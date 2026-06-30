@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何问好问题</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #07070d;
+    --surface: #0f0f1a;
+    --surface2: #18182a;
+    --border: #282840;
+    --accent: #7c5cfc;
+    --accent2: #a78bfa;
+    --accent3: #f472b6;
+    --gold: #fbbf24;
+    --green: #34d399;
+    --cyan: #22d3ee;
+    --red: #f87171;
+    --orange: #fb923c;
+    --text: #e8e8f0;
+    --text2: #9494b0;
+    --text3: #5c5c78;
+  }
+
+  html { font-size: 20px; }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slides {
+    display: flex;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100vh;
+    will-change: transform;
+  }
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5vh 6vw;
+    position: relative;
+    overflow-y: auto;
+  }
+  .slide::-webkit-scrollbar { width: 3px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Typography */
+  h1 { font-size: 3.8rem; font-weight: 900; letter-spacing: 0.04em; line-height: 1.25; }
+  h2 { font-size: 2.6rem; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 0.5em; }
+  h3 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.4em; }
+  h4 { font-size: 1.3rem; font-weight: 500; color: var(--text2); margin-bottom: 0.3em; }
+  p { font-size: 1.15rem; line-height: 1.8; color: var(--text2); max-width: 1000px; }
+  li { font-size: 1.1rem; line-height: 1.7; color: var(--text2); }
+
+  .highlight { color: var(--accent2); font-weight: 500; }
+  .gold { color: var(--gold); }
+  .green { color: var(--green); }
+  .cyan { color: var(--cyan); }
+  .pink { color: var(--accent3); }
+  .orange { color: var(--orange); }
+  .red { color: var(--red); }
+
+  /* Cover */
+  .cover {
+    background: radial-gradient(ellipse at 25% 35%, rgba(124,92,252,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 65%, rgba(244,114,182,0.07) 0%, transparent 45%),
+                var(--bg);
+    text-align: center;
+  }
+  .cover .pre-title {
+    font-size: 1rem;
+    color: var(--text3);
+    letter-spacing: 0.4em;
+    margin-bottom: 1.2rem;
+  }
+  .cover .subtitle {
+    font-size: 1.3rem;
+    color: var(--text2);
+    margin-top: 1rem;
+    letter-spacing: 0.2em;
+    font-weight: 300;
+  }
+  .cover .tagline {
+    margin-top: 2.5rem;
+    font-size: 1.5rem;
+    color: var(--accent2);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+  }
+
+  /* Decorative */
+  .deco-line {
+    width: 70px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 2px;
+    margin: 1.2rem 0;
+  }
+  .deco-line.center { margin: 1.2rem auto; }
+
+  /* Content wrapper */
+  .content {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .content.left { align-items: flex-start; }
+
+  /* Cards */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1100px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2rem;
+    width: 100%;
+    max-width: 1100px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card .icon { font-size: 2rem; margin-bottom: 0.6rem; }
+  .card h4 { color: var(--text); margin-bottom: 0.3rem; }
+  .card p { font-size: 1rem; }
+
+  /* Layer diagram */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 1.5rem 0;
+  }
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .layer:hover { transform: translateX(6px); }
+  .layer.l1 { background: rgba(124,92,252,0.08); border-color: rgba(124,92,252,0.3); }
+  .layer.l2 { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); }
+  .layer.l3 { background: rgba(244,114,182,0.08); border-color: rgba(244,114,182,0.3); }
+  .layer .num {
+    font-size: 1.6rem;
+    font-weight: 900;
+    min-width: 36px;
+    text-align: center;
+  }
+  .layer.l1 .num { color: var(--accent2); }
+  .layer.l2 .num { color: var(--gold); }
+  .layer.l3 .num { color: var(--accent3); }
+  .layer .info { flex: 1; }
+  .layer .info h4 { margin-bottom: 0.2rem; }
+  .layer .info p { font-size: 0.95rem; margin: 0; }
+
+  /* Dimension cards */
+  .dim-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    align-items: flex-start;
+  }
+  .dim-card .idx {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--accent2);
+    min-width: 32px;
+    text-align: center;
+  }
+  .dim-card .body { flex: 1; }
+  .dim-card .body h4 { font-size: 1.1rem; margin-bottom: 0.2rem; }
+  .dim-card .body p { font-size: 0.9rem; margin: 0; }
+  .dim-card .body .ex { font-size: 0.85rem; color: var(--text3); margin-top: 0.3rem; }
+  .dim-card .body .ex .bad { color: var(--red); }
+  .dim-card .body .ex .gd { color: var(--green); }
+
+  /* Steps */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 1rem 0;
+  }
+  .step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 0.8rem 1.2rem;
+    background: var(--surface);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent);
+  }
+  .step .num {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 28px;
+  }
+  .step p { font-size: 1rem; margin: 0; }
+
+  /* Principle block */
+  .principle-block {
+    padding: 1.2rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    border-left: 4px solid var(--gold);
+    width: 100%;
+    max-width: 1000px;
+    margin: 0.8rem 0;
+  }
+  .principle-block p { font-size: 1.05rem; margin: 0; }
+
+  /* Quote */
+  .quote-block {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(124,92,252,0.06), rgba(244,114,182,0.04));
+    border: 1px solid rgba(124,92,252,0.2);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 1000px;
+    margin: 1rem 0;
+    position: relative;
+  }
+  .quote-block::before {
+    content: '"';
+    position: absolute;
+    top: -0.2rem;
+    left: 0.8rem;
+    font-size: 4rem;
+    color: var(--accent);
+    opacity: 0.3;
+    line-height: 1;
+  }
+  .quote-block p {
+    font-size: 1.3rem;
+    color: var(--text);
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .quote-block .attr {
+    font-size: 0.9rem;
+    color: var(--text3);
+    margin-top: 0.6rem;
+    text-align: right;
+  }
+
+  /* Page number */
+  .page-num {
+    position: absolute;
+    bottom: 3vh;
+    right: 4vw;
+    font-size: 0.85rem;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+    background: rgba(7,7,13,0.85);
+    backdrop-filter: blur(14px);
+    padding: 0.5rem 1.4rem;
+    border-radius: 40px;
+    border: 1px solid var(--border);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    transition: color 0.2s;
+    font-family: inherit;
+  }
+  .nav button:hover { color: var(--text); }
+  .nav .dots {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .nav .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .nav .dot.active { background: var(--accent2); width: 22px; border-radius: 4px; }
+  .nav .page-label {
+    font-size: 0.8rem;
+    color: var(--text3);
+    min-width: 36px;
+    text-align: center;
+  }
+
+  /* Keyboard hint */
+  .kbd-hint {
+    position: fixed;
+    bottom: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: var(--text3);
+    opacity: 0.35;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* Stats */
+  .stats {
+    display: flex;
+    gap: 2.5rem;
+    margin: 2rem 0;
+  }
+  .stat { text-align: center; }
+  .stat .num {
+    font-size: 2.8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat .label {
+    font-size: 0.95rem;
+    color: var(--text3);
+    margin-top: 0.3rem;
+  }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-right: 0.3rem;
+  }
+  .tag.dim { background: rgba(124,92,252,0.15); color: var(--accent2); }
+  .tag.bad { background: rgba(248,113,113,0.15); color: var(--red); }
+  .tag.good { background: rgba(52,211,153,0.15); color: var(--green); }
+
+  /* Exercise list */
+  .ex-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 1rem 0;
+  }
+  .ex-item {
+    padding: 0.9rem 1.2rem;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+  .ex-item .num {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 24px;
+  }
+  .ex-item .body { flex: 1; }
+  .ex-item .body strong { color: var(--text); }
+  .ex-item .body p { font-size: 0.9rem; margin: 0; margin-top: 0.2rem; }
+
+  /* Case flow */
+  .case-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 1rem 0;
+  }
+  .case-step {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.7rem 1.2rem;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .case-step .idx {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 28px;
+  }
+  .case-step .arrow { color: var(--text3); font-size: 1.2rem; }
+  .case-step p { font-size: 0.95rem; margin: 0; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    html { font-size: 14px; }
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.8rem; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .ex-list { grid-template-columns: 1fr; }
+    .stats { gap: 1.2rem; }
+    .stat .num { font-size: 2rem; }
+    .layer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ========== SLIDE 1: COVER ========== -->
+  <div class="slide cover">
+    <div class="content" style="text-align:center;">
+      <div class="pre-title">✦ 认知工具系列 ✦</div>
+      <h1>如何问好问题</h1>
+      <div class="deco-line center"></div>
+      <div class="subtitle">从"正确的问题"到"更好的问题"</div>
+      <div class="tagline">定义问题的能力，比寻找答案的能力更稀缺</div>
+      <div class="stats">
+        <div class="stat"><div class="num">3</div><div class="label">问题层次</div></div>
+        <div class="stat"><div class="num">7</div><div class="label">检验维度</div></div>
+        <div class="stat"><div class="num">5</div><div class="label">迭代步骤</div></div>
+        <div class="stat"><div class="num">5</div><div class="label">日常练习</div></div>
+      </div>
+    </div>
+    <div class="page-num">01 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 2: WHY ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>为什么问好问题如此重要？</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:1.2rem;">
+        在 AI 时代，提问能力正在成为<span class="highlight">最稀缺的人类优势</span>。
+      </p>
+      <p style="margin-bottom:1.2rem;">
+        AI 可以回答几乎任何问题——但前提是，你得<span class="gold">问对问题</span>。
+        一个平庸的问题得到一个平庸的答案，一个深刻的问题得到一个深刻的洞察。
+        AI 的产出质量，上限取决于提问者的提问质量。
+      </p>
+      <p style="margin-bottom:1.2rem;">
+        但"问好问题"的价值远不止于 AI 协作。它是<span class="highlight">独立思考的起点</span>，
+        是<span class="cyan">认知深度的标尺</span>，是<span class="pink">判断力的外在表现</span>。
+      </p>
+      <div class="principle-block" style="border-left-color:var(--red);margin-top:1rem;">
+        <p><span class="red">⚡ 一个简单但残酷的事实：</span>
+        大多数人花大量时间寻找答案，却很少花时间审视问题本身。
+        而真正的高手，会把更多精力放在<span class="gold">"定义问题"</span>上——
+        因为他们知道，一个定义精准的问题，答案往往已经呼之欲出。</p>
+      </div>
+    </div>
+    <div class="page-num">02 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 3: THREE LAYERS ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>好问题的三层结构</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:1rem;">一个好问题，从外到内可以分为三层——大多数人停在第一层。</p>
+
+      <div class="layers">
+        <div class="layer l1">
+          <div class="num">①</div>
+          <div class="info">
+            <h4>问题本身</h4>
+            <p>最表层——你问的是什么。"如何判断组织架构设计水平？""AI时代什么组织形态最有效？"</p>
+          </div>
+        </div>
+        <div class="layer l2">
+          <div class="num">②</div>
+          <div class="info">
+            <h4>问题的前提假设</h4>
+            <p>每一个问题都隐含着一组未被言说的假设。这些假设才是真正塑造答案的力量。<br>
+            <span class="gold">核心原则：审视问题之前，先审视问题的前提。</span></p>
+          </div>
+        </div>
+        <div class="layer l3">
+          <div class="num">③</div>
+          <div class="info">
+            <h4>提问者的目的</h4>
+            <p>最深的一层——你为什么要问这个问题？同样的问题，出于不同的目的，应该被重构为完全不同的问题。<br>
+            <span class="pink">核心原则：问题不是目的，目的是问题的灵魂。</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="principle-block" style="margin-top:0.5rem;">
+        <p>💡 一个糟糕的问题，往往不是因为问题本身不好，而是因为它建立在<span class="red">一个错误的前提</span>上，或者<span class="text3">根本没有目的</span>。</p>
+      </div>
+    </div>
+    <div class="page-num">03 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 4: SEVEN DIMENSIONS ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>七个检验维度</h2>
+      <div class="deco-line"></div>
+      <div class="grid-2" style="margin-top:0.5rem;">
+        <div class="dim-card">
+          <div class="idx">1</div>
+          <div class="body">
+            <h4>前提审视度</h4>
+            <p>问题是否审视了自己的前提假设？</p>
+            <div class="ex"><span class="bad">✕</span> "如何判断组织架构水平？"<br><span class="gd">✓</span> "组织架构设计对什么阶段的企业最重要？"</div>
+          </div>
+        </div>
+        <div class="dim-card">
+          <div class="idx">2</div>
+          <div class="body">
+            <h4>目的对齐度</h4>
+            <p>问题是否服务于一个明确的目的？</p>
+            <div class="ex"><span class="bad">✕</span> "什么是好的组织架构？"<br><span class="gd">✓</span> "对于我的副业项目，第一天应该用什么组织形态？"</div>
+          </div>
+        </div>
+        <div class="dim-card">
+          <div class="idx">3</div>
+          <div class="body">
+            <h4>可操作度</h4>
+            <p>问题是否指向行动？</p>
+            <div class="ex"><span class="bad">✕</span> "什么样的组织是好的？"<br><span class="gd">✓</span> "从职能制转向客户导向，最常见的失败原因是什么？"</div>
+          </div>
+        </div>
+        <div class="dim-card">
+          <div class="idx">4</div>
+          <div class="body">
+            <h4>开放度</h4>
+            <p>问题是否允许意料之外的答案？</p>
+            <div class="ex"><span class="bad">✕</span> "组织架构是不是最重要的？"<br><span class="gd">✓</span> "除了组织架构，还有什么因素同样重要？"</div>
+          </div>
+        </div>
+        <div class="dim-card">
+          <div class="idx">5</div>
+          <div class="body">
+            <h4>第一性原理深度</h4>
+            <p>问题是否触及了事物的本质？</p>
+            <div class="ex"><span class="bad">✕</span> "哪些公司有好的组织架构？"<br><span class="gd">✓</span> "信息流动的效率是组织的核心——从这个第一性原理出发，结构应该是什么？"</div>
+          </div>
+        </div>
+        <div class="dim-card">
+          <div class="idx">6</div>
+          <div class="body">
+            <h4>反脆弱性</h4>
+            <p>问题是否经得起被反驳？</p>
+            <div class="ex"><span class="bad">✕</span> "如何证明我的框架是对的？"<br><span class="gd">✓</span> "我的框架在什么情况下会失效？"</div>
+          </div>
+        </div>
+        <div class="dim-card" style="grid-column:1/-1;">
+          <div class="idx">7</div>
+          <div class="body">
+            <h4>时间尺度</h4>
+            <p>问题是否考虑了不同的时间维度？</p>
+            <div class="ex"><span class="bad">✕</span> "什么组织形态最好？"<br><span class="gd">✓</span> "一家初创企业从10人到100人再到1000人，组织形态应该如何演变？"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">04 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 5: ITERATION FRAMEWORK ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>迭代框架：从好到更好</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.8rem;">五步法，将一个问题从"还可以"升级到"有穿透力"。</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <div><strong>写下你的问题</strong><p>"如何判断一个企业的组织架构设计水平？"</p></div>
+        </div>
+        <div class="step" style="border-left-color:var(--gold);">
+          <div class="num" style="color:var(--gold);">2</div>
+          <div><strong>追问前提</strong><p>我假设了什么？这个假设对谁成立？在什么条件下不成立？</p></div>
+        </div>
+        <div class="step" style="border-left-color:var(--accent3);">
+          <div class="num" style="color:var(--accent3);">3</div>
+          <div><strong>追问目的</strong><p>我为什么问这个问题？这个目的下，什么才是真正有用的问题？</p></div>
+        </div>
+        <div class="step" style="border-left-color:var(--green);">
+          <div class="num" style="color:var(--green);">4</div>
+          <div><strong>升级问题</strong><p>从"如何判断"升级到"如何设计"，从"什么是对的"升级到"怎么从错的变成对的"。</p></div>
+        </div>
+        <div class="step" style="border-left-color:var(--cyan);">
+          <div class="num" style="color:var(--cyan);">5</div>
+          <div><strong>切换方法论</strong><p>归纳法只能看到已经看到的，演绎法才能触及未知。两种方法切换着问。</p></div>
+        </div>
+      </div>
+
+      <div class="principle-block" style="margin-top:1rem;border-left-color:var(--cyan);">
+        <p>🔄 <span class="cyan">元技巧：</span> 每次得到一个答案后，问自己"这是正确的问题吗？"——这是最高水平的思考习惯。</p>
+      </div>
+    </div>
+    <div class="page-num">05 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 6: PRINCIPLES ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>三个核心原则</h2>
+      <div class="deco-line"></div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="card" style="border-top:3px solid var(--accent3);">
+          <div class="icon">🎯</div>
+          <h4>目的即灵魂</h4>
+          <p>问题不是目的，目的是问题的灵魂。没有目的的问题，再漂亮也是空壳。</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold);">
+          <div class="icon">🔍</div>
+          <h4>先审前提</h4>
+          <p>审视问题之前，先审视问题的前提。一个糟糕的问题，往往建立在错误的前提上。</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--cyan);grid-column:1/-1;">
+          <div class="icon">🔄</div>
+          <h4>切换方法论</h4>
+          <p>归纳法只能看到已经看到的，演绎法才能触及未知。两种方法切换着问，比只用一种深刻得多。</p>
+        </div>
+      </div>
+
+      <div class="quote-block" style="margin-top:1.5rem;">
+        <p>"往回退一步审视问题本身，这本身就是高水平的思考习惯。"</p>
+        <div class="attr">—— 元原则</div>
+      </div>
+    </div>
+    <div class="page-num">06 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 7: DAILY EXERCISES ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>五个日常练习</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.8rem;">把提问能力变成肌肉记忆</p>
+
+      <div class="ex-list">
+        <div class="ex-item">
+          <div class="num">1</div>
+          <div class="body">
+            <strong>"再问一次"练习</strong>
+            <p>每次得到答案后，问自己"这是正确的问题吗？"</p>
+          </div>
+        </div>
+        <div class="ex-item">
+          <div class="num">2</div>
+          <div class="body">
+            <strong>前提标注练习</strong>
+            <p>写下问题后，用括号标注出所有隐含前提，逐一审视</p>
+          </div>
+        </div>
+        <div class="ex-item">
+          <div class="num">3</div>
+          <div class="body">
+            <strong>目的追问练习</strong>
+            <p>连续追问三次"我为什么问这个问题？"，直到触及真正的目的</p>
+          </div>
+        </div>
+        <div class="ex-item">
+          <div class="num">4</div>
+          <div class="body">
+            <strong>反问题练习</strong>
+            <p>主动问"我的框架在什么情况下会失效？"，寻找边界条件</p>
+          </div>
+        </div>
+        <div class="ex-item" style="grid-column:1/-1;">
+          <div class="num">5</div>
+          <div class="body">
+            <strong>切换视角练习</strong>
+            <p>从支持方、反对方、质疑方、搅局者四个角度分别提问</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="principle-block" style="border-left-color:var(--accent);margin-top:0.5rem;">
+        <p>🎯 每天选一个练习做一次，21天形成习惯。比学习任何提问技巧都重要的，是<span class="highlight">培养"这个问题好像不太对"的直觉</span>。</p>
+      </div>
+    </div>
+    <div class="page-num">07 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 8: CASE STUDY ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>附：从实践中提炼</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.8rem;">今天关于组织架构的思考过程，本身就是"如何问好问题"的完整案例。</p>
+
+      <div class="case-flow">
+        <div class="case-step">
+          <div class="idx">直觉</div>
+          <div class="arrow">→</div>
+          <p>看一个企业，先看它的结构——<span class="gold">这是一个好直觉</span></p>
+        </div>
+        <div class="case-step">
+          <div class="idx">框架</div>
+          <div class="arrow">→</div>
+          <p>三个判断维度——<span class="green">这是一个好框架</span></p>
+        </div>
+        <div class="case-step">
+          <div class="idx">批判</div>
+          <div class="arrow">→</div>
+          <p>这是正确的问题吗？——<span class="highlight">这是更好的问题</span></p>
+        </div>
+        <div class="case-step">
+          <div class="idx">升级</div>
+          <div class="arrow">→</div>
+          <p>从"如何判断"到"如何设计"到"为什么问这个问题"——<span class="pink">完成了三层跃迁</span></p>
+        </div>
+      </div>
+
+      <div class="principle-block" style="border-left-color:var(--accent3);margin-top:1rem;">
+        <p>💎 最有价值的部分不是框架本身，而是<span class="gold">产生框架的那个瞬间的直觉</span>——"看一个企业，先看它的结构"。这个直觉比框架更值钱。框架可以迭代，直觉才是你的。</p>
+      </div>
+
+      <div class="principle-block" style="border-left-color:var(--cyan);margin-top:0.5rem;">
+        <p>同样的道理：最有价值的不是某个"好问题"本身，而是你产生了那个好问题的那个瞬间的直觉——"这个问题好像不太对"。<span class="highlight">培养这个直觉，比学习任何提问技巧都重要。</span></p>
+      </div
