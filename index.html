@@ -35,6 +35,7 @@
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    user-select: none;
   }
 
   .slides {
@@ -58,7 +59,6 @@
   .slide::-webkit-scrollbar-track { background: transparent; }
   .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Typography */
   h1 { font-size: 3.8rem; font-weight: 900; letter-spacing: 0.04em; line-height: 1.25; }
   h2 { font-size: 2.6rem; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 0.5em; }
   h3 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.4em; }
@@ -74,7 +74,6 @@
   .orange { color: var(--orange); }
   .red { color: var(--red); }
 
-  /* Cover */
   .cover {
     background: radial-gradient(ellipse at 25% 35%, rgba(124,92,252,0.10) 0%, transparent 55%),
                 radial-gradient(ellipse at 75% 65%, rgba(244,114,182,0.07) 0%, transparent 45%),
@@ -102,7 +101,6 @@
     letter-spacing: 0.1em;
   }
 
-  /* Decorative */
   .deco-line {
     width: 70px;
     height: 3px;
@@ -112,7 +110,6 @@
   }
   .deco-line.center { margin: 1.2rem auto; }
 
-  /* Content wrapper */
   .content {
     width: 100%;
     max-width: 1100px;
@@ -122,7 +119,6 @@
   }
   .content.left { align-items: flex-start; }
 
-  /* Cards */
   .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -149,7 +145,6 @@
   .card h4 { color: var(--text); margin-bottom: 0.3rem; }
   .card p { font-size: 1rem; }
 
-  /* Layer diagram */
   .layers {
     display: flex;
     flex-direction: column;
@@ -171,12 +166,7 @@
   .layer.l1 { background: rgba(124,92,252,0.08); border-color: rgba(124,92,252,0.3); }
   .layer.l2 { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); }
   .layer.l3 { background: rgba(244,114,182,0.08); border-color: rgba(244,114,182,0.3); }
-  .layer .num {
-    font-size: 1.6rem;
-    font-weight: 900;
-    min-width: 36px;
-    text-align: center;
-  }
+  .layer .num { font-size: 1.6rem; font-weight: 900; min-width: 36px; text-align: center; }
   .layer.l1 .num { color: var(--accent2); }
   .layer.l2 .num { color: var(--gold); }
   .layer.l3 .num { color: var(--accent3); }
@@ -184,7 +174,6 @@
   .layer .info h4 { margin-bottom: 0.2rem; }
   .layer .info p { font-size: 0.95rem; margin: 0; }
 
-  /* Dimension cards */
   .dim-card {
     display: flex;
     gap: 1rem;
@@ -194,13 +183,7 @@
     border-radius: 12px;
     align-items: flex-start;
   }
-  .dim-card .idx {
-    font-size: 1.4rem;
-    font-weight: 900;
-    color: var(--accent2);
-    min-width: 32px;
-    text-align: center;
-  }
+  .dim-card .idx { font-size: 1.4rem; font-weight: 900; color: var(--accent2); min-width: 32px; text-align: center; }
   .dim-card .body { flex: 1; }
   .dim-card .body h4 { font-size: 1.1rem; margin-bottom: 0.2rem; }
   .dim-card .body p { font-size: 0.9rem; margin: 0; }
@@ -208,7 +191,6 @@
   .dim-card .body .ex .bad { color: var(--red); }
   .dim-card .body .ex .gd { color: var(--green); }
 
-  /* Steps */
   .steps {
     display: flex;
     flex-direction: column;
@@ -226,15 +208,9 @@
     border-radius: 10px;
     border-left: 3px solid var(--accent);
   }
-  .step .num {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--accent2);
-    min-width: 28px;
-  }
+  .step .num { font-size: 1.2rem; font-weight: 700; color: var(--accent2); min-width: 28px; }
   .step p { font-size: 1rem; margin: 0; }
 
-  /* Principle block */
   .principle-block {
     padding: 1.2rem 1.5rem;
     background: var(--surface);
@@ -247,7 +223,6 @@
   }
   .principle-block p { font-size: 1.05rem; margin: 0; }
 
-  /* Quote */
   .quote-block {
     padding: 1.5rem 2rem;
     background: linear-gradient(135deg, rgba(124,92,252,0.06), rgba(244,114,182,0.04));
@@ -268,31 +243,19 @@
     opacity: 0.3;
     line-height: 1;
   }
-  .quote-block p {
-    font-size: 1.3rem;
-    color: var(--text);
-    font-weight: 500;
-    margin: 0;
-    line-height: 1.6;
-  }
-  .quote-block .attr {
-    font-size: 0.9rem;
-    color: var(--text3);
-    margin-top: 0.6rem;
-    text-align: right;
-  }
+  .quote-block p { font-size: 1.3rem; color: var(--text); font-weight: 500; margin: 0; line-height: 1.6; }
+  .quote-block .attr { font-size: 0.9rem; color: var(--text3); margin-top: 0.6rem; text-align: right; }
 
-  /* Page number */
   .page-num {
     position: absolute;
-    bottom: 3vh;
+    bottom: 10vh;
     right: 4vw;
     font-size: 0.85rem;
     color: var(--text3);
     letter-spacing: 0.1em;
+    z-index: 10;
   }
 
-  /* Navigation */
   .nav {
     position: fixed;
     bottom: 3vh;
@@ -319,10 +282,7 @@
     font-family: inherit;
   }
   .nav button:hover { color: var(--text); }
-  .nav .dots {
-    display: flex;
-    gap: 0.4rem;
-  }
+  .nav .dots { display: flex; gap: 0.4rem; }
   .nav .dot {
     width: 7px; height: 7px;
     border-radius: 50%;
@@ -338,20 +298,6 @@
     text-align: center;
   }
 
-  /* Keyboard hint */
-  .kbd-hint {
-    position: fixed;
-    bottom: 10vh;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.8rem;
-    color: var(--text3);
-    opacity: 0.35;
-    z-index: 50;
-    pointer-events: none;
-  }
-
-  /* Stats */
   .stats {
     display: flex;
     gap: 2.5rem;
@@ -365,26 +311,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  .stat .label {
-    font-size: 0.95rem;
-    color: var(--text3);
-    margin-top: 0.3rem;
-  }
+  .stat .label { font-size: 0.95rem; color: var(--text3); margin-top: 0.3rem; }
 
-  /* Tag */
-  .tag {
-    display: inline-block;
-    padding: 0.2rem 0.7rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-right: 0.3rem;
-  }
-  .tag.dim { background: rgba(124,92,252,0.15); color: var(--accent2); }
-  .tag.bad { background: rgba(248,113,113,0.15); color: var(--red); }
-  .tag.good { background: rgba(52,211,153,0.15); color: var(--green); }
-
-  /* Exercise list */
   .ex-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -402,17 +330,11 @@
     gap: 0.8rem;
     align-items: flex-start;
   }
-  .ex-item .num {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--accent2);
-    min-width: 24px;
-  }
+  .ex-item .num { font-size: 1rem; font-weight: 700; color: var(--accent2); min-width: 24px; }
   .ex-item .body { flex: 1; }
   .ex-item .body strong { color: var(--text); }
   .ex-item .body p { font-size: 0.9rem; margin: 0; margin-top: 0.2rem; }
 
-  /* Case flow */
   .case-flow {
     display: flex;
     flex-direction: column;
@@ -430,16 +352,10 @@
     border-radius: 10px;
     border: 1px solid var(--border);
   }
-  .case-step .idx {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent2);
-    min-width: 28px;
-  }
+  .case-step .idx { font-size: 1.1rem; font-weight: 700; color: var(--accent2); min-width: 28px; }
   .case-step .arrow { color: var(--text3); font-size: 1.2rem; }
   .case-step p { font-size: 0.95rem; margin: 0; }
 
-  /* Responsive */
   @media (max-width: 768px) {
     html { font-size: 14px; }
     h1 { font-size: 2.2rem; }
@@ -535,7 +451,7 @@
       </div>
 
       <div class="principle-block" style="margin-top:0.5rem;">
-        <p>💡 一个糟糕的问题，往往不是因为问题本身不好，而是因为它建立在<span class="red">一个错误的前提</span>上，或者<span class="text3">根本没有目的</span>。</p>
+        <p>💡 一个糟糕的问题，往往不是因为问题本身不好，而是因为它建立在<span class="red">一个错误的前提</span>上，或者根本没有目的。</p>
       </div>
     </div>
     <div class="page-num">03 / 09</div>
@@ -765,4 +681,89 @@
 
       <div class="principle-block" style="border-left-color:var(--cyan);margin-top:0.5rem;">
         <p>同样的道理：最有价值的不是某个"好问题"本身，而是你产生了那个好问题的那个瞬间的直觉——"这个问题好像不太对"。<span class="highlight">培养这个直觉，比学习任何提问技巧都重要。</span></p>
-      </div
+      </div>
+    </div>
+    <div class="page-num">08 / 09</div>
+  </div>
+
+  <!-- ========== SLIDE 9: META PRINCIPLE ========== -->
+  <div class="slide cover">
+    <div class="content" style="text-align:center;">
+      <div style="font-size:1rem;color:var(--text3);letter-spacing:0.3em;margin-bottom:1.5rem;">✦ 最后一句 ✦</div>
+      <div class="quote-block" style="border:none;background:none;max-width:900px;">
+        <p style="font-size:2.2rem;line-height:1.5;color:var(--text);">
+          当你能在自己的问题面前停下来，<br>
+          问一句<span class="highlight">"这是正确的问题吗？"</span>
+        </p>
+      </div>
+      <div style="margin-top:2rem;">
+        <p style="font-size:1.8rem;color:var(--accent2);font-weight:300;">
+          你就已经超越了大多数人
+        </p>
+      </div>
+      <div style="margin-top:4rem;">
+        <p style="font-size:1rem;color:var(--text3);letter-spacing:0.2em;">
+          认知工具系列 · 第 1 篇
+        </p>
+      </div>
+    </div>
+    <div class="page-num">09 / 09</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav" id="nav">
+  <button id="prevBtn">‹</button>
+  <span class="page-label" id="pageLabel">1/9</span>
+  <div class="dots" id="dots"></div>
+  <button id="nextBtn">›</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.getElementById('slides');
+  const dots = document.getElementById('dots');
+  const pageLabel = document.getElementById('pageLabel');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const total = document.querySelectorAll('.slide').length;
+  let current = 0;
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', function() { goTo(i); });
+    dots.appendChild(dot);
+  }
+
+  function goTo(n) {
+    if (n < 0) n = 0;
+    if (n >= total) n = total - 1;
+    current = n;
+    slides.style.transform = 'translateX(-' + (current * 100) + 'vw)';
+    pageLabel.textContent = (current + 1) + '/' + total;
+    document.querySelectorAll('.dot').forEach(function(d, i) {
+      d.className = 'dot' + (i === current ? ' active' : '');
+    });
+  }
+
+  prevBtn.addEventListener('click', function() { goTo(current - 1); });
+  nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { goTo(current - 1); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) { goTo(current + (diff > 0 ? 1 : -1)); }
+  });
+})();
+</script>
+
+</body>
+</html>
