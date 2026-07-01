@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组织的周期穿越</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #07070d; --surface: #0f0f1a; --surface2: #18182a; --border: #282840;
+    --accent: #7c5cfc; --accent2: #a78bfa; --accent3: #f472b6;
+    --gold: #fbbf24; --green: #34d399; --cyan: #22d3ee; --red: #f87171;
+    --orange: #fb923c; --text: #e8e8f0; --text2: #9494b0; --text3: #5c5c78;
+  }
+  html { font-size: 20px; }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    overflow: hidden; height: 100vh; width: 100vw; user-select: none;
+  }
+  .slides {
+    display: flex; transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100vh; will-change: transform;
+  }
+  .slide {
+    min-width: 100vw; height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; padding: 4vh 5vw; position: relative; overflow-y: auto;
+  }
+  .slide::-webkit-scrollbar { width: 3px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: 0.04em; line-height: 1.25; }
+  h2 { font-size: 2.4rem; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 0.4em; }
+  h3 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.3em; }
+  h4 { font-size: 1.2rem; font-weight: 500; color: var(--text2); margin-bottom: 0.3em; }
+  p { font-size: 1.1rem; line-height: 1.7; color: var(--text2); max-width: 1000px; }
+  li { font-size: 1.05rem; line-height: 1.6; color: var(--text2); }
+
+  .highlight { color: var(--accent2); font-weight: 500; }
+  .gold { color: var(--gold); }
+  .green { color: var(--green); }
+  .cyan { color: var(--cyan); }
+  .pink { color: var(--accent3); }
+  .orange { color: var(--orange); }
+  .red { color: var(--red); }
+
+  .cover {
+    background: radial-gradient(ellipse at 25% 35%, rgba(124,92,252,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 65%, rgba(244,114,182,0.07) 0%, transparent 45%), var(--bg);
+    text-align: center;
+  }
+  .cover .pre-title { font-size: 1rem; color: var(--text3); letter-spacing: 0.4em; margin-bottom: 1rem; }
+  .cover .subtitle { font-size: 1.2rem; color: var(--text2); margin-top: 0.8rem; letter-spacing: 0.2em; font-weight: 300; }
+  .cover .tagline { margin-top: 2rem; font-size: 1.4rem; color: var(--accent2); font-weight: 300; letter-spacing: 0.1em; }
+
+  .deco-line { width: 70px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent3)); border-radius: 2px; margin: 1rem 0; }
+  .deco-line.center { margin: 1rem auto; }
+
+  .content { width: 100%; max-width: 1100px; display: flex; flex-direction: column; align-items: center; }
+  .content.left { align-items: flex-start; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; width: 100%; max-width: 1100px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; width: 100%; max-width: 1100px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.3rem; transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card .icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .card h4 { color: var(--text); margin-bottom: 0.2rem; font-size: 1.1rem; }
+  .card p { font-size: 0.95rem; margin: 0; }
+
+  .stats { display: flex; gap: 2rem; margin: 1.5rem 0; }
+  .stat { text-align: center; }
+  .stat .num {
+    font-size: 2.5rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat .label { font-size: 0.9rem; color: var(--text3); margin-top: 0.2rem; }
+
+  .page-num { position: absolute; bottom: 9vh; right: 3vw; font-size: 0.8rem; color: var(--text3); letter-spacing: 0.1em; z-index: 10; }
+
+  .nav {
+    position: fixed; bottom: 2.5vh; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 0.8rem; z-index: 100;
+    background: rgba(7,7,13,0.85); backdrop-filter: blur(14px);
+    padding: 0.4rem 1.2rem; border-radius: 40px; border: 1px solid var(--border);
+  }
+  .nav button {
+    background: none; border: none; color: var(--text2); font-size: 1.2rem;
+    cursor: pointer; padding: 0.2rem 0.4rem; transition: color 0.2s; font-family: inherit;
+  }
+  .nav button:hover { color: var(--text); }
+  .nav .dots { display: flex; gap: 0.3rem; }
+  .nav .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--border);
+    transition: all 0.3s; cursor: pointer;
+  }
+  .nav .dot.active { background: var(--accent2); width: 20px; border-radius: 3px; }
+  .nav .page-label { font-size: 0.75rem; color: var(--text3); min-width: 32px; text-align: center; }
+
+  .dim-row {
+    display: flex; gap: 0.8rem; align-items: flex-start;
+    padding: 0.7rem 1rem; background: var(--surface); border-radius: 10px;
+    border-left: 3px solid var(--accent); width: 100%; max-width: 1000px; margin: 0.3rem 0;
+  }
+  .dim-row .idx { font-size: 1.1rem; font-weight: 700; color: var(--accent2); min-width: 24px; }
+  .dim-row .body { flex: 1; }
+  .dim-row .body strong { color: var(--text); }
+  .dim-row .body p { font-size: 0.9rem; margin: 0; }
+
+  .principle-block {
+    padding: 1rem 1.3rem; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; border-left: 4px solid var(--gold);
+    width: 100%; max-width: 1000px; margin: 0.6rem 0;
+  }
+  .principle-block p { font-size: 1rem; margin: 0; }
+
+  .quote-block {
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient(135deg, rgba(124,92,252,0.06), rgba(244,114,182,0.04));
+    border: 1px solid rgba(124,92,252,0.2); border-radius: 12px;
+    width: 100%; max-width: 1000px; margin: 0.8rem 0; position: relative;
+  }
+  .quote-block::before {
+    content: '"'; position: absolute; top: -0.1rem; left: 0.6rem;
+    font-size: 3.5rem; color: var(--accent); opacity: 0.25; line-height: 1;
+  }
+  .quote-block p { font-size: 1.15rem; color: var(--text); font-weight: 500; margin: 0; line-height: 1.5; }
+  .quote-block .attr { font-size: 0.85rem; color: var(--text3); margin-top: 0.4rem; text-align: right; }
+
+  .expert-card {
+    padding: 1rem 1.2rem; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; margin: 0.5rem 0; width: 100%; max-width: 1000px;
+  }
+  .expert-card .name { font-weight: 700; color: var(--accent2); font-size: 1.1rem; }
+  .expert-card .title { font-size: 0.85rem; color: var(--text3); margin-left: 0.5rem; }
+  .expert-card .speech { font-size: 0.95rem; color: var(--text2); margin-top: 0.3rem; line-height: 1.5; }
+
+  .collision {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem;
+    width: 100%; max-width: 1100px; margin: 0.5rem 0;
+  }
+  .collision .col {
+    padding: 0.8rem; background: var(--surface); border-radius: 10px;
+    border-top: 2px solid var(--accent);
+  }
+  .collision .col .who { font-weight: 700; font-size: 0.9rem; color: var(--accent2); margin-bottom: 0.3rem; }
+  .collision .col p { font-size: 0.85rem; margin: 0; }
+
+  .checklist { width: 100%; max-width: 1000px; margin: 0.5rem 0; }
+  .checklist .item { padding: 0.5rem 0; font-size: 1rem; color: var(--text2); }
+  .checklist .item::before { content: "☐ "; color: var(--text3); }
+
+  .tag {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
+    font-size: 0.75rem; font-weight: 500; margin-right: 0.3rem;
+  }
+  .tag.assume { background: rgba(251,191,36,0.15); color: var(--gold); }
+  .tag.miss { background: rgba(248,113,113,0.15); color: var(--red); }
+
+  .insight-list { width: 100%; max-width: 1000px; margin: 0.5rem 0; }
+  .insight-list li { margin: 0.4rem 0; font-size: 1rem; }
+
+  @media (max-width: 768px) {
+    html { font-size: 14px; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.6rem; }
+    .grid-2, .grid-3, .collision { grid-template-columns: 1fr; }
+    .stats { gap: 1rem; } .stat .num { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- 1: COVER -->
+  <div class="slide cover">
+    <div class="content" style="text-align:center;">
+      <div class="pre-title">✦ 事业发展 · 认知系列 ✦</div>
+      <h1>组织的周期穿越</h1>
+      <div class="deco-line center"></div>
+      <div class="subtitle">适应性 · 变革能力 · 存在的意义</div>
+      <div class="tagline">不是对抗周期，而是在每一个周期里，做那个周期该做的事</div>
+      <div class="stats">
+        <div class="stat"><div class="num">4</div><div class="label">周期类型</div></div>
+        <div class="stat"><div class="num">6</div><div class="label">进化维度</div></div>
+        <div class="stat"><div class="num">5</div><div class="label">智囊专家</div></div>
+        <div class="stat"><div class="num">9</div><div class="label">章节</div></div>
+      </div>
+    </div>
+    <div class="page-num">01 / 14</div>
+  </div>
+
+  <!-- 2: 问题的起点 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>一、问题的起点</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:1rem;">
+        产品四年一换，企业三年一坎。但更核心的问题是——
+      </p>
+      <div class="principle-block" style="border-left-color:var(--accent);padding:1.5rem;">
+        <p style="font-size:1.3rem;color:var(--text);line-height:1.6;">
+          <span class="highlight">如果产品注定有生命周期，商业注定有周期波动，经济注定有周期起伏，</span><br>
+          那组织<span class="gold">凭什么活着</span>？它<span class="cyan">怎么活着</span>？它<span class="pink">为什么值得活着</span>？
+        </p>
+      </div>
+      <p style="margin-top:1rem;">
+        这不是一个技术问题，不是一个管理问题，是一个<span class="highlight">存在论问题</span>。
+      </p>
+    </div>
+    <div class="page-num">02 / 14</div>
+  </div>
+
+  <!-- 3: 四重周期叠加 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>二、四重周期叠加</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.8rem;">一个组织同时处于四重周期之中</p>
+      <div class="grid-2">
+        <div class="card" style="border-top:3px solid var(--accent2);">
+          <h4>📦 产品周期 <span style="color:var(--text3);font-weight:400;">1-5年</span></h4>
+          <p>技术迭代、竞争升级、客户需求变化</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold);">
+          <h4>📊 商业周期 <span style="color:var(--text3);font-weight:400;">3-7年</span></h4>
+          <p>市场扩张→饱和→收缩→再扩张</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--cyan);">
+          <h4>🏭 产业周期 <span style="color:var(--text3);font-weight:400;">10-20年</span></h4>
+          <p>技术范式转换、产业链重构、监管变化</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--red);">
+          <h4>🌍 经济周期 <span style="color:var(--text3);font-weight:400;">5-10年</span></h4>
+          <p>繁荣→衰退→萧条→复苏</p>
+        </div>
+      </div>
+      <div class="principle-block" style="margin-top:0.8rem;border-left-color:var(--red);">
+        <p>⚡ <span class="red">死亡窗口：</span> 多重周期同时触底才是真正的生存危机。产品换代 + 组织转型 + 经济衰退 = 三重死亡。</p>
+      </div>
+    </div>
+    <div class="page-num">03 / 14</div>
+  </div>
+
+  <!-- 4: 六个维度协同进化 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>三、六个维度的协同进化</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.6rem;">穿越周期，不是靠一个超级产品或一个天才CEO</p>
+      <div class="dim-row"><div class="idx">①</div><div class="body"><strong>技术</strong><p>从"拥有技术"到"技术吸收能力"——华为海思2004年成立，15年后才用上</p></div></div>
+      <div class="dim-row" style="border-left-color:var(--gold);"><div class="idx" style="color:var(--gold);">②</div><div class="body"><strong>产品交付</strong><p>从"做产品"到"做产品线"——现金牛/明星/问题/瘦狗，组合管理</p></div></div>
+      <div class="dim-row" style="border-left-color:var(--accent3);"><div class="idx" style="color:var(--accent3);">③</div><div class="body"><strong>商业模式</strong><p>从"一种模式"到"模式弹性"——微软从卖许可证到卖云服务</p></div></div>
+      <div class="dim-row" style="border-left-color:var(--cyan);"><div class="idx" style="color:var(--cyan);">④</div><div class="body"><strong>组织结构</strong><p>从"稳定结构"到"结构流动性"——单元小型化、边界可穿透、形态可切换</p></div></div>
+      <div class="dim-row" style="border-left-color:var(--green);"><div class="idx" style="color:var(--green);">⑤</div><div class="body"><strong>人才梯队</strong><p>从"招人"到"造人"——内部人才生产能力比留住所有人更重要</p></div></div>
+      <div class="dim-row" style="border-left-color:var(--orange);"><div class="idx" style="color:var(--orange);">⑥</div><div class="body"><strong>文化</strong><p>从"价值观"到"文化适应性"——对变化的默认态度决定生死</p></div></div>
+    </div>
+    <div class="page-num">04 / 14</div>
+  </div>
+
+  <!-- 5: 变革能力 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>四、变革能力</h2>
+      <div class="deco-line"></div>
+      <div class="grid-3" style="margin-bottom:0.8rem;">
+        <div class="card" style="border-top:3px solid var(--red);">
+          <h4 style="color:var(--red);">🔥 危机驱动型</h4>
+          <p>业绩下滑被迫变<br>成功率 ~20%</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold);">
+          <h4 style="color:var(--gold);">👤 领导驱动型</h4>
+          <p>CEO洞察主动变<br>成功率 ~40%</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--green);">
+          <h4 style="color:var(--green);">⚙️ 系统驱动型</h4>
+          <p>变革是日常状态<br>成功率 ~60%</p>
+        </div>
+      </div>
+      <div class="principle-block" style="border-left-color:var(--gold);">
+        <p><span class="gold">反常识结论：</span> 在最好的时候做最难的改变，在最差的时候做最保守的防守。</p>
+      </div>
+      <div class="principle-block" style="border-left-color:var(--cyan);margin-top:0.4rem;">
+        <p>变革能力 = (变革意愿 × 变革资源 × 变革经验) / 变革阻力</p>
+      </div>
+    </div>
+    <div class="page-num">05 / 14</div>
+  </div>
+
+  <!-- 6: 为什么活着 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>五、为什么活着？</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.8rem;">三层答案，由浅入深</p>
+      <div class="grid-2">
+        <div class="card" style="border-left:4px solid var(--text3);">
+          <h4>📋 表层 · 利益相关者</h4>
+          <p>股东要回报，员工要工作，客户要服务，社会要就业。但组织在完成使命后可以体面结束。</p>
+        </div>
+        <div class="card" style="border-left:4px solid var(--gold);">
+          <h4>📚 中层 · 知识传承</h4>
+          <p>组织承载了无法被个人承载的知识——技术、关系、制度、文化。组织死了，知识就散了。</p>
+        </div>
+        <div class="card" style="grid-column:1/-1;border-left:4px solid var(--accent2);">
+          <h4>💎 深层 · 成为更好的自己</h4>
+          <p>存在的终极意义是在穿越周期的过程中不断进化。每一次产品换代、组织变革、危机应对，都是对存在意义的重新确认。</p>
+        </div>
+      </div>
+      <div class="quote-block" style="margin-top:0.8rem;">
+        <p>组织像一棵树。树活着不是为了永远不倒，而是在春天发芽，夏天生长，秋天结果，冬天积蓄。</p>
+        <div class="attr">—— 树的比喻</div>
+      </div>
+    </div>
+    <div class="page-num">06 / 14</div>
+  </div>
+
+  <!-- 7: 自检清单 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>六、自检清单</h2>
+      <div class="deco-line"></div>
+      <div class="grid-2" style="margin-bottom:0.5rem;">
+        <div class="card" style="border-left:3px solid var(--green);">
+          <h4 style="color:var(--green);">✅ 健康信号</h4>
+          <p style="font-size:0.85rem;">技术吸收机制 / 产品组合有下一代 / 模式有弹性 / 结构能调整 / 内部培养强 / 文化鼓励变化</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red);">
+          <h4 style="color:var(--red);">⚠️ 危险信号</h4>
+          <p style="font-size:0.85rem;">技术3年没更新 / 只有一个产品 / 模式10年不变 / 部门墙厚 / 核心岗位无人可替 / 求稳为主</p>
+        </div>
+      </div>
+      <div class="principle-block" style="border-left-color:var(--accent);">
+        <p><strong>变革能力自检：</strong> 过去3年有成功变革吗？有6个月现金储备吗？团队有"失败了能重来"的心理准备吗？</p>
+      </div>
+      <div class="principle-block" style="border-left-color:var(--accent3);margin-top:0.4rem;">
+        <p><strong>存在意义自检：</strong> 如果明天组织消失，谁会遗憾？积累了哪些无法被个人承载的知识？过去10年进化了多少？</p>
+      </div>
+    </div>
+    <div class="page-num">07 / 14</div>
+  </div>
+
+  <!-- 8: 结语 -->
+  <div class="slide cover">
+    <div class="content" style="text-align:center;">
+      <div style="font-size:1rem;color:var(--text3);letter-spacing:0.3em;margin-bottom:1rem;">✦ 七 · 结语 ✦</div>
+      <div class="quote-block" style="border:none;background:none;max-width:900px;">
+        <p style="font-size:1.8rem;line-height:1.5;color:var(--text);">
+          我知道产品会死，所以我在它活着的时候就开始准备下一代<br>
+          我知道企业会死，所以我在它健康的时候就开始准备变革<br>
+          我知道周期会来，所以我在好的时候就为坏的时候做准备
+        </p>
+      </div>
+      <p style="margin-top:1.5rem;font-size:1.2rem;color:var(--accent2);">
+        不是对抗周期，而是对周期的深刻理解和对自身的持续进化
+      </p>
+    </div>
+    <div class="page-num">08 / 14</div>
+  </div>
+
+  <!-- 9: 批判性审视 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>八、批判性审视</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.6rem;">任何框架都有盲区——这篇论述的5个隐含假设</p>
+      <div class="grid-2">
+        <div class="card" style="border-left:3px solid var(--gold);">
+          <p style="font-size:0.85rem;"><span class="tag assume">假设</span> 组织应该活着<br><span class="tag miss">盲区</span> 有些组织应该体面地结束</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--gold);">
+          <p style="font-size:0.85rem;"><span class="tag assume">假设</span> 组织是有机体<br><span class="tag miss">盲区</span> 组织没有自主意志，靠人推动</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--gold);">
+          <p style="font-size:0.85rem;"><span class="tag assume">假设</span> 六个维度能协同进化<br><span class="tag miss">盲区</span> 维度间的"时差"才是真问题</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--gold);">
+          <p style="font-size:0.85rem;"><span class="tag assume">假设</span> 变革能力可以被系统化<br><span class="tag miss">盲区</span> 系统化变革可能是悖论</p>
+        </div>
+      </div>
+      <div class="principle-block" style="border-left-color:var(--red);margin-top:0.5rem;">
+        <p><span class="red">核心追问：</span> 真正深刻的问题不是"怎么活得更久"，而是<span class="highlight">"什么时候应该选择不活"</span>。</p>
+      </div>
+    </div>
+    <div class="page-num">09 / 14</div>
+  </div>
+
+  <!-- 10: 智囊团·第一轮 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>九、智囊团辩论 · 第一轮</h2>
+      <div class="deco-line"></div>
+      <p style="font-size:0.9rem;color:var(--text3);margin-bottom:0.5rem;">核心问题：组织应该追求基业长青，还是接受生命周期？</p>
+      <div class="expert-card">
+        <span class="name">Clayton Christensen</span><span class="title">颠覆性创新理论提出者</span>
+        <div class="speech">"不要试图让一个组织穿越所有周期。建立一个组织生态系统——母公司在不同阶段孵化不同的子组织，让新组织去应对新周期。"</div>
+      </div>
+      <div class="expert-card">
+        <span class="name">Jim Collins</span><span class="title">《基业长青》《从优秀到卓越》作者</span>
+        <div class="speech">"核心意识形态不变，具体做法不断进化。但我的研究有幸存者偏差——我只研究了活下来的企业。"</div>
+      </div>
+      <div class="expert-card">
+        <span class="name">Nassim Nicholas Taleb</span><span class="title">《黑天鹅》《反脆弱》作者</span>
+        <div class="speech">"不要追求穿越周期，要追求从冲击中获益。效率是反脆弱的敌人，冗余才是反脆弱的唯一来源。"</div>
+      </div>
+      <div class="expert-card">
+        <span class="name">Arie de Geus</span><span class="title">《长寿公司》作者</span>
+        <div class="speech">"文化适应性的核心只有一个指标：当一个人发现不对劲的信号，他会不会说出来？说出来之后，会不会有人听？"</div>
+      </div>
+      <div class="expert-card">
+        <span class="name">Gary Hamel</span><span class="title">《管理大未来》作者</span>
+        <div class="speech">"真正的变革不是被推动的，而是被释放的。让每一个人都有变革的自主权——不是老板授权你变，而是你本来就有权变。"</div>
+      </div>
+    </div>
+    <div class="page-num">10 / 14</div>
+  </div>
+
+  <!-- 11: 智囊团·第二轮 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>九、智囊团辩论 · 第二轮</h2>
+      <div class="deco-line"></div>
+      <div class="expert-card" style="border-left:3px solid var(--accent);">
+        <span class="name">Christensen → Collins</span>
+        <div class="speech">"你怎么区分核心意识形态和核心僵化？在它们看起来一模一样的时候，你怎么知道哪个是哪个？"</div>
+      </div>
+      <div class="expert-card" style="border-left:3px solid var(--gold);">
+        <span class="name">Collins → Christensen</span>
+        <div class="speech">"核心意识形态不是'我们做什么'，而是'我们为什么做'。柯达的问题是它把'做胶卷'当成了核心，而不是'帮人们保存记忆'。"</div>
+      </div>
+      <div class="expert-card" style="border-left:3px solid var(--red);">
+        <span class="name">Taleb → 所有人</span>
+        <div class="speech">"组织追求长寿，本质上是一种自私。从社会整体利益出发，我们应该欢迎组织的死亡，而不是试图延长它们的生命。"</div>
+      </div>
+      <div class="expert-card" style="border-left:3px solid var(--cyan);">
+        <span class="name">de Geus → Taleb</span>
+        <div class="speech">"长寿组织不一定是老而不死。活了100年以上的企业，平均每25年就有一次根本性转型——它们已经死过好几次了，只是名字没变。"</div>
+      </div>
+      <div class="expert-card" style="border-left:3px solid var(--orange);">
+        <span class="name">Hamel → 所有人</span>
+        <div class="speech">"你们都认为变革是必要的，但没有人讨论变革的成本——生产力损失6-18个月，离职率上升30-50%，信任消耗，机会成本。"</div>
+      </div>
+    </div>
+    <div class="page-num">11 / 14</div>
+  </div>
+
+  <!-- 12: 智囊团·第三轮 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>九、智囊团辩论 · 第三轮</h2>
+      <div class="deco-line"></div>
+      <h4 style="margin-top:0.3rem;">碰撞一：组织到底有没有"意志"？</h4>
+      <div class="collision">
+        <div class="col"><div class="who">Christensen</div><p>组织没有意志，只有惯性。所谓的意志是核心人物意志的投影。</p></div>
+        <div class="col" style="border-top-color:var(--gold);"><div class="who" style="color:var(--gold);">Collins</div><p>好的组织会把创始人的意志制度化——不是变成流程，而是变成文化。</p></div>
+        <div class="col" style="border-top-color:var(--accent3);"><div class="who" style="color:var(--accent3);">Hamel</div><p>组织是意志的竞技场——不同的人在争夺组织的意志。变革的本质，就是让变革派的意志压倒保守派的意志。</p></div>
+      </div>
+
+      <h4 style="margin-top:0.8rem;">碰撞二：穿越周期需要什么？</h4>
+      <div class="collision">
+        <div class="col"><div class="who">de Geus</div><p>敏感度。对环境的敏感，对边缘声音的敏感。</p></div>
+        <div class="col" style="border-top-color:var(--gold);"><div class="who" style="color:var(--gold);">Taleb</div><p>冗余。没有冗余就没有反脆弱性。效率是反脆弱的敌人。</p></div>
+        <div class="col" style="border-top-color:var(--accent3);"><div class="who" style="color:var(--accent3);">Christensen</div><p>资源独立性。新业务如果和老业务争资源，新业务永远赢不了。</p></div>
+      </div>
+
+      <h4 style="margin-top:0.8rem;">碰撞三：组织存在的终极意义是什么？</h4>
+      <div class="collision">
+        <div class="col"><div class="who">Taleb</div><p>没有终极意义。组织是工具，工具用完了就该扔掉。</p></div>
+        <div class="col" style="border-top-color:var(--gold);"><div class="who" style="color:var(--gold);">Collins</div><p>让一群普通人做出不普通的成就。不是为了活着而活着，而是为了创造而活着。</p></div>
+        <div class="col" style="border-top-color:var(--accent3);"><div class="who" style="color:var(--accent3);">Christensen</div><p>完成使命。使命完成了，组织就应该结束。强行延长生命是对使命的背叛。</p></div>
+      </div>
+    </div>
+    <div class="page-num">12 / 14</div>
+  </div>
+
+  <!-- 13: 辩论启示 -->
+  <div class="slide">
+    <div class="content left">
+      <h2>辩论的启示</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:0.6rem;">没有共识，但留下了值得深思的问题</p>
+      <ol class="insight-list">
+        <li><span class="highlight">"活着"本身不是答案</span>——你需要先回答"为什么活着"，再讨论"怎么活得更久"</li>
+        <li><span class="gold">变革的成本可能被低估了</span>——不变有风险，变也有风险，需要权衡的是"哪个风险更大"</li>
+        <li><span class="cyan">没有普适方案</span>——不同行业、不同规模、不同阶段的企业，需要完全不同的策略</li>
+        <li><span class="pink">"核心"和"僵化"只有一线之隔</span>——你以为在坚守核心，可能只是在坚守惯性</li>
+        <li><span class="green">组织的死亡不是失败</span>——有时候，体面地结束比苟延残喘更有尊严</li>
+      </ol>
+      <div class="principle-block" style="border-left-color:var(--accent);margin-top:0.8rem;">
+        <p style="font-size:1.1rem;">组织的意义，不是对抗周期，而是在每一个周期里，<span class="highlight">做那个周期该做的事</span>。</p>
+      </div>
+    </div>
+    <div class="page-num">13 / 14</div>
+  </div>
+
+  <!-- 14: FINAL -->
+  <div class="slide cover">
+    <div class="content" style="text-align:center;">
+      <div style="font-size:1rem;color:var(--text3);letter-spacing:0.3em;margin-bottom:1.5rem;">✦ 最后一句 ✦</div>
+      <div class="quote-block" style="border:none;background:none;max-width:900px;">
+        <p style="font-size:2rem;line-height:1.5;color:var(--text);">
+          组织存在的意义，不是"永远活着"<br>
+          而是<span class="highlight">在有限的生命里</span><br>
+          完成尽可能多的进化<br>
+          积累尽可能多的知识<br>
+          创造尽可能多的价值
+        </p>
+      </div>
+      <div style="margin-top:2rem;">
+        <p style="font-size:1rem;color:var(--text3);letter-spacing:0.2em;">
+          事业发展 · 认知系列 · 2026年7月
+        </p>
+      </div>
+    </div>
+    <div class="page-num">14 / 14</div>
+  </div>
+
+</div>
+
+<div class="nav" id="nav">
+  <button id="prevBtn">‹</button>
+  <span class="page-label" id="pageLabel">1/14</span>
+  <div class="dots" id="dots"></div>
+  <button id="nextBtn">›</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.getElementById('slides');
+  const dots = document.getElementById('dots');
+  const pageLabel = document.getElementById('pageLabel');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const total = document.querySelectorAll('.slide').length;
+  let current = 0;
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', function() { goTo(i); });
+    dots.appendChild(dot);
+  }
+  function goTo(n) {
+    if (n < 0) n = 0;
+    if (n >= total) n = total - 1;
+    current = n;
+    slides.style.transform = 'translateX(-' + (current * 100) + 'vw)';
+    pageLabel.textContent = (current + 1) + '/' + total;
+    document.querySelectorAll('.dot').forEach(function(d, i) {
+      d.className = 'dot' + (i === current ? ' active' : '');
+    });
+  }
+  prevBtn.addEventListener('click', function() { goTo(current - 1); });
+  nextBtn.addEventListener('click', function() { goTo(current + 1); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { goTo(current - 1); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  });
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) { goTo(current + (diff > 0 ? 1 : -1)); }
+  });
+})();
+</script>
+
+</body>
+</html>
