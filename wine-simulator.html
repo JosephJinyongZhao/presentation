@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>调酒商业模拟 — 利润计算器</title>
+<style>
+:root{--burgundy:#722f37;--gold:#c9a96e;--cream:#faf6f0;--dark:#2c1810;--gray:#8b7355;--lg:#e8e0d5;--green:#2e7d32;--red:#c62828}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--cream);color:var(--dark)}
+header{background:linear-gradient(135deg,var(--burgundy),#4a2528);color:#fff;padding:24px 20px;text-align:center}
+header h1{font-size:22px;letter-spacing:1px}
+header p{font-size:13px;opacity:.85}
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--lg);position:sticky;top:0;z-index:10}
+.tabs button{flex:1;padding:14px 8px;border:none;background:none;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;transition:.2s;position:relative}
+.tabs button.active{color:var(--burgundy)}
+.tabs button.active::after{content:'';position:absolute;bottom:-2px;left:10%;width:80%;height:3px;background:var(--burgundy);border-radius:3px 3px 0 0}
+.container{max-width:720px;margin:0 auto;padding:16px}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.card-title{font-size:16px;font-weight:700;color:var(--burgundy);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--lg)}
+.form-group{margin-bottom:16px}.form-group:last-child{margin-bottom:0}
+label{display:block;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:6px}
+label small{font-weight:400;color:var(--gray)}
+input[type="text"],input[type="number"],textarea,select{width:100%;padding:10px 12px;border:1.5px solid var(--lg);border-radius:8px;font-size:14px;transition:.2s;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,.15)}
+textarea{resize:vertical;min-height:60px}
+input[type="range"]{width:100%;height:6px;-webkit-appearance:none;background:var(--lg);border-radius:3px;outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--burgundy);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.cost-summary{background:#f8f4ee;border-radius:10px;padding:16px;margin-top:12px}
+.cost-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.cost-row.total{border-top:1.5px solid var(--lg);margin-top:6px;padding-top:10px;font-weight:700;font-size:15px}
+.cost-row.total .value{color:var(--burgundy)}
+.cost-row.over-budget .value{color:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--burgundy);color:#fff}
+.btn-primary:hover{background:#5a252c}
+.btn-primary:disabled{background:var(--lg);color:var(--gray);cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--burgundy);border:1.5px solid var(--burgundy)}
+.btn-outline:hover{background:#fdf6f3}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result-item{background:#f8f4ee;border-radius:10px;padding:14px;text-align:center}
+.result-item .rl{font-size:11px;color:var(--gray);letter-spacing:.5px}
+.result-item .rv{font-size:22px;font-weight:800;margin-top:4px}
+.result-item .rv.green{color:var(--green)}
+.result-item .rv.red{color:var(--red)}
+.result-item .rv.burgundy{color:var(--burgundy)}
+.result-item.full{grid-column:1/-1}
+.score-bar{display:flex;align-items:center;gap:8px;margin:8px 0}
+.score-bar .track{flex:1;height:8px;background:var(--lg);border-radius:4px;overflow:hidden}
+.score-bar .fill{height:100%;border-radius:4px;transition:width .5s}
+.score-bar .sl{font-size:12px;color:var(--gray);width:80px;text-align:right}
+.score-bar .sv{font-size:14px;font-weight:700;width:28px;text-align:right}
+.wine-preview{display:flex;gap:12px;margin-bottom:14px}
+.wine-preview-item{flex:1;text-align:center;padding:10px 4px;border-radius:8px;background:#f8f4ee}
+.wine-preview-item .pct{font-size:20px;font-weight:800}
+.wine-preview-item .pct.c{color:#e65100}
+.wine-preview-item .pct.p{color:#7b1fa2}
+.wine-preview-item .pct.m{color:#c62828}
+.wine-preview-item .wn{font-size:11px;color:var(--gray);margin-top:2px}
+.steps{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:var(--lg);color:var(--gray)}
+.step-dot.active{background:var(--burgundy);color:#fff}
+.step-dot.done{background:var(--green);color:#fff}
+.empty-state{text-align:center;padding:40px 20px;color:var(--gray)}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px;line-height:1.6}
+.team-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--lg);cursor:pointer;transition:.15s}
+.team-item:hover{background:#fdfaf5;padding-left:8px;padding-right:8px;border-radius:8px}
+.team-item:last-child{border-bottom:none}
+.team-item .rank{width:28px;height:28px;border-radius:50%;background:var(--lg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray);flex-shrink:0}
+.team-item .rank.gold{background:var(--gold);color:#fff}
+.team-item .rank.silver{background:#b0bec5;color:#fff}
+.team-item .rank.bronze{background:#a1887f;color:#fff}
+.team-item .info{flex:1}
+.team-item .info .name{font-weight:600;font-size:15px}
+.team-item .info .detail{font-size:12px;color:var(--gray)}
+.team-item .profit{font-weight:700;font-size:15px}
+.team-item .profit.pos{color:var(--green)}
+.team-item .profit.neg{color:var(--red)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;z-index:100;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:480px){.result-grid{grid-template-columns:1fr}header h1{font-size:18px}}
+.slider-row{margin-bottom:14px}
+.slider-row:last-child{margin-bottom:0}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:13px}
+.slider-header .wn{font-weight:600}
+.slider-header .amt{color:var(--gray)}
+.slider-header .amt strong{color:var(--dark)}
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;border-bottom:1px dashed var(--lg)}
+.detail-row:last-child{border-bottom:none}
+.detail-row .dl{color:var(--dark)}
+.detail-row .dv{font-weight:600}
+.box-score{margin:12px 0}
+.box-score .bs-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.box-score .bs-header label{margin-bottom:0}
+.team-select{margin-bottom:16px}
+.team-select select{width:100%;padding:10px;border:1.5px solid var(--lg);border-radius:8px;font-size:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍷 调酒商业模拟</h1>
+  <p>提交配方 → 评委评分 → 自动计算利润</p>
+</header>
+
+<div class="tabs">
+  <button class="active" onclick="switchTab('submit')">📝 提交产品</button>
+  <button onclick="switchTab('results')">💰 利润计算</button>
+  <button onclick="switchTab('board')">🏆 排行榜</button>
+</div>
+
+<div class="container">
+
+<!-- ========== SUBMIT ========== -->
+<div id="tab-submit" class="section active">
+  <div class="steps">
+    <div class="step-dot active">1</div>
+    <div class="step-dot">2</div>
+    <div class="step-dot">3</div>
+    <div class="step-dot">4</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏷️ 团队信息</div>
+    <div class="form-group">
+      <label>团队名称</label>
+      <input type="text" id="teamName" placeholder="例：醉牛队" maxlength="20">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧪 调配配方</div>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:14px;">拖动滑条调整比例，总量 <strong>300ml</strong>，预算 <strong>300元</strong></p>
+
+    <div class="wine-preview">
+      <div class="wine-preview-item"><div class="pct c" id="pctC">33%</div><div class="wn">霞多丽 0.5元/ml</div></div>
+      <div class="wine-preview-item"><div class="pct p" id="pctP">33%</div><div class="wn">黑皮诺 0.8元/ml</div></div>
+      <div class="wine-preview-item"><div class="pct m" id="pctM">33%</div><div class="wn">玛瑟兰 1.2元/ml</div></div>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-header">
+        <span class="wn">🟠 霞多丽 <span style="font-weight:400;color:var(--gray);font-size:12px;">大众基础</span></span>
+        <span class="amt"><strong id="mlC">100</strong>ml · <span id="costC">50</span>元</span>
+      </div>
+      <input type="range" id="sC" min="0" max="300" value="100" oninput="updateBlend()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header">
+        <span class="wn">🟣 黑皮诺 <span style="font-weight:400;color:var(--gray);font-size:12px;">中高端</span></span>
+        <span class="amt"><strong id="mlP">100</strong>ml · <span id="costP">80</span>元</span>
+      </div>
+      <input type="range" id="sP" min="0" max="300" value="100" oninput="updateBlend()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header">
+        <span class="wn">🔴 玛瑟兰 <span style="font-weight:400;color:var(--gray);font-size:12px;">小众特色</span></span>
+        <span class="amt"><strong id="mlM">100</strong>ml · <span id="costM">120</span>元</span>
+      </div>
+      <input type="range" id="sM" min="0" max="300" value="100" oninput="updateBlend()">
+    </div>
+
+    <div class="cost-summary">
+      <div class="cost-row"><span>总调配量</span><span><strong id="tMl">300</strong> / 300 ml</span></div>
+      <div class="cost-row"><span>总成本</span><span><strong id="tCost">250</strong> 元</span></div>
+      <div class="cost-row total" id="budgetRow"><span>预算剩余</span><span class="value"><strong id="bRemain">50</strong> 元</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💲 市场定价</div>
+    <div class="form-group">
+      <label>定价 <small>元 / 100ml</small></label>
+      <input type="number" id="price" min="0" step="5" value="60" oninput="updateBlend()">
+    </div>
+    <div style="font-size:13px;color:var(--gray);">基础价参考：<strong id="baseP">75</strong> 元/100ml（成本×1.5）</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎨 品牌包装</div>
+    <div class="form-group">
+      <label>产品名称</label>
+      <input type="text" id="prodName" placeholder="例：塞上月光" maxlength="30">
+    </div>
+    <div class="form-group">
+      <label>产品故事 <small>一句话</small></label>
+      <textarea id="story" placeholder="例：源自贺兰山东麓，用三种风土酿造一段关于时间的故事……" maxlength="100" rows="2"></textarea>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="submitProduct()">📩 提交产品</button>
+  <p id="submitMsg" style="text-align:center;margin-top:10px;font-size:13px;color:var(--gray);display:none;"></p>
+</div>
+
+<!-- ========== RESULTS ========== -->
+<div id="tab-results" class="section">
+  <div id="noTeam" class="empty-state">
+    <div class="icon">📋</div>
+    <p>还没有提交的团队<br>先去「提交产品」填写</p>
+  </div>
+
+  <div id="resContent" style="display:none;">
+    <!-- Team selector -->
+    <div class="card team-select">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>选择团队</label>
+        <select id="teamSelect" onchange="loadTeamResults()"></select>
+      </div>
+    </div>
+
+    <!-- Team product info -->
+    <div class="card">
+      <div class="card-title"><span id="rTeamName">——</span> <span style="font-size:12px;font-weight:400;color:var(--gray);" id="rProdName"></span></div>
+      <div class="detail-row"><span class="dl">配方比例</span><span class="dv" id="rBlend">——</span></div>
+      <div class="detail-row"><span class="dl">总成本</span><span class="dv" id="rCost">——</span></div>
+      <div class="detail-row"><span class="dl">定价</span><span class="dv" id="rPrice">——</span></div>
+      <div class="detail-row"><span class="dl">品牌故事</span><span class="dv" id="rStory" style="font-weight:400;color:var(--gray);font-size:13px;">——</span></div>
+    </div>
+
+    <!-- Judge score -->
+    <div class="card">
+      <div class="card-title">👩‍⚖️ 评委评分</div>
+      <div class="box-score">
+        <div class="bs-header">
+          <label style="margin-bottom:0;">品牌故事分 <small>（0-10）</small></label>
+          <span style="font-size:20px;font-weight:800;color:var(--burgundy);" id="bsDisp">5</span>
+        </div>
+        <input type="range" id="bScore" min="0" max="10" value="5" step="0.5" oninput="updateProfit()">
+      </div>
+      <div style="font-size:12px;color:var(--gray);text-align:center;margin-top:-4px;">评分参考：7-10分有真实故事和情感共鸣 · 4-6分有名字但不够特别 · 1-3分随意写的</div>
+    </div>
+
+    <!-- Profit result -->
+    <div class="card">
+      <div class="card-title">💰 利润计算结果</div>
+
+      <div style="margin-bottom:16px;">
+        <div class="score-bar">
+          <span class="sl">配比风险分</span>
+          <div class="track"><div class="fill" id="riskBar" style="width:50%;background:#e65100;"></div></div>
+          <span class="sv" id="riskScore">5.0</span>
+        </div>
+        <div class="score-bar">
+          <span class="sl">定价合理分</span>
+          <div class="track"><div class="fill" id="priceBar" style="width:50%;background:#1565c0;"></div></div>
+          <span class="sv" id="priceScore">5.0</span>
+        </div>
+        <div class="score-bar">
+          <span class="sl">品牌故事分</span>
+          <div class="track"><div class="fill" id="brandBar" style="width:50%;background:var(--burgundy);"></div></div>
+          <span class="sv" id="baScore">5.0</span>
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-item full">
+          <div class="rl">市场需求</div>
+          <div class="rv burgundy" id="demand">500 瓶</div>
+        </div>
+        <div class="result-item">
+          <div class="rl">总收入</div>
+          <div class="rv" id="revenue">0 元</div>
+        </div>
+        <div class="result-item">
+          <div class="rl">总成本（材料）</div>
+          <div class="rv" id="fCost">0 元</div>
+        </div>
+        <div class="result-item full" id="profitBox">
+          <div class="rl">最终利润</div>
+          <div class="rv green" id="profit">0 元</div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;color:var(--gray);margin-top:12px;padding-top:12px;border-top:1px solid var(--lg);">
+        需求 = (风险分+定价分+品牌分) ÷ 3 × 100瓶 &nbsp;·&nbsp; 利润 = 定价×需求 − 材料成本
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== LEADERBOARD ========== -->
+<div id="tab-board" class="section">
+  <div class="empty-state" id="boardEmpty">
+    <div class="icon">🏆</div>
+    <p>还没有数据<br>提交产品后会自动出现在这里</p>
+  </div>
+  <div id="boardContent" style="display:none;">
+    <div class="card">
+      <div class="card-title">🏆 利润排名</div>
+      <div id="boardList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 总览表</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:#f8f4ee;">
+              <th style="padding:10px 8px;text-align:left;">团队</th>
+              <th style="padding:10px 8px;text-align:center;">配方</th>
+              <th style="padding:10px 8px;text-align:center;">定价</th>
+              <th style="padding:10px 8px;text-align:center;">品牌分</th>
+              <th style="padding:10px 8px;text-align:center;">利润</th>
+            </tr>
+          </thead>
+          <tbody id="boardTable"></tbody>
+        </table>
+      </div>
+    </div>
+    <button class="btn btn-outline" onclick="resetAll()" style="margin-top:8px;">🗑️ 清空所有数据</button>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// === DATA ===
+const WINES = [
+  { key:'chard', name:'霞多丽', cost:0.5, color:'#e65100', label:'大众基础' },
+  { key:'pinot', name:'黑皮诺', cost:0.8, color:'#7b1fa2', label:'中高端' },
+  { key:'mars',  name:'玛瑟兰', cost:1.2, color:'#c62828', label:'小众特色' }
+];
+
+function loadTeams() {
+  try { return JSON.parse(localStorage.getItem('wineTeams') || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveTeams(teams) {
+  localStorage.setItem('wineTeams', JSON.stringify(teams));
+}
+
+// === BLEND CALC ===
+function getBlend() {
+  let c = parseFloat(document.getElementById('sC').value) || 0;
+  let p = parseFloat(document.getElementById('sP').value) || 0;
+  let m = parseFloat(document.getElementById('sM').value) || 0;
+  let total = c + p + m;
+  if (total > 300) {
+    let ratio = 300 / total;
+    c = Math.round(c * ratio);
+    p = Math.round(p * ratio);
+    m = 300 - c - p;
+  }
+  return { c, p, m, total: c+p+m };
+}
+
+function updateBlend() {
+  const b = getBlend();
+  const cost = b.c*0.5 + b.p*0.8 + b.m*1.2;
+  const remain = 300 - cost;
+
+  document.getElementById('mlC').textContent = b.c;
+  document.getElementById('mlP').textContent = b.p;
+  document.getElementById('mlM').textContent = b.m;
+  document.getElementById('costC').textContent = Math.round(b.c*0.5);
+  document.getElementById('costP').textContent = Math.round(b.p*0.8);
+  document.getElementById('costM').textContent = Math.round(b.m*1.2);
+  document.getElementById('tMl').textContent = b.total;
+  document.getElementById('tCost').textContent = Math.round(cost);
+  document.getElementById('bRemain').textContent = Math.round(remain);
+
+  document.getElementById('pctC').textContent = b.total ? Math.round(b.c/b.total*100)+'%' : '0%';
+  document.getElementById('pctP').textContent = b.total ? Math.round(b.p/b.total*100)+'%' : '0%';
+  document.getElementById('pctM').textContent = b.total ? Math.round(b.m/b.total*100)+'%' : '0%';
+
+  const budRow = document.getElementById('budgetRow');
+  if (remain < 0) {
+    budRow.className = 'cost-row total over-budget';
+  } else {
+    budRow.className = 'cost-row total';
+  }
+
+  // base price
+  const costPer100 = cost / b.total * 100;
+  const basePrice = Math.round(costPer100 * 1.5);
+  document.getElementById('baseP').textContent = basePrice;
+}
+
+// === SUBMIT ===
+function submitProduct() {
+  const name = document.getElementById('teamName').value.trim();
+  if (!name) { showToast('请输入团队名称'); return; }
+  const prod = document.getElementById('prodName').value.trim();
+  if (!prod) { showToast('请输入产品名称'); return; }
+  const story = document.getElementById('story').value.trim();
+  const price = parseFloat(document.getElementById('price').value);
+  if (!price || price <= 0) { showToast('请输入有效定价'); return; }
+
+  const b = getBlend();
+  if (b.total === 0) { showToast('请调整配方'); return; }
+
+  const cost = Math.round(b.c*0.5 + b.p*0.8 + b.m*1.2);
+  const costPer100 = cost / b.total * 100;
+  const basePrice = Math.round(costPer100 * 1.5);
+
+  const team = {
+    id: Date.now(),
+    teamName: name,
+    productName: prod,
+    story: story,
+    blend: { c: b.c, p: b.p, m: b.m, total: b.total },
+    cost: cost,
+    basePrice: basePrice,
+    price: price,
+    brandScore: null,
+    profit: null
+  };
+
+  let teams = loadTeams();
+  // Check duplicate name
+  if (teams.some(t => t.teamName === name)) {
+    showToast('该团队名称已存在，请换一个');
+    return;
+  }
+  teams.push(team);
+  saveTeams(teams);
+
+  document.getElementById('submitMsg').style.display = 'block';
+  document.getElementById('submitMsg').textContent = '✅ 提交成功！去「利润计算」查看结果';
+  document.getElementById('submitMsg').style.color = 'var(--green)';
+
+  // Reset form
+  document.getElementById('teamName').value = '';
+  document.getElementById('prodName').value = '';
+  document.getElementById('story').value = '';
+  document.getElementById('sC').value = 100;
+  document.getElementById('sP').value = 100;
+  document.getElementById('sM').value = 100;
+  document.getElementById('price').value = 60;
+  updateBlend();
+
+  setTimeout(() => { document.getElementById('submitMsg').style.display = 'none'; }, 4000);
+}
+
+// === TAB SWITCH ===
+function switchTab(tab) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelector(`.tabs button[onclick*="${tab}"]`).classList.add('active');
+
+  if (tab === 'results') loadTeamSelect();
+  if (tab === 'board') renderBoard();
+}
+
+// === TEAM SELECT ===
+function loadTeamSelect() {
+  const teams = loadTeams();
+  const sel = document.getElementById('teamSelect');
+  const noTeam = document.getElementById('noTeam');
+  const res = document.getElementById('resContent');
+
+  if (teams.length === 0) {
+    noTeam.style.display = 'block';
+    res.style.display = 'none';
+    return;
+  }
+
+  noTeam.style.display = 'none';
+  res.style.display = 'block';
+
+  sel.innerHTML = teams.map(t =>
+    `<option value="${t.id}">${t.teamName} — ${t.productName}</option>`
+  ).join('');
+
+  loadTeamResults();
+}
+
+function loadTeamResults() {
+  const id = parseInt(document.getElementById('teamSelect').value);
+  const teams = loadTeams();
+  const t = teams.find(x => x.id === id);
+  if (!t) return;
+
+  document.getElementById('rTeamName').textContent = t.teamName;
+  document.getElementById('rProdName').textContent = '「' + t.productName + '」';
+  document.getElementById('rBlend').textContent =
+    `霞多丽 ${t.blend.c}ml · 黑皮诺 ${t.blend.p}ml · 玛瑟兰 ${t.blend.m}ml`;
+  document.getElementById('rCost').textContent = t.cost + ' 元';
+  document.getElementById('rPrice').textContent = t.price + ' 元/100ml';
+  document.getElementById('rStory').textContent = t.story || '（未填写）';
+
+  const bs = t.brandScore !== null ? t.brandScore : 5;
+  document.getElementById('bScore').value = bs;
+  document.getElementById('bsDisp').textContent = bs;
+
+  updateProfit();
+}
+
+// === CALC PROFIT ===
+function updateProfit() {
+  const id = parseInt(document.getElementById('teamSelect')?.value);
+  if (!id) return;
+  const teams = loadTeams();
+  const t = teams.find(x => x.id === id);
+  if (!t) return;
+
+  const brandScore = parseFloat(document.getElementById('bScore').value) || 5;
+  document.getElementById('bsDisp').textContent = brandScore.toFixed(1);
+
+  // Save brand score to team
+  t.brandScore = brandScore;
+
+  // 1. Risk score: Marselan ratio × 10
+  const marsRatio = t.blend.m / t.blend.total;
+  const riskScore = Math.round(marsRatio * 10 * 10) / 10; // 0-10
+
+  // 2. Pricing score
+  const basePrice = t.basePrice;
+  const deviation = Math.abs(t.price - basePrice) / basePrice;
+  let pricingScore = Math.round((10 - Math.min(10, deviation * 10)) * 10) / 10;
+  pricingScore = Math.max(0, Math.min(10, pricingScore));
+
+  // 3. Brand score
+  const baScore = brandScore;
+
+  // 4. Demand
+  const avgScore = (riskScore + pricingScore + baScore) / 3;
+  const demand = Math.round(avgScore * 100);
+
+  // 5. Profit
+  const revenue = t.price * demand;
+  const cost = t.cost;
+  const profit = revenue - cost;
+
+  t.profit = profit;
+
+  // Save updated brand score + profit
+  saveTeams(teams);
+
+  // Update UI
+  document.getElementById('riskBar').style.width = (riskScore * 10) + '%';
+  document.getElementById('priceBar').style.width = (pricingScore * 10) + '%';
+  document.getElementById('brandBar').style.width = (baScore * 10) + '%';
+  document.getElementById('riskScore').textContent = riskScore.toFixed(1);
+  document.getElementById('priceScore').textContent = pricingScore.toFixed(1);
+  document.getElementById('baScore').textContent = baScore.toFixed(1);
+  document.getElementById('demand').textContent = demand + ' 瓶';
+  document.getElementById('revenue').textContent = revenue.toFixed(0) + ' 元';
+  document.getElementById('fCost').textContent = cost + ' 元';
+
+  const profitEl = document.getElementById('profit');
+  const profitBox = document.getElementById('profitBox');
+  profitEl.textContent = profit.toFixed(0) + ' 元';
+  if (profit >= 0) {
+    profitEl.className = 'rv green';
+  } else {
+    profitEl.className = 'rv red';
+  }
+}
+
+// === LEADERBOARD ===
+function renderBoard() {
+  const teams = loadTeams().filter(t => t.brandScore !== null);
+  const empty = document.getElementById('boardEmpty');
+  const content = document.getElementById('boardContent');
+
+  if (teams.length === 0) {
+    empty.style.display = 'block';
+    content.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  content.style.display = 'block';
+
+  // Sort by profit descending
+  teams.sort((a, b) => (b.profit || -Infinity) - (a.profit || -Infinity));
+
+  // List
+  const list = document.getElementById('boardList');
+  list.innerHTML = teams.map((t, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const profitClass = (t.profit || 0) >= 0 ? 'pos' : 'neg';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1);
+    return `
+      <div class="team-item" onclick="switchTab('results')">
+        <div class="rank ${rankClass}">${medal}</div>
+        <div class="info">
+          <div class="name">${t.teamName}</div>
+          <div class="detail">${t.productName} · 定价${t.price}元 · 品牌分${t.brandScore?.toFixed(1)}</div>
+        </div>
+        <div class="profit ${profitClass}">${t.profit >= 0 ? '+' : ''}${Math.round(t.profit || 0)}元</div>
+      </div>
+    `;
+  }).join('');
+
+  // Table
+  const tbl = document.getElementById('boardTable');
+  tbl.innerHTML = teams.map(t => {
+    const pct = t.blend.total > 0
+      ? `C${Math.round(t.blend.c/t.blend.total*100)}% P${Math.round(t.blend.p/t.blend.total*100)}% M${Math.round(t.blend.m/t.blend.total*100)}%`
+      : '—';
+    return `
+      <tr styl
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid var(--lg);font-weight:600;">${t.teamName}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--lg);text-align:center;font-size:12px;color:var(--gray);">${pct}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--lg);text-align:center;">${t.price}元</td>
+        <td style="padding:8px;border-bottom:1px solid var(--lg);text-align:center;">${t.brandScore?.toFixed(1)}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--lg);text-align:center;font-weight:700;color:${(t.profit||0)>=0?'var(--green)':'var(--red)'};">${Math.round(t.profit||0)}元</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function resetAll() {
+  if (confirm('确定清空所有团队数据？')) {
+    localStorage.removeItem('wineTeams');
+    showToast('已清空所有数据');
+    renderBoard();
+    loadTeamSelect();
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Init
+updateBlend();
+</script>
+</body>
+</html>

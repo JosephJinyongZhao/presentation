@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🍷 周日葡萄酒活动复盘反馈</title>
+<style>
+  :root {
+    --wine: #722F37;
+    --wine-light: #9B4B54;
+    --wine-dark: #4A1E22;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --cream: #FDF8F0;
+    --bg: #1A1112;
+    --card: #241618;
+    --text: #F0E6D8;
+    --text-muted: #B8A89A;
+    --border: #3D2528;
+    --green: #5B8C5A;
+    --red: #C0392B;
+    --yellow: #B8860B;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 15px; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 60px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--wine-dark) 0%, var(--wine) 50%, var(--wine-light) 100%);
+    padding: 48px 24px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(201,169,110,0.08) 0%, transparent 60%);
+  }
+  .header-emoji { font-size: 2.8rem; margin-bottom: 8px; position: relative; }
+  .header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    position: relative;
+  }
+  .header .subtitle {
+    font-size: 0.85rem;
+    color: var(--gold);
+    margin-top: 8px;
+    opacity: 0.8;
+    position: relative;
+  }
+  .header .meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    position: relative;
+  }
+
+  /* Container */
+  .container { padding: 20px 16px; }
+
+  /* Section */
+  .section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--wine);
+    color: var(--gold-light);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Value Cards */
+  .value-card {
+    background: rgba(114,47,55,0.12);
+    border-left: 3px solid var(--wine-light);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .value-card:last-child { margin-bottom: 0; }
+  .value-card .label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .value-card .desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Callout */
+  .callout {
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .callout:last-child { margin-bottom: 0; }
+  .callout-tip {
+    background: rgba(201,169,110,0.1);
+    border-left: 3px solid var(--gold);
+    color: var(--gold-light);
+  }
+  .callout-warn {
+    background: rgba(184,134,11,0.12);
+    border-left: 3px solid var(--yellow);
+    color: #E8C87A;
+  }
+  .callout-danger {
+    background: rgba(192,57,43,0.1);
+    border-left: 3px solid var(--red);
+    color: #E8A098;
+  }
+  .callout-success {
+    background: rgba(91,140,90,0.1);
+    border-left: 3px solid var(--green);
+    color: #A8D0A0;
+  }
+  .callout .emoji { margin-right: 6px; }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    min-width: 400px;
+  }
+  thead th {
+    background: var(--wine-dark);
+    color: var(--gold-light);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: var(--wine);
+    opacity: 0.5;
+  }
+  .timeline-item {
+    position: relative;
+    padding: 8px 0 8px 12px;
+    font-size: 0.85rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--bg);
+  }
+  .timeline-item .time {
+    font-weight: 600;
+    color: var(--gold);
+    font-size: 0.78rem;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .timeline-item .event {
+    color: var(--text-muted);
+  }
+  .timeline-item .wines {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin-top: 2px;
+    padding-left: 8px;
+    border-left: 1px solid var(--border);
+  }
+
+  /* Principles Grid */
+  .principles {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .principle-card {
+    background: rgba(201,169,110,0.06);
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid rgba(201,169,110,0.15);
+  }
+  .principle-card .p-num {
+    font-size: 0.7rem;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .principle-card .p-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+  .principle-card .p-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* New Flow */
+  .flow-section {
+    background: rgba(91,140,90,0.06);
+    border: 1px solid rgba(91,140,90,0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .flow-section .flow-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .flow-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(91,140,90,0.1);
+  }
+  .flow-item:last-child { border-bottom: none; }
+  .flow-item .f-time {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gold);
+    white-space: nowrap;
+    min-width: 72px;
+    padding-top: 1px;
+  }
+  .flow-item .f-content {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .flow-item .f-content .highlight {
+    color: var(--gold-light);
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 20px 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  /* Responsive */
+  @media (min-width: 480px) {
+    .container { max-width: 480px; margin: 0 auto; }
+    .principles { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-emoji">🍷</div>
+  <h1>周日葡萄酒活动复盘反馈</h1>
+  <div class="subtitle">致王宇恒庄主</div>
+  <div class="meta">2026年6月28日 · 西安</div>
+</div>
+
+<div class="container">
+
+  <!-- 核心价值 -->
+  <div class="section">
+    <div class="section-title"><span class="num">1</span> 活动核心价值</div>
+
+    <div class="value-card">
+      <div class="label">🔥 庄主本人的热爱与专业</div>
+      <div class="desc">王宇恒庄主讲解调酒艺术时的投入感和专业度，是任何商业讲师都无法替代的。"人"的温度，是活动最核心的差异化竞争力。</div>
+    </div>
+
+    <div class="value-card">
+      <div class="label">👐 DIY调酒——高参与度体验</div>
+      <div class="desc">让参与者从被动品鉴变为主动创造，成本低、体验深、记忆点强，是活动中最高杠杆的环节。</div>
+    </div>
+
+    <div class="value-card">
+      <div class="label">🏔️ 产区精品酒品鉴——内容硬核</div>
+      <div class="desc">宁夏4款精品酒（马瑟兰、马尔贝克、赤霞珠、西拉）提供了扎实的专业内容，让参与者对国产精品葡萄酒有了具象认知。</div>
+    </div>
+
+    <div class="value-card">
+      <div class="label">🤝 社交属性——天然的连接媒介</div>
+      <div class="desc">葡萄酒作为社交润滑剂，参与者之间的交流质量较高，多人表达了"认识新朋友"的正面反馈。</div>
+    </div>
+
+    <div class="callout callout-tip" style="margin-top:14px;">
+      <span class="emoji">💡</span> <strong>建议放大</strong>：未来活动应把"庄主本人"作为核心卖点来设计，而不是把庄主分享当作流程中的一个环节。
+    </div>
+  </div>
+
+  <!-- 流程改进建议 -->
+  <div class="section">
+    <div class="section-title"><span class="num">2</span> 流程改进建议</div>
+
+    <div class="callout callout-danger">
+      <span class="emoji">🔴</span> <strong>优先级最高：物理体验是活动的底层</strong><br>
+      环境温度过高，品酒对温度敏感，高温让葡萄酒风味大打折扣，参与者注意力下降。<br>
+      <span style="color:var(--gold-light);">→ 活动前确认场地空调能力，备移动空调；品酒安排在温度最舒适时段；必要时换场地或改上午。</span>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="emoji">🟡</span> <strong>流程节奏重构：让核心价值不被形式稀释</strong><br>
+      当前品酒（核心体验）被商业游戏（过渡性内容）挤压了时间和注意力。
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>当前</th>
+            <th>建议调整</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>品酒位置</strong></td>
+            <td>分散在开头和后半段</td>
+            <td><strong style="color:var(--gold-light);">品酒前置化</strong>：集中在前90分钟，精力最充沛时感受葡萄酒</td>
+          </tr>
+          <tr>
+            <td><strong>商业游戏</strong></td>
+            <td>独立环节，占30分钟</td>
+            <td><strong style="color:var(--gold-light);">游戏轻量化</strong>：改为15分钟快速创意赛</td>
+          </tr>
+          <tr>
+            <td><strong>成果分享</strong></td>
+            <td>每组10分钟，共40分钟</td>
+            <td><strong style="color:var(--gold-light);">分享压缩</strong>：每组3-5分钟，或改为最佳创意评选</td>
+          </tr>
+          <tr>
+            <td><strong>自由交流</strong></td>
+            <td>最后30分钟</td>
+            <td><strong style="color:var(--gold-light);">交流前置化</strong>：在品酒环节之间穿插，让社交自然融合</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 优化版流程 -->
+    <div class="flow-section">
+      <div class="flow-title">✨ 建议的新流程（优化版）</div>
+      <div class="flow-item">
+        <span class="f-time">14:30-15:00</span>
+        <span class="f-content"><span class="highlight">迎宾品鉴 + 自由社交</span><br>黑比诺起泡酒、马尔贝克干白（边品边聊）</span>
+      </div>
+      <div class="flow-item">
+        <span class="f-time">15:00-15:45</span>
+        <span class="f-content"><span class="highlight">庄主深度分享 + 精品品鉴</span><br>庄主讲解 + 带领品鉴4款精品酒</span>
+      </div>
+      <div class="flow-item">
+        <span class="f-time">15:45-16:15</span>
+        <span class="f-content"><span class="highlight">DIY调酒体验</span><br>全员动手调配个人专属酒款</span>
+      </div>
+      <div class="flow-item">
+        <span class="f-time">16:15-16:30</span>
+        <span class="f-content"><span class="highlight">快速创意赛</span><br>小组快速完成新品命名 + 一句话品牌故事</span>
+      </div>
+      <div class="flow-item">
+        <span class="f-time">16:30-16:45</span>
+        <span class="f-content"><span class="highlight">最佳创意评选 + 自由品鉴</span><br>互品DIY作品，投票评选</span>
+      </div>
+      <div class="flow-item">
+        <span class="f-time">16:45-17:00</span>
+        <span class="f-content"><span class="highlight">自由交流 + 散场</span></span>
+      </div>
+    </div>
+
+    <!-- 细节优化 -->
+    <div style="margin-top:12px;">
+      <div style="font-size:0.85rem;font-weight:600;color:var(--gold);margin-bottom:10px;">🟠 细节优化建议</div>
+      <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.8;">
+        <div style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:var(--gold-light);">1.</span> <span><strong style="color:var(--text);">品酒"边品边讲"</strong>：庄主品鉴时同步讲解，边倒边讲边互动</span></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:var(--gold-light);">2.</span> <span><strong style="color:var(--text);">商业游戏定位调整</strong>：要么轻量化（15分钟），要么深度化（增加商业模型指导）</span></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:var(--gold-light);">3.</span> <span><strong style="color:var(--text);">分组机制优化</strong>：提前了解参与者背景，按行业/兴趣分组</span></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;"><span style="color:var(--gold-light);">4.</span> <span><strong style="color:var(--text);">视觉辅助</strong>：庄主分享时增加PPT或品酒笔记卡片</span></div>
+        <div style="display:flex;gap:8px;"><span style="color:var(--gold-light);">5.</span> <span><strong style="color:var(--text);">纪念品/带走物</strong>：DIY酒标设计、品酒笔记卡等延长记忆</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 可复用方法论 -->
+  <div class="section">
+    <div class="section-title"><span class="num">3</span> 可复用的方法论</div>
+
+    <div class="principles">
+      <div class="principle-card">
+        <div class="p-num">原则一</div>
+        <div class="p-title">核心价值不被形式稀释</div>
+        <div class="p-desc">识别活动的"不可替代价值"（庄主的专业与热爱），确保它不被过渡性内容挤压。品酒是目的，商业游戏是手段，手段不能喧宾夺主。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">原则二</div>
+        <div class="p-title">物理体验是底层</div>
+        <div class="p-desc">温度、光线、座位、声音——这些"看不见"的因素决定了参与者的基础体验。底层不舒服，上层内容再好也白费。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">原则三</div>
+        <div class="p-title">参与感 > 观赏感</div>
+        <div class="p-desc">DIY调酒效果好，因为参与者从观众变成了创作者。每个环节问自己：参与者是在"看"还是在"做"？</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">原则四</div>
+        <div class="p-title">社交是隐形的核心需求</div>
+        <div class="p-desc">人们来参加活动，表面是学品酒，深层是认识人。流程设计要为社交留出自然发生的空间。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 本次活动完整流程 -->
+  <div class="section">
+    <div class="section-title"><span class="num">4</span> 本次活动完整流程</div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <span class="time">14:30-15:00</span>
+        <span class="event">迎宾酒环节</span>
+        <div class="wines">黑比诺起泡酒 · 马尔贝克干白</div>
+      </div>
+      <div class="timeline-item">
+        <span class="time">15:00-15:30</span>
+        <span class="event">庄主分享课——调酒的艺术</span>
+      </div>
+      <div class="timeline-item">
+        <span class="time">15:30-15:50</span>
+        <span class="event">DIY专属葡萄酒</span>
+      </div>
+      <div class="timeline-item">
+        <span class="time">15:50-16:10</span>
+        <span class="event">葡萄酒商业游戏</span>
+      </div>
+      <div class="timeline-item">
+        <span class="time">16:10-17:00</span>
+        <span class="event">小组成果分享（每组10分钟）</span>
+      </div>
+      <div class="timeline-item">
+        <span class="time">17:10-17:30</span>
+        <span class="event">产区精品酒品鉴</span>
+        <div class="wines">葡尚酒庄·马瑟兰 · 海悦仁和·马尔贝克<br>欣恒酒庄·赤霞珠 · 欣恒酒庄·西拉</div>
+      </div>
+      <div class="timeline-item">
+        <span class="time">17:30-18:00</span>
+        <span class="event">自由交流时段</span>
+        <div class="wines">各组DIY新品 · 夏木酒庄·维欧尼干白<br>马瑟兰自然酒 · 无名白兰地</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 总结 -->
+  <div class="callout callout-success" style="margin-top:4px;">
+    <span class="emoji">🎯</span> <strong>总结</strong><br>
+    本次活动有很好的底子——庄主的专业热爱、DIY的参与感设计、精品酒的内容硬核度，都是不可替代的核心资产。需要优化的主要是<strong>流程节奏</strong>（品酒前置、游戏轻量化）和<strong>物理体验</strong>（温度控制）。下一次迭代，在现有基础上做减法，让核心价值不被形式稀释，效果会大幅提升。
+  </div>
+
+  <div class="footer">
+    小Ark · 2026年6月29日
+  </div>
+
+</div>
+
+</body>
+</html>

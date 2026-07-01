@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>调酒商业模拟 · 团队工作台</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#f5f0eb;color:#2c2416;line-height:1.5;-webkit-text-size-adjust:100%}
+
+  /* Header */
+  .header{background:linear-gradient(135deg,#2c1810,#4a2c1a);color:#f0e6d8;padding:20px 16px;text-align:center}
+  .header h1{font-size:1.2rem;font-weight:700}
+  .header p{font-size:.78rem;color:#c4a882;margin-top:4px}
+  .header .badge{display:inline-block;margin-top:8px;padding:3px 14px;background:rgba(196,168,130,.15);border:1px solid rgba(196,168,130,.3);border-radius:100px;font-size:.72rem;color:#c4a882}
+
+  /* Setup bar - compact */
+  .setup{background:#fff;padding:10px 14px;border-bottom:1px solid #e8e0d6;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .setup label{font-size:.75rem;font-weight:600;color:#4a2c1a}
+  .setup input,.setup select{padding:4px 8px;border:1px solid #d4c8b8;border-radius:6px;font-size:.78rem;font-family:inherit;background:#faf6f0}
+  .setup input:focus,.setup select:focus{outline:none;border-color:#8b6914}
+  .setup .btn-sm{padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:500;cursor:pointer;border:none;background:#f0e8dc;color:#4a2c1a;border:1px solid #d4c8b8}
+
+  /* Step indicator */
+  .step-bar{display:flex;overflow-x:auto;background:#fff;padding:8px 10px;gap:4px;border-bottom:1px solid #e8e0d6;position:sticky;top:0;z-index:50}
+  .step-bar::-webkit-scrollbar{display:none}
+  .step-dot{flex-shrink:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;background:#f0e8dc;color:#8a7a6a;cursor:pointer;transition:all .2s}
+  .step-dot.active{background:#8b6914;color:#fff}
+  .step-dot.done{background:#d4c8b8;color:#fff}
+
+  /* Main */
+  .main{padding:12px 12px 80px;max-width:500px;margin:0 auto}
+  .step{display:none}
+  .step.active{display:block;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Card */
+  .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px}
+  .card .label{font-size:.68rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#8b6914;margin-bottom:3px}
+  .card h2{font-size:1.05rem;color:#2c2416;margin-bottom:3px}
+  .card .desc{font-size:.8rem;color:#6a5a4a;margin-bottom:12px}
+  .card h3{font-size:.88rem;font-weight:600;color:#4a2c1a;margin-bottom:8px;margin-top:14px}
+  .card h3:first-of-type{margin-top:0}
+
+  /* Form */
+  .fg{margin-bottom:10px}
+  .fg label{display:block;font-size:.78rem;font-weight:500;color:#4a2c1a;margin-bottom:2px}
+  .fg .hint{font-size:.7rem;color:#8a7a6a;margin-bottom:2px}
+  .fg input,.fg textarea,.fg select{width:100%;padding:8px 10px;border:1px solid #d4c8b8;border-radius:8px;font-size:.82rem;font-family:inherit;background:#faf6f0;-webkit-appearance:none;appearance:none}
+  .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:#8b6914;box-shadow:0 0 0 2px rgba(139,105,20,.12)}
+  .fg textarea{resize:vertical;min-height:50px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:collapse;font-size:.75rem;margin:8px 0}
+  .tbl th{background:#f0e8dc;padding:6px 8px;text-align:left;font-weight:600;color:#4a2c1a;border-bottom:2px solid #d4c8b8}
+  .tbl td{padding:6px 8px;border-bottom:1px solid #e8e0d6;color:#4a2c1a}
+
+  /* Calc display */
+  .calc{background:#faf6f0;border:1px solid #e8e0d6;border-radius:8px;padding:12px;margin:10px 0}
+  .cr{display:flex;justify-content:space-between;padding:4px 0;font-size:.8rem;border-bottom:1px solid #f0e8dc}
+  .cr:last-child{border-bottom:none}
+  .cr .l{color:#6a5a4a}
+  .cr .v{color:#4a2c1a;font-weight:500}
+  .cr .v.hl{color:#8b6914;font-weight:700}
+
+  /* Info box */
+  .info{background:#f0e8dc;border-radius:8px;padding:12px;margin:10px 0}
+  .info p{font-size:.8rem;color:#4a2c1a;line-height:1.5}
+
+  /* Buttons */
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:9px 18px;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;border:none;flex:1;min-width:80px;min-height:40px}
+  .btn-p{background:#8b6914;color:#fff}
+  .btn-p:active{background:#7a5c12}
+  .btn-s{background:#f0e8dc;color:#4a2c1a;border:1px solid #d4c8b8}
+  .btn-s:active{background:#e0d4c4}
+  .btn-g{background:#166534;color:#fff}
+  .btn-g:active{background:#14532d}
+  .btn-d{background:#991b1b;color:#fff}
+  .btn-d:active{background:#7f1d1d}
+
+  /* Score */
+  .sc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .sc-item{text-align:center;padding:10px;border-radius:8px;background:#faf6f0;border:1px solid #e8e0d6}
+  .sc-item .sv{font-size:1.3rem;font-weight:700;color:#8b6914}
+  .sc-item .sl{font-size:.7rem;color:#6a5a4a;margin-top:2px}
+
+  .result{background:linear-gradient(135deg,#2c1810,#4a2c1a);color:#f0e6d8;border-radius:12px;padding:20px;text-align:center;margin:12px 0}
+  .result .big{font-size:2rem;font-weight:700;color:#fbbf24}
+  .result .lbl{font-size:.78rem;color:#c4a882;margin-top:2px}
+
+  .enc{background:linear-gradient(135deg,#fefce8,#fffbeb);border:1px solid #fde68a;border-radius:8px;padding:14px;margin:10px 0}
+  .enc h4{color:#92400e;font-size:.82rem;margin-bottom:4px}
+  .enc p{font-size:.78rem;color:#78350f;line-height:1.5}
+
+  .aw{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+  .aw-item{padding:10px;border-radius:8px;border:1px solid #e8e0d6;background:#faf6f0;text-align:center}
+  .aw-item .ai{font-size:1.2rem;margin-bottom:2px}
+  .aw-item h4{font-size:.78rem;color:#4a2c1a;margin-bottom:1px}
+  .aw-item p{font-size:.7rem;color:#6a5a4a}
+
+  .footer{text-align:center;padding:16px;color:#8a7a6a;font-size:.7rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🍷 调酒商业模拟</h1>
+  <p>团队工作台 · 每一步填进去，分数算出来</p>
+  <span class="badge" id="roundBadge">第 1 轮</span>
+</div>
+
+<div class="setup">
+  <label>队名</label>
+  <input id="teamName" placeholder="队名" style="width:90px">
+  <label>轮次</label>
+  <select id="roundSelect" onchange="switchRound(this.value)" style="width:70px">
+    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+  </select>
+  <button class="btn-sm" onclick="saveAll()">💾</button>
+  <button class="btn-sm" onclick="loadAll()">📂</button>
+  <button class="btn-sm" style="color:#991b1b" onclick="resetRound()">↺</button>
+</div>
+
+<div class="step-bar" id="stepBar">
+  <div class="step-dot active" onclick="goStep(0)">👥</div>
+  <div class="step-dot" onclick="goStep(1)">1</div>
+  <div class="step-dot" onclick="goStep(2)">2</div>
+  <div class="step-dot" onclick="goStep(3)">3</div>
+  <div class="step-dot" onclick="goStep(4)">4</div>
+  <div class="step-dot" onclick="goStep(5)">5</div>
+  <div class="step-dot" onclick="goStep(6)">6</div>
+  <div class="step-dot" onclick="goStep(7)">7</div>
+  <div class="step-dot" onclick="goStep(8)">🏆</div>
+</div>
+
+<div class="main">
+
+<!-- S0 -->
+<div class="step active" id="s0">
+  <div class="card">
+    <div class="label">第一步</div>
+    <h2>👥 角色分工</h2>
+    <p class="desc">每组5人，每人一个角色</p>
+    <div class="row3">
+      <div class="fg"><label>🍷 酿酒师</label><input id="r1" placeholder="名字"></div>
+      <div class="fg"><label>📊 市场总监</label><input id="r2" placeholder="名字"></div>
+      <div class="fg"><label>💰 财务官</label><input id="r3" placeholder="名字"></div>
+    </div>
+    <div class="row3">
+      <div class="fg"><label>🎨 品牌官</label><input id="r4" placeholder="名字"></div>
+      <div class="fg"><label>👑 CEO</label><input id="r5" placeholder="名字"></div>
+    </div>
+    <div class="info"><p>酿酒师→配方 · 市场总监→定价 · 财务官→算账 · 品牌官→故事 · CEO→最终决定</p></div>
+    <div class="btns"><button class="btn btn-p" onclick="goStep(1)">下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S1 -->
+<div class="step" id="s1">
+  <div class="card">
+    <div class="label">步骤 1 · 全员品鉴（5min）</div>
+    <h2>🍷 品基酒</h2>
+    <p class="desc">边尝边想：谁是你的目标客户？</p>
+    <table class="tbl">
+      <tr><th>基酒</th><th>风格</th><th>成本</th></tr>
+      <tr><td><strong>霞多丽</strong></td><td>饱满圆润，接受度广</td><td>0.5元/ml</td></tr>
+      <tr><td><strong>黑皮诺</strong></td><td>优雅细腻，更柔和</td><td>0.8元/ml</td></tr>
+      <tr><td><strong>玛瑟兰</strong></td><td>浓郁独特，辨识度高</td><td>1.2元/ml</td></tr>
+    </table>
+    <div class="fg"><label>🎯 目标客户是谁？</label><textarea id="s1t" placeholder="年轻人？商务人士？送礼市场？"></textarea></div>
+    <div class="fg"><label>📝 品鉴笔记</label><textarea id="s1n" placeholder="每种基酒的味道印象..."></textarea></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(0)">← 上一步</button><button class="btn btn-p" onclick="goStep(2)">下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="step" id="s2">
+  <div class="card">
+    <div class="label">步骤 2 · 酿酒师+财务官（5min）</div>
+    <h2>🧪 定配方</h2>
+    <p class="desc">总量 <strong>300ml</strong>，预算 <strong>300元</strong>。玛瑟兰越多风险越大</p>
+    <div class="row3">
+      <div class="fg"><label>霞多丽 (ml)</label><input type="number" id="s2x" min="0" max="300" step="5" value="100" oninput="calc()"></div>
+      <div class="fg"><label>黑皮诺 (ml)</label><input type="number" id="s2h" min="0" max="300" step="5" value="100" oninput="calc()"></div>
+      <div class="fg"><label>玛瑟兰 (ml)</label><input type="number" id="s2m" min="0" max="300" step="5" value="100" oninput="calc()"></div>
+    </div>
+    <div class="calc">
+      <div class="cr"><span class="l">总成本</span><span class="v hl" id="c_cost">250.0 元</span></div>
+      <div class="cr"><span class="l">预算剩余</span><span class="v" id="c_budget" style="color:#166534">50.0 元</span></div>
+      <div class="cr"><span class="l">玛瑟兰占比</span><span class="v hl" id="c_msl">33%</span></div>
+      <div class="cr"><span class="l">配比风险分</span><span class="v hl" id="c_risk">3.3</span></div>
+      <div class="cr" style="border-bottom:none"><span class="l">基础价参考</span><span class="v hl" id="c_base">12.5 元/100ml</span></div>
+    </div>
+    <div class="fg"><label>📝 配方思路</label><textarea id="s2r" placeholder="为什么这样配？"></textarea></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(1)">← 上一步</button><button class="btn btn-p" onclick="goStep(3)">下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="step" id="s3">
+  <div class="card">
+    <div class="label">步骤 3 · 全员动手（10min）</div>
+    <h2>🔬 动手调酒</h2>
+    <p class="desc">精确量取，记住配方比例</p>
+    <div class="row3">
+      <div class="fg"><label>霞多丽 (ml)</label><input type="number" id="s3x" min="0" max="300" step="1" oninput="sync3()"></div>
+      <div class="fg"><label>黑皮诺 (ml)</label><input type="number" id="s3h" min="0" max="300" step="1" oninput="sync3()"></div>
+      <div class="fg"><label>玛瑟兰 (ml)</label><input type="number" id="s3m" min="0" max="300" step="1" oninput="sync3()"></div>
+    </div>
+    <p style="font-size:.78rem;color:#6a5a4a;text-align:center">总量：<span id="s3t">0</span> ml <span id="s3d" style="margin-left:8px;color:#8b6914"></span></p>
+    <div class="fg" style="margin-top:8px"><label>📝 调酒记录</label><textarea id="s3n" placeholder="有什么意外或发现？"></textarea></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(2)">← 上一步</button><button class="btn btn-p" onclick="goStep(4)">下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="step" id="s4">
+  <div class="card">
+    <div class="label">步骤 4 · 品牌官主导（10min）</div>
+    <h2>🎨 品牌包装</h2>
+    <p class="desc">名字抓人，故事和配方呼应</p>
+    <div class="fg"><label>🏷️ 酒名</label><input id="s4n" placeholder="例如：夜光·霞语"></div>
+    <div class="fg"><label>📖 品牌故事</label><textarea id="s4s" placeholder="这瓶酒背后的故事..." style="min-height:70px"></textarea></div>
+    <div class="fg"><label>🎴 酒标描述</label><textarea id="s4l" placeholder="颜色、图案、风格..."></textarea></div>
+    <div class="fg"><label>🎯 品牌定位</label><input id="s4p" placeholder="一句话说清楚谁喝的"></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(3)">← 上一步</button><button class="btn btn-p" onclick="goStep(5)">下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S5 -->
+<div class="step" id="s5">
+  <div class="card">
+    <div class="label">步骤 5 · 品鉴对标（15min）</div>
+    <h2>🏆 品鉴对标</h2>
+    <p class="desc">对比获奖酒，想清楚差距</p>
+    <div class="info">
+      <p><strong>三个核心问题：</strong><br>
+      1. 获奖酒一定比你的好喝？→ 评审偏好≠市场偏好<br>
+      2. 获奖酒贵在哪？→ 品牌+信誉+故事溢价<br>
+      3. 商业成功=获奖成功？→ 往往是两回事</p>
+    </div>
+    <div class="fg"><label>📝 对标笔记</label><textarea id="s5n" placeholder="获奖酒好在哪里？差距在哪？" style="min-height:60px"></textarea></div>
+    <div class="fg"><label>💡 下一轮怎么改进？</label><textarea id="s5l" placeholder="想改配方还是定价？"></textarea></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(4)">← 上一步</button><button class="btn btn-p" onclick="goStep(6)">下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S6 -->
+<div class="step" id="s6">
+  <div class="card">
+    <div class="label">步骤 6 · 市场总监+CEO（5min）</div>
+    <h2>💰 提交定价</h2>
+    <p class="desc">单位：<strong>元/100ml</strong>。基础价 = 成本×1.5</p>
+    <div class="calc">
+      <div class="cr"><span class="l">总成本</span><span class="v" id="p_cost">--</span></div>
+      <div class="cr"><span class="l">每100ml成本</span><span class="v" id="p_c100">--</span></div>
+      <div class="cr" style="border-bottom:none"><span class="l">基础价参考</span><span class="v hl" id="p_base">--</span></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>💵 定价（元/100ml）</label><input type="number" id="s6p" min="0" step="0.5" placeholder="例如：15"></div>
+      <div class="fg"><label>📊 策略</label><input id="s6r" placeholder="为什么定这个价？"></div>
+    </div>
+    <div class="info"><p>偏离基础价越远，定价合理分越低。但偏离也可能带来更高利润。</p></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(5)">← 上一步</button><button class="btn btn-p" onclick="goStep(7)">提交，下一步 →</button></div>
+  </div>
+</div>
+
+<!-- S7 -->
+<div class="step" id="s7">
+  <div class="card">
+    <div class="label">步骤 7</div>
+    <h2>⏳ 等待成绩</h2>
+    <p class="desc">认真听酒庄主点评，比分数值钱</p>
+    <div class="fg"><label>📝 点评记录</label><textarea id="s7f" placeholder="哪些做得好？哪些可以改进？" style="min-height:70px"></textarea></div>
+    <div class="btns"><button class="btn btn-s" onclick="goStep(6)">← 上一步</button><button class="btn btn-p" onclick="goStep(8)">查看结果 →</button></div>
+  </div>
+</div>
+
+<!-- S8 -->
+<div class="step" id="s8">
+  <div class="card">
+    <div class="label">🏆 最终结果</div>
+    <h2>评分与奖项</h2>
+    <p class="desc">填入酒庄主给的分数，自动算总成绩</p>
+    <div class="info">
+      <p style="font-size:.75rem;line-height:1.6">
+        <strong>市场需求</strong> = 三项平均 × 100瓶<br>
+        <strong>利润</strong> = 定价×需求÷100 - 总成本
+      </p>
+    </div>
+    <div class="row3">
+      <div class="fg"><label>🎲 风险分</label><div class="hint">自动：<span id="s8ra">--</span></div><input type="number" id="s8risk" min="0" max="10" step="0.5" oninput="calcFinal()"></div>
+      <div class="fg"><label>💰 定价分</label><div class="hint">参考：<span id="s8pa">--</span></div><input type="number" id="s8price" min="0" max="10" step="0.5" oninput="calcFinal()"></div>
+      <div class="fg"><label>📖 品牌分</label><div class="hint">酒庄主打</div><input type="number" id="s8brand" min="0" max="10" step="0.5" oninput="calcFinal()"></div>
+    </div>
+    <div id="fr" style="display:none">
+      <div class="calc">
+        <div class="cr"><span class="l">三项平均</span><span class="v hl" id="f_avg">--</span></div>
+        <div class="cr"><span class="l">市场需求</span><span class="v hl" id="f_demand">-- 瓶</span></div>
+        <div class="cr"><span class="l">总收入</span><span class="v" id="f_rev">-- 元</span></div>
+        <div class="cr"><span class="l">总成本</span><span class="v" id="f_cost">-- 元</span></div>
+        <div class="cr" style="border-bottom:none"><span class="l">最终利润</span><span class="v hl" id="f_profit">-- 元</span></div>
+      </div>
+      <div class="result">
+        <div class="lbl">综合评分</div>
+        <div class="big" id="f_final">--</div>
+        <div style="margin-top:4px;font-size:.78rem;color:#c4a882" id="f_level"></div>
+      </div>
+      <div id="encBox"></div>
+      <div style="margin-top:12px">
+        <h3 style="font-size:.82rem;color:#4a2c1a;margin-bottom:8px">🏆 四个奖项</h3>
+        <div class="aw">
+          <div class="aw-item"><div class="ai">🥇</div><h4>最佳利润奖</h4><p>利润最高</p></div>
+          <div class="aw-item"><div class="ai">⭐</div><h4>最佳口碑奖</h4><p>品牌分最高</p></div>
+          <div class="aw-item"><div class="ai">💡</div><h4>最佳创新奖</h4><p>配方最独特</p></div>
+          <div class="aw-item"><div class="ai">🐎</div><h4>黑马奖</h4><p>低成本高利润</p></div>
+        </div>
+      </div>
+      <div class="enc">
+        <h4>🧠 关键认知</h4>
+        <ul style="padding-left:16px;font-size:.78rem;color:#78350f;line-height:1.7">
+          <li><strong>好喝≠好卖</strong>：获奖酒和赚钱酒是两回事</li>
+          <li><strong>定价是艺术</strong>：偏离基础价有风险也有机会</li>
+          <li><strong>品牌有价格</strong>：好故事让市场愿意多付钱</li>
+          <li><strong>冒险值不值？</strong>：玛瑟兰比例是你对风险的回答</li>
+        </ul>
+      </div>
+      <div class="btns">
+        <button class="btn btn-g" onclick="saveAll()">💾 保存</button>
+        <button class="btn btn-p" onclick="nextRound()">下一轮 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="footer">调酒商业模拟 · 团队工作台</div>
+
+<script>
+let cs=0;
+function goStep(n){
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n));
+  document.querySelectorAll('.step-dot').forEach((d,i)=>{
+    d.classList.toggle('active',i===n);
+    d.classList.toggle('done',i<n);
+  });
+  cs=n;window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchRound(r){
+  document.getElementById('roundSelect').value=r;
+  document.getElementById('roundBadge').textContent='第 '+r+' 轮';
+  loadAll();
+}
+function nextRound(){const r=parseInt(document.getElementById('roundSelect').value);if(r<3)switchRound(r+1);else alert('已经是最后一轮了！');}
+
+function calc(){
+  const x=parseFloat(document.getElementById('s2x').value)||0,h=parseFloat(document.getElementById('s2h').value)||0,m=parseFloat(document.getElementById('s2m').value)||0;
+  const t=x+h+m,c=x*0.5+h*0.8+m*1.2,b=300-c,r=t>0?m/t:0,rs=(r*10).toFixed(1),c100=t>0?(c/t*100).toFixed(1):0,bp=(c100*1.5).toFixed(1);
+  document.getElementById('c_cost').textContent=c.toFixed(1)+' 元';
+  const be=document.getElementById('c_budget');be.textContent=b.toFixed(1)+' 元';be.style.color=b<0?'#dc2626':'#166534';
+  document.getElementById('c_msl').textContent=(r*100).toFixed(0)+'%';
+  document.getElementById('c_risk').textContent=rs+' 分';
+  document.getElementById('c_base').textContent=bp+' 元/100ml';
+  document.getElementById('p_cost').textContent=c.toFixed(1)+' 元';
+  document.getElementById('p_c100').textContent=c100+' 元';
+  document.getElementById('p_base').textContent=bp+' 元/100ml';
+  document.getElementById('s8ra').textContent=rs+' 分';
+  const p=parseFloat(document.getElementById('s6p').value)||0;
+  if(p>0){const bpv=parseFloat(bp),diff=Math.abs(p-bpv),ps=Math.max(0,Math.min(10,10-diff*0.5));document.getElementById('s8pa').textContent=ps.toFixed(1)+' 分'}
+}
+
+function sync3(){const x=parseFloat(document.getElementById('s3x').value)||0,h=parseFloat(document.getElementById('s3h').value)||0,m=parseFloat(document.getElementById('s3m').value)||0,t=x+h+m;document.getElementById('s3t').textContent=t;if(t===0)document.getElementById('s3d').textContent='';else if(t!==300)document.getElementById('s3d').textContent='⚠️ 应为300ml，当前'+t+'ml';else document.getElementById('s3d').textContent='✅ 正确'}
+
+function calcFinal(){const risk=parseFloat(document.getElementById('s8risk').value)||0,ps=parseFloat(document.getElementById('s8price').value)||0,brand=parseFloat(document.getElementById('s8brand').value)||0,avg=(risk+ps+brand)/3,demand=Math.round(avg*100);const x=parseFloat(document.getElementById('s2x').value)||0,h=parseFloat(document.getElementById('s2h').value)||0,m=parseFloat(document.getElementById('s2m').value)||0,tc=x*0.5+h*0.8+m*1.2,sp=parseFloat(document.getElementById('s6p').value)||0,rev=sp*demand/100,profit=rev-tc;document.getElementById('fr').style.display='block';document.getElementById('f_avg').textContent=avg.toFixed(1);document.getElementById('f_demand').textContent=demand+' 瓶';document.getElementById('f_rev').textContent=rev.toFixed(0)+' 元';document.getElementById('f_cost').textContent=tc.toFixed(1)+' 元';document.getElementById('f_profit').textContent=profit.toFixed(0)+' 元';const fs=Math.round(Math.max(0,avg*10+(profit>0?Math.min(profit/20,30):profit/20)));document.getElementById('f_final').textContent=fs;let l='';if(fs>=80)l='🌟 卓越！大获成功！';else if(fs>=60)l='👍 优秀！有潜力冲击大奖！';else if(fs>=40)l='💪 良好！调整策略有望提升。';else if(fs>=20)l='📈 有进步空间！想想哪里可以优化。';else l='🔄 别灰心！下一轮调整再来！';document.getElementById('f_level').textContent=l;let htm='<div class="enc"><h4>💬 鼓励的话</h4><p>';if(risk>=7)htm+='你们敢于冒险（玛瑟兰比例高），这种勇气值得肯定！<br>';if(ps>=7)htm+='定价策略不错，对市场有很好的判断力。<br>';if(brand>=7)htm+='品牌故事很打动人！好的故事能让产品溢价。<br>';if(avg<4)htm+='第一轮是热身，关键是学到了什么。下一轮一定会涨！<br>';if(profit>5000)htm+='利润表现亮眼，找到了产品与市场的黄金平衡点！<br>';if(risk<3&&profit>0)htm+='稳健策略奏效了！低风险也能赚钱。<br>';if(brand<4)htm+='品牌故事还有提升空间——把配方特点和故事更紧密地结合。<br>';htm+='</p></div>';document.getElementById('encBox').innerHTML=htm}
+
+function getKey(k){return k+'_R'+document.getElementById('roundSelect').value}
+function saveAll(){const t=document.getElementById('teamName').value.trim()||'未命名';const f=['r1','r2','r3','r4','r5','s1t','s1n','s2x','s2h','s2m','s2r','s3x','s3h','s3m','s3n','s4n','s4s','s4l','s4p','s5n','s5l','s6p','s6r','s7f','s8risk','s8price','s8brand'];const d={team:t};f.forEach(k=>{const el=document.getElementById(k);if(el)d[k]=el.value});localStorage.setItem(getKey('wd'),JSON.stringify(d));alert('✅ 已保存第 '+document.getElementById('roundSelect').value+' 轮！')}
+function loadAll(){const r=localStorage.getItem(getKey('wd'));if(!r)return;const d=JSON.parse(r);if(d.team)document.getElementById('teamName').value=d.team;Object.keys(d).forEach(k=>{if(k!=='team'){const el=document.getElementById(k);if(el)el.value=d[k]}});calc();sync3();calcFinal()}
+function resetRound(){if(!confirm('重置第 '+document.getElementById('roundSelect').value+' 轮数据？'))return;localStorage.removeItem(getKey('wd'));location.reload()}
+
+document.getElementById('s6p').addEventListener('input',function(){const p=parseFloat(this.value)||0;const bt=document.getElementById('p_base').textContent;const b=parseFloat(bt);if(p>0&&b>0){const d=Math.abs(p-b),ps=Math.max(0,Math.min(10,10-d*0.5));document.getElementById('s8pa').textContent=ps.toFixed(1)+' 分'}});
+calc();
+</script>
+</body>
+</html>

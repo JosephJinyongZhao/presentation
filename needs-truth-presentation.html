@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>需求的真相与值得的生活</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a28;
+    --accent: #f0c040;
+    --accent2: #e8967a;
+    --accent3: #7ab8e8;
+    --text: #e8e6e0;
+    --text2: #9896a0;
+    --text3: #5a5868;
+    --border: #2a2a3a;
+    --glow: rgba(240, 192, 64, 0.15);
+  }
+
+  html { font-size: clamp(16px, 2vw, 28px); }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  .slide-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5vh 6vw;
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.98);
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 1.5rem;
+    border-radius: 2rem;
+    border: 1px solid var(--border);
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .nav-btn:hover { color: var(--accent); background: rgba(240,192,64,0.1); }
+  .nav-dots {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .nav-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--text3);
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+  .nav-dot.active { background: var(--accent); width: 1.2rem; border-radius: 0.25rem; }
+  .nav-counter {
+    color: var(--text3);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    min-width: 3rem;
+    text-align: center;
+  }
+
+  /* Progress bar */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 200;
+    transition: width 0.5s ease;
+  }
+
+  /* Slide content styles */
+  .slide-content {
+    width: 100%;
+    max-width: 1400px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .slide-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+  .slide-title .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .slide-title .accent { color: var(--accent); }
+  .slide-title .accent2 { color: var(--accent2); }
+  .slide-title .accent3 { color: var(--accent3); }
+
+  .slide-subtitle {
+    font-size: 1.1rem;
+    color: var(--text2);
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .slide-body {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text);
+    max-width: 100%;
+  }
+  .slide-body p { margin-bottom: 0.8rem; }
+  .slide-body strong { color: var(--accent); font-weight: 600; }
+  .slide-body em { color: var(--accent2); font-style: normal; font-weight: 500; }
+
+  /* Cards grid */
+  .card-grid {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+  }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .card-grid-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+  .card-grid-7 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    padding: 1.2rem;
+    transition: all 0.3s;
+  }
+  .card:hover {
+    border-color: rgba(240,192,64,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .card-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--accent);
+  }
+  .card-body {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text2);
+  }
+
+  /* Big number */
+  .big-number {
+    font-size: 5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .big-number-label {
+    font-size: 0.9rem;
+    color: var(--text2);
+    font-weight: 300;
+  }
+
+  /* List styling */
+  .slide-body ul, .slide-body ol {
+    list-style: none;
+    padding: 0;
+  }
+  .slide-body li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .slide-body li:last-child { border-bottom: none; }
+  .slide-body li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.5rem;
+    top: 0.85rem;
+  }
+  .slide-body li strong { color: var(--accent); }
+
+  /* Quote block */
+  .quote-block {
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    background: rgba(240,192,64,0.05);
+    border-radius: 0 0.6rem 0.6rem 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .quote-block .attribution {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text2);
+    font-size: 0.8rem;
+    font-weight: 300;
+  }
+
+  /* Challenge cards */
+  .challenge-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    padding: 1rem;
+    margin-bottom: 0.6rem;
+  }
+  .challenge-card .challenge-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 0.15rem 0.6rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.4rem;
+  }
+  .challenge-card .challenge-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .challenge-card .challenge-body {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text2);
+  }
+
+  /* Timeline / flow */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .flow-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 0.8rem 1.2rem;
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+  }
+  .flow-item .flow-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .flow-item .flow-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .flow-arrow {
+    color: var(--text3);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  /* Test cards */
+  .test-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+  }
+  .test-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    padding: 1.2rem;
+    text-align: center;
+  }
+  .test-card .test-emoji {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .test-card .test-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .test-card .test-desc {
+    font-size: 0.8rem;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* Arrow indicator */
+  .scroll-hint {
+    position: fixed;
+    bottom: 8vh;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text3);
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed;
+    bottom: 8vh;
+    right: 3vw;
+    color: var(--text3);
+    font-size: 0.6rem;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.4;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 3vh 4vw; }
+    .slide-title { font-size: 1.8rem; }
+    .slide-body { font-size: 0.9rem; }
+    .card-grid-2, .card-grid-3, .card-grid-4, .card-grid-5, .card-grid-7 { grid-template-columns: 1fr 1fr; }
+    .test-grid { grid-template-columns: 1fr; }
+    .big-number { font-size: 3rem; }
+    .flow-row { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+
+  /* Center content helper */
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+  }
+
+  /* Decorative */
+  .deco-line {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    margin: 0.8rem 0 1.2rem 0;
+    border-radius: 2px;
+  }
+  .deco-line.center { margin: 0.8rem auto 1.2rem auto; }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.3rem;
+    background: rgba(240,192,64,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(240,192,64,0.2);
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+
+  /* Two column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  .two-col .col { min-width: 0; }
+
+  /* Numbered list */
+  .num-list { counter-reset: item; }
+  .num-list li {
+    counter-increment: item;
+    padding-left: 2.5rem;
+  }
+  .num-list li::before {
+    content: counter(item);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--accent);
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+  }
+  .num-list li::after { display: none; }
+
+  /* Comparison */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  .compare-box {
+    padding: 1.2rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--border);
+  }
+  .compare-box.old {
+    background: rgba(232,150,122,0.08);
+    border-color: rgba(232,150,122,0.2);
+  }
+  .compare-box.new {
+    background: rgba(240,192,64,0.08);
+    border-color: rgba(240,192,64,0.2);
+  }
+  .compare-box .compare-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .compare-box.old .compare-label { color: var(--accent2); }
+  .compare-box.new .compare-label { color: var(--accent); }
+  .compare-box .compare-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="slide-container" id="slides">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" data-index="0">
+    <div class="slide-content center-content">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">🧭</div>
+      <div class="slide-title" style="font-size: 3.5rem; text-align: center;">
+        需求的真相<br>与<span class="highlight">值得的生活</span>
+      </div>
+      <div class="deco-line center"></div>
+      <div class="slide-subtitle" style="text-align: center; max-width: 700px;">
+        从2000卡路里到一生的追问<br>
+        一个关于欲望、时间与意义的认知循环
+      </div>
+      <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+        <span class="tag">个体理性</span>
+        <span class="tag">七重批判</span>
+        <span class="tag">框架修正</span>
+        <span class="tag">有意识的选择</span>
+      </div>
+      <div style="margin-top: 2rem; color: var(--text3); font-size: 0.7rem;">
+        2026年6月28日 · 晨间思考
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: The Starting Intuition -->
+  <div class="slide" data-index="1">
+    <div class="slide-content">
+      <div class="slide-title">起点：<span class="highlight">一个早晨的直觉</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3" style="margin-bottom: 1.2rem;">
+          <div class="card" style="text-align: center;">
+            <div class="big-number">2000</div>
+            <div class="big-number-label">卡路里 / 天</div>
+            <div class="card-body" style="margin-top: 0.5rem;">维持基本生存所需热量</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="big-number">4-6</div>
+            <div class="big-number-label">小时 / 天</div>
+            <div class="card-body" style="margin-top: 0.5rem;">真正高效可用的时间</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="big-number">极有限</div>
+            <div class="big-number-label">一生真实用度</div>
+            <div class="card-body" style="margin-top: 0.5rem;">吃穿住行的真实需求</div>
+          </div>
+        </div>
+        <div class="quote-block">
+          需求很少，但生产力已经过剩。从个体理性角度，我们并没有那么多欲求。可是社会竞争和社会适应要求你产生更多"需求"——一旦进入这个环境，就会被裹挟。
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text2); margin-top: 0.5rem;">
+          <strong style="color: var(--accent);">核心追问：</strong>什么样的事情是真正值得追求的？哪些只是过渡性的问题？哪些只是外部的阶段性影响？
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: The Truth of Needs -->
+  <div class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="slide-title">一、需求的真相：<span class="highlight">被制造的匮乏</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3">
+          <div class="card">
+            <div class="card-icon">🧬</div>
+            <div class="card-title">生理需求的真实边界</div>
+            <div class="card-body">
+              基础代谢1200-1800大卡/天，维持生存成本极低。人类早已跨过"不够"的门槛。<br><br>
+              <strong>但市场经济的运转逻辑建立在永不满足之上。</strong>如果每个人都满足了，经济就停滞了。需求被系统性地制造——不是因为你真的需要，而是因为系统需要你需要。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👁️</div>
+            <div class="card-title">相对剥夺感</div>
+            <div class="card-body">
+              凡勃伦《有闲阶级论》——炫耀性消费：超过生存线后，消费的主要驱动力不是效用，而是<strong>社会地位信号</strong>。<br><br>
+              你买更好的车，不是因为你需要从A到B，而是因为邻居的车比你好。这种相对剥夺感没有上限。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎭</div>
+            <div class="card-title">身份焦虑：消费即存在</div>
+            <div class="card-body">
+              当传统的身份标识（家族、宗教、社区）瓦解后，人们用消费来定义自己是谁。<br><br>
+              <strong>"我消费，故我在。"</strong>买什么牌子、住什么小区——不再是选择，而是身份宣言。这种焦虑关乎存在本身。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: The Truth of Time -->
+  <div class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="slide-title">二、时间的真相：<span class="highlight">最稀缺的不可再生资源</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="two-col" style="margin-bottom: 1rem;">
+          <div class="col">
+            <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 0.8rem; padding: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text2);">一天</span>
+                <span style="font-weight: 600;">24小时</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text2);">睡眠</span>
+                <span>− 7-8h</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text2);">基本生存</span>
+                <span>− 2-3h</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text2);">社交/家庭义务</span>
+                <span>− 2-3h</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text2);">可用时间</span>
+                <span style="color: var(--accent); font-weight: 600;">≈ 10-12h</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0;">
+                <span style="color: var(--accent2); font-weight: 500;">真正高效（心流）</span>
+                <span style="color: var(--accent2); font-weight: 700;">≈ 4-6h</span>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card" style="height: 100%;">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">注意力经济的掠夺</div>
+              <div class="card-body">
+                社交媒体、短视频、新闻推送——这些产品的商业模式就是<strong>占有你的注意力</strong>，然后卖给广告商。<br><br>
+                <em>你不是在"消遣"，你是在被开采。你的注意力是别人的矿藏。</em><br><br>
+                钱可以再赚，关系可以重建，但时间过去了就是过去了。<br><br>
+                <strong>你愿意把不可逆的时间花在什么事情上？</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.85rem; color: var(--accent2); font-weight: 500;">
+          「大多数人用这4-6小时中的大部分，去做了自己并不真正在意的事。」
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Three Categories Framework -->
+  <div class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="slide-title">三、审视框架：<span class="highlight">三类事情</span>的区分</div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3" style="margin-bottom: 1rem;">
+          <div class="card" style="border-color: rgba(240,192,64,0.3);">
+            <div class="card-icon">🌟</div>
+            <div class="card-title" style="color: var(--accent);">真正值得追求的事</div>
+            <div class="card-body">
+              内在价值不依赖外部评价，且具有累积性。
+            </div>
+            <ul style="margin-top: 0.5rem; font-size: 0.78rem; list-style: none; padding: 0;">
+              <li style="padding: 0.2rem 0; border: none;">🧠 认知的深化</li>
+              <li style="padding: 0.2rem 0; border: none;">❤️ 真实的关系</li>
+              <li style="padding: 0.2rem 0; border: none;">🎨 创造性的表达</li>
+              <li style="padding: 0.2rem 0; border: none;">💪 身体的健康与能力</li>
+              <li style="padding: 0.2rem 0; border: none;">🧘 精神的自洽</li>
+            </ul>
+          </div>
+          <div class="card" style="border-color: rgba(232,150,122,0.3);">
+            <div class="card-icon">🔄</div>
+            <div class="card-title" style="color: var(--accent2);">过渡性的问题</div>
+            <div class="card-body">
+              需要做，但不值得投入过多情感和精力——只是手段，不是目的。
+            </div>
+            <ul style="margin-top: 0.5rem; font-size: 0.78rem; list-style: none; padding: 0;">
+              <li style="padding: 0.2rem 0; border: none;">💼 职业的早期积累</li>
+              <li style="padding: 0.2rem 0; border: none;">👥 社会认可</li>
+              <li style="padding: 0.2rem 0; border: none;">😰 阶段性焦虑</li>
+            </ul>
+          </div>
+          <div class="card" style="border-color: rgba(122,184,232,0.3);">
+            <div class="card-icon">🌊</div>
+            <div class="card-title" style="color: var(--accent3);">外部的阶段性影响</div>
+            <div class="card-body">
+              环境强加给你的，不是你自己选择的。
+            </div>
+            <ul style="margin-top: 0.5rem; font-size: 0.78rem; list-style: none; padding: 0;">
+              <li style="padding: 0.2rem 0; border: none;">🛍️ 消费主义叙事</li>
+              <li style="padding: 0.2rem 0; border: none;">⏰ 社会时钟</li>
+              <li style="padding: 0.2rem 0; border: none;">🏃 竞争焦虑</li>
+            </ul>
+          </div>
+        </div>
+        <div style="text-align: center; color: var(--text2); font-size: 0.85rem;">
+          <strong style="color: var(--accent);">关键能力：</strong>识别哪些焦虑是环境强加的，哪些是你真正在意的
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Four Sharp Questions -->
+  <div class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="slide-title">四、经历审视：<span class="highlight">四个尖锐的追问</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-4">
+          <div class="card">
+            <div class="card-icon">🛒</div>
+            <div class="card-title">关于消费</div>
+            <div class="card-body">
+              <strong>审视点：</strong>上一次真正因为"需要"而购买的东西是什么？上一次因为"别人有"而购买的是什么？<br><br>
+              <em>建议：</em>做一次"需求溯源"——如果没有任何人知道，我还会买吗？
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⏳</div>
+            <div class="card-title">关于时间</div>
+            <div class="card-body">
+              <strong>审视点：</strong>过去一周，你的高效时间用在了哪里？有多少用在了五年后还会在意的事情上？<br><br>
+              <em>建议：</em>做一周的时间审计。不是为了自责，而是为了看清真相。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🤝</div>
+            <div class="card-title">关于社交</div>
+            <div class="card-body">
+              <strong>审视点：</strong>你的社交有多少是"应该做"的，有多少是"想做"的？<br><br>
+              <em>建议：</em>区分义务性社交和滋养性社交。前者减少到最低必要，后者主动增加。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🧘</div>
+            <div class="card-title">关于焦虑</div>
+            <div class="card-body">
+              <strong>审视点：</strong>你现在的焦虑中，有多少是"自己的事"，有多少是"别人的事"？<br><br>
+              <em>建议：</em>斯多葛学派分辨法——区分你能控制的和你不能控制的。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Three Tests -->
+  <div class="slide" data-index="6">
+    <div class="slide-content">
+      <div class="slide-title">五、可操作的<span class="highlight">判断工具</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="test-grid">
+          <div class="test-card">
+            <div class="test-emoji">⚰️</div>
+            <div class="test-name">葬礼测试</div>
+            <div class="test-desc">
+              想象在你的葬礼上，你希望别人如何记住你？不是因为职位、收入、房子——而是因为你是一个什么样的人，你给别人的生活带来了什么。
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--accent); font-weight: 500;">
+              过滤掉终极尺度上不重要的事
+            </div>
+          </div>
+          <div class="test-card">
+            <div class="test-emoji">📅</div>
+            <div class="test-name">五年测试</div>
+            <div class="test-desc">
+              问自己：五年后回头看，这件事我还会计较吗？如果答案是"不会"，那它现在就不值得你失眠。
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--accent); font-weight: 500;">
+              把当下的焦虑放在时间尺度上审视
+            </div>
+          </div>
+          <div class="test-card">
+            <div class="test-emoji">🔍</div>
+            <div class="test-name">内在动机测试</div>
+            <div class="test-desc">
+              我做这件事，是因为我真心想做，还是因为我觉得"应该做"？前者带来持久的满足，后者带来短暂的解脱和长期的疲惫。
+            </div>
+            <div style="margin-top: 0.5rem            <div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--accent); font-weight: 500;">
+              区分真心想做和觉得应该做
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Back to Start -->
+  <div class="slide" data-index="7">
+    <div class="slide-content center-content">
+      <div class="slide-title" style="text-align: center;">六、回到起点</div>
+      <div class="deco-line center"></div>
+      <div class="quote-block" style="text-align: center; max-width: 800px; border-left: none; border-top: 3px solid var(--accent); border-radius: 0.6rem;">
+        2000卡路里就能活一天。但你活着不是为了2000卡路里。<br><br>
+        你活着是为了<strong>体验、连接、创造、理解</strong>。<br>
+        这些不需要很多钱，但需要很多<strong>清醒的注意力</strong>。
+      </div>
+      <div style="margin-top: 1.5rem; font-size: 1.2rem; color: var(--accent2); text-align: center; max-width: 700px; line-height: 1.6;">
+        生产力的过剩不是问题，问题是<strong style="color: var(--accent);">注意力的错配</strong>——<br>
+        我们把最稀缺的资源，用在了最不稀缺的事情上。
+      </div>
+      <div style="margin-top: 1.5rem; font-size: 1.4rem; font-weight: 700; text-align: center; max-width: 800px; line-height: 1.5; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        「真正值得追问的不是'我够不够多'，<br>而是'我是不是在用有限的时间，做真正重要的事'」
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Seven Challenges Intro -->
+  <div class="slide" data-index="8">
+    <div class="slide-content center-content">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">⚔️</div>
+      <div class="slide-title" style="text-align: center;">批判性审视：<br><span class="highlight">个体理性框架的七重挑战</span></div>
+      <div class="deco-line center"></div>
+      <div class="slide-subtitle" style="text-align: center; max-width: 700px;">
+        以上六章从个体理性视角出发。但这个框架本身需要被审视——<br>
+        它是否过于简化？是否有隐藏的假设？
+      </div>
+      <div style="margin-top: 1.2rem; display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center;">
+        <span class="tag">社会</span>
+        <span class="tag">哲学</span>
+        <span class="tag">历史</span>
+        <span class="tag">博弈</span>
+        <span class="tag">生物</span>
+        <span class="tag">认知</span>
+        <span class="tag">实证</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Social Dimension -->
+  <div class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 1/7</span><br><span class="highlight">社会维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          个体理性 ≠ 社会最优
+        </div>
+        <div class="two-col" style="margin-top: 0.8rem;">
+          <div class="col">
+            <div class="challenge-card">
+              <div class="challenge-label">核心论证</div>
+              <div class="challenge-body">
+                <strong>节俭悖论</strong>（Paradox of Thrift）：个人层面的"知足常乐"在宏观层面会导致总需求不足。如果大多数人都满足于2000卡路里和4小时高效工作，经济会萎缩，税收会减少，公共品（教育、医疗、基础设施）将无法维持。<br><br>
+                <strong>个体理性与集体理性之间存在根本张力</strong>：对你个人来说合理的"少欲"选择，如果成为普遍行为，可能导致社会系统的崩溃。
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="challenge-card" style="border-color: rgba(240,192,64,0.3);">
+              <div class="challenge-label" style="background: var(--accent);">反反驳</div>
+              <div class="challenge-body">
+                你的"理性"是在一个已经运转的社会系统中做出的。系统本身需要"非理性"（过度消费、过度生产）来维持。<br><br>
+                <strong>你享受的公共品（道路、学校、医院），恰恰来自那些"不理性"地多生产、多消费的人。</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Philosophy -->
+  <div class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 2/7</span><br><span class="highlight">哲学维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          "真实需求"是一个哲学陷阱——谁来判断什么是真实的？
+        </div>
+        <div class="card-grid card-grid-3" style="margin-top: 0.8rem;">
+          <div class="card">
+            <div class="card-icon">📖</div>
+            <div class="card-title">马尔库塞</div>
+            <div class="card-body">
+              《单向度的人》：在发达工业社会中，所谓"真实需求"本身就是被系统定义的。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <div class="card-title">尼采</div>
+            <div class="card-body">
+              所谓"需求"不过是权力意志的表现形式。追求更多不是异化，而是生命力的自然流露。"知足"可能只是生命力衰退的合理化。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎭</div>
+            <div class="card-title">萨特</div>
+            <div class="card-body">
+              选择"少欲"本身就是自由选择。但把它当作"唯一正确的答案"，就陷入了自欺（bad faith）——逃避选择的焦虑。
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--accent); text-align: center;">
+          「问题不是'哪些需求是真实的'，而是'我如何有意识地选择我要被哪些需求驱动'」
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: History -->
+  <div class="slide" data-index="11">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 3/7</span><br><span class="highlight">历史维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          匮乏曾是常态，过剩是特例
+        </div>
+        <div class="two-col" style="margin-top: 0.8rem;">
+          <div class="col">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div style="font-size: 3rem; font-weight: 900; color: var(--accent);">99.9%</div>
+              <div style="font-size: 0.85rem; color: var(--text2); line-height: 1.5;">
+                人类历史处于<br><strong style="color: var(--text);">生存匮乏</strong>状态
+              </div>
+            </div>
+            <div class="challenge-card">
+              <div class="challenge-body">
+                农业社会中，90%以上的人口从事粮食生产，仍然周期性饥荒。所谓"需求很少"是<strong>现代人的特权视角</strong>，不是人类普遍经验。
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="challenge-card" style="border-color: rgba(240,192,64,0.3);">
+              <div class="challenge-label" style="background: var(--accent);">反反驳</div>
+              <div class="challenge-body">
+                今天的"过剩"可能只是<strong>历史长河中的一个短暂阶段</strong>。资源枯竭、气候变化、地缘冲突随时可能把人类推回匮乏状态。<br><br>
+                "需求很少"的判断可能是一种<strong>时代幻觉</strong>——你恰好出生在人类历史上最富裕的时代和地区。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: Game Theory -->
+  <div class="slide" data-index="12">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 4/7</span><br><span class="highlight">博弈维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          社会竞争不是可选项
+        </div>
+        <div class="card-grid card-grid-2" style="margin-top: 0.8rem;">
+          <div class="card">
+            <div class="card-icon">🎲</div>
+            <div class="card-title">囚徒困境</div>
+            <div class="card-body">
+              如果所有人都不竞争，大家都能过得好。但只要有一小部分人开始竞争，不竞争的人就会被淘汰。<br><br>
+              <strong>你不竞争，不等于竞争不存在——只是你输了。</strong>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⚖️</div>
+            <div class="card-title">竞争是手段还是目的？</div>
+            <div class="card-body">
+              如果竞争的目的是"更好的生活"，而竞争本身正在毁掉生活，那这个博弈结构本身就需要被审视。<br><br>
+              <strong>真正的破局点不是"退出竞争"，而是"改变竞争的定义"</strong>——在你不那么在意的维度上放弃，在你真正在意的维度上深度投入。
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 0.8rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+          <div class="challenge-card" style="flex: 1; min-width: 200px;">
+            <div class="challenge-body">💼 劳动力市场：满足于"够用就好"→ 升职机会流向别人</div>
+          </div>
+          <div class="challenge-card" style="flex: 1; min-width: 200px;">
+            <div class="challenge-body">🎓 教育：让孩子"快乐就好"→ 未来竞争处于劣势</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 14: Biology -->
+  <div class="slide" data-index="13">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 5/7</span><br><span class="highlight">生物维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          欲望不是缺陷，是进化遗产
+        </div>
+        <div class="two-col" style="margin-top: 0.8rem;">
+          <div class="col">
+            <div class="challenge-card">
+              <div class="challenge-label">进化心理学</div>
+              <div class="challenge-body">
+                在人类进化的99.9%时间里，资源稀缺是常态。那些"满足于现状"的祖先，在饥荒来临时更容易饿死。那些"永不满足、持续积累"的祖先，更有可能存活并繁衍。
+              </div>
+            </div>
+            <div class="challenge-card" style="margin-top: 0.5rem;">
+              <div class="challenge-label">多巴胺系统</div>
+              <div class="challenge-body">
+                多巴胺不是为"满足"设计的，而是为<strong>追求</strong>设计的。获得目标时多巴胺短暂升高然后回落，下一个目标开始驱动你。这是<strong>进化设计的生存策略</strong>。
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="challenge-card" style="border-color: rgba(240,192,64,0.3); height: 100%;">
+              <div class="challenge-label" style="background: var(--accent);">启示</div>
+              <div class="challenge-body">
+                "消费主义制造需求"之所以有效，是因为它<strong>劫持了已经存在的神经机制</strong>——不是它创造了欲望，而是它找到了触发欲望的开关。<br><br>
+                "知足常乐"是一种<strong>对抗生物本能的文明成就</strong>，而不是回归"自然状态"。自然状态恰恰是永不满足。<br><br>
+                你不是在对抗"邪恶的消费主义"，而是在对抗<strong>亿万年的进化遗产</strong>。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 15: Cognition -->
+  <div class="slide" data-index="14">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 6/7</span><br><span class="highlight">认知维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          注意力错配的归因偏差
+        </div>
+        <div class="two-col" style="margin-top: 0.8rem;">
+          <div class="col">
+            <div class="challenge-card">
+              <div class="challenge-label">外归因倾向</div>
+              <div class="challenge-body">
+                说"社交媒体掠夺了我的注意力"，比说"我选择了刷社交媒体而不是读书"更容易接受。但前者是<strong>受害者叙事</strong>，后者是<strong>责任叙事</strong>。
+              </div>
+            </div>
+            <div class="challenge-card" style="margin-top: 0.5rem;">
+              <div class="challenge-label">系统1 / 系统2</div>
+              <div class="challenge-body">
+                卡尼曼：人的默认模式是懒惰的（系统1主导），需要刻意努力才能启动系统2。"注意力被掠夺"与其说是外部攻击，不如说是<strong>内部投降</strong>。
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="challenge-card" style="border-color: rgba(240,192,64,0.3); height: 100%;">
+              <div class="challenge-label" style="background: var(--accent);">反反驳</div>
+              <div class="challenge-body">
+                这个挑战很尖锐——它把矛头从"系统"转向了"个人责任"。但它可能过于严苛了：<strong>系统设计确实利用了人的认知弱点</strong>，这不是个人意志力能完全对抗的。<br><br>
+                最好的回应是：<strong>承认个人有责任，同时要求系统承担设计伦理</strong>——就像食品安全法要求食品不能添加有害成分一样，注意力经济也应该有伦理底线。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 16: Empirical -->
+  <div class="slide" data-index="15">
+    <div class="slide-content">
+      <div class="slide-title"><span class="tag" style="font-size: 0.8rem;">挑战 7/7</span><br><span class="highlight">实证维度</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="quote-block" style="font-size: 1.2rem;">
+          数据说了什么？
+        </div>
+        <div class="card-grid card-grid-4" style="margin-top: 0.8rem;">
+          <div class="card">
+            <div class="card-icon">💰</div>
+            <div class="card-title">收入与幸福感</div>
+            <div class="card-body">
+              伊斯特林悖论：超过一定收入后效应递减。但富国的人确实比穷国的人更幸福。<br><br>
+              <strong>真相：钱在一定范围内能买幸福，效应递减而非消失。</strong>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⏰</div>
+            <div class="card-title">时间利用</div>
+            <div class="card-body">
+              高收入人群工作时间更长，但生活满意度也更高。<br><br>
+              <strong>"少工作"不等于"更幸福"。</strong>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎪</div>
+            <div class="card-title">消费类型</div>
+            <div class="card-body">
+              体验消费（旅行、学习、文化）比物质消费带来更持久的满足感。<br><br>
+              <strong>但体验消费也需要钱。</strong>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👥</div>
+            <div class="card-title">社会比较</div>
+            <div class="card-body">
+              社会比较对幸福感的影响约占20-30%。<br><br>
+              <strong>完全无视社会比较的人并不更幸福——他们可能只是脱离了社会网络。</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 17: Synthesis -->
+  <div class="slide" data-index="16">
+    <div class="slide-content">
+      <div class="slide-title">八、综合：框架的<span class="highlight">修正与深化</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="compare-row" style="margin-bottom: 1rem;">
+          <div class="compare-box old">
+            <div class="compare-label">原命题</div>
+            <div class="compare-text">
+              需求很少，是被制造的，应聚焦真正重要的事。
+            </div>
+          </div>
+          <div class="compare-box new">
+            <div class="compare-label">修正命题</div>
+            <div class="compare-text">
+              需求有真实边界，但这个边界比"2000卡路里"宽得多。社会确实在制造过剩需求，但完全拒绝也有代价。最务实的策略不是"少欲"，而是"有意识的选择"。
+            </div>
+          </div>
+        </div>
+        <div class="card-grid card-grid-7" style="font-size: 0.7rem;">
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">🏛️</div>
+            <div style="color: var(--accent); font-weight: 600;">社会</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">个体理性≠社会理性</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">🤔</div>
+            <div style="color: var(--accent); font-weight: 600;">哲学</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">"真实需求"是陷阱</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">📜</div>
+            <div style="color: var(--accent); font-weight: 600;">历史</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">过剩是历史特例</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">🎲</div>
+            <div style="color: var(--accent); font-weight: 600;">博弈</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">退出有真实代价</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">🧬</div>
+            <div style="color: var(--accent); font-weight: 600;">生物</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">欲望是进化遗产</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">🧠</div>
+            <div style="color: var(--accent); font-weight: 600;">认知</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">部分归因于个人</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 0.8rem;">
+            <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">📊</div>
+            <div style="color: var(--accent); font-weight: 600;">实证</div>
+            <div style="color: var(--text2); font-size: 0.65rem;">钱能买幸福（有限）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 18: Final Framework -->
+  <div class="slide" data-index="17">
+    <div class="slide-content center-content">
+      <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
+      <div class="slide-title" style="text-align: center; font-size: 2.2rem;">
+        一个<span class="highlight">更诚实</span>的框架
+      </div>
+      <div class="deco-line center"></div>
+      <div class="quote-block" style="text-align: center; max-width: 900px; font-size: 1.3rem; line-height: 1.8; border-left: none; border-top: 3px solid var(--accent); border-radius: 0.6rem;">
+        "我知道很多需求是被制造的，也知道完全拒绝有代价。<br>
+        我选择<strong>有意识地参与这个游戏</strong>——<br>
+        在某些维度上认真玩，在某些维度上放弃，<br>
+        在最重要的维度上深度投入。<br><br>
+        <span style="color: var(--accent);">我不骗自己说钱不重要，<br>也不骗自己说钱是一切。</span>"
+      </div>
+      <div style="margin-top: 1.2rem; color: var(--text2); font-size: 0.85rem; text-align: center;">
+        这个框架不如原来的简洁有力，但它更诚实。<br>
+        <strong style="color: var(--accent);">诚实的框架往往比漂亮的框架更有用——因为它经得起审视。</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 19: End -->
+  <div class="slide" data-index="18">
+    <div class="slide-content center-content">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🌅</div>
+      <div class="slide-title" style="text-align: center; font-size: 2.5rem;">
+        回到<span class="highlight">生活本身</span>
+      </div>
+      <div class="deco-line center"></div>
+      <div style="margin-top: 1rem; font-size: 1.1rem; color: var(--text2); text-align: center; max-width: 700px; line-height: 1.8;">
+        真正值得追问的不是"我够不够多"，<br>
+        而是<strong style="color: var(--accent);">"我是不是在用有限的时间，做真正重要的事"</strong>。<br><br>
+        而这个问题的答案，没有人能替你回答。<br>
+        它需要你用自己的生活去验证。
+      </div>
+      <div style="margin-top: 2rem; color: var(--text3); font-size: 0.7rem;">
+        2026年6月28日 · 晨间思考 · 立论→批判→修正
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-counter" id="counter">1 / 19</span>
+  <button class="nav-btn" id="nextBtn">→</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let isTransitioning = false;
+
+  const dotsContainer = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function update() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function goTo(index) {
+    if (isTransitioning || index === current || index < 0 || index >= total) return;
+    isTransitioning = true;
+    current = index;
+    update();
+    setTimeout(() => { isTransitioning = false; }, 600);
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goTo(total - 1);
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  });
+
+  // Mouse wheel
+  let wheelTimeout = false;
+  document.addEventListener('wheel', (e) => {
+    if (wheelTimeout) return;
+    wheelTimeout = true;
+    if (e.deltaY > 0) goTo(current + 1);
+    else goTo(current - 1);
+    setTimeout(() => { wheelTimeout = false; }, 800);
+  }, { passive: true });
+
+  update();
+})();
+</script>
+
+</body>
+</html>

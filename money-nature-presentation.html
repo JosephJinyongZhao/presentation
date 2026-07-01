@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金钱的本质：金融资产、法律虚构与人的异化</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #08080e;
+    --bg2: #10101a;
+    --bg3: #18182a;
+    --accent: #7ab8e8;
+    --accent2: #e8967a;
+    --accent3: #f0c040;
+    --text: #e8e6e0;
+    --text2: #9896a0;
+    --text3: #5a5868;
+    --border: #22223a;
+    --glow: rgba(122, 184, 232, 0.12);
+  }
+
+  html { font-size: clamp(16px, 2vw, 28px); }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  .slide-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+  .slide {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 5vh 6vw;
+    opacity: 0; transform: translateY(30px) scale(0.98);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none; will-change: transform, opacity;
+  }
+  .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .slide.exit { opacity: 0; transform: translateY(-30px) scale(0.98); }
+
+  .nav {
+    position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1.2rem; z-index: 100;
+    background: rgba(8,8,14,0.8); backdrop-filter: blur(12px);
+    padding: 0.6rem 1.5rem; border-radius: 2rem; border: 1px solid var(--border);
+  }
+  .nav-btn {
+    background: none; border: none; color: var(--text2); font-size: 1.4rem;
+    cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 0.4rem;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .nav-btn:hover { color: var(--accent); background: rgba(122,184,232,0.1); }
+  .nav-dots { display: flex; gap: 0.4rem; }
+  .nav-dot {
+    width: 0.5rem; height: 0.5rem; border-radius: 50%;
+    background: var(--text3); transition: all 0.3s; cursor: pointer; border: none; padding: 0;
+  }
+  .nav-dot.active { background: var(--accent); width: 1.2rem; border-radius: 0.25rem; }
+  .nav-counter { color: var(--text3); font-size: 0.7rem; font-weight: 400; letter-spacing: 0.05em; min-width: 3rem; text-align: center; }
+
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 200; transition: width 0.5s ease;
+  }
+
+  .slide-content { width: 100%; max-width: 1400px; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+
+  .slide-title {
+    font-size: 2.8rem; font-weight: 700; line-height: 1.3; margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+  .slide-title .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .slide-title .accent { color: var(--accent); }
+  .slide-title .accent2 { color: var(--accent2); }
+
+  .slide-subtitle { font-size: 1.1rem; color: var(--text2); font-weight: 300; margin-bottom: 1.5rem; line-height: 1.6; }
+
+  .slide-body { font-size: 1.05rem; line-height: 1.7; color: var(--text); max-width: 100%; }
+  .slide-body p { margin-bottom: 0.8rem; }
+  .slide-body strong { color: var(--accent); font-weight: 600; }
+  .slide-body em { color: var(--accent2); font-style: normal; font-weight: 500; }
+
+  .card-grid { display: grid; gap: 1rem; width: 100%; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 0.8rem;
+    padding: 1.2rem; transition: all 0.3s;
+  }
+  .card:hover { border-color: rgba(122,184,232,0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .card-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--accent); }
+  .card-body { font-size: 0.8rem; line-height: 1.5; color: var(--text2); }
+
+  .big-number { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 0.3rem; }
+  .big-number-label { font-size: 0.9rem; color: var(--text2); font-weight: 300; }
+
+  .slide-body ul, .slide-body ol { list-style: none; padding: 0; }
+  .slide-body li { padding: 0.5rem 0; padding-left: 1.5rem; position: relative; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .slide-body li:last-child { border-bottom: none; }
+  .slide-body li::before { content: '◆'; position: absolute; left: 0; color: var(--accent); font-size: 0.5rem; top: 0.85rem; }
+
+  .quote-block {
+    border-left: 3px solid var(--accent); padding: 1rem 1.5rem; margin: 1rem 0;
+    background: rgba(122,184,232,0.05); border-radius: 0 0.6rem 0.6rem 0;
+    font-size: 1.1rem; line-height: 1.6; font-weight: 400;
+  }
+  .quote-block .attribution { display: block; margin-top: 0.5rem; color: var(--text2); font-size: 0.8rem; font-weight: 300; }
+
+  .deco-line { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); margin: 0.8rem 0 1.2rem 0; border-radius: 2px; }
+  .deco-line.center { margin: 0.8rem auto 1.2rem auto; }
+
+  .tag {
+    display: inline-block; font-size: 0.65rem; font-weight: 500; padding: 0.2rem 0.6rem;
+    border-radius: 0.3rem; background: rgba(122,184,232,0.12); color: var(--accent);
+    border: 1px solid rgba(122,184,232,0.2); margin-right: 0.3rem; margin-bottom: 0.3rem;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
+  .two-col .col { min-width: 0; }
+
+  .center-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; }
+
+  /* Timeline / flow */
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%; flex-wrap: wrap; }
+  .flow-item {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 0.6rem;
+    padding: 0.7rem 1rem; text-align: center; flex: 1; min-width: 100px;
+  }
+  .flow-item .flow-num { font-size: 0.7rem; color: var(--accent); font-weight: 600; margin-bottom: 0.2rem; }
+  .flow-item .flow-text { font-size: 0.8rem; line-height: 1.3; }
+  .flow-arrow { color: var(--text3); font-size: 1.2rem; flex-shrink: 0; }
+
+  /* Alienation cards */
+  .alien-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 0.8rem;
+    padding: 1rem; margin-bottom: 0.6rem;
+  }
+  .alien-card .alien-num {
+    display: inline-block; font-size: 0.7rem; font-weight: 700; color: var(--bg);
+    background: var(--accent2); padding: 0.15rem 0.6rem; border-radius: 0.3rem; margin-bottom: 0.3rem;
+  }
+  .alien-card .alien-title { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+  .alien-card .alien-body { font-size: 0.78rem; line-height: 1.5; color: var(--text2); }
+
+  /* Three layers */
+  .layer-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 0.8rem;
+    padding: 1rem; margin-bottom: 0.6rem;
+  }
+  .layer-card .layer-label {
+    display: inline-block; font-size: 0.7rem; font-weight: 600; color: var(--bg);
+    padding: 0.15rem 0.6rem; border-radius: 0.3rem; margin-bottom: 0.3rem;
+  }
+  .layer-card .layer-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+  .layer-card .layer-body { font-size: 0.78rem; line-height: 1.5; color: var(--text2); }
+
+  /* Comparison */
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
+  .compare-box { padding: 1.2rem; border-radius: 0.8rem; border: 1px solid var(--border); }
+  .compare-box.old { background: rgba(232,150,122,0.08); border-color: rgba(232,150,122,0.2); }
+  .compare-box.new { background: rgba(122,184,232,0.08); border-color: rgba(122,184,232,0.2); }
+  .compare-box .compare-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .compare-box.old .compare-label { color: var(--accent2); }
+  .compare-box.new .compare-label { color: var(--accent); }
+  .compare-box .compare-text { font-size: 0.9rem; line-height: 1.5; color: var(--text); }
+
+  @media (max-width: 768px) {
+    .slide { padding: 3vh 4vw; }
+    .slide-title { font-size: 1.8rem; }
+    .slide-body { font-size: 0.9rem; }
+    .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .compare-row { grid-template-columns: 1fr; }
+    .flow-row { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .big-number { font-size: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="slide-container" id="slides">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" data-index="0">
+    <div class="slide-content center-content">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">💰</div>
+      <div class="slide-title" style="font-size: 3.2rem; text-align: center;">
+        金钱的本质<br>
+        <span class="highlight">金融资产 · 法律虚构 · 人的异化</span>
+      </div>
+      <div class="deco-line center"></div>
+      <div class="slide-subtitle" style="text-align: center; max-width: 700px;">
+        一张纸（或一串数字）为什么能换取真实的面包、房屋和医疗服务？<br>
+        答案比表面复杂得多。
+      </div>
+      <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+        <span class="tag">索取权</span>
+        <span class="tag">法律决定</span>
+        <span class="tag">预期折现</span>
+        <span class="tag">行为塑造</span>
+        <span class="tag">四种异化</span>
+      </div>
+      <div style="margin-top: 2rem; color: var(--text3); font-size: 0.7rem;">
+        2026年6月28日 · 晨间思考
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: The Simple Question -->
+  <div class="slide" data-index="1">
+    <div class="slide-content center-content">
+      <div class="slide-title" style="text-align: center;">
+        起点：一个<span class="highlight">看似简单</span>的问题
+      </div>
+      <div class="deco-line center"></div>
+      <div class="quote-block" style="text-align: center; max-width: 800px; font-size: 1.3rem; border-left: none; border-top: 3px solid var(--accent); border-radius: 0.6rem;">
+        金钱是什么？<br><br>
+        我们每天都在用它，为它焦虑，为它奔波，用它衡量价值、计算得失。<br>
+        但停下来想一想——<br><br>
+        <strong style="color: var(--accent); font-size: 1.5rem;">一张纸（或一串数字）<br>为什么能换取真实的面包、房屋和医疗服务？</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Money as Claim -->
+  <div class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="slide-title">一、金钱作为<span class="highlight">金融资产</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3" style="margin-bottom: 1rem;">
+          <div class="card">
+            <div class="card-icon">📄</div>
+            <div class="card-title">股票</div>
+            <div class="card-body">
+              对公司<strong>剩余价值</strong>的索取权。拥有企业未来利润的一部分——但不是确定的，而是"剩余"的。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📜</div>
+            <div class="card-title">债券</div>
+            <div class="card-body">
+              对<strong>固定利息和本金</strong>的索取权。比股票更确定，但仍然依赖发行方的偿付能力。
+            </div>
+          </div>
+          <div class="card" style="border-color: rgba(122,184,232,0.4);">
+            <div class="card-icon">💵</div>
+            <div class="card-title" style="color: var(--accent);">货币</div>
+            <div class="card-body">
+              对<strong>当下</strong>商品和服务的索取权。它是最流动、最即时的金融资产。<br><br>
+              <em>金钱是唯一一种"当下的索取权"。</em>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; color: var(--text2); font-size: 0.85rem;">
+          所有金融资产的共同本质：<strong style="color: var(--accent);">都是某种法律规定的索取权（Claim）</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Legal Determinism -->
+  <div class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="slide-title">法律决定论：<span class="highlight">金融资产都是法律规范</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="two-col" style="margin-bottom: 1rem;">
+          <div class="col">
+            <div class="card" style="height: 100%;">
+              <div class="card-icon">⚖️</div>
+              <div class="card-title">核心洞察</div>
+              <div class="card-body">
+                股票不是一张纸，债券不是一张契约——它们是<strong>法律体系创造的权利</strong>。<br><br>
+                没有公司法，股票毫无意义。<br>
+                没有合同法，债券只是废纸。<br>
+                没有央行和商业银行体系，货币只是金属片或印刷品。<br><br>
+                <strong style="color: var(--accent);">金融资产的价值，100%依赖于法律体系的背书和强制执行。</strong>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card" style="height: 100%; border-color: rgba(122,184,232,0.3);">
+              <div class="card-icon">💭</div>
+              <div class="card-title">这意味着什么？</div>
+              <div class="card-body">
+                金融资产的价值本质上是一种<strong>集体信念</strong>——我们共同相信法律会保护这些权利，所以它们有价值。<br><br>
+                <em style="color: var(--accent2);">如果法律体系崩溃，所有金融资产同时归零。</em><br><br>
+                <div style="margin-top: 0.8rem; padding: 0.6rem; background: rgba(122,184,232,0.08); border-radius: 0.4rem; font-size: 0.85rem;">
+                  <strong>金钱的独特地位：</strong>索取权在<strong style="color: var(--accent);">当下</strong>可行使。你手里的100元，现在就能去换东西。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-item"><div class="flow-num">金钱</div><div class="flow-text">当下可行使</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-num">债券</div><div class="flow-text">未来某时点</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-num">股票</div><div class="flow-text">不确定的未来</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-num">期货</div><div class="flow-text">特定未来时点</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Finance = Future to Present -->
+  <div class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="slide-title">二、金融的本质：<span class="highlight">把未来的过剩预期化到当下</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3" style="margin-bottom: 1rem;">
+          <div class="card">
+            <div class="card-icon">🔄</div>
+            <div class="card-title">跨期资源配置</div>
+            <div class="card-body">
+              金融最根本的功能：<strong>跨期资源配置</strong>。<br><br>
+              你现在有剩余（储蓄），但未来可能需要更多。你现在有需求（投资），但当前资金不足。金融工具让这两者匹配。
+            </div>
+          </div>
+          <div class="card" style="border-color: rgba(122,184,232,0.3);">
+            <div class="card-icon">🔮</div>
+            <div class="card-title">预期与想象</div>
+            <div class="card-body">
+              <strong>金融资产的价值很大程度上建立在预期之上，而非已经实现的产出之上。</strong><br><br>
+              初创公司估值 ≠ 现在利润，而是<em>人们相信它未来能赚多少钱</em>。<br>
+              股票波动 ≠ 基本面变了，而是<em>人们的预期变了</em>。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏠</div>
+            <div class="card-title">财富感受</div>
+            <div class="card-body">
+              当你的股票涨了，你感觉自己"更富了"——即使还没卖出。<br><br>
+              这种<strong>虚拟财富感</strong>改变行为：更愿意消费、冒险、投资。<br><br>
+              <em>资产价格下跌 → 财富感受消失 → 消费收缩 → 经济螺旋下行</em>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 1rem; color: var(--accent); font-weight: 500; padding: 0.6rem; border: 1px dashed var(--border); border-radius: 0.6rem;">
+          「金融资产的本质，是把'未来可能有的东西'折现成'现在可以交易的东西'」
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: How Money Shapes Behavior -->
+  <div class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="slide-title">三、金钱对人的<span class="highlight">行为塑造</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3">
+          <div class="card">
+            <div class="card-icon">📊</div>
+            <div class="card-title">量化一切的冲动</div>
+            <div class="card-body">
+              金钱把一切不可量化的东西，变成了可量化的数字。<br><br>
+              ⏱️ 你的时间值多少钱（时薪）<br>
+              🧠 你的能力值多少钱（薪酬）<br>
+              💡 你的创意值多少钱（估值）<br>
+              🤝 你的关系值多少钱（人脉变现）<br><br>
+              <strong>思维殖民：</strong>人们开始用金钱尺度衡量一切，包括那些本不该用金钱衡量的事。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⏳</div>
+            <div class="card-title">延迟满足的强化</div>
+            <div class="card-body">
+              金钱鼓励<strong>延迟满足</strong>：工作→获得金钱→不立即花掉→储蓄或投资→期待未来更大满足。<br><br>
+              这是现代经济的基础——没有延迟满足，就没有资本积累，没有增长。<br><br>
+              <em style="color: var(--accent2);">但它也创造了一种永久的匮乏感：你总是在"为未来存钱"，很少真正享受当下。</em>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏆</div>
+            <div class="card-title">社会竞争的中介化</div>
+            <div class="card-body">
+              金钱把社会竞争从"直接的力量对抗"变成了"间接的财富比较"：<br><br>
+              ⚔️ 原始社会：武力强 → 地位高<br>
+              👑 封建社会：血统高贵 → 地位高<br>
+              💰 现代社会：钱多 → 地位高<br><br>
+              <strong>通用度量衡</strong>——但标准是单一的：数字大小。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Alienation Intro -->
+  <div class="slide" data-index="6">
+    <div class="slide-content center-content">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🔄</div>
+      <div class="slide-title" style="text-align: center;">
+        四、人的异化：<br><span class="highlight">金钱如何改变了我们</span>
+      </div>
+      <div class="deco-line center"></div>
+      <div class="slide-subtitle" style="text-align: center; max-width: 600px;">
+        金钱不是中性的交换媒介——<br>
+        它改变着它所触及的一切关系的性质。
+      </div>
+      <div style="margin-top: 1.2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+        <span class="tag">手段变目的</span>
+        <span class="tag">虚拟替代真实</span>
+        <span class="tag">时间商品化</span>
+        <span class="tag">关系货币化</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Alienation 1-2 -->
+  <div class="slide" data-index="7">
+    <div class="slide-content">
+      <div class="slide-title">四种异化 <span class="highlight">(1-2)</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="two-col">
+          <div class="col">
+            <div class="alien-card" style="border-color: rgba(232,150,122,0.3);">
+              <div class="alien-num">异化一</div>
+              <div class="alien-title">手段变成了目的</div>
+              <div class="alien-body">
+                金钱本应是<strong>手段</strong>——帮你获取真正需要的东西。但在现代社会中，金钱越来越成为<strong>目的本身</strong>。<br><br>
+                ❌ 追求的不是"更好的生活"，而是"更多的钱"<br>
+                ❌ 衡量成功不是"我过得怎么样"，而是"我赚了多少"<br>
+                ❌ 做选择不是基于"什么让我快乐"，而是"什么更赚钱"<br><br>
+                <em style="color: var(--accent2);">这是最根本的异化。</em>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="alien-card" style="border-color: rgba(122,184,232,0.3);">
+              <div class="alien-num" style="background: var(--accent);">异化二</div>
+              <div class="alien-title">虚拟价值替代真实价值</div>
+              <div class="alien-body">
+                当预期脱离现实太远，就会产生泡沫。泡沫破裂时，虚拟价值消失，但真实价值并没有增加。<br><br>
+                📈 炒股比创业更吸引人——来钱快<br>
+                🏠 炒房比生产更吸引人——确定性高<br>
+                🎲 投机比投资更吸引人——刺激<br><br>
+                <strong>自我指涉的循环：</strong>钱在金融体系内部流转，很少进入实体经济。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Alienation 3-4 -->
+  <div class="slide" data-index="8">
+    <div class="slide-content">
+      <div class="slide-title">四种异化 <span class="highlight">(3-4)</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="two-col">
+          <div class="col">
+            <div class="alien-card" style="border-color: rgba(240,192,64,0.3);">
+              <div class="alien-num" style="background: var(--accent3); color: var(--bg);">异化三</div>
+              <div class="alien-title">时间的异化</div>
+              <div class="alien-body">
+                金钱把时间变成了可交易的商品。<br><br>
+                "时间就是金钱"——这句话看似合理，实则扭曲。<br><br>
+                时间被等价于时薪，于是人们开始计算"我花一小时做这件事，值不值这个钱"。<br><br>
+                但时间不仅是生产力工具，它还是<strong>体验的载体、关系的土壤、思考的空间</strong>。<br><br>
+                <em style="color: var(--accent3);">当你把所有时间都换算成金钱时，你就失去了那些"不产生金钱但产生意义"的时间。</em>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="alien-card" style="border-color: rgba(232,150,122,0.3);">
+              <div class="alien-num">异化四</div>
+              <div class="alien-title">关系的异化</div>
+              <div class="alien-body">
+                金钱介入人际关系的方式非常微妙：<br><br>
+                🤝 朋友之间借钱，关系就变了<br>
+                💑 婚姻中经济地位不对等，权力结构就变了<br>
+                👨‍👩‍👦 亲子关系中用金钱奖励行为，动机就变了<br><br>
+                <strong style="color: var(--accent2);">金钱不是中性的交换媒介——它改变着它所触及的一切关系的性质。</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Critical Examination -->
+  <div class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="slide-title">五、批判性审视：<span class="highlight">这是必然的吗？</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="two-col" style="margin-bottom: 1rem;">
+          <div class="col">
+            <div class="card" style="border-color: rgba(122,184,232,0.3);">
+              <div class="card-icon">🛡️</div>
+              <div class="card-title">金钱不是原罪</div>
+              <div class="card-body">
+                作为一种交换媒介和价值储藏手段，金钱极大地扩展了人类合作的规模和效率。<br><br>
+                没有金钱，你只能和熟人交易。有了金钱，你可以和地球另一端的人交易。<br><br>
+                <strong>这是人类文明进步的重要基石。</strong>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card" style="border-color: rgba(232,150,122,0.3);">
+              <div class="card-icon">⚠️</div>
+              <div class="card-title" style="color: var(--accent2);">问题出在"金钱唯一论"</div>
+              <div class="card-body">
+                问题不在于金钱的存在，而在于<strong>金钱成为唯一的价值尺度</strong>。<br><br>
+                ❌ 社会只奖励赚钱能力，不奖励其他价值创造<br>
+                ❌ 人们只用"值多少钱"来衡量一切选择<br>
+                ❌ "有没有钱"成为判断成功的唯一标准<br><br>
+                <strong style="color: var(--accent2);">单一尺度必然导致异化——因为它抹杀了人类价值的多样性。</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Possible Ways Out -->
+  <div class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="slide-title">可能的<span class="highlight">出路</span></div>
+      <div class="deco-line"></div>
+      <div class="slide-body">
+        <div class="card-grid card-grid-3">
+          <div class="card" style="border-color: rgba(122,184,232,0.3);">
+            <div class="card-icon">🧘</div>
+            <div class="card-title">个人层面的清醒</div>
+            <div class="card-body">
+              意识到金钱是手段而非目的。<br><br>
+              定期问自己：<strong style="color: var(--accent);">如果钱不是问题，我会做什么？</strong><br><br>
+              这个问题的答案，往往比"怎么赚更多钱"更接近真实需求。
+            </div>
+          </div>
+          <div class="card" style="border-color: rgba(240,192,64,0.3);">
+            <div class="card-icon            <div class="card-icon">🌈</div>
+            <div class="card-title" style="color: var(--accent3);">多元价值体系的建立</div>
+            <div class="card-body">
+              在自己的生活圈子里，建立多元的评价体系。<br><br>
+              不只是"谁赚得多"，还有"谁活得更通透""谁对别人更有帮助""谁更快乐"。<br><br>
+              <strong style="color: var(--accent3);">这些非金钱的维度，需要被有意识地看见和肯定。</strong>
+            </div>
+          </div>
+          <div class="card" style="border-color: rgba(232,150,122,0.3);">
+            <div class="card-icon">🏛️</div>
+            <div class="card-title" style="color: var(--accent2);">制度层面的反思</div>
+            <div class="card-body">
+              金融体系的设计是否过于偏向"虚拟价值创造"而非"真实价值创造"？<br><br>
+              税收、监管、货币政策是否在无意中鼓励投机而非生产？<br><br>
+              <strong style="color: var(--accent2);">这些是更深层的问题，需要集体智慧去探索。</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Back to Start -->
+  <div class="slide" data-index="11">
+    <div class="slide-content center-content">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+      <div class="slide-title" style="text-align: center;">
+        六、回到<span class="highlight">起点</span>
+      </div>
+      <div class="deco-line center"></div>
+      <div class="quote-block" style="text-align: center; max-width: 900px; font-size: 1.1rem; line-height: 1.8; border-left: none; border-top: 3px solid var(--accent); border-radius: 0.6rem;">
+        金钱是一种法律决定的索取权，是未来价值的预期折现，是经济效率的重要工具。<br><br>
+        但它也是异化的来源——<br>
+        当<strong>手段变成目的</strong>，当<strong>虚拟价值替代真实价值</strong>，当<strong>单一尺度抹杀多元可能</strong>。
+      </div>
+      <div style="margin-top: 1.5rem; font-size: 1.4rem; font-weight: 700; text-align: center; max-width: 800px; line-height: 1.5; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        「真正的问题不是'要不要金钱'，<br>而是'如何在承认金钱必要性的同时，不被它完全定义'」
+      </div>
+      <div style="margin-top: 1.2rem; color: var(--text2); font-size: 0.85rem; text-align: center; max-width: 600px;">
+        这个问题的答案，不在经济学教科书里，<br>而在每个人的生活实践中——<br>
+        你如何花钱、如何赚钱、<strong style="color: var(--accent);">如何在不赚钱的时候定义自己的价值</strong>。
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: End -->
+  <div class="slide" data-index="12">
+    <div class="slide-content center-content">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🌊</div>
+      <div class="slide-title" style="text-align: center; font-size: 2.5rem;">
+        在符号与真实之间<br><span class="highlight">保持清醒</span>
+      </div>
+      <div class="deco-line center"></div>
+      <div style="margin-top: 1rem; font-size: 1.1rem; color: var(--text2); text-align: center; max-width: 700px; line-height: 1.8;">
+        金钱是一个强大的工具，但它只是一个工具。<br><br>
+        它衡量<strong style="color: var(--accent);">交换价值</strong>，但衡量不了<strong style="color: var(--accent2);">生命价值</strong>。<br>
+        它记录<strong style="color: var(--accent);">过去的积累</strong>，但定义不了<strong style="color: var(--accent2);">未来的意义</strong>。<br>
+        它能买<strong style="color: var(--accent);">舒适</strong>，但买不了<strong style="color: var(--accent2);">满足</strong>。
+      </div>
+      <div style="margin-top: 2rem; color: var(--text3); font-size: 0.7rem;">
+        2026年6月28日 · 晨间思考
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-counter" id="counter">1 / 13</span>
+  <button class="nav-btn" id="nextBtn">→</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let isTransitioning = false;
+
+  const dotsContainer = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function update() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function goTo(index) {
+    if (isTransitioning || index === current || index < 0 || index >= total) return;
+    isTransitioning = true;
+    current = index;
+    update();
+    setTimeout(() => { isTransitioning = false; }, 600);
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goTo(total - 1);
+    }
+  });
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  });
+
+  let wheelTimeout = false;
+  document.addEventListener('wheel', (e) => {
+    if (wheelTimeout) return;
+    wheelTimeout = true;
+    if (e.deltaY > 0) goTo(current + 1);
+    else goTo(current - 1);
+    setTimeout(() => { wheelTimeout = false; }, 800);
+  }, { passive: true });
+
+  update();
+})();
+</script>
+
+</body>
+</html>

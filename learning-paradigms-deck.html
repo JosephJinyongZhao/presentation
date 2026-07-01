@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习的三种基本范式</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a28;--text:#e8e8f0;--text-dim:#8888a0;--text-bright:#fff;--accent1:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--accent4:#fdcb6e;--border:rgba(255,255,255,.06);--glow1:rgba(108,92,231,.3);--glow2:rgba(0,206,201,.3);--glow3:rgba(253,121,168,.3)}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:5vh 6vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}
+.slide-content{max-width:1100px;width:100%;margin:0 auto}
+.slide-title{font-family:'Noto Serif SC',serif;font-size:clamp(2rem,4vw,3.6rem);font-weight:900;line-height:1.3;margin-bottom:.5em;background:linear-gradient(135deg,var(--text-bright) 0%,var(--accent1) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-subtitle{font-size:clamp(1rem,1.6vw,1.4rem);color:var(--text-dim);font-weight:300;line-height:1.6;margin-bottom:2rem}
+.slide-label{display:inline-block;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);border:1px solid rgba(0,206,201,.3);padding:.3em 1em;border-radius:100px;margin-bottom:1.5rem;font-weight:500}
+.nav-bar{position:fixed;bottom:2.5vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1rem;z-index:100;background:rgba(10,10,15,.8);backdrop-filter:blur(12px);padding:.6rem 1.5rem;border-radius:100px;border:1px solid var(--border)}
+.nav-btn{background:0;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;padding:.3rem .6rem;transition:color .3s;font-family:inherit}
+.nav-btn:hover{color:var(--text-bright)}
+.nav-dots{display:flex;gap:.4rem}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dim);opacity:.3;transition:all .3s;cursor:pointer}
+.nav-dot.active{opacity:1;background:var(--accent1);box-shadow:0 0 12px var(--glow1);width:24px;border-radius:4px}
+.nav-counter{font-size:.75rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;letter-spacing:.05em;min-width:4em;text-align:center}
+.paradigm-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:2rem 0}
+.paradigm-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden}
+.paradigm-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px}
+.paradigm-card:nth-child(1)::before{background:var(--accent1)}
+.paradigm-card:nth-child(2)::before{background:var(--accent2)}
+.paradigm-card:nth-child(3)::before{background:var(--accent3)}
+.paradigm-card:hover{transform:translateY(-4px)}
+.paradigm-card:nth-child(1):hover{box-shadow:0 8px 32px var(--glow1)}
+.paradigm-card:nth-child(2):hover{box-shadow:0 8px 32px var(--glow2)}
+.paradigm-card:nth-child(3):hover{box-shadow:0 8px 32px var(--glow3)}
+.paradigm-icon{font-size:2.5rem;margin-bottom:1rem;display:block}
+.paradigm-name{font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:700;margin-bottom:.5rem}
+.paradigm-card:nth-child(1) .paradigm-name{color:var(--accent1)}
+.paradigm-card:nth-child(2) .paradigm-name{color:var(--accent2)}
+.paradigm-card:nth-child(3) .paradigm-name{color:var(--accent3)}
+.paradigm-desc{font-size:.85rem;color:var(--text-dim);line-height:1.6}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:1.5rem 0}
+.col-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem}
+.col-box h4{font-size:.95rem;margin-bottom:.8rem;color:var(--accent2)}
+.col-box ul{list-style:none;font-size:.82rem;line-height:1.7;color:var(--text-dim)}
+.col-box ul li::before{content:'→ ';color:var(--accent2);opacity:.6}
+.comp-grid{display:grid;grid-template-columns:140px repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:1.5rem 0;font-size:.8rem}
+.comp-cell{padding:.8rem 1rem;background:var(--bg2);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.4}
+.comp-cell.header{font-weight:700;background:var(--bg3);color:var(--text-bright)}
+.comp-cell.label{font-weight:500;color:var(--text-dim);justify-content:flex-start;text-align:left}
+.comp-cell.c1{color:var(--accent1)}
+.comp-cell.c2{color:var(--accent2)}
+.comp-cell.c3{color:var(--accent3)}
+.callout{background:var(--bg2);border-left:3px solid var(--accent1);border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1.5rem 0;font-size:.9rem;line-height:1.6}
+.callout.warn{border-left-color:var(--accent4)}
+.callout.danger{border-left-color:var(--accent3)}
+.callout.good{border-left-color:var(--accent2)}
+.tag{display:inline-block;padding:.2em .8em;border-radius:100px;font-size:.7rem;font-weight:500;margin:.15em}
+.tag.t1{background:rgba(108,92,231,.15);color:var(--accent1)}
+.tag.t2{background:rgba(0,206,201,.15);color:var(--accent2)}
+.tag.t3{background:rgba(253,121,168,.15);color:var(--accent3)}
+.flow-row{display:flex;align-items:center;justify-content:center;gap:.8rem;flex-wrap:wrap;margin:1.5rem 0}
+.flow-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.6rem 1.2rem;font-size:.8rem;color:var(--text-dim);text-align:center}
+.flow-item.highlight{border-color:var(--accent1);color:var(--accent1)}
+.flow-arrow{color:var(--text-dim);opacity:.4;font-size:1.2rem}
+.sandwich{display:flex;flex-direction:column;align-items:center;gap:.4rem;margin:1.5rem auto;max-width:500px}
+.sand-layer{width:100%;padding:.7rem 1rem;border-radius:10px;text-align:center;font-size:.85rem;font-weight:500;border:1px solid}
+.sand-layer.l1{background:rgba(253,121,168,.1);border-color:rgba(253,121,168,.3);color:var(--accent3)}
+.sand-layer.l2{background:rgba(0,206,201,.1);border-color:rgba(0,206,201,.3);color:var(--accent2)}
+.sand-layer.l3{background:rgba(108,92,231,.1);border-color:rgba(108,92,231,.3);color:var(--accent1)}
+.sand-layer.l4{background:rgba(253,203,110,.1);border-color:rgba(253,203,110,.3);color:var(--accent4)}
+.sand-arrow{color:var(--text-dim);opacity:.3;font-size:.8rem}
+.shift-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0}
+.shift-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;transition:transform .3s}
+.shift-card:hover{transform:translateY(-3px)}
+.shift-card .sc-icon{font-size:2rem;margin-bottom:.5rem}
+.shift-card .sc-before{font-size:.75rem;color:var(--text-dim);text-decoration:line-through;opacity:.5;margin-bottom:.3rem}
+.shift-card .sc-after{font-size:.9rem;font-weight:600;color:var(--accent2);line-height:1.4}
+.shift-card .sc-arrow{color:var(--accent4);font-size:1.2rem;margin:.3rem 0}
+.os-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin:1.5rem 0}
+.os-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem .8rem;text-align:center;font-size:.75rem;line-height:1.4;transition:transform .3s}
+.os-item:hover{transform:translateY(-3px)}
+.os-item .os-icon{font-size:1.5rem;margin-bottom:.4rem;display:block}
+.os-item .os-label{color:var(--text-bright);font-weight:500}
+.os-item .os-desc{color:var(--text-dim);font-size:.65rem;margin-top:.3rem}
+.origin-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;margin:1.5rem 0;position:relative}
+.origin-box::before{content:'"';position:absolute;top:-10px;left:20px;font-size:4rem;color:var(--accent1);opacity:.3;font-family:serif;line-height:1}
+.origin-box p{font-size:.95rem;line-height:1.7;color:var(--text-dim)}
+.origin-box .speaker{margin-top:1rem;font-size:.8rem;color:var(--accent2)}
+.slide.title-slide{background:radial-gradient(ellipse at 30% 20%,rgba(108,92,231,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(0,206,201,.06) 0%,transparent 50%),var(--bg)}
+.title-slide .main-title{font-family:'Noto Serif SC',serif;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:900;line-height:1.2;text-align:center;background:linear-gradient(135deg,#fff 0%,var(--accent1) 40%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem}
+.title-slide .sub-title{font-size:clamp(1rem,1.8vw,1.5rem);color:var(--text-dim);text-align:center;font-weight:300;max-width:700px;line-height:1.6}
+.title-slide .meta{margin-top:2rem;font-size:.8rem;color:var(--text-dim);opacity:.5;text-align:center}
+.title-slide .three-badges{display:flex;gap:1rem;justify-content:center;margin-top:2.5rem}
+.badge{padding:.5rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:500;border:1px solid;opacity:.8}
+.badge.b1{border-color:var(--accent1);color:var(--accent1)}
+.badge.b2{border-color:var(--accent2);color:var(--accent2)}
+.badge.b3{border-color:var(--accent3);color:var(--accent3)}
+@media(max-width:768px){.paradigm-cards,.shift-cards{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.comp-grid{font-size:.65rem;grid-template-columns:90px repeat(3,1fr)}.comp-cell{padding:.4rem .5rem}.os-grid{grid-template-columns:repeat(3,1fr)}.slide{padding:3vh 4vw}.three-badges{flex-direction:column;align-items:center}}
+.slide::-webkit-scrollbar{width:4px}
+.slide::-webkit-scrollbar-track{background:0 0}
+.slide::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .slide-content>*{animation:fadeUp .5s ease forwards;opacity:0}
+.slide.active .slide-content>:nth-child(1){animation-delay:.05s}
+.slide.active .slide-content>:nth-child(2){animation-delay:.1s}
+.slide.active .slide-content>:nth-child(3){animation-delay:.15s}
+.slide.active .slide-content>:nth-child(4){animation-delay:.2s}
+.slide.active .slide-content>:nth-child(5){animation-delay:.25s}
+.slide.active .slide-content>:nth-child(6){animation-delay:.3s}
+.kbd-hint{position:fixed;bottom:8vh;right:2vw;font-size:.65rem;color:var(--text-dim);opacity:.3;z-index:50;font-family:'JetBrains Mono',monospace;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S0: Title -->
+<div class="slide title-slide active" data-index="0">
+<div class="slide-content" style="text-align:center">
+<div class="main-title">学习的三种基本范式</div>
+<div class="sub-title">尝试 · 模仿 · 语言指导<br>机制、整合与AI时代的范式迁移</div>
+<div class="three-badges">
+<span class="badge b1">🧪 尝试与试错</span>
+<span class="badge b2">👁️ 模仿与观察</span>
+<span class="badge b3">💬 语言指导</span>
+</div>
+<div class="meta">2026.06.22 · 赵锦勇 · 基于与小鱼的晨间对话</div>
+</div>
+</div>
+
+<!-- S1: Origin -->
+<div class="slide" data-index="1">
+<div class="slide-content">
+<span class="slide-label">🌱 起点</span>
+<div class="slide-title">从一段晨间对话开始</div>
+<div class="origin-box">
+<p>"学习就是课本和做作业。"——小鱼</p>
+<p style="margin-top:1rem">今天早上我问小鱼"学习是什么"，他的回答让我意识到：<strong>学校只是学习的一种组织形式，不是学习的全部。</strong> 学校体系过度依赖语言指导，而严重低估了尝试和模仿的价值。</p>
+<p style="margin-top:1rem">小鱼自己说出了两种方式：<span class="tag t3">别人教（语言指导）</span> 和 <span class="tag t2">模仿</span>。我补充了第三种：<span class="tag t1">去尝试、去犯错</span>。</p>
+<div class="speaker">—— 赵锦勇 · 2026.06.22 晨</div>
+</div>
+<div class="callout warn"><span class="co-icon">⚠️</span> 当"学习"被窄化为"听讲+做题"，尝试和模仿就被系统性地边缘化了。这是现代教育最大的盲区。</div>
+</div>
+</div>
+
+<!-- S2: Three paradigms -->
+<div class="slide" data-index="2">
+<div class="slide-content">
+<span class="slide-label">📐 框架</span>
+<div class="slide-title">三种学习范式</div>
+<div class="slide-subtitle">每一种都有独立的生物学基础和认知机制</div>
+<div class="paradigm-cards">
+<div class="paradigm-card">
+<span class="paradigm-icon">🧪</span>
+<div class="paradigm-name">尝试与试错</div>
+<div class="paradigm-desc">行动→反馈→调整。最古老的学习机制，所有动物共有。产生内隐体感知识，深度最高但成本最高。</div>
+<div style="margin-top:.8rem"><span class="tag t1">多巴胺预期误差</span></div>
+</div>
+<div class="paradigm-card">
+<span class="paradigm-icon">👁️</span>
+<div class="paradigm-name">模仿与观察</div>
+<div class="paradigm-desc">通过观察他人行为及其后果学习。灵长类共有，效率最高、风险最低，但有失真风险。</div>
+<div style="margin-top:.8rem"><span class="tag t2">镜像神经元系统</span></div>
+</div>
+<div class="paradigm-card">
+<span class="paradigm-icon">💬</span>
+<div class="paradigm-name">语言指导</div>
+<div class="paradigm-desc">通过符号系统传递抽象知识。人类独有，传递效率最高但深度最低，信息损耗最大。</div>
+<div style="margin-top:.8rem"><span class="tag t3">语言系统 + 前额叶</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S3: Trial & Error -->
+<div class="slide" data-index="3">
+<div class="slide-content">
+<span class="slide-label" style="border-color:rgba(108,92,231,.3);color:var(--accent1)">🧪 范式一</span>
+<div class="slide-title">尝试与试错</div>
+<div class="two-col">
+<div class="col-box">
+<h4>🔬 生物学机制</h4>
+<ul>
+<li><strong>多巴胺预期误差</strong>：实际结果与预期的差异驱动学习</li>
+<li>出现在所有脊椎动物中，比语言系统古老数亿年</li>
+<li>产生"体感知识"——无法用语言表达的深层理解</li>
+</ul>
+</div>
+<div class="col-box">
+<h4>📊 效果特征</h4>
+<ul>
+<li><strong>深度最高</strong>：内隐、体感、不可替代</li>
+<li><strong>效率最低</strong>：需要大量试错，成本高</li>
+<li><strong>记忆最持久</strong>：多感官+情感+行动综合编码</li>
+<li><strong>不可完全替代</strong>：有些知识只能通过试错获得</li>
+</ul>
+</div>
+</div>
+<div class="callout good"><span class="co-icon">💡</span> 典型场景：学骑车、学游泳、创业、谈判、艺术创作。波兰尼："我们知道的比我们能说出来的多得多。"</div>
+</div>
+</div>
+
+<!-- S4: Imitation -->
+<div class="slide" data-index="4">
+<div class="slide-content">
+<span class="slide-label" style="border-color:rgba(0,206,201,.3);color:var(--accent2)">👁️ 范式二</span>
+<div class="slide-title">模仿与观察</div>
+<div class="two-col">
+<div class="col-box">
+<h4>🔬 生物学机制</h4>
+<ul>
+<li><strong>镜像神经元</strong>：观察他人做某事时，大脑中做同一件事的区域被激活</li>
+<li>班杜拉社会学习理论：观察学习不需要直接强化</li>
+<li>灵长类共有，进化层级介于试错和语言之间</li>
+</ul>
+</div>
+<div class="col-box">
+<h4>📊 三种模仿层次</h4>
+<ul>
+<li><strong>复制</strong>：照搬动作（跟着视频学做菜）</li>
+<li><strong>理解</strong>：理解背后的原理（看高手下棋）</li>
+<li><strong>内化</strong>：变成自己的本能（跟大师久了风格自然融入）</li>
+</ul>
+</div>
+</div>
+<div class="callout"><span class="co-icon">💡</span> 效率最高、风险最低——不需要亲自试错就能获取经验。但观察者可能误解被观察者的策略，存在失真风险。</div>
+</div>
+</div>
+
+<!-- S5: Language -->
+<div class="slide" data-index="5">
+<div class="slide-content">
+<span class="slide-label" style="border-color:rgba(253,121,168,.3);color:var(--accent3)">💬 范式三</span>
+<div class="slide-title">语言指导</div>
+<div class="two-col">
+<div class="col-box">
+<h4>🔬 生物学机制</h4>
+<ul>
+<li>布罗卡区 + 韦尼克区 + 前额叶皮层（抽象推理）</li>
+<li><strong>人类独有</strong>——没有其他动物能通过语言传递抽象知识</li>
+<li>知识的可编码性和可传递性——一人可教千万人</li>
+</ul>
+</div>
+<div class="col-box">
+<h4>📊 效果特征</h4>
+<ul>
+<li><strong>效率极高</strong>：一节课传递十年经验</li>
+<li><strong>深度最低</strong>：语言是"知识的压缩包"，解压必有损失</li>
+<li><strong>最易失真</strong>：编码解码过程中的信息损耗最大</li>
+<li><strong>最依赖信任</strong>：学习者无法通过自身验证</li>
+</ul>
+</div>
+</div>
+<div class="callout warn"><span class="co-icon">⚠️</span> 语言指导是"二手知识"的传递方式。内隐知识无法通过语言传递，只能通过尝试和模仿获得。</div>
+</div>
+</div>
+
+<!-- S6: Comparison -->
+<div class="slide" data-index="6">
+<div class="slide-content">
+<span class="slide-label">📊 对比</span>
+<div class="slide-title">三种范式综合比较</div>
+<div class="comp-grid">
+<div class="comp-cell header">维度</div>
+<div class="comp-cell header c1">尝试与试错</div>
+<div class="comp-cell header c2">模仿与观察</div>
+<div class="comp-cell header c3">语言指导</div>
+<div class="comp-cell label">生物学基础</div>
+<div class="comp-cell c1">多巴胺预期误差</div>
+<div class="comp-cell c2">镜像神经元系统</div>
+<div class="comp-cell c3">语言系统+前额叶</div>
+<div class="comp-cell label">进化层级</div>
+<div class="comp-cell c1">最古老（所有动物）</div>
+<div class="comp-cell c2">较古老（灵长类）</div>
+<div class="comp-cell c3">人类独有（~10万年）</div>
+<div class="comp-cell label">知识类型</div>
+<div class="comp-cell c1">内隐知识（体感）</div>
+<div class="comp-cell c2">内隐→外显过渡</div>
+<div class="comp-cell c3">外显知识（可编码）</div>
+<div class="comp-cell label">学习深度</div>
+<div class="comp-cell c1">最高</div>
+<div class="comp-cell c2">中高</div>
+<div class="comp-cell c3">中低</div>
+<div class="comp-cell label">传递效率</div>
+<div class="comp-cell c1">最低（一对一）</div>
+<div class="comp-cell c2">中（一对多观察）</div>
+<div class="comp-cell c3">最高（一对多语言）</div>
+<div class="comp-cell label">信息保真度</div>
+<div class="comp-cell c1">最高（直接体验）</div>
+<div class="comp-cell c2">中高（有解读偏差）</div>
+<div class="comp-cell c3">最低（编码解码损耗）</div>
+<div class="comp-cell label">风险成本</div>
+<div class="comp-cell c1">最高</div>
+<div class="comp-cell c2">低</div>
+<div class="comp-cell c3">极低</div>
+</div>
+</div>
+</div>
+
+<!-- S7: Sandwich -->
+<div class="slide" data-index="7">
+<div class="slide-content">
+<span class="slide-label">🧩 整合</span>
+<div class="slide-title">学习的"三明治"模型</div>
+<div class="slide-subtitle">最有效的学习不是只用一种范式，而是三种交替运用</div>
+<div class="sandwich">
+<div class="sand-layer l1">① 语言指导：获取框架</div>
+<div class="sand-arrow">↓</div>
+<div class="sand-layer l2">② 模仿：看别人怎么做</div>
+<div class="sand-arrow">↓</div>
+<div class="sand-layer l3">③ 尝试：自己做并犯错</div>
+<div class="sand-arrow">↓</div>
+<div class="sand-layer l4">④ 语言指导：反思总结</div>
+<div class="sand-arrow">↓</div>
+<div class="sand-layer l2">⑤ 模仿：对比高手做法</div>
+<div class="sand-arrow">↓</div>
+<div class="sand-layer l3">⑥ 尝试：改进后再做</div>
+<div class="sand-arrow">↻</div>
+<div class="sand-layer l4">⑦ 循环，直到形成肌肉记忆</div>
+</div>
+<div class="callout good"><span class="co-icon">🎯</span> 学事实→语言指导为主；学技能→尝试为主，模仿为辅；学判断→模仿+尝试交替；学价值观→模仿为主</div>
+</div>
+</div>
+
+<!-- S8: Learning Audit -->
+<div class="slide" data-index="8">
+<div class="slide-content">
+<span class="slide-label">🔍 工具</span>
+<div class="slide-title">学习审计三问</div>
+<div class="slide-subtitle">每学一个新东西前，问自己三个问题</div>
+<div class="flow-row">
+<div class="flow-item highlight">❓ 这件事的<br>内隐知识占比有多高？</div>
+<div class="flow-arrow">→</div>
+<div class="flow-item">越高，越需要<br>尝试和模仿</div>
+</div>
+<div class="flow-row">
+<div class="flow-item highlight">❓ 身边有可以<br>模仿的榜样吗？</div>
+<div class="flow-arrow">→</div>
+<div class="flow-item">有，优先模仿<br>没有，先找语言指导</div>
+</div>
+<div class="flow-row">
+<div class="flow-item highlight">❓ 能否设计一个<br>最小试错循环？</div>
+<div class="flow-arrow">→</div>
+<div class="flow-item">能，先试再学<br>不能，先学再试</div>
+</div>
+<div class="two-col" style="margin-top:1rem">
+<div class="col-box">
+<h4>👤 个人层面</h4>
+<ul>
+<li>学事实 → 语言指导为主</li>
+<li>学技能 → 尝试为主，模仿为辅</li>
+<li>学判断 → 模仿+尝试交替</li>
+<li>学价值观 → 模仿为主</li>
+</ul>
+</div>
+<div class="col-box">
+<h4>🏢 组织层面（SECI）</h4>
+<ul>
+<li>内隐→内隐：师徒制、轮岗（模仿）</li>
+<li>内隐→外显：复盘、写文档（语言输出）</li>
+<li>外显→外显：知识库、培训（语言整合）</li>
+<li>外显→内隐：实践历练（尝试）</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S9: AI Shift -->
+<div class="slide" data-index="9">
+<div class="slide-content">
+<span class="slide-label">🚀 AI时代</span>
+<div class="slide-title">AI带来的范式迁移</div>
+<div class="slide-subtitle">三种范式各自面临根本性的变化</div>
+<div class="shift-cards">
+<div class="shift-card">
+<div class="sc-icon">💬</div>
+<div class="sc-before">知识稀缺 → 获取知识</div>
+<div class="sc-arrow">↓</div>
+<div class="sc-after">知识富余 →<br><strong>判断知识质量</strong></div>
+</div>
+<div class="shift-card">
+<div class="sc-icon">👁️</div>
+<div class="sc-before">跟人学 → 身边榜样</div>
+<div class="sc-arrow">↓</div>
+<div class="sc-after">跟系统学 →<br><strong>模仿AI思维链</strong></div>
+</div>
+<div class="shift-card">
+<div class="sc-icon">🧪</div>
+<div class="sc-before">现实中试错 → 成本高</div>
+<div class="sc-arrow">↓</div>
+<div class="sc-after">模拟中试错 →<br><strong>成本断崖下降</strong></div>
+</div>
+</div>
+<div class="callout danger"><span class="co-icon">🚨</span> AI让语言指导和模仿变得廉价高效，但<strong>尝试（试错）的价值反而上升了</strong>——体感知识不可替代，试错产生差异化竞争优势。</div>
+</div>
+</div>
+
+<!-- S10: AI Learning OS -->
+<div class="slide" data-index="10">
+<div class="slide-content">
+<span class="slide-label">⚙️ 系统</span>
+<div class="slide-title">AI时代的"学习操作系统"</div>
+<div class="slide-subtitle">个人学习OS的五个组件</div>
+<div class="os-grid">
+<div class="os-item">
+<span class="os-icon">❓</span>
+<div class="os-label">提问引擎</div>
+<div class="os-desc">你提出好问题<br>AI无法替代</div>
+</div>
+<div class="os-item">
+<span class="os-icon">📚</span>
+<div class="os-label">知识获取</div>
+<div class="os-desc">AI快速提供<br>框架与方法论</div>
+</div>
+<div class="os-item">
+<span class="os-icon">🎮</span>
+<div class="os-label">模拟器</div>
+<div class="os-desc">AI+你<br>低风险试错</div>
+</div>
+<div class="os-item">
+<span class="os-icon">👁️</span>
+<div class="os-label">观察站</div>
+<div class="os-desc">你+AI+他人<br>多视角模仿</div>
+</div>
+<div class="os-item">
+<span class="os-icon">🔄</span>
+<div class="os-label">反思器</div>
+<div class="os-desc">你+AI<br>结构化复盘</div>
+</div>
+</div>
+<div class="callout good"><span class="co-icon">🌱</span> 你早上教给小鱼的，不仅是"学习是什么"，更是一种元认知能力——关于学习的学习。在AI时代，这种能力比任何具体知识都值钱。</div>
+</div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+<button class="nav-btn" onclick="prevSlide()">◀</button>
+<div class="nav-dots" id="navDots"></div>
+<span class="nav-counter" id="navCounter">1 / 11</span>
+<button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+<div class="kbd-hint">← → / Space</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function renderDots() {
+  const dots = document.getElementById('navDots');
+  dots.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === current ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dots.appendChild(dot);
+  }
+  document.getElementById('navCounter').textContent = (current + 1) + ' / ' + total;
+}
+
+function goTo(idx) {
+  slides[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+  renderDots();
+}
+
+function nextSlide() { goTo((current + 1) % total); }
+function prevSlide() { goTo((current - 1 + total) % total); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+});
+
+renderDots();
+</script>
+</body>
+</html>

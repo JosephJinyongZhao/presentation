@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组织架构设计的底层逻辑</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a2e;--accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--accent4:#fdcb6e;--text:#e8e8f0;--text2:#9999b0;--text3:#666680;--grad:linear-gradient(135deg,#6c5ce7,#00cec9);--grad2:linear-gradient(135deg,#fd79a8,#fdcb6e)}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.presentation{width:100vw;height:100vh;position:relative;overflow:hidden}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:5vh 6vw;opacity:0;transform:translateY(30px) scale(0.97);transition:all 0.6s cubic-bezier(0.4,0,0.2,1);pointer-events:none;overflow-y:auto}
+.slide.active{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.slide.exit{opacity:0;transform:translateY(-30px) scale(0.97)}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;height:60px;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(transparent,rgba(10,10,15,0.95));z-index:100;padding:0 40px}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:var(--text3);cursor:pointer;transition:all 0.3s;border:none;flex-shrink:0}
+.nav-dot.active{background:var(--accent);box-shadow:0 0 12px rgba(108,92,231,0.5);width:28px;border-radius:5px}
+.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text2);font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;z-index:99;backdrop-filter:blur(8px)}
+.nav-arrow:hover{background:rgba(108,92,231,0.2);border-color:var(--accent);color:var(--text)}
+.nav-arrow.prev{left:20px}.nav-arrow.next{right:20px}
+.slide-counter{position:fixed;top:24px;right:32px;font-size:14px;color:var(--text3);z-index:100;letter-spacing:1px}
+h1{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;line-height:1.2;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5em}
+h2{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:700;color:var(--text);margin-bottom:0.6em}
+p,li{font-size:clamp(1rem,1.8vw,1.5rem);line-height:1.7;color:var(--text2);font-weight:300}
+.subtitle{font-size:clamp(1rem,2vw,1.6rem);color:var(--text2);margin-top:0.5em}
+.accent-c{color:var(--accent);font-weight:500}.accent2-c{color:var(--accent2);font-weight:500}.accent3-c{color:var(--accent3);font-weight:500}.accent4-c{color:var(--accent4);font-weight:500}
+.slide-content{width:100%;max-width:1200px;margin:0 auto}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:2vw;width:100%}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5vw;width:100%}
+.grid-6{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1vw;width:100%}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:clamp(1rem,2vw,2rem);transition:all 0.3s}
+.card:hover{border-color:rgba(108,92,231,0.3);transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,92,231,0.1)}
+.card h4{font-size:clamp(0.9rem,1.5vw,1.3rem);font-weight:600;margin-bottom:0.5em;color:var(--text)}
+.card p{font-size:clamp(0.8rem,1.2vw,1.1rem);line-height:1.6}
+.card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px}
+.timeline{display:flex;width:100%;position:relative;padding:20px 0}
+.timeline::before{content:'';position:absolute;top:50%;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3),var(--accent4));border-radius:2px}
+.timeline-item{flex:1;text-align:center;position:relative;padding-top:30px}
+.timeline-item::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--accent);z-index:1}
+.timeline-item:nth-child(2)::before{border-color:var(--accent2)}
+.timeline-item:nth-child(3)::before{border-color:var(--accent3)}
+.timeline-item:nth-child(4)::before{border-color:var(--accent4)}
+.timeline-item .year{font-size:clamp(1rem,1.5vw,1.4rem);font-weight:700;color:var(--text)}
+.timeline-item .label{font-size:clamp(0.7rem,1vw,0.95rem);color:var(--text2);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:clamp(0.8rem,1.2vw,1.1rem)}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:12px 16px;text-align:left;border-bottom:2px solid var(--accent)}
+td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.05);color:var(--text2)}
+.tag{display:inline-block;padding:4px 14px;border-radius:20px;font-size:clamp(0.7rem,1vw,0.9rem);font-weight:500;margin:2px}
+.tag-p{background:rgba(108,92,231,0.2);color:var(--accent)}
+.tag-t{background:rgba(0,206,201,0.2);color:var(--accent2)}
+.tag-pk{background:rgba(253,121,168,0.2);color:var(--accent3)}
+.tag-y{background:rgba(253,203,110,0.2);color:var(--accent4)}
+.quote{border-left:4px solid var(--accent);padding:16px 24px;background:rgba(108,92,231,0.06);border-radius:0 12px 12px 0;margin:16px 0;font-style:italic}
+.quote p{font-size:clamp(0.9rem,1.5vw,1.3rem);color:var(--text)}
+.big-num{font-size:clamp(2.4rem,5vw,4rem);font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.company-card{background:var(--bg2);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:clamp(0.8rem,1.5vw,1.5rem);text-align:center}
+.company-card .cname{font-size:clamp(1rem,1.5vw,1.4rem);font-weight:700;margin-bottom:2px}
+.company-card .cslogan{font-size:clamp(0.7rem,1vw,0.95rem);color:var(--accent2);margin-bottom:6px}
+.company-card .cdesc{font-size:clamp(0.7rem,1vw,0.9rem);color:var(--text2);line-height:1.5}
+.progress-bar{width:100%;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.title-slide{text-align:center}
+.title-slide h1{font-size:clamp(2.8rem,6vw,5rem);margin-bottom:0.3em}
+.title-slide .meta{font-size:clamp(0.9rem,1.5vw,1.3rem);color:var(--text3);margin-top:2em}
+.divider{width:60px;height:3px;background:var(--grad);border-radius:2px;margin:16px 0}
+ul{list-style:none;padding:0}
+li{padding:6px 0;padding-left:1.5em;position:relative}
+ul li::before{content:'\25C6';position:absolute;left:0;color:var(--accent);font-size:0.6em;top:0.7em}
+@media(max-width:768px){
+.slide{padding:4vh 5vw}
+.grid-2,.grid-3,.grid-6{grid-template-columns:1fr}
+.nav-arrow{display:none}
+.timeline{flex-direction:column;gap:16px}
+.timeline::before,.timeline-item::before{display:none}
+.timeline-item{padding-top:0}
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .a1{animation:fadeInUp 0.6s 0.1s both}
+.slide.active .a2{animation:fadeInUp 0.6s 0.2s both}
+.slide.active .a3{animation:fadeInUp 0.6s 0.3s both}
+.slide.active .a4{animation:fadeInUp 0.6s 0.4s both}
+.slide.active .a5{animation:fadeInUp 0.6s 0.5s both}
+.slide.active .a6{animation:fadeInUp 0.6s 0.6s both}
+</style>
+</head>
+<body>
+<div class="presentation" id="app">
+<div class="slide-counter" id="counter">1 / 23</div>
+<button class="nav-arrow prev" id="prevBtn">&#8249;</button>
+<button class="nav-arrow next" id="nextBtn">&#8250;</button>
+
+<!-- S1: TITLE -->
+<div class="slide title-slide active" data-index="0">
+<div class="slide-content">
+<div class="a1"><div style="width:80px;height:4px;background:var(--grad);border-radius:2px;margin:0 auto 24px"></div></div>
+<h1 class="a2">组织架构设计的<br>底层逻辑</h1>
+<p class="subtitle a3" style="max-width:700px;margin:0 auto">从技术导向到需求导向<br>从工业时代到AI时代</p>
+<div class="a4" style="margin-top:48px">
+<span class="tag tag-p">结构决定行为</span>
+<span class="tag tag-t">行为决定绩效</span>
+<span class="tag tag-pk">AI时代组织变革</span>
+</div>
+<p class="meta a5">赵锦勇 · 2026年6月</p>
+</div>
+</div>
+
+<!-- S2: 三个判断维度 -->
+<div class="slide" data-index="1">
+<div class="slide-content">
+<h2 class="a1">三个判断维度</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:24px">看一个企业的组织设计，从这三个入口切入</p>
+<div class="grid-3">
+<div class="card a3">
+<div class="card-icon" style="background:rgba(108,92,231,0.15)">&#x1F9ED;</div>
+<h4>导向</h4>
+<p>面向<span class="accent-c">生产技术</span>，还是面向<span class="accent2-c">消费需求</span>？</p>
+<div class="progress-bar" style="margin-top:12px"><div class="progress-fill" style="width:80%;background:var(--accent)"></div></div>
+<p style="font-size:0.8em;margin-top:4px">80%的企业选前者——因为熟悉</p>
+</div>
+<div class="card a4">
+<div class="card-icon" style="background:rgba(0,206,201,0.15)">&#x1F52C;</div>
+<h4>粒度</h4>
+<p>划分有多<span class="accent2-c">细</span>，专业度就有多<span class="accent2-c">深</span></p>
+<div class="quote" style="margin:8px 0 0;padding:8px 12px"><p style="font-size:0.85em">过细&#x2192;部门墙<br>过粗&#x2192;责任模糊</p></div>
+</div>
+<div class="card a5">
+<div class="card-icon" style="background:rgba(253,121,168,0.15)">&#x1F4A1;</div>
+<h4>原创性</h4>
+<p><span class="accent3-c">深度思考</span>的结果，还是<span class="accent3-c">照抄模板</span>？</p>
+<p style="font-size:0.85em;margin-top:8px">真正有组织思考力的企业，架构会呈现<span class="accent-c">"定制感"</span></p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S3: 星模型 -->
+<div class="slide" data-index="2">
+<div class="slide-content">
+<h2 class="a1">底层命题：结构决定行为</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:20px">加尔布雷思「星模型」——五个要素必须相互匹配</p>
+<div class="a3" style="width:100%;max-width:700px;margin:0 auto">
+<svg viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6c5ce7"/><stop offset="100%" stop-color="#00cec9"/></linearGradient>
+<linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#fdcb6e"/></linearGradient></defs>
+<polygon points="300,30 340,145 460,145 360,225 390,340 300,260 210,340 240,225 140,145 260,145" fill="rgba(108,92,231,0.08)" stroke="url(#g1)" stroke-width="2"/>
+<text x="300" y="185" text-anchor="middle" fill="#e8e8f0" font-size="18" font-weight="700">战略</text>
+<circle cx="300" cy="30" r="30" fill="rgba(108,92,231,0.2)" stroke="url(#g1)" stroke-width="2"/><text x="300" y="36" text-anchor="middle" fill="#e8e8f0" font-size="13" font-weight="500">结构</text>
+<circle cx="460" cy="145" r="30" fill="rgba(0,206,201,0.2)" stroke="url(#g1)" stroke-width="2"/><text x="460" y="151" text-anchor="middle" fill="#e8e8f0" font-size="13" font-weight="500">流程</text>
+<circle cx="390" cy="340" r="30" fill="rgba(253,121,168,0.2)" stroke="url(#g2)" stroke-width="2"/><text x="390" y="346" text-anchor="middle" fill="#e8e8f0" font-size="13" font-weight="500">激励</text>
+<circle cx="210" cy="340" r="30" fill="rgba(253,203,110,0.2)" stroke="url(#g2)" stroke-width="2"/><text x="210" y="346" text-anchor="middle" fill="#e8e8f0" font-size="13" font-weight="500">人才</text>
+<circle cx="140" cy="145" r="30" fill="rgba(108,92,231,0.2)" stroke="url(#g1)" stroke-width="2"/><text x="140" y="151" text-anchor="middle" fill="#e8e8f0" font-size="13" font-weight="500">文化</text>
+</svg>
+</div>
+<div class="grid-6 a4" style="margin-top:8px">
+<div class="card" style="padding:10px;text-align:center"><p style="font-size:clamp(0.7rem,1vw,0.9rem);font-weight:600;color:var(--accent)">结构</p><p style="font-size:clamp(0.6rem,0.8vw,0.8rem)">信息流向</p></div>
+<div class="card" style="padding:10px;text-align:center"><p style="font-size:clamp(0.7rem,1vw,0.9rem);font-weight:600;color:var(--accent2)">流程</p><p style="font-size:clamp(0.6rem,0.8vw,0.8rem)">协作效率</p></div>
+<div class="card" style="padding:10px;text-align:center"><p style="font-size:clamp(0.7rem,1vw,0.9rem);font-weight:600;color:var(--accent3)">激励</p><p style="font-size:clamp(0.6rem,0.8vw,0.8rem)">行为优先级</p></div>
+<div class="card" style="padding:10px;text-align:center"><p style="font-size:clamp(0.7rem,1vw,0.9rem);font-weight:600;color:var(--accent4)">人才</p><p style="font-size:clamp(0.6rem,0.8vw,0.8rem)">执行质量</p></div>
+<div class="card" style="padding:10px;text-align:center"><p style="font-size:clamp(0.7rem,1vw,0.9rem);font-weight:600;color:var(--accent)">文化</p><p style="font-size:clamp(0.6rem,0.8vw,0.8rem)">行为准则</p></div>
+</div>
+</div>
+</div>
+
+<!-- S4: 技术变革时间线 -->
+<div class="slide" data-index="3">
+<div class="slide-content">
+<h2 class="a1">技术变革与组织演进</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:24px">技术改变信息传递成本 &#x2192; 信息是组织的血液</p>
+<div class="timeline a3">
+<div class="timeline-item"><div class="year">18C末</div><div class="label">蒸汽机</div><div style="margin-top:8px"><span class="tag tag-p">直线制</span></div></div>
+<div class="timeline-item"><div class="year">20C初</div><div class="label">电力/流水线</div><div style="margin-top:8px"><span class="tag tag-t">职能制&#x2192;事业部制</span></div></div>
+<div class="timeline-item"><div class="year">1980s-2010s</div><div class="label">IT/互联网</div><div style="margin-top:8px"><span class="tag tag-pk">矩阵制&#x2192;网络制</span></div></div>
+<div class="timeline-item"><div class="year">2020s-</div><div class="label">AI/智能化</div><div style="margin-top:8px"><span class="tag tag-y">赋能&#x2192;涌现</span></div></div>
+</div>
+</div>
+</div>
+
+<!-- S5: 通用汽车 vs 福特 -->
+<div class="slide" data-index="4">
+<div class="slide-content">
+<h2 class="a1">经典对决：通用汽车 vs 福特</h2>
+<div class="divider a2"></div>
+<div class="grid-2" style="margin-top:16px">
+<div class="card a3" style="border-color:rgba(108,92,231,0.3)">
+<h4 style="color:var(--accent)">福特 / 职能制</h4>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem)">"任何颜色都可以，只要它是黑色的"</p>
+<p style="font-size:clamp(0.75rem,1vw,0.9rem);margin-top:8px">单一产品、单一流程 &#x2192; 职能制高效</p>
+</div>
+<div class="card a4" style="border-color:rgba(0,206,201,0.3)">
+<h4 style="color:var(--accent2)">通用汽车 / 事业部制</h4>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem)">斯隆首创：多品牌独立核算</p>
+<p style="font-size:clamp(0.75rem,1vw,0.9rem);margin-top:8px">雪佛兰/别克/凯迪拉克各面向不同市场</p>
+</div>
+</div>
+<div class="card a5" style="margin-top:16px;text-align:center;border-color:rgba(253,203,110,0.3)">
+<p style="font-size:clamp(0.9rem,1.5vw,1.2rem)"><span class="accent4-c">启示：</span>产品线多元化 &#x2192; 事业部制；单一产品规模化 &#x2192; 职能制</p>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem);margin-top:4px">结构要匹配产品战略</p>
+</div>
+</div>
+</div>
+
+<!-- S6: 第三次工业革命 -->
+<div class="slide" data-index="5">
+<div class="slide-content">
+<h2 class="a1">第三次工业革命：IT/互联网</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:20px">信息传递成本趋近于零 &#x2192; 矩阵制与网络制</p>
+<div class="grid-2">
+<div class="card a3">
+<h4 style="color:var(--accent3)">IBM / 全球矩阵</h4>
+<p style="font-size:clamp(0.75rem,1.1vw,0.95rem)">按区域&#x00D7;按业务交叉管理——理论上完美，实际上决策链条过长。郭士纳时代大幅简化</p>
+</div>
+<div class="card a4">
+<h4 style="color:var(--accent2)">华为 / 铁三角</h4>
+<p style="font-size:clamp(0.75rem,1.1vw,0.95rem)">客户经理+解决方案专家+交付专家——不是按产品线，不是按区域，而是按<span class="accent2-c">"客户场景"</span>来组织</p>
+</div>
+</div>
+<div class="quote a5" style="margin-top:16px">
+<p style="font-size:clamp(0.85rem,1.3vw,1.1rem)">矩阵制解决了"兼顾多个维度"的问题，但增加了协调成本。关键在于找到<span class="accent-c">什么维度是主维度</span></p>
+</div>
+</div>
+</div>
+
+<!-- S7: AI时代变革 -->
+<div class="slide" data-index="6">
+<div class="slide-content">
+<h2 class="a1">AI时代：从命令-控制到赋能-涌现</h2>
+<div class="divider a2"></div>
+<table class="a3" style="margin-top:16px">
+<thead><tr><th>传统组织</th><th>AI时代组织</th></tr></thead>
+<tbody>
+<tr><td>层级决策</td><td>网络化决策</td></tr>
+<tr><td>岗位固定</td><td>角色动态</td></tr>
+<tr><td>信息向上流动</td><td>信息全员可见</td></tr>
+<tr><td>管理者做判断</td><td>AI辅助判断</td></tr>
+<tr><td>按职能分工</td><td>按任务/目标临时组队</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- S8: 亚马逊 -->
+<div class="slide" data-index="7">
+<div class="slide-content">
+<h2 class="a1">亚马逊 / 两个披萨团队</h2>
+<div class="divider a2"></div>
+<div class="grid-3 a3" style="margin-top:16px">
+<div class="card" style="text-align:center">
+<div class="big-num">6-10</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem)">人/团队</p>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">两个披萨够吃为准</p>
+</div>
+<div class="card" style="text-align:center">
+<div class="big-num" style="background:var(--grad2);-webkit-background-clip:text;background-clip:text">API</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem)">强制模块化</p>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">团队间只能通过API通信</p>
+</div>
+<div class="card" style="text-align:center">
+<div class="big-num">&#x2194;</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem)">单向门/双向门</p>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">可逆决策快速试错</p>
+</div>
+</div>
+<div class="quote a4" style="margin-top:16px">
+<p style="font-size:clamp(0.85rem,1.3vw,1.1rem)">AI时代演进：从"平台+业务线"矩阵 &#x2192; <span class="accent2-c">"AI中台+业务前台"</span>赋能模式</p>
+</div>
+</div>
+</div>
+
+<!-- S9: 奈飞 -->
+<div class="slide" data-index="8">
+<div class="slide-content">
+<h2 class="a1">奈飞 / 自由与责任</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:20px">流程和规则是对低密度人才的妥协</p>
+<div class="grid-3 a3">
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F50D;</div>
+<h4>保持者测试</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">"这个人要走，我会拼命挽留吗？"<br>否 &#x2192; 让他走</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x2705;</div>
+<h4>知情同意</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">非"知情审批"<br>员工自己做决策</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F3D6;</div>
+<h4>无休假政策</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">自己决定天数<br>"不要让团队失望"</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S10: 字节跳动 -->
+<div class="slide" data-index="9">
+<div class="slide-content">
+<h2 class="a1">字节跳动 / Context, not Control</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:20px">信息越充分，决策质量越高；审批越多，决策速度越慢</p>
+<div class="grid-3 a3">
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F4C4;</div>
+<h4>全员透明</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">OKR、文档、会议记录默认全员可见</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F465;</div>
+<h4>小前台</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">数千个小团队，每个有明确目标和自主权</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F680;</div>
+<h4>Day 1</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">永远保持创业公司敏捷</p>
+</div>
+</div>
+<div class="quote a4" style="margin-top:16px">
+<p style="font-size:clamp(0.85rem,1.3vw,1.1rem)">核心优势：<span class="accent2-c">信息流动的效率</span>——这恰好是AI时代最需要的组织能力</p>
+</div>
+</div>
+</div>
+
+<!-- S11: 海尔 -->
+<div class="slide" data-index="10">
+<div class="slide-content">
+<h2 class="a1">海尔 / 人单合一</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:16px">每个人直接面对用户，每个人都是自己的CEO</p>
+<div class="grid-3 a3">
+<div class="card" style="text-align:center">
+<div class="big-num">4000+</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem)">小微组织</p>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">自负盈亏，可独立融资上市</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F4DC;</div>
+<h4>链群合约</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">小微之间通过合约协作，非行政指令</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F33F;</div>
+<h4>三生体系</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">生态收入/品牌/平台</p>
+</div>
+</div>
+<div class="quote a4" style="margin-top:16px">
+<p style="font-size:clamp(0.85rem,1.3vw,1.1rem)">世界上最激进的去中心化实验——企业不再是法律实体，而是<span class="accent2-c">"生态平台+独立小微"</span>的共生体</p>
+</div>
+</div>
+</div>
+
+<!-- S12: 华为 -->
+<div class="slide" data-index="11">
+<div class="slide-content">
+<h2 class="a1">华为 / 从职能制到军团制</h2>
+<div class="divider a2"></div>
+<div class="a3" style="width:100%;max-width:700px;margin:0 auto">
+<svg viewBox="0 0 700 100" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<defs><linearGradient id="h1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6c5ce7"/><stop offset="50%" stop-color="#00cec9"/><stop offset="100%" stop-color="#fd79a8"/></linearGradient></defs>
+<rect x="0" y="35" width="700" height="30" rx="15" fill="rgba(255,255,255,0.05)"/>
+<rect x="0" y="35" width="140" height="30" rx="15" fill="url(#h1)" opacity="0.3"/>
+<rect x="140" y="35" width="140" height="30" rx="15" fill="url(#h1)" opacity="0.5"/>
+<rect x="280" y="35" width="140" height="30" rx="15" fill="url(#h1)" opacity="0.7"/>
+<rect x="420" y="35" width="140" height="30" rx="15" fill="url(#h1)" opacity="0.85"/>
+<rect x="560" y="35" width="140" height="30" rx="15" fill="url(#h1)"/>
+<text x="70" y="55" text-anchor="middle" fill="#e8e8f0" font-size="12" font-weight="500">职能制</text>
+<text x="210" y="55" text-anchor="middle" fill="#e8e8f0" font-size="12" font-weight="500">矩阵制</text>
+<text x="350" y="55" text-anchor="middle" fill="#e8e8f0" font-size="12" font-weight="500">IPD流程</text>
+<text x="490" y="55" text-anchor="middle" fill="#e8e8f0" font-size="12" font-weight="500">项目制</text>
+<text x="630" y="55" text-anchor="middle" fill="#e8e8f0" font-size="12" font-weight="500">军团制</text>
+<text x="350" y="25" text-anchor="middle" fill="#9999b0" font-size="11">1987 &#x2192; 1995 &#x2192; 2003 &#x2192; 2010 &#x2192; 2020</text>
+</svg>
+</div>
+<p class="a4" style="margin-top:16px;font-size:clamp(0.85rem,1.3vw,1.1rem);text-align:center">从<span class="accent-c">职能驱动</span> &#x2192; <span class="accent2-c">流程驱动</span> &#x2192; <span class="accent3-c">场景驱动</span></p>
+</div>
+</div>
+
+<!-- S13: 小米 -->
+<div class="slide" data-index="12">
+<div class="slide-content">
+<h2 class="a1">小米 / 生态链模式</h2>
+<div class="divider a2"></div>
+<p class="a2" style="margin-bottom:16px">"竹林效应"——单个竹子脆弱，竹林整体坚韧</p>
+<div class="grid-3 a3">
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F4F1;</div>
+<h4>核心产品</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">小米做手机、IoT平台</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F4B0;</div>
+<h4>投资+赋能</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">持股20-30%，提供品牌/渠道/供应链</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F3CB;</div>
+<h4>铁人三项</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">硬件+新零售+互联网服务</p>
+</div>
+</div>
+<div class="quote a4" style="margin-top:16px">
+<p style="font-size:clamp(0.85rem,1.3vw,1.1rem)">一种<span class="accent2-c">"半开放"</span>的组织形态——比传统企业更灵活，比纯平台更可控。这种"中间态"可能是AI时代很多企业的方向</p>
+</div>
+</div>
+</div>
+
+<!-- S14: AI五大趋势 -->
+<div class="slide" data-index="13">
+<div class="slide-content">
+<h2 class="a1">AI时代组织五大趋势</h2>
+<div class="divider a2"></div>
+<div class="grid-3 a3" style="margin-top:16px">
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F500;</div>
+<h4>任务流</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">从职能墙到任务流<br>按任务组织，非按部门</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F4CA;</div>
+<h4>信息密度</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">从管理幅度到信息密度<br>AI辅助信息处理</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F3AD;</div>
+<h4>角色化</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">从岗位到角色<br>人+AI共同完成</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F578;</div>
+<h4>网络化</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">从中心化到网络化<br>每个节点自主决策</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">&#x1F504;</div>
+<h4>动态组织</h4>
+<p style="font-size:clamp(0.7rem,1vw,0.85rem)">从静态架构到动态组织<br>实时调整，按需组队</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S15: 四维判断框架 -->
+<div class="slide" data-index="14">
+<div class="slide-content">
+<h2 class="a1">四维判断框架</h2>
+<div class="divider a2"></div>
+<table class="a3" style="margin-top:16px">
+<thead><tr><th>维度</th><th>差</th><th>中</th><th>好</th></tr></thead>
+<tbody>
+<tr><td><strong style="color:var(--accent)">导向</strong></td><td>按内部职能划分</td><td>按产品线划分</td><td style="color:var(--accent2)">按客户场景/问题划分</td></tr>
+<tr><td><strong style="color:var(--accent2)">粒度</strong></td><td>部门过大，责任模糊</td><td>分工明确但部门墙严重</td><td style="color:var(--accent2)">小团队+明确边界+强协作</td></tr>
+<tr><td><strong style="color:var(--accent3)">原创性</strong></td><td>照抄成功企业模板</td><td>有调整但核心照搬</td><td style="color:var(--accent2)">定制化设计，解决自身问题</td></tr>
+<tr><td><strong style="color:var(--accent4)">动态性</strong></td><td>一年一画从不调整</td><td>年度调整反应滞后</td><td style="color:var(--accent2)">实时调整，按需组队</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- S16: 对你的启示 -->
+<div class="slide" data-index="15">
+<div class="slide-content">
+<h2 class="a1">对你的启示</h2>
+<div class="divider a2"></div>
+<div class="grid-2 a3" style="margin-top:16px">
+<div class="card" style="border-color:rgba(108,92,231,0.3)">
+<h4 style="color:var(--accent)">&#x1F4BC; 创业者/副业探索者</h4>
+<ul>
+<li>从第一天就思考组织问题</li>
+<li>AI时代是组织创新的窗口期</li>
+<li>按"场景"而非"职能"组织</li>
+</ul>
+</div>
+<div class="card" style="border-color:rgba(0,206,201,0.3)">
+<h4 style="color:var(--accent2)">&#x1F3EB; 光华管理者</h4>
+<ul>
+<li>分院本身就是组织设计的课题</li>
+<li>按"客户旅程"组织教育产品</li>
+<li>校友社群的去中心化潜力</li>
+</ul>
+</div>
+</div>
+<div class="quote a4" style="margin-top:16px">
+<p style="font-size:clamp(0.85rem,1.3vw,1.1rem)">你的AI课程、葡萄酒活动、校友社群——如果按<span class="accent2-c">"企业家的AI认知升级"</span>这个场景来组织，它们可能是一个有机整体</p>
+</div>
+</div>
+</div>
+
+<!-- S17: 延伸阅读 -->
+<div class="slide" data-index="16">
+<div class="slide-content">
+<h2 class="a1">延伸阅读</h2>
+<div class="divider a2"></div>
+<div class="grid-3 a3" style="margin-top:16px">
+<div class="card" style="text-align:center;padding:clamp(0.6rem,1.2vw,1.2rem)">
+<p style="font-size:clamp(0.75rem,1.1vw,1rem);font-weight:600;color:var(--accent)">钱德勒</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.85rem)">《战略与结构》</p>
+</div>
+<div class="card" style="text-align:center;padding:clamp(0.6rem,1.2vw,1.2rem)">
+<p style="font-size:clamp(0.75rem,1.1vw,1rem);font-weight:600;color:var(--accent2)">明茨伯格</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.85rem)">《组织的结构》</p>
+</div>
+<div class="card" style="text-align:center;padding:clamp(0.6rem,1.2vw,1.2rem)">
+<p style="font-size:clamp(0.75rem,1.1vw,1rem);font-weight:600;color:var(--accent3)">《赋能》</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.85rem)">Team of Teams</p>
+</div>
+<div class="card" style="text-align:center;padding:clamp(0.6rem,1.2vw,1.2rem)">
+<p style="font-size:clamp(0.75rem,1.1vw,1rem);font-weight:600;color:var(--accent4)">《奈飞文化手册》</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.85rem)">自由与责任</p>
+</div>
+<div class="card" style="text-align:center;padding:clamp(0.6rem,1.2vw,1.2rem)">
+<p style="font-size:clamp(0.75rem,1.1vw,1rem);font-weight:600;color:var(--accent)">张瑞敏</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.85rem)">《海尔转型》</p>
+</div>
+<div class="card" style="text-align:center;padding:clamp(0.6rem,1.2vw,1.2rem)">
+<p style="font-size:clamp(0.75rem,1.1vw,1rem);font-weight:600;color:var(--accent2)">《字节跳动》</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.85rem)">Context, not Control</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S18: END -->
+<div class="slide end-slide title-slide" data-index="17">
+<div class="slide-content">
+<h1 class="a1">谢谢</h1>
+<div class="a2" style="width:80px;height:4px;background:var(--grad);border-radius:2px;margin:24px auto"></div>
+<p class="subtitle a3">组织架构不是"画出来的"，而是"长出来的"</p>
+<p class="a4" style="margin-top:32px;font-size:clamp(0.85rem,1.3vw,1.1rem);color:var(--text2)">最好的组织设计，是在深刻理解自己的战略、文化、人才、技术环境之后，<br>长出来的"定制化"结构</p>
+<p class="a5" style="margin-top:48px;font-size:clamp(0.8rem,1.2vw,1rem);color:var(--text3)">那些敢于打破工业时代组织惯性的人，将获得最大的红利</p>
+</div>
+</div>
+
+
+<!-- S19: 批判性审视标题 -->
+<div class="slide" data-index="18">
+<div class="slide-content">
+<h2 class="a1">批判性审视</h2>
+<div class="divider a2"></div>
+<p class="a3" style="font-size:clamp(1.2rem,2.2vw,1.8rem);text-align:center;color:var(--accent3)">这个框架遗漏了什么？</p>
+<p class="a4" style="margin-top:16px;text-align:center">七重批判，来自不同视角的审视</p>
+</div>
+</div>
+
+<!-- S20: 七重批判 -->
+<div class="slide" data-index="19">
+<div class="slide-content">
+<h2 class="a1">七重批判</h2>
+<div class="divider a2"></div>
+<div class="grid-3 a3" style="margin-top:12px">
+<div class="card" style="padding:clamp(0.6rem,1vw,1rem);text-align:center">
+<div style="font-size:28px;margin-bottom:4px">&#x2696;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">权力维度</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">架构图&#x2260;权力结构</p>
+</div>
+<div class="card" style="padding:clamp(0.6rem,1vw,1rem);text-align:center">
+<div style="font-size:28px;margin-bottom:4px">&#x1F3B0;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">幸存者偏差</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">成功案例不可简单复制</p>
+</div>
+<div class="card" style="padding:clamp(0.6rem,1vw,1rem);text-align:center">
+<div style="font-size:28px;margin-bottom:4px">&#x1F3AD;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">非理性因素</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">组织是政治系统</p>
+</div>
+<div class="card" style="padding:clamp(0.6rem,1vw,1rem);text-align:center">
+<div style="font-size:28px;margin-bottom:4px">&#x1F504;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">变革可行性</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">知道目标&#x2260;能到达</p>
+</div>
+<div class="card" style="padding:clamp(0.6rem,1vw,1rem);text-align:center">
+<div style="font-size:28px;margin-bottom:4px">&#x1F331;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">生命周期</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">不同阶段不同架构</p>
+</div>
+<div class="card" style="padding:clamp(0.6rem,1vw,1rem);text-align:center">
+<div style="font-size:28px;margin-bottom:4px">&#x1F9D1;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">人的质量</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">人比结构更重要</p>
+</div>
+</div>
+<div class="card a4" style="margin-top:12px;text-align:center;max-width:400px;margin-left:auto;margin-right:auto;padding:clamp(0.5rem,1vw,1rem)">
+<div style="font-size:28px;margin-bottom:4px">&#x1F916;</div>
+<h4 style="font-size:clamp(0.8rem,1.2vw,1rem)">AI瓦解</h4>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">组织架构这个概念本身可能正在过时</p>
+</div>
+</div>
+</div>
+
+<!-- S21: 智囊团标题 -->
+<div class="slide" data-index="20">
+<div class="slide-content">
+<h2 class="a1">智囊团讨论实录</h2>
+<div class="divider a2"></div>
+<p class="a3" style="font-size:clamp(1rem,1.8vw,1.4rem);text-align:center;color:var(--text2)">四位专家，有血有肉的碰撞</p>
+<div class="grid-2 a4" style="margin-top:24px">
+<div class="card" style="text-align:center;border-color:rgba(108,92,231,0.3)">
+<div style="font-size:32px;margin-bottom:4px">&#x1F535;</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem);font-weight:600;color:var(--accent)">组织理论学者</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">"框架扎实，但漏了权力维度"</p>
+</div>
+<div class="card" style="text-align:center;border-color:rgba(253,121,168,0.3)">
+<div style="font-size:32px;margin-bottom:4px">&#x1F534;</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem);font-weight:600;color:var(--accent3)">实战派CEO</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">"组织是长出来的，不是设计出来的"</p>
+</div>
+<div class="card" style="text-align:center;border-color:rgba(253,203,110,0.3)">
+<div style="font-size:32px;margin-bottom:4px">&#x1F7E1;</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem);font-weight:600;color:var(--accent4)">组织人类学家</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">"组织首先是政治系统"</p>
+</div>
+<div class="card" style="text-align:center;border-color:rgba(0,206,201,0.3)">
+<div style="font-size:32px;margin-bottom:4px">&#x1F7E2;</div>
+<p style="font-size:clamp(0.8rem,1.2vw,1rem);font-weight:600;color:var(--accent2)">复杂系统科学家</p>
+<p style="font-size:clamp(0.65rem,0.9vw,0.8rem)">"组织架构这个概念正在被AI瓦解"</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S22: 智囊团碰撞 -->
+<div class="slide" data-index="21">
+<div class="slide-content">
+<h2 class="a1">关键碰撞</h2>
+<div class="divider a2"></div>
+<div class="a3" style="margin-top:16px">
+<div class="quote" style="margin:8px 0;padding:10px 16px;border-left-color:var(--accent3)">
+<p style="font-size:clamp(0.75rem,1.1vw,0.95rem)"><strong style="color:var(--accent3)">&#x1F534; CEO：</strong> "一个烂架构配上好人，能跑起来；一个完美架构配上烂人，必死"</p>
+</div>
+<div class="quote" style="margin:8px 0;padding:10px 16px;border-left-color:var(--accent4)">
+<p style="font-size:clamp(0.75rem,1.1vw,0.95rem)"><strong style="color:var(--accent4)">&#x1F7E1; 人类学家：</strong> "真正的组织，有一半是'看不见的'——非正式网络、派系、隐性权力"</p>
+</div>
+<div class="quote" style="margin:8px 0;padding:10px 16px;border-left-color:var(--accent2)">
+<p style="font-size:clamp(0.75rem,1.1vw,0.95rem)"><strong style="color:var(--accent2)">&#x1F7E2; 科学家：</strong> "我们正在用工业时代的组织语言，讨论AI时代的组织问题"</p>
+</div>
+<div class="quote" style="margin:8px 0;padding:10px 16px;border-left-color:var(--accent)">
+<p style="font-size:clamp(0.75rem,1.1vw,0.95rem)"><strong style="color:var(--accent)">&#x1F535; 学者：</strong> "权力不会消失，只会转移。谁为结果负责？谁承担法律责任？这些不是AI能解决的"</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S23: 更新后的结尾 -->
+<div class="slide end-slide title-slide" data-index="22">
+<div class="slide-content">
+<h1 class="a1">谢谢</h1>
+<div class="a2" style="width:80px;height:4px;background:var(--grad);border-radius:2px;margin:24px auto"></div>
+<p class="subtitle a3">组织架构不是"画出来的"，而是"长出来的"</p>
+<p class="a4" style="margin-top:24px;font-size:clamp(0.85rem,1.3vw,1.1rem);color:var(--text2)">AI时代给我们的，不仅是重新设计组织的机会<br>更是重新定义"组织"这个概念的机会</p>
+<p class="a5" style="margin-top:36px;font-size:clamp(0.8rem,1.2vw,1rem);color:var(--text3)">那些敢于打破工业时代组织惯性的人，将获得最大的红利</p>
+</div>
+</div>
+</div><!-- end presentation -->
+
+<div class="nav-bar" id="navBar"></div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const navBar = document.getElementById('navBar');
+  let current = 0;
+  let isAnimating = false;
+
+  for(let i=0; i<total; i++){
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i===0?' active':'');
+    dot.dataset.index = i;
+    dot.addEventListener('click', function(){ goTo(parseInt(this.dataset.index)); });
+    navBar.appendChild(dot);
+  }
+  const dots = navBar.querySelectorAll('.nav-dot');
+
+  function goTo(index){
+    if(isAnimating || index === current || index < 0 || index >= total) return;
+    isAnimating = true;
+    const prev = current;
+    current = index;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exit');
+    slides[current].classList.remove('exit');
+    slides[current].classList.add('active');
+    setTimeout(function(){ slides[prev].classList.remove('exit'); isAnimating = false; }, 600);
+    counter.textContent = (current+1) + ' / ' + total;
+    dots.forEach(function(d,i){ d.classList.toggle('active', i===current); });
+  }
+
+  prevBtn.addEventListener('click', function(){ goTo(current-1); });
+  nextBtn.addEventListener('click', function(){ goTo(current+1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current+1); }
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current-1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', function(e){
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if(Math.abs(diff) > 50){ diff > 0 ? goTo(current+1) : goTo(current-1); }
+  });
+})();
+</script>
+</body>
+</html>

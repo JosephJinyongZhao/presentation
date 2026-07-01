@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间日志系统 v5.5</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a28;
+    --border: #2a2a3e;
+    --accent: #6c5ce7;
+    --accent2: #a29bfe;
+    --accent3: #fd79a8;
+    --gold: #fdcb6e;
+    --green: #00b894;
+    --cyan: #00cec9;
+    --red: #e17055;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #606078;
+  }
+
+  html { font-size: 18px; }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* === Slide Container === */
+  .slides {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100vh;
+    will-change: transform;
+  }
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5vh 6vw;
+    position: relative;
+    overflow-y: auto;
+  }
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* === Typography === */
+  h1 { font-size: 4rem; font-weight: 900; letter-spacing: 0.04em; line-height: 1.2; }
+  h2 { font-size: 2.8rem; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 0.6em; }
+  h3 { font-size: 1.8rem; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 0.5em; }
+  h4 { font-size: 1.3rem; font-weight: 500; color: var(--text2); margin-bottom: 0.4em; }
+  p, li { font-size: 1.2rem; line-height: 1.7; color: var(--text2); }
+  .highlight { color: var(--accent2); font-weight: 500; }
+  .gold { color: var(--gold); }
+  .green { color: var(--green); }
+  .cyan { color: var(--cyan); }
+  .pink { color: var(--accent3); }
+
+  /* === Cover === */
+  .cover {
+    background: radial-gradient(ellipse at 30% 40%, rgba(108,92,231,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 60%, rgba(253,121,168,0.08) 0%, transparent 50%),
+                var(--bg);
+    text-align: center;
+  }
+  .cover .subtitle {
+    font-size: 1.4rem;
+    color: var(--text2);
+    margin-top: 1.2rem;
+    letter-spacing: 0.3em;
+  }
+  .cover .version {
+    font-size: 1rem;
+    color: var(--text3);
+    margin-top: 0.8rem;
+    letter-spacing: 0.2em;
+  }
+  .cover .tagline {
+    margin-top: 3rem;
+    font-size: 1.6rem;
+    color: var(--accent2);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+  }
+
+  /* === Decorative Lines === */
+  .deco-line {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 2px;
+    margin: 1.5rem 0;
+  }
+  .deco-line.center { margin: 1.5rem auto; }
+
+  /* === Grid & Cards === */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card .icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+  .card h4 { color: var(--text); margin-bottom: 0.3rem; }
+  .card p { font-size: 1rem; }
+
+  /* === Comparison Table === */
+  .comp-table {
+    width: 100%;
+    max-width: 1100px;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 1.1rem;
+  }
+  .comp-table th {
+    text-align: left;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .comp-table th:first-child { border-radius: 12px 0 0 0; }
+  .comp-table th:last-child { border-radius: 0 12px 0 0; }
+  .comp-table td {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .comp-table tr:last-child td { border-bottom: none; }
+  .comp-table td:first-child { color: var(--text3); font-weight: 500; }
+  .comp-table .yes { color: var(--green); }
+  .comp-table .no { color: var(--text3); }
+
+  /* === Field List === */
+  .field-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem 2rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 1rem 0;
+  }
+  .field-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding: 0.6rem 1rem;
+    background: var(--surface);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .field-item .tag {
+    font-size: 0.85rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .field-item .tag.quick { background: var(--green); }
+  .field-item .tag.both { background: var(--gold); color: #222; }
+  .field-item .name { font-weight: 500; color: var(--text); }
+  .field-item .desc { font-size: 0.95rem; color: var(--text2); }
+
+  /* === Flow Diagram === */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 2rem 0;
+  }
+  .flow-step {
+    flex: 1;
+    text-align: center;
+    padding: 1.2rem 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .flow-step .num {
+    display: inline-block;
+    width: 32px; height: 32px;
+    line-height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  .flow-step p { font-size: 0.95rem; margin: 0; }
+  .flow-arrow { color: var(--text3); font-size: 1.5rem; flex-shrink: 0; }
+
+  /* === Direction Tags === */
+  .dir-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+  .dir-tag {
+    padding: 0.6rem 1.4rem;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+  }
+  .dir-tag:nth-child(1) { border-color: var(--accent); color: var(--accent2); }
+  .dir-tag:nth-child(2) { border-color: var(--cyan); color: var(--cyan); }
+  .dir-tag:nth-child(3) { border-color: var(--green); color: var(--green); }
+  .dir-tag:nth-child(4) { border-color: var(--gold); color: var(--gold); }
+  .dir-tag:nth-child(5) { border-color: var(--text3); color: var(--text3); }
+
+  /* === Principles === */
+  .principles {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .principle {
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
+    background: var(--surface);
+    border-radius: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  .principle .pct { font-size: 1.6rem; font-weight: 900; color: var(--accent2); min-width: 60px; }
+  .principle .pct.gold { color: var(--gold); }
+  .principle .pct.pink { color: var(--accent3); }
+  .principle p { font-size: 1.05rem; margin: 0; }
+
+  /* === Page Number === */
+  .page-num {
+    position: absolute;
+    bottom: 3vh;
+    right: 4vw;
+    font-size: 0.9rem;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+
+  /* === Navigation === */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    border: 1px solid var(--border);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    transition: color 0.2s;
+    font-family: inherit;
+  }
+  .nav button:hover { color: var(--text); }
+  .nav .dots {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .nav .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .nav .dot.active { background: var(--accent2); width: 24px; border-radius: 4px; }
+  .nav .page-label {
+    font-size: 0.85rem;
+    color: var(--text3);
+    min-width: 40px;
+    text-align: center;
+  }
+
+  /* === Content Wrapper === */
+  .content {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .content.left { align-items: flex-start; }
+
+  /* === Stats === */
+  .stats {
+    display: flex;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat .label {
+    font-size: 1rem;
+    color: var(--text3);
+    margin-top: 0.3rem;
+  }
+
+  /* === Category Grid === */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 1.5rem 0;
+  }
+  .cat-item {
+    text-align: center;
+    padding: 1.2rem 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .cat-item .emoji { font-size: 2rem; margin-bottom: 0.4rem; }
+  .cat-item .cat-name { font-weight: 500; font-size: 1.1rem; }
+  .cat-item .cat-sub { font-size: 0.85rem; color: var(--text3); margin-top: 0.3rem; }
+
+  /* === Keyboard hint === */
+  .kbd-hint {
+    position: fixed;
+    bottom: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    color: var(--text3);
+    opacity: 0.5;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* === Responsive === */
+  @media (max-width: 768px) {
+    html { font-size: 14px; }
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .field-list { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats { gap: 1rem; }
+    .stat .num { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ========== SLIDE 1: COVER ========== -->
+  <div class="slide cover">
+    <div class="content" style="text-align:center;">
+      <div style="font-size:1.2rem;color:var(--accent2);letter-spacing:0.3em;margin-bottom:1rem;">✦ 个人效能系统 ✦</div>
+      <h1>时间日志</h1>
+      <div class="deco-line center"></div>
+      <div class="subtitle">Time Log System</div>
+      <div class="version">v5.5 · 双模式精简版</div>
+      <div class="tagline">记录 · 觉察 · 进化</div>
+      <div class="stats">
+        <div class="stat"><div class="num">2</div><div class="label">记录模式</div></div>
+        <div class="stat"><div class="num">6/13</div><div class="label">字段（快/标）</div></div>
+        <div class="stat"><div class="num">7</div><div class="label">项目分类</div></div>
+        <div class="stat"><div class="num">5</div><div class="label">关联方向</div></div>
+      </div>
+    </div>
+    <div class="page-num">01 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 2: OVERVIEW ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>系统概述</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:1.5rem;max-width:900px;">
+        一套个人时间日志记录与管理体系。双模式设计，<span class="highlight">80% 场景用快速记录</span>，<span class="gold">20% 场景用标准深度分析</span>。
+        覆盖飞书多维表格自动写入，形成完整的「记录 → 觉察 → 进化」闭环。
+      </p>
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="card">
+          <div class="icon">⚡</div>
+          <h4>快速模式</h4>
+          <p>6个基础字段，≤50字回复。日常随手记，零负担。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🔬</div>
+          <h4>标准模式</h4>
+          <p>13个完整字段，含Ark分析。有洞察价值的记录用深度模式。</p>
+        </div>
+        <div class="card">
+          <div class="icon">📊</div>
+          <h4>多维表格</h4>
+          <p>自动写入飞书「每日」表，数据永久保存，可追溯可分析。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🤖</div>
+          <h4>AI 辅助</h4>
+          <p>诤友视角分析：30%肯定 + 40%提问 + 30%挑战，拒绝空泛。</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">02 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 3: MODE COMPARISON ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>双模式对比</h2>
+      <div class="deco-line"></div>
+      <table class="comp-table">
+        <tr>
+          <th style="width:25%;">对比维度</th>
+          <th style="width:37.5%;">⚡ 快速模式</th>
+          <th style="width:37.5%;">🔬 标准模式</th>
+        </tr>
+        <tr>
+          <td>触发词</td>
+          <td><code>快速记录，...</code></td>
+          <td><code>时间日志，...</code></td>
+        </tr>
+        <tr>
+          <td>适用场景</td>
+          <td>日常记录（80%）</td>
+          <td>有洞察价值的记录（20%）</td>
+        </tr>
+        <tr>
+          <td>存档字段</td>
+          <td><span class="yes">6 个基础字段</span></td>
+          <td><span class="yes">13 个完整字段</span></td>
+        </tr>
+        <tr>
+          <td>Ark 分析</td>
+          <td><span class="no">✕ 无</span></td>
+          <td><span class="yes">✓ 深度分析</span></td>
+        </tr>
+        <tr>
+          <td>飞书回复</td>
+          <td>≤ 50 字</td>
+          <td>150 字三行</td>
+        </tr>
+        <tr>
+          <td>多维表格</td>
+          <td><span class="yes">✓ 写入</span></td>
+          <td><span class="yes">✓ 写入</span></td>
+        </tr>
+      </table>
+      <div class="dir-tags" style="margin-top:1.5rem;">
+        <span class="dir-tag">⚡ 快速 · 80%</span>
+        <span class="dir-tag">🔬 标准 · 20%</span>
+      </div>
+    </div>
+    <div class="page-num">03 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 4: FIELDS ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>字段规格</h2>
+      <div class="deco-line"></div>
+      <div style="display:flex;gap:1.5rem;margin-bottom:0.5rem;">
+        <span style="font-size:0.95rem;color:var(--text3);">🟢 绿色 = 快速模式可用</span>
+        <span style="font-size:0.95rem;color:var(--text3);">🟣 紫色 = 仅标准模式</span>
+      </div>
+      <div class="field-list">
+        <div class="field-item"><span class="tag both">共</span><span class="name">时间</span><span class="desc">YYYY/MM/DD HH:MM</span></div>
+        <div class="field-item"><span class="tag both">共</span><span class="name">项目</span><span class="desc">一级/二级 分类</span></div>
+        <div class="field-item"><span class="tag both">共</span><span class="name">细节</span><span class="desc">原始描述，不加工</span></div>
+        <div class="field-item"><span class="tag both">共</span><span class="name">对象</span><span class="desc">关联人物，无则留空</span></div>
+        <div class="field-item"><span class="tag both">共</span><span class="name">主观感受</span><span class="desc">用户提到的感受</span></div>
+        <div class="field-item"><span class="tag both">共</span><span class="name">关联方向</span><span class="desc">五选一方向</span></div>
+        <div class="field-item"><span class="tag">标</span><span class="name">能量状态</span><span class="desc">1-10 分</span></div>
+        <div class="field-item"><span class="tag">标</span><span class="name">目标对齐</span><span class="desc">1-10 分</span></div>
+        <div class="field-item"><span class="tag">标</span><span class="name">Ark 辅助</span><span class="desc">30%肯定+40%提问+30%挑战</span></div>
+        <div class="field-item"><span class="tag">标</span><span class="name">Ark 深度</span><span class="desc">≥3条洞察</span></div>
+        <div class="field-item"><span class="tag">标</span><span class="name">落地行动</span><span class="desc">🔥今天 / ⚡本周 / 💡本月</span></div>
+        <div class="field-item"><span class="tag">标</span><span class="name">Ark 长期收益</span><span class="desc">≤3条，明确价值</span></div>
+        <div class="field-item" style="grid-column:1/-1;"><span class="tag">标</span><span class="name">风险提示</span><span class="desc">隐含假设 → 潜在影响 → 未知的未知</span></div>
+      </div>
+    </div>
+    <div class="page-num">04 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 5: CATEGORIES ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>项目分类</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:1.5rem;">7 大一级分类，覆盖生活全维度</p>
+      <div class="cat-grid">
+        <div class="cat-item"><div class="emoji">💪</div><div class="cat-name">健康</div><div class="cat-sub">睡眠·运动·饮食·医疗</div></div>
+        <div class="cat-item"><div class="emoji">👨‍👩‍👧‍👦</div><div class="cat-name">家庭</div><div class="cat-sub">亲子·家人·育儿·父母</div></div>
+        <div class="cat-item"><div class="emoji">💼</div><div class="cat-name">工作</div><div class="cat-sub">商务·投资·管理·运营</div></div>
+        <div class="cat-item"><div class="emoji">📚</div><div class="cat-name">学习</div><div class="cat-sub">阅读·研究·思考</div></div>
+        <div class="cat-item"><div class="emoji">🏠</div><div class="cat-name">生活</div><div class="cat-sub">日常·采购·出行</div></div>
+        <div class="cat-item"><div class="emoji">🤝</div><div class="cat-name">社交</div><div class="cat-sub">朋友·人脉·校友</div></div>
+        <div class="cat-item" style="grid-column:span 2;"><div class="emoji">🤖</div><div class="cat-name">科技</div><div class="cat-sub">AI·技术·创新·探索</div></div>
+      </div>
+
+      <h3 style="margin-top:2rem;font-size:1.5rem;">关联方向速查</h3>
+      <div class="dir-tags">
+        <span class="dir-tag">🚀 创新探索</span>
+        <span class="dir-tag">🧠 AI深化</span>
+        <span class="dir-tag">🌿 健康系统</span>
+        <span class="dir-tag">🏡 家庭仪式</span>
+        <span class="dir-tag">📋 日常琐事</span>
+      </div>
+    </div>
+    <div class="page-num">05 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 6: WORKFLOW ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>执行流程</h2>
+      <div class="deco-line"></div>
+
+      <h4 style="margin-top:1rem;">⚡ 快速模式</h4>
+      <div class="flow">
+        <div class="flow-step"><div class="num">1</div><p>解析时间+活动</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">2</div><p>填充6字段</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">3</div><p>写入「每日」表</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">4</div><p>≤50字回复</p></div>
+      </div>
+
+      <h4 style="margin-top:2rem;">🔬 标准模式</h4>
+      <div class="flow">
+        <div class="flow-step"><div class="num">1</div><p>解析时间+项目+细节</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">2</div><p>填充13字段</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">3</div><p>写入「每日」表</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">4</div><p>三行回复</p></div>
+      </div>
+
+      <div style="margin-top:2rem;padding:1.2rem 1.8rem;background:var(--surface);border-radius:12px;border:1px solid var(--border);width:100%;max-width:1000px;">
+        <p style="font-size:1rem;margin:0;"><span class="gold">💡 批量记录</span> 多条用分号或换行分隔，每条独立执行后汇总反馈</p>
+      </div>
+    </div>
+    <div class="page-num">06 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 7: PRINCIPLES ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>诤友原则</h2>
+      <div class="deco-line"></div>
+      <p style="margin-bottom:1.5rem;">每条标准模式分析遵循严格的比例结构</p>
+      <div class="principles">
+        <div class="principle">
+          <div class="pct gold">30%</div>
+          <div>
+            <strong style="color:var(--gold);">肯定</strong>
+            <p>具体指出做得好的地方，有事实依据。禁止空泛夸奖（"很棒""很好"）。</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="pct">40%</div>
+          <div>
+            <strong style="color:var(--accent2);">提问</strong>
+            <p>提出引导性问题，启发更深层思考。"你觉得这个方法还能用在哪些场景？"</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="pct pink">30%</div>
+          <div>
+            <strong style="color:var(--accent3);">挑战</strong>
+            <p>指出可提升之处，尖锐但有建设性。不能温和空洞，必须直击盲区。</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+        <div style="padding:0.6rem 1.2rem;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:0.95rem;color:var(--text2);">
+          ❌ 禁止连续3条正面反馈
+        </div>
+        <div style="padding:0.6rem 1.2rem;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:0.95rem;color:var(--text2);">
+          ✅ 盲区/模式/矛盾点必须整合
+        </div>
+      </div>
+    </div>
+    <div class="page-num">07 / 08</div>
+  </div>
+
+  <!-- ========== SLIDE 8: OUTPUT FORMAT ========== -->
+  <div class="slide">
+    <div class="content left">
+      <h2>输出格式</h2>
+      <div class="deco-line"></div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="card" style="border-left:4px solid var(--green);">
+          <h4 style="color:var(--green);">⚡ 快速模式回复</h4>
+          <div style="margin-top:0.8rem;padding:1rem;background:var(--bg);border-radius:8px;font-family:monospace;font-size:1rem;color:var(--text2);">
+            ✅ 已记录 | [工作] | 15:30
+          </div>
+          <p style="margin-top:0.8rem;">≤ 50 字，仅告知已记录</p>
+        </div>
+        <div class="card" style="border-left:4px solid var(--accent);">
+          <h4 style="color:var(--accent2);">🔬 标准模式三行</h4>
+          <div style="margin-top:0.8rem;padding:1rem;background:var(--bg);border-radius:8px;font-family:monospace;font-size:0.95rem;color:var(--text2);line-height:1.6;">
+            ✅ 已记录 | [工作] | 15:30<br>
+            💡 核心洞察（≤50字）<br>
+            🎯 落地建议（≤50字）
+          </div>
+          <p style="margin-top:0.8rem;">总字数 ≤ 150 字</p>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;padding:1.2rem 1.8rem;background:var(--surface);border-radius:12px;border:1px solid var(--border);width:100%;max-width:1000px;">
+        <p style="font-size:1rem;margin:0;"><span class="red" style="color:var(--red);">⚠️ 惩罚规则：</span> 格式错误/内容空泛 → 立即复盘根因；连续2次同类错误 → 暂停执行，重新学习规范</p>
+      </div>
+
+      <div style="margin-top:1.5rem;text-align:center;width:100%;">
+        <p style="font-size:1.2rem;color:var(--text3);">记录不是目的，<span class="highlight">觉察

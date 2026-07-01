@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实践即认知</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08080e;--bg2:#10101a;--bg3:#181828;--text:#eaeaf2;--text-dim:#8888a8;--text-bright:#fff;--gold:#f0c040;--gold-dim:rgba(240,192,64,.15);--teal:#40d0c0;--teal-dim:rgba(64,208,192,.12);--rose:#e06080;--rose-dim:rgba(224,96,128,.12);--blue:#6090e0;--blue-dim:rgba(96,144,224,.12);--border:rgba(255,255,255,.05);--glow-gold:rgba(240,192,64,.2);--glow-teal:rgba(64,208,192,.15)}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6vh 7vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}
+.slide-content{max-width:1100px;width:100%;margin:0 auto}
+.slide-title{font-family:'Noto Serif SC',serif;font-size:clamp(2.2rem,4.5vw,4rem);font-weight:900;line-height:1.3;margin-bottom:.5em;background:linear-gradient(135deg,var(--text-bright) 0%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-subtitle{font-size:clamp(1.1rem,1.8vw,1.6rem);color:var(--text-dim);font-weight:300;line-height:1.7;margin-bottom:2rem}
+.slide-label{display:inline-block;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,192,64,.25);padding:.35em 1.2em;border-radius:100px;margin-bottom:1.5rem;font-weight:500}
+.nav-bar{position:fixed;bottom:2.5vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1rem;z-index:100;background:rgba(8,8,14,.85);backdrop-filter:blur(12px);padding:.6rem 1.5rem;border-radius:100px;border:1px solid var(--border)}
+.nav-btn{background:0;border:none;color:var(--text-dim);font-size:1.3rem;cursor:pointer;padding:.3rem .6rem;transition:color .3s;font-family:inherit}
+.nav-btn:hover{color:var(--text-bright)}
+.nav-dots{display:flex;gap:.45rem}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dim);opacity:.25;transition:all .3s;cursor:pointer}
+.nav-dot.active{opacity:1;background:var(--gold);box-shadow:0 0 14px var(--glow-gold);width:28px;border-radius:4px}
+.nav-counter{font-size:.75rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;letter-spacing:.05em;min-width:4em;text-align:center}
+.slide.title-slide{background:radial-gradient(ellipse at 25% 20%,rgba(240,192,64,.06) 0%,transparent 55%),radial-gradient(ellipse at 75% 80%,rgba(64,208,192,.04) 0%,transparent 50%),var(--bg)}
+.title-slide .main-title{font-family:'Noto Serif SC',serif;font-size:clamp(2.8rem,5.5vw,5rem);font-weight:900;line-height:1.2;text-align:center;background:linear-gradient(135deg,#fff 0%,var(--gold) 40%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem}
+.title-slide .sub-title{font-size:clamp(1.1rem,2vw,1.8rem);color:var(--text-dim);text-align:center;font-weight:300;max-width:750px;line-height:1.7;margin:0 auto}
+.title-slide .meta{margin-top:2.5rem;font-size:.85rem;color:var(--text-dim);opacity:.4;text-align:center}
+.title-slide .tagline{text-align:center;margin-top:3rem;font-size:clamp(1rem,1.6vw,1.4rem);color:var(--gold);font-weight:500;opacity:.85}
+.kbd-hint{position:fixed;bottom:8vh;right:2vw;font-size:.65rem;color:var(--text-dim);opacity:.2;z-index:50;font-family:'JetBrains Mono',monospace;letter-spacing:.05em}
+.callout{background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 14px 14px 0;padding:1.3rem 1.8rem;margin:1.5rem 0;font-size:clamp(.9rem,1.3vw,1.1rem);line-height:1.7}
+.callout.teal{border-left-color:var(--teal)}
+.callout.rose{border-left-color:var(--rose)}
+.callout.blue{border-left-color:var(--blue)}
+.callout .co-icon{margin-right:.6rem}
+.tag{display:inline-block;padding:.25em .9em;border-radius:100px;font-size:.75rem;font-weight:500;margin:.15em}
+.tag.gold{background:var(--gold-dim);color:var(--gold)}
+.tag.teal{background:var(--teal-dim);color:var(--teal)}
+.tag.rose{background:var(--rose-dim);color:var(--rose)}
+.tag.blue{background:var(--blue-dim);color:var(--blue)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:1.5rem 0}
+.col-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.8rem}
+.col-box h4{font-size:clamp(.9rem,1.2vw,1.05rem);margin-bottom:.8rem;color:var(--gold)}
+.col-box.teal h4{color:var(--teal)}
+.col-box.rose h4{color:var(--rose)}
+.col-box ul{list-style:none;font-size:clamp(.8rem,1.1vw,.95rem);line-height:1.8;color:var(--text-dim)}
+.col-box ul li::before{content:'→ ';color:var(--gold);opacity:.5}
+.col-box.teal ul li::before{color:var(--teal)}
+.col-box.rose ul li::before{color:var(--rose)}
+.flow-row{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;margin:1.5rem 0}
+.flow-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:.8rem 1.5rem;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text-dim);text-align:center;line-height:1.5}
+.flow-item.gold{border-color:rgba(240,192,64,.3);color:var(--gold)}
+.flow-item.teal{border-color:rgba(64,208,192,.3);color:var(--teal)}
+.flow-item.rose{border-color:rgba(224,96,128,.3);color:var(--rose)}
+.flow-arrow{color:var(--text-dim);opacity:.3;font-size:1.4rem}
+.ecosystem{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:2rem 0}
+.eco-item{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;display:flex;align-items:flex-start;gap:1rem;transition:transform .3s}
+.eco-item:hover{transform:translateY(-3px)}
+.eco-icon{font-size:2rem;flex-shrink:0;width:48px;text-align:center}
+.eco-text h4{font-size:clamp(.9rem,1.2vw,1.05rem);margin-bottom:.3rem}
+.eco-text p{font-size:clamp(.75rem,1vw,.85rem);color:var(--text-dim);line-height:1.5}
+.eco-item:nth-child(1) h4{color:var(--gold)}
+.eco-item:nth-child(2) h4{color:var(--teal)}
+.eco-item:nth-child(3) h4{color:var(--rose)}
+.eco-item:nth-child(4) h4{color:var(--blue)}
+.cycle-viz{display:flex;flex-direction:column;align-items:center;gap:.3rem;margin:2rem auto;max-width:600px}
+.cycle-step{width:100%;padding:.9rem 1.2rem;border-radius:12px;text-align:center;font-size:clamp(.85rem,1.2vw,1rem);font-weight:500;border:1px solid;line-height:1.4}
+.cycle-step.s1{background:rgba(240,192,64,.08);border-color:rgba(240,192,64,.2);color:var(--gold)}
+.cycle-step.s2{background:rgba(64,208,192,.08);border-color:rgba(64,208,192,.2);color:var(--teal)}
+.cycle-step.s3{background:rgba(224,96,128,.08);border-color:rgba(224,96,128,.2);color:var(--rose)}
+.cycle-step.s4{background:rgba(96,144,224,.08);border-color:rgba(96,144,224,.2);color:var(--blue)}
+.cycle-arr{color:var(--text-dim);opacity:.25;font-size:.9rem}
+.insight-box{background:linear-gradient(135deg,rgba(240,192,64,.06),rgba(64,208,192,.04));border:1px solid rgba(240,192,64,.15);border-radius:16px;padding:2rem;margin:1.5rem 0;text-align:center}
+.insight-box .big-quote{font-family:'Noto Serif SC',serif;font-size:clamp(1.2rem,2vw,1.8rem);font-weight:700;color:var(--gold);line-height:1.5;margin-bottom:.5rem}
+.insight-box .big-quote-sub{font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--text-dim);line-height:1.6}
+.mvc-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0}
+.mvc-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;transition:transform .3s}
+.mvc-card:hover{transform:translateY(-3px)}
+.mvc-card .mvc-num{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--gold);opacity:.4;margin-bottom:.3rem}
+.mvc-card h4{font-size:clamp(.85rem,1.1vw,.95rem);margin-bottom:.5rem;color:var(--text-bright)}
+.mvc-card p{font-size:clamp(.7rem,.95vw,.8rem);color:var(--text-dim);line-height:1.5}
+@media(max-width:768px){.two-col,.ecosystem{grid-template-columns:1fr}.mvc-steps{grid-template-columns:1fr}.slide{padding:4vh 5vw}}
+.slide::-webkit-scrollbar{width:4px}
+.slide::-webkit-scrollbar-track{background:0 0}
+.slide::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .slide-content>*{animation:fadeUp .5s ease forwards;opacity:0}
+.slide.active .slide-content>:nth-child(1){animation-delay:.05s}
+.slide.active .slide-content>:nth-child(2){animation-delay:.1s}
+.slide.active .slide-content>:nth-child(3){animation-delay:.15s}
+.slide.active .slide-content>:nth-child(4){animation-delay:.2s}
+.slide.active .slide-content>:nth-child(5){animation-delay:.25s}
+.slide.active .slide-content>:nth-child(6){animation-delay:.3s}
+.slide.active .slide-content>:nth-child(7){animation-delay:.35s}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S0: Title -->
+<div class="slide title-slide active" data-index="0">
+<div class="slide-content" style="text-align:center">
+<div class="main-title">实践即认知</div>
+<div class="sub-title">在现实碰撞中生长的思考与方向</div>
+<div class="tagline">你不是在"寻找方向"，你是在"培育方向"</div>
+<div class="meta">2026.06.22 · 赵锦勇</div>
+</div>
+</div>
+
+<!-- S1: The Problem -->
+<div class="slide" data-index="1">
+<div class="slide-content">
+<span class="slide-label">❓ 问题</span>
+<div class="slide-title">为什么"想清楚再做"常常失败？</div>
+<div class="slide-subtitle">"三思而后行"在复杂世界中有一个致命的隐含假设</div>
+<div class="callout rose"><span class="co-icon">⚠️</span> <strong>空中楼阁的困境：</strong>当思考脱离实践，它就会变成"关于思考的思考"——一种自我指涉的封闭循环。你越想越焦虑，越焦虑越想，因为缺乏来自现实的新信息输入来打破这个循环。</div>
+<div class="two-col">
+<div class="col-box rose">
+<h4>🏗️ 建筑师模式（传统）</h4>
+<ul>
+<li>先画蓝图，再施工</li>
+<li>偏差即错误</li>
+<li>追求确定性</li>
+<li>害怕意外</li>
+<li>在简单环境中有效</li>
+</ul>
+</div>
+<div class="col-box teal">
+<h4>🎷 爵士乐手模式（实践）</h4>
+<ul>
+<li>知道基本和弦，在演奏中即兴</li>
+<li>意外是灵感的来源</li>
+<li>拥抱不确定性</li>
+<li>在互动中创造</li>
+<li>在复杂世界中生长</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S2: Cognitive Conflict -->
+<div class="slide" data-index="2">
+<div class="slide-content">
+<span class="slide-label">🧠 核心机制</span>
+<div class="slide-title">认知冲突：大脑如何通过"撞墙"学习</div>
+<div class="slide-subtitle">"在实践的碰撞中，会遇到很多和自己思考理解不一样的问题，反而促进了自己更多的思考"</div>
+<div class="two-col">
+<div class="col-box">
+<h4>📖 皮亚杰认知发展模型</h4>
+<ul>
+<li><strong>同化：</strong>用现有认知框架解释新经验（把新东西塞进旧抽屉）</li>
+<li><strong>顺应：</strong>因新经验而修改认知框架（为新东西造一个新抽屉）</li>
+<li>当实践与既有认知不一致时，大脑进入"失衡"状态——这正是认知成长的起点</li>
+</ul>
+</div>
+<div class="col-box teal">
+<h4>🔬 生物学基础</h4>
+<ul>
+<li><strong>DMN（默认模式网络）：</strong>缺乏外部刺激时过度活跃 → "空想焦虑"的神经基础</li>
+<li><strong>TPN（任务正相关网络）：</strong>实践激活，将注意力从内部循环转向外部互动</li>
+<li>实践不仅是心理上的解脱，更是神经层面的重新布线</li>
+</ul>
+</div>
+</div>
+<div class="callout"><span class="co-icon">💡</span> <strong>核心洞察：</strong>认知冲突不是问题，它是答案。不舒服的"失衡"状态正是大脑在告诉你——旧的框架不够用了，该升级了。</div>
+</div>
+</div>
+
+<!-- S3: Emergence -->
+<div class="slide" data-index="3">
+<div class="slide-content">
+<span class="slide-label">🌊 涌现</span>
+<div class="slide-title">方向不是"找到"的，是"长出来"的</div>
+<div class="slide-subtitle">"在这个实践中慢慢有了方向"——复杂系统中涌现秩序的典型特征</div>
+<div class="cycle-viz">
+<div class="cycle-step s1">🌱 小规模实践</div>
+<div class="cycle-arr">↓</div>
+<div class="cycle-step s2">📡 获得现实反馈</div>
+<div class="cycle-arr">↓</div>
+<div class="cycle-step s3">🔄 调整认知框架</div>
+<div class="cycle-arr">↓</div>
+<div class="cycle-step s4">🧭 修正方向</div>
+<div class="cycle-arr">↻</div>
+<div class="cycle-step s1">🌱 新一轮实践（方向逐渐清晰）</div>
+</div>
+<div class="callout teal"><span class="co-icon">🌊</span> 就像河流不是先规划好河道再流——水在流动中，根据地形和阻力，自然形成了河道。方向是无数小实践的反馈信号逐渐汇聚成的趋势线。</div>
+</div>
+</div>
+
+<!-- S4: Triple Practice -->
+<div class="slide" data-index="4">
+<div class="slide-content">
+<span class="slide-label">🔭 三重实践</span>
+<div class="slide-title">多重的实践塑造认知</div>
+<div class="slide-subtitle">"这种实践既可以是自己的实践，也可以观察到的这个世界的实践"</div>
+<div class="two-col">
+<div class="col-box">
+<h4>🧪 亲身实践</h4>
+<ul>
+<li>自己的试错和体验</li>
+<li>最深度的认知冲突</li>
+<li>成本高、风险大</li>
+<li>产生不可替代的体感知识</li>
+</ul>
+</div>
+<div class="col-box teal">
+<h4>👁️ 观察实践</h4>
+<ul>
+<li>他人的经历、历史案例</li>
+<li>低成本获取经验</li>
+<li>镜像神经元提供生物学基础</li>
+<li>看别人做 = 大脑在模拟实践</li>
+</ul>
+</div>
+</div>
+<div class="callout blue"><span class="co-icon">💬</span> <strong>还有第三种：对话实践</strong>——与他人的深度交流中碰撞认知。三重实践叠加，构成了认知进化的立体营养。</div>
+</div>
+</div>
+
+<!-- S5: Biology -->
+<div class="slide" data-index="5">
+<div class="slide-content">
+<span class="slide-label">🧬 生物学根基</span>
+<div class="slide-title">为什么这是"有意义的"</div>
+<div class="slide-subtitle">"也许从生物学上来讲，这也是有意义的"——确实如此</div>
+<div class="two-col">
+<div class="col-box rose">
+<h4>🧠 大脑为行动而设计</h4>
+<ul>
+<li>人类大脑在进化中大部分时间在行动中度过</li>
+<li>认知系统本质上是行动导向系统</li>
+<li>思考是行动的副产品，不是目的本身</li>
+<li>运动皮层在大脑皮层中占比极大</li>
+</ul>
+</div>
+<div class="col-box teal">
+<h4>⚡ 多巴胺预期误差</h4>
+<ul>
+<li>多巴胺编码的是"预期误差"，不是快乐</li>
+<li>现实结果 vs 预期的差异驱动学习</li>
+<li>实践 → 预期误差 → 多巴胺信号 → 认知调整</li>
+<li>没有实践 → 没有学习</li>
+</ul>
+</div>
+</div>
+<div class="callout rose"><span class="co-icon">🚨</span> <strong>焦虑的生物学根源：</strong>当思考脱离行动，大脑陷入"空转"——DMN过度活跃，反复思考同一问题，无新信息输入，焦虑升级，更不敢行动。打破循环的唯一方式就是行动。</div>
+</div>
+</div>
+
+<!-- S6: Ecosystem -->
+<div class="slide" data-index="6">
+<div class="slide-content">
+<span class="slide-label">🌿 隐喻</span>
+<div class="slide-title">认知的生态系统</div>
+<div class="slide-subtitle">把你的认知系统看作一个生态系统</div>
+<div class="ecosystem">
+<div class="eco-item">
+<div class="eco-icon">☀️</div>
+<div class="eco-text">
+<h4>实践 = 阳光和雨水</h4>
+<p>外部能量的输入。没有实践，认知系统就会枯萎。</p>
+</div>
+</div>
+<div class="eco-item">
+<div class="eco-icon">🦎</div>
+<div class="eco-text">
+<h4>认知冲突 = 物种竞争</h4>
+<p>推动进化。不舒服的碰撞正是系统在升级。</p>
+</div>
+</div>
+<div class="eco-item">
+<div class="eco-icon">🧭</div>
+<div class="eco-text">
+<h4>方向感 = 生态演替</h4>
+<p>不是被设计的，是从无数互动中涌现的。</p>
+</div>
+</div>
+<div class="eco-item">
+<div class="eco-icon">🐛</div>
+<div class="eco-text">
+<h4>焦虑 = 害虫</h4>
+<p>在缺乏外部输入时滋生。阳光雨水充足了，害虫自然减少。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- S7: MVC -->
+<div class="slide" data-index="7">
+<div class="slide-content">
+<span class="slide-label">🛠️ 方法</span>
+<div class="slide-title">最小可行认知（MVC）</div>
+<div class="slide-subtitle">借鉴精益创业的MVP概念——尽快设计小规模实践来制造认知冲突</div>
+<div class="mvc-steps">
+<div class="mvc-card">
+<div class="mvc-num">01</div>
+<h4>写下假设</h4>
+<p>"我认为……"——把隐性假设变成显性命题</p>
+</div>
+<div class="mvc-card">
+<div class="mvc-num">02</div>
+<h4>设计最小实践</h4>
+<p>24小时内可完成的小规模检验</p>
+</div>
+<div class="mvc-card">
+<div class="mvc-num">03</div>
+<h4>执行并记录</h4>
+<p>对比预期与现实，找出差异</p>
+</div>
+</div>
+<div class="callout teal"><span class="co-icon">🎯</span> <strong>三重实践轮换法：</strong>每周至少一次直接实践（做一件新的事）+ 一次深度观察（读案例、分析动态）+ 一次对话碰撞（找认知水平相当的人深度交流）。轮换训练，避免单一模式带来的认知固化。</div>
+</div>
+</div>
+
+<!-- S8: Final Insight -->
+<div class="slide" data-index="8">
+<div class="slide-content">
+<span class="slide-label">🌱 结语</span>
+<div class="slide-title">培育方向，而非寻找方向</div>
+<div class="insight-box">
+<div class="big-quote">你不是在"寻找方向"<br>你是在"培育方向"</div>
+<div class="big-quote-sub">就像园丁无法命令种子长成什么形状，但他可以提供最好的土壤、阳光和水——然后相信生命自己会找到生长的路径。</div>
+</div>
+<div class="flow-row">
+<div class="flow-item gold">🏃 保持行动</div>
+<div class="flow-arrow">+</div>
+<div class="flow-item teal">👁️ 保持观察</div>
+<div class="flow-arrow">+</div>
+<div class="flow-item rose">💬 保持对话</div>
+<div class="flow-arrow">+</div>
+<div class="flow-item blue">📝 保持记录</div>
+</div>
+<div class="callout"><span class="co-icon">🌱</span> 方向会在你与世界的持续互动中，自然而然地浮现。你的任务不是想清楚一切再行动，而是<strong>保持行动，保持观察，保持对话，保持记录</strong>。</div>
+</div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+<button class="nav-btn" onclick="prevSlide()">◀</button>
+<div class="nav-dots" id="navDots"></div>
+<span class="nav-counter" id="navCounter">1 / 9</span>
+<button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+<div class="kbd-hint">← → / Space</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+function renderDots(){
+  const d=document.getElementById('navDots');
+  d.innerHTML='';
+  for(let i=0;i<total;i++){
+    const dot=document.createElement('div');
+    dot.className='nav-dot'+(i===current?' active':'');
+    dot.onclick=()=>goTo(i);
+    d.appendChild(dot);
+  }
+  document.getElementById('navCounter').textContent=(current+1)+' / '+total;
+}
+function goTo(idx){
+  slides[current].classList.remove('active');
+  current=idx;
+  slides[current].classList.add('active');
+  renderDots();
+}
+function nextSlide(){goTo((current+1)%total)}
+function prevSlide(){goTo((current-1+total)%total)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide()}
+  if(e.key==='ArrowLeft'){e.preventDefault();prevSlide()}
+});
+renderDots();
+</script>
+</body>
+</html>

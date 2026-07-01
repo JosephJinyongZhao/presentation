@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>质感的来源</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0A0A0F;
+    --bg2: #12121A;
+    --card: #1A1A28;
+    --wine: #8B3A42;
+    --wine-glow: rgba(139,58,66,0.3);
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --gold-glow: rgba(201,169,110,0.15);
+    --text: #EAE2D6;
+    --text-muted: #9A9084;
+    --border: #2A2530;
+    --green: #5B8C5A;
+    --green-glow: rgba(91,140,90,0.15);
+  }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    user-select: none;
+  }
+
+  /* Slide Container */
+  .slides {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Typography */
+  .slide h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900;
+    color: var(--gold-light);
+    line-height: 1.3;
+    margin-bottom: 1.2rem;
+    letter-spacing: 2px;
+  }
+  .slide h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+  }
+  .slide h3 {
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 0.8rem;
+  }
+  .slide p {
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+  .slide .muted {
+    color: var(--text-muted);
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+  }
+  .slide .highlight {
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+
+  /* Formula */
+  .formula-box {
+    background: linear-gradient(135deg, rgba(201,169,110,0.08), rgba(139,58,66,0.08));
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 20px;
+    padding: 3vh 4vw;
+    text-align: center;
+    margin: 2vh 0;
+  }
+  .formula {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 900;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+  }
+  .formula-sub {
+    font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+    color: var(--text-muted);
+    margin-top: 1rem;
+    line-height: 1.8;
+  }
+
+  /* Grid 2-col */
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2vw;
+    margin: 1.5vh 0;
+  }
+  .grid2 .col {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 2.5vh 2vw;
+    border: 1px solid var(--border);
+  }
+  .grid2 .col .label {
+    font-size: clamp(0.85rem, 1.3vw, 1.1rem);
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .grid2 .col ul {
+    list-style: none;
+    padding: 0;
+  }
+  .grid2 .col ul li {
+    font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+    color: var(--text-muted);
+    line-height: 1.8;
+    padding-left: 1.2rem;
+    position: relative;
+    margin-bottom: 0.3rem;
+  }
+  .grid2 .col ul li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--wine);
+    font-weight: 700;
+  }
+  .grid2 .col .arrow {
+    margin-top: 0.8rem;
+    font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+    color: var(--gold-light);
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+    background: rgba(201,169,110,0.08);
+    border-radius: 8px;
+    border-left: 3px solid var(--gold);
+  }
+
+  /* Quote */
+  .quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+    line-height: 1.7;
+    color: var(--gold-light);
+    text-align: center;
+    padding: 2vh 2vw;
+    border-left: 4px solid var(--gold);
+    margin: 1.5vh 0;
+    background: rgba(201,169,110,0.05);
+    border-radius: 0 12px 12px 0;
+  }
+
+  /* Principle Card */
+  .principle {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 2.5vh 2.5vw;
+    border: 1px solid var(--border);
+    margin-bottom: 1.5vh;
+  }
+  .principle:last-child { margin-bottom: 0; }
+  .principle .p-num {
+    font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    color: var(--wine);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 0.3rem;
+  }
+  .principle .p-title {
+    font-size: clamp(1.1rem, 2vw, 1.7rem);
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 0.5rem;
+  }
+  .principle .p-body {
+    font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin: 1.5vh 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+  }
+  thead th {
+    background: var(--wine);
+    color: var(--gold-light);
+    padding: 1.2vh 1.2vw;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  tbody td {
+    padding: 1vh 1.2vw;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* Callout */
+  .callout {
+    border-radius: 14px;
+    padding: 2vh 2.5vw;
+    margin: 1.5vh 0;
+    font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+    line-height: 1.7;
+  }
+  .callout-green {
+    background: rgba(91,140,90,0.08);
+    border-left: 4px solid var(--green);
+    color: var(--text);
+  }
+  .callout-green .c-title {
+    color: var(--green);
+    font-weight: 700;
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.8vh 1.5vw;
+    border-radius: 30px;
+    border: 1px solid var(--border);
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    transition: color 0.3s;
+    line-height: 1;
+  }
+  .nav-btn:hover { color: var(--gold); }
+  .nav-dots {
+    display: flex;
+    gap: 0.5vw;
+  }
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .nav-dot.active {
+    background: var(--gold);
+    width: 24px;
+    border-radius: 4px;
+  }
+  .nav-page {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-width: 50px;
+    text-align: center;
+  }
+
+  /* Animations */
+  .slide.active .fade-in {
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .fade-in-d1 { animation-delay: 0.1s; }
+  .slide.active .fade-in-d2 { animation-delay: 0.2s; }
+  .slide.active .fade-in-d3 { animation-delay: 0.3s; }
+  .slide.active .fade-in-d4 { animation-delay: 0.4s; }
+  .slide.active .fade-in-d5 { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide-specific */
+  .slide-cover {
+    background: radial-gradient(ellipse at 50% 30%, rgba(139,58,66,0.15) 0%, transparent 70%);
+  }
+  .slide-cover .subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+  }
+  .slide-cover .tagline {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+    color: var(--gold);
+    margin-top: 3vh;
+    padding: 1.5vh 2vw;
+    border-top: 1px solid var(--border);
+  }
+
+  .slide-end {
+    background: radial-gradient(ellipse at 50% 40%, rgba(201,169,110,0.08) 0%, transparent 60%);
+  }
+
+  /* Principle grid for 5 items */
+  .principle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2vh;
+  }
+
+  /* Decision framework highlight */
+  .highlight-row {
+    display: flex;
+    gap: 1vw;
+    margin: 0.8vh 0;
+  }
+  .highlight-row .tag {
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    font-weight: 600;
+  }
+  .tag-deep { background: rgba(201,169,110,0.15); color: var(--gold-light); }
+  .tag-shallow { background: rgba(139,58,66,0.15); color: #D4A0A0; }
+  .tag-honest { background: rgba(91,140,90,0.15); color: var(--green); }
+
+  /* Keyboard hint */
+  .hint {
+    position: fixed;
+    bottom: 8vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: rgba(154,144,132,0.3);
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid2 { grid-template-columns: 1fr; gap: 1.5vh; }
+    .nav { gap: 3vw; padding: 0.6vh 3vw; }
+    .nav-dot { width: 6px; height: 6px; }
+    .nav-dot.active { width: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide-cover active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-in" style="font-size:clamp(2rem,4vw,3.5rem);margin-bottom:1rem;">🍷</div>
+      <h1 class="fade-in fade-in-d1">质感的来源</h1>
+      <div class="subtitle fade-in fade-in-d2">专业深度 · 时间积累 · 即兴魅力</div>
+      <div class="tagline fade-in fade-in-d3">当内核足够深厚时，即兴本身就是最好的形式</div>
+      <div class="muted fade-in fade-in-d4" style="margin-top:4vh;">从葡萄酒活动对比中提炼的核心原则</div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 一个对比 -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2 class="fade-in">一个对比，两种质感</h2>
+      <div class="grid2 fade-in fade-in-d1">
+        <div class="col">
+          <div class="label">🔥 王宇恒庄主：即兴的魅力</div>
+          <ul>
+            <li>澳大利亚阿德莱德葡萄酒学院深造</li>
+            <li>自己建设酒庄</li>
+            <li>自己酿造葡萄酒</li>
+            <li>拥有获奖酒款</li>
+            <li>充满热爱</li>
+          </ul>
+          <div class="arrow">→ 没有PPT，没有排练，即兴分享，每一个细节都有质感</div>
+        </div>
+        <div class="col">
+          <div class="label">📦 商业游戏：设计的单薄</div>
+          <ul>
+            <li>临时手搓的创意游戏</li>
+            <li>缺乏底层系统支撑</li>
+            <li>参与者感知不到深度</li>
+            <li>更像一个"活动填充物"</li>
+          </ul>
+          <div class="arrow">→ 花了时间设计，体验感远不如庄主的即兴分享</div>
+        </div>
+      </div>
+      <div class="quote fade-in fade-in-d2">
+        精心设计的"形式"往往不如即兴释放的"内核"有质感
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 底层公式 -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2 class="fade-in">质感的底层公式</h2>
+      <div class="formula-box fade-in fade-in-d1">
+        <div class="formula">质感 = 内核深度 × 形式匹配度</div>
+        <div class="formula-sub">
+          内核深度 = 专业积累 × 时间投入 × 热爱程度<br>
+          形式匹配度 = 形式对内核的释放效率（而非形式的复杂度）
+        </div>
+      </div>
+      <div class="grid2 fade-in fade-in-d2">
+        <div class="col">
+          <div class="label">📈 内核驱动型</div>
+          <div style="font-size:clamp(0.8rem,1.3vw,1.1rem);color:var(--text-muted);line-height:1.7;">
+            <strong style="color:var(--gold-light);">条件：</strong>有足够的专业深度和时间积累<br>
+            <strong style="color:var(--gold-light);">策略：</strong>即兴释放，让内核自己说话<br>
+            <strong style="color:var(--gold-light);">风险：</strong>内核不够深时容易露怯
+          </div>
+        </div>
+        <div class="col">
+          <div class="label">📐 形式驱动型</div>
+          <div style="font-size:clamp(0.8rem,1.3vw,1.1rem);color:var(--text-muted);line-height:1.7;">
+            <strong style="color:var(--gold-light);">条件：</strong>内核尚浅，但需要快速交付<br>
+            <strong style="color:var(--gold-light);">策略：</strong>精心打磨形式，用结构弥补深度<br>
+            <strong style="color:var(--gold-light);">风险：</strong>形式喧宾夺主，体验浮于表面
+          </div>
+        </div>
+      </div>
+      <div class="muted fade-in fade-in-d3" style="margin-top:1vh;font-size:clamp(0.8rem,1.3vw,1.1rem);">
+        <span class="highlight">关键洞察：</span>内核够深 → 形式的边际收益递减；内核不足 → 形式的边际收益递增但存在上限
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 原则一 & 二 -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2 class="fade-in">核心原则（上）</h2>
+      <div class="principle-list fade-in fade-in-d1">
+        <div class="principle">
+          <div class="p-num">原则一</div>
+          <div class="p-title">内核优先原则</div>
+          <div class="p-body">在投入资源打磨形式之前，先问自己：内核够深吗？<br>
+          <span class="muted">做活动：先确认"谁来讲"比"怎么讲"重要<br>
+          做产品：先确认"解决什么真问题"比"界面好不好看"重要<br>
+          做内容：先确认"有什么真知灼见"比"排版好不好看"重要</span></div>
+        </div>
+        <div class="principle">
+          <div class="p-num">原则二</div>
+          <div class="p-title">时间不可压缩原则</div>
+          <div class="p-body">质感的核心成分是时间，无法通过技巧替代。<br>
+          <span class="muted">时间不够 → 坦诚承认，用形式来补，但不要假装内核很深<br>
+          时间够 → 信任积累，让内核自己说话，不要用形式把它裹住</span></div>
+        </div>
+      </div>
+      <div class="muted fade-in fade-in-d2" style="margin-top:1vh;font-size:clamp(0.8rem,1.3vw,1.1rem);text-align:center;">
+        任何宣称"快速获得质感"的方法，要么是骗人，要么是在定义不同的"质感"
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 原则三 & 四 -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2 class="fade-in">核心原则（中）</h2>
+      <div class="principle-list fade-in fade-in-d1">
+        <div class="principle">
+          <div class="p-num">原则三</div>
+          <div class="p-title">热爱不可外包原则</div>
+          <div class="p-body">热爱是质感的燃料，不能被替代、不能被假装、不能被外包。<br>
+          <span class="muted">庄主讲葡萄酒时的眼神、语气、细节——那些"多余"的热情，恰恰是质感最真实的来源。</span></div>
+        </div>
+        <div class="principle">
+          <div class="p-num">原则四</div>
+          <div class="p-title">形式服务于内核，而非替代内核</div>
+          <div class="p-body">形式的最高境界是让内核被看见，而不是让形式被记住。<br>
+          <span class="muted">好的形式是透明的——让内核顺畅传递，自己不抢戏。<br>
+          检验标准：参与者记住的是"庄主这个人"还是"这个环节"？</span></div>
+        </div>
+      </div>
+      <div class="muted fade-in fade-in-d2" style="margin-top:1vh;font-size:clamp(0.8rem,1.3vw,1.1rem);text-align:center;">
+        内核（不可见）→ 形式（翻译器）→ 体验（被感知）
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 原则五 -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2 class="fade-in">核心原则（下）</h2>
+      <div class="principle">
+        <div class="p-num fade-in">原则五</div>
+        <div class="p-title fade-in fade-in-d1">不确定性中的即兴能力</div>
+        <div class="formula-box fade-in fade-in-d2" style="margin:1.5vh 0;">
+          <div class="formula">即兴质量 = 专业深度 × 经验宽度 × 热爱系数</div>
+        </div>
+        <div class="p-body fade-in fade-in-d3">
+          当环境不确定、形式来不及打磨时，能依赖的只有内核的深度。<br>
+          <span class="muted">真正的即兴不是"没有准备"，而是"准备了太久，已经不需要刻意准备了"。</span>
+        </div>
+      </div>
+      <div class="grid2 fade-in fade-in-d4" style="margin-top:1.5vh;">
+        <div class="col">
+          <div class="label">🎒 即兴工具箱</div>
+          <div class="muted" style="font-size:clamp(0.8rem,1.3vw,1.1rem);">
+            把你最核心的知识、故事、洞察整理成可随时调用的模块
+          </div>
+        </div>
+        <div class="col">
+          <div class="label">⚠️ 信号识别</div>
+          <div class="muted" style="font-size:clamp(0.8rem,1.3vw,1.1rem);">
+            任何需要反复排练才能呈现的内容，说明内核还不够深
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 决策框架 -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2 class="fade-in">决策框架</h2>
+      <div class="table-wrap fade-in fade-in-d1">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;">问题</th>
+              <th style="width:28%;">内核够深</th>
+              <th style="width:28%;">内核不够深</th>
+              <th style="width:26%;">极端情况</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--gold-light);">策略</strong></td>
+              <td>即兴释放，少设计</td>
+              <td>精心设计形式，或不做</td>
+              <td>坦诚"我在学"</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--gold-light);">形式投入</strong></td>
+              <td>低（让内核自己说话）</td>
+              <td>高（用结构弥补深度）</td>
+              <td>中等（真诚本身就是形式）</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--gold-light);">风险</strong></td>
+              <td>内核不够深时露怯</td>
+              <td>形式喧宾夺主</td>
+              <td>被认为不专业</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--gold-light);">典型场景</strong></td>
+              <td>庄主分享、专家讲座</td>
+              <td>商业游戏、新手产品</td>
+              <td>创业路演、个人品牌</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-row fade-in fade-in-d2" style="justify-content:center;">
+        <span class="tag tag-deep">内核够深 → 做减法</span>
+        <span class="tag tag-shallow">内核不够 → 做加法</span>
+        <span class="tag tag-honest">都不确定 → 做真诚</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 回到你的处境 -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2 class="fade-in">回到你的处境</h2>
+      <div class="grid2 fade-in fade-in-d1">
+        <div class="col">
+          <div class="label">🧠 内核积累</div>
+          <div style="font-size:clamp(0.85rem,1.4vw,1.15rem);color:var(--text-muted);line-height:1.7;">
+            AI应用 · 商业创新 · 教育<br>
+            <span style="color:var(--gold-light);">→ 持续深耕，目标是半年后可以即兴分享</span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="label">📤 形式输出</div>
+          <div style="font-size:clamp(0.85rem,1.4vw,1.15rem);color:var(--text-muted);line-height:1.7;">
+            活动 · 文档 · HTML · 社群<br>
+            <span style="color:var(--gold-light);">→ 识别内核区与学习区，分别采用不同策略</span>
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-green fade-in fade-in-d2">
+        <div class="c-title">🎯 四条启示</div>
+        <strong>1. 识别你的"内核区"</strong> — 信任自己，少设计，多展示<br>
+        <strong>2. 识别你的"学习区"</strong> — 要么积累，要么设计，要么坦诚<br>
+        <strong>3. 警惕"形式陷阱"</strong> — 好的形式让内核被看见，不是被忘记<br>
+        <strong>4. 时间是最好的朋友</strong> — 质感无法速成，接受它，规划它
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: 结语 -->
+  <div class="slide slide-end" data-index="8">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-in" style="font-size:clamp(2rem,4vw,3.5rem);margin-bottom:1.5rem;">🍷</div>
+      <h2 class="fade-in fade-in-d1" style="font-size:clamp(1.4rem,2.8vw,2.4rem);">
+        当一个人在自己的领域里深耕到足够深时
+      </h2>
+      <div class="quote fade-in fade-in-d2" style="text-align:center;border-left:none;border-top:4px solid var(--gold);border-radius:12px 12px 0 0;font-size:clamp(1.3rem,2.5vw,2.2rem);">
+        他站在那里，本身就是一个有质感的体验
+      </div>
+      <div class="muted fade-in fade-in-d3" style="margin-top:2vh;font-size:clamp(0.9rem,1.5vw,1.2rem);">
+        这不是天赋，是时间、热爱和专注的累积结果
+      </div>
+      <div style="margin-top:3vh;padding-top:2vh;border-top:1px solid var(--border);" class="fade-in fade-in-d4">
+        <div style="font-size:clamp(1rem,1.8vw,1.5rem);color:var(--gold-light);font-weight:700;">
+          质感的秘密不在于形式有多精美<br>
+          而在于内核有多深厚
+        </div>
+        <div style="font-size:clamp(0.85rem,1.4vw,1.15rem);color:var(--gold);margin-top:1rem;">
+          当内核够深时，即兴就是最好的形式
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav" id="nav">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-page" id="pageNum">1 / 9</span>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<div class="hint">← → 或 触屏滑动翻页</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  // Dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= total) index = total - 1;
+    if (index === current) return;
+    slides[current].classList.remove('active');
+    slides[index].classList.add('active');
+    current = index;
+    updateNav();
+  }
+
+  function updateNav() {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    document.getElementById('pageNum').textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  });
+
+  // Touch
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+  document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  }, {passive: true});
+
+  // Mouse wheel
+  let wheelTimeout;
+  document.addEventListener('wheel', (e) => {
+    if (wheelTimeout) return;
+    wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 800);
+    if (e.deltaY > 0) goTo(current + 1);
+    else goTo(current - 1);
+  }, {passive: true});
+})();
+</script>
+
+</body>
+</html>
