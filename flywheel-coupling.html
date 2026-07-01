@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内外循环耦合 — 创新持续动力的系统论述与实践原则</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#e8e6e3;overflow:hidden;height:100vh}
+.slide{display:none;width:100vw;height:100vh;padding:6vh 8vw;position:relative;overflow-y:auto;align-items:flex-start;justify-content:center;flex-direction:column}
+.slide.active{display:flex}
+.slide::-webkit-scrollbar{width:4px}
+.slide::-webkit-scrollbar-track{background:transparent}
+.slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+.nav{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;z-index:100;background:rgba(10,10,15,0.8);backdrop-filter:blur(12px);padding:10px 20px;border-radius:30px;border:1px solid rgba(255,255,255,0.08)}
+.nav button{background:rgba(255,255,255,0.06);border:none;color:#888;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;transition:all .25s;display:flex;align-items:center;justify-content:center}
+.nav button:hover{background:rgba(255,255,255,0.15);color:#fff}
+.nav .page-indicator{color:#666;font-size:13px;min-width:60px;text-align:center;font-weight:300;letter-spacing:1px}
+.nav .progress-bar{width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:1px;overflow:hidden}
+.nav .progress-bar .fill{height:100%;background:linear-gradient(90deg,#f0c27f,#fc5c7d);border-radius:1px;transition:width .4s ease}
+h1{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;letter-spacing:-0.02em;line-height:1.2;margin-bottom:0.5em;background:linear-gradient(135deg,#f0c27f,#fc5c7d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h2{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:700;letter-spacing:-0.01em;margin-bottom:0.6em;color:#f0c27f}
+h3{font-size:clamp(1.1rem,2vw,1.6rem);font-weight:500;margin-bottom:0.5em;color:#e8e6e3}
+h4{font-size:clamp(0.95rem,1.5vw,1.2rem);font-weight:500;margin-bottom:0.4em;color:#fc5c7d}
+p,li{font-size:clamp(1rem,1.6vw,1.35rem);line-height:1.7;font-weight:300;color:#b8b6b3;margin-bottom:0.5em}
+.slide p strong,.slide li strong{color:#e8e6e3;font-weight:500}
+.card-grid{display:grid;gap:1.2rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));width:100%;margin:1rem 0}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.5rem;transition:all .3s}
+.card:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12)}
+.card .icon{font-size:1.8rem;margin-bottom:0.5rem}
+.card h4{font-size:1.1rem;margin-bottom:0.4rem}
+.card p{font-size:0.9rem;line-height:1.5}
+.highlight{background:linear-gradient(135deg,rgba(240,194,127,0.08),rgba(252,92,125,0.08));border-left:3px solid #f0c27f;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1rem 0;width:100%}
+.highlight p{margin:0;font-size:clamp(0.95rem,1.4vw,1.2rem)}
+.tag{display:inline-block;padding:0.2em 0.8em;border-radius:20px;font-size:0.75rem;font-weight:500;letter-spacing:0.5px;margin-right:0.4em;margin-bottom:0.3em}
+.tag-gold{background:rgba(240,194,127,0.15);color:#f0c27f}
+.tag-pink{background:rgba(252,92,125,0.15);color:#fc5c7d}
+.tag-blue{background:rgba(100,180,255,0.15);color:#64b4ff}
+.tag-green{background:rgba(100,220,180,0.15);color:#64dcb4}
+.tag-purple{background:rgba(180,130,255,0.15);color:#b482ff}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:clamp(0.8rem,1.2vw,1rem)}
+th{background:rgba(255,255,255,0.04);color:#f0c27f;font-weight:500;padding:0.7rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
+td{padding:0.6rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);color:#b8b6b3}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.principle{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.5rem;margin-bottom:1rem;width:100%}
+.principle .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f0c27f,#fc5c7d);color:#0a0a0f;font-weight:700;font-size:0.9rem;margin-right:0.6rem}
+.expert-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.5rem;margin-bottom:1rem;width:100%}
+.expert-card .expert-title{font-size:clamp(0.85rem,1.2vw,1rem);color:#fc5c7d;font-weight:500;margin-bottom:0.3rem}
+.expert-card .expert-quote{font-size:clamp(1rem,1.5vw,1.25rem);color:#f0c27f;font-weight:400;font-style:italic;margin-bottom:0.8rem}
+.expert-card .expert-q{display:inline-block;background:rgba(240,194,127,0.1);border:1px solid rgba(240,194,127,0.2);border-radius:10px;padding:0.5rem 1rem;margin-top:0.5rem;font-size:clamp(0.85rem,1.2vw,1rem);color:#f0c27f}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%;margin:1rem 0}
+.three-col .col{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.2rem;text-align:center}
+.three-col .col .big{font-size:2rem;font-weight:700;color:#f0c27f}
+.three-col .col p{font-size:0.85rem;margin:0.3rem 0 0}
+.signal-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%;margin:1rem 0}
+.signal-card{border-radius:12px;padding:1.2rem;text-align:center}
+.signal-card .emoji{font-size:2rem;margin-bottom:0.5rem}
+.signal-card .label{font-size:1rem;font-weight:500;color:#e8e6e3;margin-bottom:0.3rem}
+.signal-card .desc{font-size:0.85rem;color:#888}
+.signal-1{background:rgba(240,194,127,0.08);border:1px solid rgba(240,194,127,0.15)}
+.signal-2{background:rgba(252,92,125,0.08);border:1px solid rgba(252,92,125,0.15)}
+.signal-3{background:rgba(100,180,255,0.08);border:1px solid rgba(100,180,255,0.15)}
+.deep-q{background:rgba(252,92,125,0.04);border:1px solid rgba(252,92,125,0.12);border-radius:12px;padding:1.2rem;margin-bottom:0.8rem;width:100%}
+.deep-q .q{font-size:clamp(1rem,1.5vw,1.3rem);color:#fc5c7d;font-weight:500;margin-bottom:0.3rem}
+.deep-q .a{font-size:clamp(0.85rem,1.2vw,1rem);color:#b8b6b3}
+.layer{margin-bottom:0.6rem}
+.layer .l-num{display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.75rem;font-weight:700;margin-right:0.5rem}
+.layer-surface .l-num{background:rgba(255,255,255,0.1);color:#888}
+.layer-deep .l-num{background:rgba(240,194,127,0.2);color:#f0c27f}
+.layer-core .l-num{background:rgba(252,92,125,0.2);color:#fc5c7d}
+.subtitle{font-size:clamp(1rem,1.8vw,1.5rem);color:#888;font-weight:300;margin-bottom:1.5rem}
+@media(max-width:768px){.slide{padding:4vh 5vw}.three-col{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr}.signal-row{grid-template-columns:1fr}.nav .progress-bar{width:60px}}
+</style>
+</head>
+<body>
+<!-- S0: Cover -->
+<div class="slide active" id="s0">
+  <div style="max-width:900px;margin:auto">
+    <div style="font-size:clamp(3rem,8vw,6rem);margin-bottom:0.3rem">⚡</div>
+    <h1 style="font-size:clamp(2.8rem,6vw,5rem)">内外循环耦合</h1>
+    <p class="subtitle" style="font-size:clamp(1.2rem,2.2vw,1.8rem)">创新持续动力的系统论述与实践原则</p>
+    <div style="margin-top:2rem">
+      <span class="tag tag-gold">飞轮效应</span>
+      <span class="tag tag-pink">动物精神</span>
+      <span class="tag tag-blue">内外循环</span>
+      <span class="tag tag-green">组织动力</span>
+      <span class="tag tag-purple">批判性审视</span>
+    </div>
+    <div style="margin-top:3rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:1.5rem">
+      <p style="font-size:0.9rem;color:#666">"飞轮转动的方向，比飞轮转动的速度，重要得多。"</p>
+    </div>
+  </div>
+</div>
+
+<!-- S1 -->
+<div class="slide" id="s1">
+  <h2>一、你正在经历什么</h2>
+  <p style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1.5rem">一个正在发生的、真实的正向循环</p>
+  <div class="three-col">
+    <div class="col"><div class="big">外循环</div><p>种子用户表达强烈需求，认可价值创造，<strong style="color:#f0c27f">愿意支付费用</strong></p></div>
+    <div class="col"><div class="big">内循环</div><p>关键人员被激励，产生启发与碰撞，形成<strong style="color:#f0c27f">兴奋与动力</strong></p></div>
+    <div class="col"><div class="big">耦合</div><p>外部认可 → 内部兴奋 → 更好产出 → 更强认可<br><strong style="color:#f0c27f">飞轮效应</strong></p></div>
+  </div>
+  <div class="highlight"><p>这不是KPI驱动的，是<strong>动物精神</strong>驱动的。两个循环正在耦合——这不是线性增长，是飞轮效应。</p></div>
+</div>
+
+<!-- S2 -->
+<div class="slide" id="s2">
+  <h2>二、核心问题：这个问题的本质是什么</h2>
+  <p style="margin-bottom:1.2rem">你问"以什么样的问题来展开比较好"——框架的选择决定了你能看到什么。</p>
+  <div class="table-wrap"><table>
+    <tr><th>问题框架</th><th>能看见什么</th><th>会忽略什么</th></tr>
+    <tr><td>"创新的持续动力从何而来"</td><td>动力来源、维持机制</td><td>动力的方向、质量</td></tr>
+    <tr><td>"内外循环如何协同"</td><td>耦合机制、反馈回路</td><td>循环的脆弱性、断裂风险</td></tr>
+    <tr><td>"如何从偶然走向系统"</td><td>制度化、可复制性</td><td>动物精神的不可设计性</td></tr>
+    <tr><td>"动物精神在组织中的角色"</td><td>非理性动力、激情、信念</td><td>理性决策、资源配置</td></tr>
+  </table></div>
+  <div class="highlight"><p><strong>推荐框架：</strong>"内外循环耦合的飞轮如何<strong>设计</strong>、<strong>维持</strong>与<strong>放大</strong>？"</p></div>
+</div>
+
+<!-- S3 -->
+<div class="slide" id="s3">
+  <h2>三、外循环的三种反馈信号</h2>
+  <p>外循环不是单一的"市场认可"，它包含三种不同性质的信号：</p>
+  <div class="signal-row">
+    <div class="signal-card signal-1"><div class="emoji">🎯</div><div class="label">需求确认</div><div class="desc">"你们懂我"<br>情感共鸣 &gt; 功能匹配</div></div>
+    <div class="signal-card signal-2"><div class="emoji">💰</div><div class="label">价值确认</div><div class="desc">"我愿意付钱"<br>行为 &gt; 言语</div></div>
+    <div class="signal-card signal-3"><div class="emoji">📣</div><div class="label">口碑扩散</div><div class="desc">"我推荐给别人"<br>社交资本 &gt; 产品功能</div></div>
+  </div>
+  <div class="highlight"><p>三种信号叠加才是真正的外循环。只有需求确认没有支付意愿，是<strong>"叫好不叫座"</strong>；只有支付意愿没有口碑扩散，是<strong>"一锤子买卖"</strong>。</p></div>
+</div>
+
+<!-- S4 -->
+<div class="slide" id="s4">
+  <h2>四、内循环的三种动力来源</h2>
+  <p>内循环也不只是"兴奋和动力"，它有三种来源：</p>
+  <div class="card-grid">
+    <div class="card"><div class="icon">🎯</div><h4>意义感</h4><p>"这事值得做"——来自愿景和使命的共鸣。持久、稳定、不依赖外部反馈。</p><p style="color:#fc5c7d;font-size:0.85rem">脆弱性：容易变成空洞的口号</p></div>
+    <div class="card"><div class="icon">🏆</div><h4>成就感</h4><p>"我们做到了"——来自外部反馈的确认。直接、强烈、依赖外部信号。</p><p style="color:#fc5c7d;font-size:0.85rem">脆弱性：外部反馈波动时随之波动</p></div>
+    <div class="card"><div class="icon">📈</div><h4>成长感</h4><p>"我变强了"——来自能力提升的自我感知。内在、可持续。</p><p style="color:#fc5c7d;font-size:0.85rem">脆弱性：平台期容易让人焦虑</p></div>
+  </div>
+  <div class="highlight"><p>只有意义感没有成就感 → <strong>"理想主义者的空转"</strong>；只有成就感没有成长感 → <strong>"打工心态"</strong>；只有成长感没有意义感 → <strong>"技术自嗨"</strong>。</p></div>
+</div>
+
+<!-- S5 -->
+<div class="slide" id="s5">
+  <h2>五、耦合机制：飞轮如何转动</h2>
+  <p>外循环和内循环的耦合不是自动发生的，需要三个连接器：</p>
+  <div class="card-grid">
+    <div class="card"><div class="icon">🔄</div><h4>反馈翻译</h4><p>外循环信号 → 翻译成内循环语言。</p><p style="color:#fc5c7d;font-size:0.85rem">失败：反馈停留在数据层面</p></div>
+    <div class="card"><div class="icon">⭕</div><h4>认知闭环</h4><p>外部反馈 → 内部讨论 → 行动调整 → 新的外部反馈。</p><p style="color:#fc5c7d;font-size:0.85rem">失败：反馈只用来"确认正确"</p></div>
+    <div class="card"><div class="icon">❤️</div><h4>情感共振</h4><p>用户的热情感染团队，团队的热情感染用户。</p><p style="color:#fc5c7d;font-size:0.85rem">失败：只传递信息，不传递情感</p></div>
+  </div>
+</div>
+
+<!-- S6 -->
+<div class="slide" id="s6">
+  <h2>六、动物精神的角色</h2>
+  <div class="highlight"><p><strong>凯恩斯定义：</strong>动物精神不是非理性冲动，而是<strong>当理性计算无法给出确定答案时，驱动人们行动的内在力量</strong>。</p></div>
+  <div class="card-grid">
+    <div class="card"><div class="icon">🔥</div><h4>信念</h4><p>相信这件事值得做，即使数据还不充分</p></div>
+    <div class="card"><div class="icon">✨</div><h4>热情</h4><p>做这件事本身带来愉悦，不完全是工具性的</p></div>
+    <div class="card"><div class="icon">🤝</div><h4>信任</h4><p>相信彼此、相信用户、相信未来</p></div>
+    <div class="card"><div class="icon">⚡</div><h4>勇气</h4><p>在不确定中做出选择，而不是等待确定性</p></div>
+  </div>
+  <div class="highlight"><p><strong>关键洞察：</strong>动物精神不是经济激励的替代品，而是经济激励的<strong>放大器</strong>。</p></div>
+</div>
+
+<!-- S7 -->
+<div class="slide" id="s7">
+  <h2>七、六条原则性建议</h2>
+  <div class="principle"><p><span class="num">1</span><strong>保护外循环的真实性</strong></p><p style="font-size:0.9rem;margin-left:2.8rem">区分"说好"和"付钱"——付费意愿比满意度更硬；复购比首购更硬。</p></div>
+  <div class="principle"><p><span class="num">2</span><strong>管理内循环的波动性</strong></p><p style="font-size:0.9rem;margin-left:2.8rem">建立反馈缓冲区，设置信号阈值——单点反馈不决策，模式出现才行动。</p></div>
+  <div class="principle"><p><span class="num">3</span><strong>刻意设计耦合节点</strong></p><p style="font-size:0.9rem;margin-left:2.8rem">分享用户故事、让核心成员接触用户、共同庆祝里程碑。</p></div>
+  <div class="principle"><p><span class="num">4</span><strong>警惕飞轮的反转</strong></p><p style="font-size:0.9rem;margin-left:2.8rem">预判反转路径，在好的时候做最难的改变。</p></div>
+  <div class="principle"><p><span class="num">5</span><strong>让动物精神有落脚点</strong></p><p style="font-size:0.9rem;margin-left:2.8rem">把兴奋转化为行动承诺，把碰撞转化为可执行的实验。</p></div>
+  <div class="principle"><p><span class="num">6</span><strong>建立反馈的闭环时间</strong></p><p style="font-size:0.9rem;margin-left:2.8rem">活动后24h复盘，用户反馈48h回应，每周固定对表。</p></div>
+</div>
+
+<!-- S8 -->
+<div class="slide" id="s8">
+  <h2>八、五个需要警惕的隐含假设</h2>
+  <div class="card-grid">
+    <div class="card"><h4>假设一</h4><p><strong>早期用户代表大众需求</strong></p><p style="font-size:0.85rem;color:#fc5c7d">种子用户是创新者和早期采纳者，需求和大众可能完全不同。</p></div>
+    <div class="card"><h4>假设二</h4><p><strong>付费意愿等于价值创造</strong></p><p style="font-size:0.85rem;color:#fc5c7d">付费可能是因为新鲜感、社交压力。复购才是真正的验证。</p></div>
+    <div class="card"><h4>假设三</h4><p><strong>内部动力可以持续自我维持</strong></p><p style="font-size:0.85rem;color:#fc5c7d">动物精神会疲劳，需要系统性的恢复机制。</p></div>
+    <div class="card"><h4>假设四</h4><p><strong>内外循环可以独立优化</strong></p><p style="font-size:0.85rem;color:#fc5c7d">优化一个可能损害另一个——迎合市场可能稀释初心。</p></div>
+    <div class="card"><h4>假设五</h4><p><strong>飞轮一旦转起来就会一直转</strong></p><p style="font-size:0.85rem;color:#fc5c7d">环境变化、人员变动、竞争加剧都可能让飞轮减速。</p></div>
+  </div>
+</div>
+
+<!-- S9 -->
+<div class="slide" id="s9">
+  <h2>九、内外循环健康度自检</h2>
+  <div class="table-wrap"><table>
+    <tr><th>维度</th><th style="color:#64dcb4">🟢 绿灯</th><th style="color:#f0c27f">🟡 黄灯</th><th style="color:#fc5c7d">🔴 红灯</th></tr>
+    <tr><td>外循环：需求确认</td><td>种子用户持续表达需求</td><td>有需求但不够强烈</td><td>需求信号减弱</td></tr>
+    <tr><td>外循环：价值确认</td><td>有付费+复购</td><td>有付费无复购</td><td>无付费意愿</td></tr>
+    <tr><td>外循环：口碑扩散</td><td>用户主动推荐</td><td>愿意推荐但未行动</td><td>无推荐行为</td></tr>
+    <tr><td>内循环：意义感</td><td>团队清楚"为什么做"</td><td>偶尔怀疑</td><td>意义感模糊</td></tr>
+    <tr><td>内循环：成就感</td><td>近期有被认可的体验</td><td>偶尔有</td><td>长期缺乏</td></tr>
+    <tr><td>内循环：成长感</td><td>每个人都在学新东西</td><td>部分人有</td><td>没有人有</td></tr>
+    <tr><td>耦合：反馈翻译</td><td>外部反馈转化为内部认知</td><td>偶尔转化</td><td>信息断层</td></tr>
+    <tr><td>耦合：认知闭环</td><td>反馈→行动→新反馈</td><td>有反馈无行动</td><td>无闭环</td></tr>
+    <tr><td>耦合：情感共振</td><td>用户和团队互相感染</td><td>单向传递</td><td>无情感连接</td></tr>
+  </table></div>
+</div>
+
+<!-- S10 -->
+<div class="slide" id="s10">
+  <h2>十、从偶然到必然</h2>
+  <p style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1.5rem">你现在经历的"内外循环耦合"是珍贵的——很多组织从来没有体验过这种状态。但珍贵不等于可持续。</p>
+  <div class="card-grid">
+    <div class="card"><div class="icon">👁️</div><h4>从感知到设计</h4><p>意识到这不是运气，是可以被理解和设计的系统</p></div>
+    <div class="card"><div class="icon">🏛️</div><h4>从依赖到架构</h4><p>不依赖某个人的动物精神，而是让组织本身具有产生动物精神的能力</p></div>
+    <div class="card"><div class="icon">🔭</div><h4>从反应到预见</h4><p>不只是应对外部反馈，而是主动创造让外循环增强的条件</p></div>
+  </div>
+  <div class="highlight"><p style="font-size:clamp(1rem,1.6vw,1.3rem)">在好的时候，你已经开始思考如何让它持续好下去。<br>这本身，就是最值得保护的<strong>动物精神</strong>。</p></div>
+</div>
+
+<!-- S11 -->
+<div class="slide" id="s11">
+  <h2>十一、更深层的追问</h2>
+  <p style="margin-bottom:1rem">你在问的不是"如何让它继续转"，而是"我不知道以什么样的问题来问"——这本身就是一个信号。</p>
+  <div class="layer layer-surface"><p><span class="l-num">1</span> "创新的持续动力从何而来？" <span style="color:#666;font-size:0.85rem">— 如何维持现状</span></p></div>
+  <div class="layer layer-surface"><p><span class="l-num">2</span> "内外循环如何耦合？" <span style="color:#666;font-size:0.85rem">— 机制是什么</span></p></div>
+  <div class="layer layer-surface"><p><span class="l-num">3</span> "如何从偶然走向必然？" <span style="color:#666;font-size:0.85rem">— 如何复制成功</span></p></div>
+  <div class="layer layer-deep"><p><span class="l-num">4</span> <strong style="color:#f0c27f">"这个飞轮转动的方向对吗？"</strong> <span style="color:#888;font-size:0.85rem">— 方向比动力更重要</span></p></div>
+  <div class="layer layer-deep"><p><span class="l-num">5</span> <strong style="color:#f0c27f">"我在用'做正确的事'来逃避回答'什么才是正确的事'吗？"</strong> <span style="color:#888;font-size:0.85rem">— 行动是否在替代思考</span></p></div>
+  <div class="layer layer-core"><p><span class="l-num">6</span> <strong style="color:#fc5c7d">"这个事业到底是为了什么？"</strong> <span style="color:#888;font-size:0.85rem">— 存在的意义</span></p></div>
+  <div class="highlight" style="margin-top:0.8rem"><p><strong>核心洞察：</strong>飞轮最大的危险不是转得慢，而是<strong>转错了方向</strong>。动力和方向是两个独立的问题。</p></div>
+</div>
+
+<!-- S12 -->
+<div class="slide" id="s12">
+  <h2>十二、动物精神也需要被审视</h2>
+  <p style="margin-bottom:1rem">动物精神有光明面，也有阴暗面：</p>
+  <div class="card-grid">
+    <div class="card"><h4>🔥 信念 → 固执</h4><p>"我相信这件事"和"这件事是对的"不是一回事</p></div>
+    <div class="card"><h4>✨ 热情 → 盲目</h4><p>做自己喜欢的事不等于做有价值的事</p></div>
+    <div class="card"><h4>🤝 信任 → 盲从</h4><p>团队互相打气不等于方向正确</p></div>
+    <div class="card"><h4>⚡ 勇气 → 鲁莽</h4><p>在不确定中行动不等于在正确的方向上行动</p></div>
+  </div>
+  <div class="highlight"><p><strong>需要问自己的问题：</strong>你的动物精神，是在为正确的方向提供燃料，还是在为错误的方向提供辩护？</p></div>
+</div>
+
+<!-- S13 -->
+<div class="slide" id="s13">
+  <h2>十三、更本质的问题</h2>
+  <p style="margin-bottom:1rem">四个值得反复追问的问题：</p>
+  <div class="deep-q"><div class="q">问题一：我们到底在解决谁的什么问题？</div><div class="a">这不是一次性能回答的问题。每三个月问一次，答案可能不同。</div></div>
+  <div class="deep-q"><div class="q">问题二：如果明天就不能做了，我们会遗憾什么？</div><div class="a">帮你区分"真正重要的"和"看起来重要的"。</div></div>
+  <div class="deep-q"><div class="q">问题三：我们是在创造新价值，还是在重新分配旧价值？</div><div class="a">创造新价值是正和游戏，重新分配是零和游戏。方向不同，长期结果完全不同。</div></div>
+  <div class="deep-q"><div class="q">问题四：这个事业五年后希望被怎样记住？</div><div class="a">一句话的答案。如果说不出来，说明愿景还不够清晰。愿景是决策的筛子。</div></div>
+</div>
+
+<!-- S14 -->
+<div class="slide" id="s14">
+  <h2>十四、六位专家的多元视角</h2>
+  <p style="margin-bottom:1rem">不同领域的真实碰撞，打破思维盲区：</p>
+  <div class="expert-card">
+    <div class="expert-title">🏢 创业者 / 连续创业者</div>
+    <div class="expert-quote">"飞轮很好，但小心飞轮变成陀螺。"</div>
+    <p>每季度做一次"假设清零"，保留"刹车权"——谁有权说"停下来"？这个人不能是飞轮的最大受益者。</p>
+    <div class="expert-q">💬 如果今天用户说"我不需要了"，你的组织有没有Plan B？</div>
+  </div>
+  <div class="expert-card">
+    <div class="expert-title">📚 组织行为学教授 / 学者</div>
+    <div class="expert-quote">"你描述的不是飞轮，是组织认同的自我强化循环。"</div>
+    <p>三个风险：认同固化、群体思维、成功归因偏差。需要引入"外部批判者"角色。</p>
+    <div class="expert-q">💬 如果出现一个完全一样的竞争者但价格只有一半，你的核心壁垒是什么？</div>
+  </div>
+  <div class="expert-card">
+    <div class="expert-title">💰 投资人</div>
+    <div class="expert-quote">"PMF信号很好，但PMF不等于商业模式。"</div>
+    <p>需要验证：可复制性、可规模化、可防御性。用单位经济学说话。</p>
+    <div class="expert-q">💬 你的获客成本是多少？用户生命周期价值是多少？</div>
+  </div>
+  <div class="expert-card">
+    <div class="expert-title">👥 社会学家</div>
+    <div class="expert-quote">"你描述的本质上是一个'意义共同体'的诞生过程。"</div>
+    <p>三个要素：共享叙事、互惠机制、边界管理。把种子用户变成"共创者"。</p>
+    <div class="expert-q">💬 如果核心成员离开，这个群体会散吗？</div>
+  </div>
+  <div class="expert-card">
+    <div class="expert-title">🧠 心理学家</div>
+    <div class="expert-quote">"内在动机最怕的是被外部奖励侵蚀。"</div>
+    <p>过度合理化效应：引入外部奖励后，内在兴趣可能下降。保护"玩"的心态。</p>
+    <div class="expert-q">💬 如果永远赚不到大钱，你还会继续做吗？</div>
+  </div>
+  <div class="expert-card">
+    <div class="expert-title">🎭 哲学家</div>
+    <div class="expert-quote">"你问的不是'如何维持动力'，你问的是'这个动力值得吗'。"</div>
+    <p>你在追求谁的承认？如果没有人承认，你还做不做？你是在"成为自己"还是"扮演角色"？</p>
+    <div class="expert-q">💬 如果做的所有事都没有人知道是你做的，你还愿意做吗？</div>
+  </div>
+</div>
+
+<!-- S15 -->
+<div class="slide" id="s15">
+  <h2>十五、六位专家看到了什么</h2>
+  <div class="table-wrap"><table>
+    <tr><th>视角</th><th>核心关注</th><th>最尖锐的问题</th></tr>
+    <tr><td>🏢 创业者</td><td>方向 vs 动力</td><td>谁有权说"停下来"？</td></tr>
+    <tr><td>📚 学者</td><td>认同固化 vs 自我修正</td><td>你的核心假设被挑战过吗？</td></tr>
+    <tr><td>💰 投资人</td><td>PMF vs 商业模式</td><td>你的单位经济模型是什么？</td></tr>
+    <tr><td>👥 社会学家</td><td>共同体 vs 交易关系</td><td>核心成员离开，群体会散吗？</td></tr>
+    <tr><td>🧠 心理学家</td><td>内在动机 vs 外部奖励</td><td>不赚钱你还做吗？</td></tr>
+    <tr><td>🎭 哲学家</td><td>自我 vs 角色</td><td>无人见证时你还做吗？</td></tr>
+  </table></div>
+  <div class="highlight"><p>这六个问题没有标准答案。但每一个都值得你认真回答一次。<br>不是回答给我，是回答给自己。</p></div>
+</div>
+
+<!-- S16 -->
+<div class="slide" id="s16">
+  <h2>十六、如何用这份文档</h2>
+  <div class="three-col">
+    <div class="col"><div class="big">📋</div><h4 style="margin-top:0.5rem">近期行动</h4><p>第1-7章：系统论述与原则，指导日常行动</p></div>
+    <div class="col"><div class="big">🧭</div><h4 style="margin-top:0.5rem">每季度校准</h4><p>第8章：深层追问，校准方向</p></div>
+    <div class="col"><div class="big">🔍</div><h4 style="margin-top:0.5rem">每半年扫描</h4><p>第9章：多元视角，打破盲区</p></div>
+  </div>
+  <div class="highlight" style="margin-top:1.5rem">
+    <p style="font-size:clamp(1.2rem,2vw,1.8rem);text-align:center"><strong>飞轮转动的方向，<br>比飞轮转动的速度，<br>重要得多。</strong></p>
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <button data-dir="prev">◀</button>
+  <span class="page-indicator" id="pageNum">1 / 17</span>
+  <div class="progress-bar"><div class="fill" style="width:5.9%"></div></div>
+  <button data-dir="next">▶</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+let cur=0;
+const tot=slides.length;
+function show(i){
+  slides.forEach(s=>s.classList.remove('active'));
+  slides[i].classList.add('active');
+  cur=i;
+  document.getElementById('pageNum').textContent=(i+1)+' / '+tot;
+  document.querySelector('.progress-bar .fill').style.width=((i+1)/tot*100)+'%';
+}
+document.addEventListener('keydown',e=>{
+  if((e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')&&cur<tot-1){e.preventDefault();show(cur+1)}
+  else if((e.key==='ArrowLeft'||e.key==='ArrowUp')&&cur>0){e.preventDefault();show(cur-1)}
+  else if(e.key==='Home'){e.preventDefault();show(0)}
+  else if(e.key==='End'){e.preventDefault();show(tot-1)}
+});
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.dir==='prev'&&cur>0)show(cur-1);
+  else if(b.dataset.dir==='next'&&cur<tot-1)show(cur+1);
+}));
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});
+document.addEventListener('touchend',e=>{
+  const d=tx-e.changedTouches[0].screenX;
+  if(Math.abs(d)>50){if(d>0&&cur<tot-1)show(cur+1);else if(d<0&&cur>0)show(cur-1)}
+});
+document.addEventListener('wheel',e=>{
+  if(e.deltaY>0&&cur<tot-1){e.preventDefault();show(cur+1)}
+  else if(e.deltaY<0&&cur>0){e.preventDefault();show(cur-1)}
+},{passive:false});
+show(0);
+</script>
+
+</body>
+</html>
