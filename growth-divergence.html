@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>增长的分化与矛盾 — 中国经济深层结构的多维审视</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#e8e6e3;overflow:hidden;height:100vh}
+.slide{display:none;width:100vw;height:100vh;padding:6vh 8vw;position:relative;overflow-y:auto;align-items:flex-start;justify-content:center;flex-direction:column}
+.slide.active{display:flex}
+.slide::-webkit-scrollbar{width:4px}
+.slide::-webkit-scrollbar-track{background:transparent}
+.slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+.nav{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;z-index:100;background:rgba(10,10,15,0.8);backdrop-filter:blur(12px);padding:10px 20px;border-radius:30px;border:1px solid rgba(255,255,255,0.08)}
+.nav button{background:rgba(255,255,255,0.06);border:none;color:#888;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;transition:all .25s;display:flex;align-items:center;justify-content:center}
+.nav button:hover{background:rgba(255,255,255,0.15);color:#fff}
+.nav .page-indicator{color:#666;font-size:13px;min-width:60px;text-align:center;font-weight:300;letter-spacing:1px}
+.nav .progress-bar{width:120px;height:2px;background:rgba(255,255,255,0.08);border-radius:1px;overflow:hidden}
+.nav .progress-bar .fill{height:100%;background:linear-gradient(90deg,#64b4ff,#b482ff);border-radius:1px;transition:width .4s ease}
+h1{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;letter-spacing:-0.02em;line-height:1.2;margin-bottom:0.5em;background:linear-gradient(135deg,#64b4ff,#b482ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h2{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:700;letter-spacing:-0.01em;margin-bottom:0.6em;color:#64b4ff}
+h3{font-size:clamp(1.1rem,2vw,1.6rem);font-weight:500;margin-bottom:0.5em;color:#e8e6e3}
+h4{font-size:clamp(0.95rem,1.5vw,1.2rem);font-weight:500;margin-bottom:0.4em;color:#b482ff}
+p,li{font-size:clamp(1rem,1.6vw,1.35rem);line-height:1.7;font-weight:300;color:#b8b6b3;margin-bottom:0.5em}
+.slide p strong,.slide li strong{color:#e8e6e3;font-weight:500}
+.card-grid{display:grid;gap:1.2rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));width:100%;margin:1rem 0}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.5rem;transition:all .3s}
+.card:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12)}
+.card .icon{font-size:1.8rem;margin-bottom:0.5rem}
+.card h4{font-size:1.1rem;margin-bottom:0.4rem}
+.card p{font-size:0.9rem;line-height:1.5}
+.highlight{background:linear-gradient(135deg,rgba(100,180,255,0.08),rgba(180,130,255,0.08));border-left:3px solid #64b4ff;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1rem 0;width:100%}
+.highlight p{margin:0;font-size:clamp(0.95rem,1.4vw,1.2rem)}
+.tag{display:inline-block;padding:0.2em 0.8em;border-radius:20px;font-size:0.75rem;font-weight:500;letter-spacing:0.5px;margin-right:0.4em;margin-bottom:0.3em}
+.tag-blue{background:rgba(100,180,255,0.15);color:#64b4ff}
+.tag-purple{background:rgba(180,130,255,0.15);color:#b482ff}
+.tag-green{background:rgba(100,220,180,0.15);color:#64dcb4}
+.tag-pink{background:rgba(252,92,125,0.15);color:#fc5c7d}
+.tag-gold{background:rgba(240,194,127,0.15);color:#f0c27f}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:clamp(0.8rem,1.2vw,1rem)}
+th{background:rgba(255,255,255,0.04);color:#64b4ff;font-weight:500;padding:0.7rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
+td{padding:0.6rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);color:#b8b6b3}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.theory-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.5rem;margin-bottom:1rem;width:100%}
+.theory-card .theory-name{font-size:clamp(0.85rem,1.2vw,1rem);color:#b482ff;font-weight:500;margin-bottom:0.3rem}
+.theory-card .theory-quote{font-size:clamp(0.95rem,1.4vw,1.2rem);color:#64b4ff;font-weight:400;font-style:italic;margin-bottom:0.6rem}
+.theory-card .theory-crit{display:inline-block;background:rgba(252,92,125,0.1);border:1px solid rgba(252,92,125,0.2);border-radius:10px;padding:0.4rem 0.8rem;margin-top:0.5rem;font-size:clamp(0.75rem,1vw,0.85rem);color:#fc5c7d}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%;margin:1rem 0}
+.three-col .col{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.2rem;text-align:center}
+.three-col .col .big{font-size:2rem;font-weight:700;color:#64b4ff}
+.three-col .col p{font-size:0.85rem;margin:0.3rem 0 0}
+.explain-card{border-radius:12px;padding:1.2rem;margin-bottom:0.8rem;width:100%}
+.explain-card .ex-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:0.75rem;font-weight:700;margin-right:0.5rem}
+.explain-card .ex-title{font-size:clamp(0.95rem,1.3vw,1.15rem);font-weight:500}
+.explain-card .ex-desc{font-size:clamp(0.8rem,1.1vw,0.95rem);margin-top:0.3rem;color:#888}
+.explain-card .ex-insight{font-size:clamp(0.8rem,1.1vw,0.95rem);margin-top:0.3rem;color:#64b4ff}
+.explain-1{background:rgba(100,180,255,0.04);border-left:3px solid #64b4ff}
+.explain-2{background:rgba(180,130,255,0.04);border-left:3px solid #b482ff}
+.explain-3{background:rgba(100,220,180,0.04);border-left:3px solid #64dcb4}
+.explain-4{background:rgba(240,194,127,0.04);border-left:3px solid #f0c27f}
+.explain-5{background:rgba(252,92,125,0.04);border-left:3px solid #fc5c7d}
+.explain-6{background:rgba(255,160,80,0.04);border-left:3px solid #ffa050}
+.subtitle{font-size:clamp(1rem,1.8vw,1.5rem);color:#888;font-weight:300;margin-bottom:1.5rem}
+@media(max-width:768px){.slide{padding:4vh 5vw}.three-col{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr}.nav .progress-bar{width:60px}}
+</style>
+</head>
+<body>
+<!-- S0: Cover -->
+<div class="slide active" id="s0">
+  <div style="max-width:900px;margin:auto">
+    <div style="font-size:clamp(3rem,8vw,6rem);margin-bottom:0.3rem">📊</div>
+    <h1 style="font-size:clamp(2.8rem,6vw,5rem)">增长的分化与矛盾</h1>
+    <p class="subtitle" style="font-size:clamp(1.2rem,2.2vw,1.8rem)">中国经济深层结构的多维审视</p>
+    <div style="margin-top:2rem">
+      <span class="tag tag-blue">生产法 vs 需求法</span>
+      <span class="tag tag-purple">六种解释</span>
+      <span class="tag tag-green">五大理论流派</span>
+      <span class="tag tag-pink">资产负债表衰退</span>
+      <span class="tag tag-gold">GDP框架局限</span>
+    </div>
+    <div style="margin-top:3rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:1.5rem">
+      <p style="font-size:0.9rem;color:#666">"数据是地图，不是领土。"</p>
+    </div>
+  </div>
+</div>
+
+<!-- S1: 背离 -->
+<div class="slide" id="s1">
+  <h2>一、一个无法忽视的背离</h2>
+  <p style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1.5rem">2026年5月，同一个经济体，两个截然不同的画像</p>
+  <div class="three-col">
+    <div class="col">
+      <div class="big" style="color:#fc5c7d">📉 需求法GDP</div>
+      <p>固投增速 <strong style="color:#fc5c7d">负</strong><br>社零增速 <strong style="color:#fc5c7d">负</strong><br>进出口 <strong style="color:#fc5c7d">负</strong></p>
+      <p style="margin-top:0.5rem;font-size:0.8rem;color:#666">经济衰退的典型信号</p>
+    </div>
+    <div class="col">
+      <div class="big" style="color:#64dcb4">📈 生产法GDP</div>
+      <p>农业 <strong style="color:#64dcb4">增长</strong><br>工业 <strong style="color:#64dcb4">增长</strong><br>服务业 <strong style="color:#64dcb4">增长</strong></p>
+      <p style="margin-top:0.5rem;font-size:0.8rem;color:#666">用电量、就业数据也向好</p>
+    </div>
+    <div class="col">
+      <div class="big" style="color:#b482ff">❓ 背离</div>
+      <p>生产在扩张<br>消费在萎缩<br><strong style="color:#b482ff">深层结构正在变化</strong></p>
+    </div>
+  </div>
+  <div class="highlight"><p>这不是统计错误。这是一个信号——中国经济的深层结构正在发生某种变化，传统的单一视角已经无法捕捉它的全貌。</p></div>
+</div>
+
+<!-- S2: 增长的本质 -->
+<div class="slide" id="s2">
+  <h2>二、增长的本质：四种视角</h2>
+  <p>当我们说"经济增长"时，我们到底在说什么？</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="icon">🏭</div>
+      <h4>古典视角</h4>
+      <p>增长是生产能力的扩张——分工深化和市场扩大（亚当·斯密）</p>
+    </div>
+    <div class="card">
+      <div class="icon">🛒</div>
+      <h4>凯恩斯视角</h4>
+      <p>增长是有效需求的满足——有人愿意买，才有人愿意生产</p>
+    </div>
+    <div class="card">
+      <div class="icon">💥</div>
+      <h4>熊彼特视角</h4>
+      <p>增长是创造性破坏——新产业取代旧产业，本质是结构变迁</p>
+    </div>
+    <div class="card">
+      <div class="icon">🧮</div>
+      <h4>现代增长理论</h4>
+      <p>增长来自资本积累、劳动力增长和全要素生产率（TFP）</p>
+    </div>
+  </div>
+  <div class="highlight"><p>当前中国经济的背离，恰恰是这四种视角同时成立、但指向不同方向的体现。</p></div>
+</div>
+
+<!-- S3: 生产法 vs 需求法 -->
+<div class="slide" id="s3">
+  <h2>三、两种测量方法的本质差异</h2>
+  <div class="three-col">
+    <div class="col">
+      <div class="big">🏗️</div>
+      <h4 style="margin-top:0.5rem">生产法</h4>
+      <p><strong>测量"谁在生产"</strong><br>一产+二产+三产增加值之和</p>
+      <p style="font-size:0.8rem;color:#666;margin-top:0.5rem">回答：经济在制造什么</p>
+    </div>
+    <div class="col">
+      <div class="big">💳</div>
+      <h4 style="margin-top:0.5rem">需求法（支出法）</h4>
+      <p><strong>测量"谁在花钱"</strong><br>消费+投资+净出口之和</p>
+      <p style="font-size:0.8rem;color:#666;margin-top:0.5rem">回答：经济在消耗什么</p>
+    </div>
+    <div class="col">
+      <div class="big">⚖️</div>
+      <h4 style="margin-top:0.5rem">理论上</h4>
+      <p>生产 = 收入 = 支出<br>三者应相等</p>
+      <p style="font-size:0.8rem;color:#fc5c7d;margin-top:0.5rem">但现实中，背离已超出统计误差</p>
+    </div>
+  </div>
+</div>
+
+<!-- S4: 解释1-2 -->
+<div class="slide" id="s4">
+  <h2>四、六种解释（上）</h2>
+  <div class="explain-card explain-1">
+    <p><span class="ex-num" style="background:rgba(100,180,255,0.2);color:#64b4ff">1</span><span class="ex-title">统计口径与结构性调整</span></p>
+    <p class="ex-desc">生产法基于企业报表，需求法依赖抽样调查。数字经济在生产法中更易捕捉，在需求法中易遗漏。服务业非市场化部分按成本法核算，"增长"可能反映政府投入而非实际产出。</p>
+    <p class="ex-insight">局限：可解释部分背离，但难以解释背离的持续扩大。</p>
+  </div>
+  <div class="explain-card explain-2">
+    <p><span class="ex-num" style="background:rgba(180,130,255,0.2);color:#b482ff">2</span><span class="ex-title">结构性失衡——有生产能力但无消费能力</span></p>
+    <p class="ex-desc">生产端靠出口和政府投资维持，但居民消费端信心不足、收入增长放缓。居民可支配收入增速低于GDP增速，储蓄率居高不下，消费倾向下降。</p>
+    <p class="ex-insight">关键洞察：不是传统"需求不足"，而是"有生产能力但无消费能力"的结构性失衡。</p>
+  </div>
+  <div class="explain-card explain-3">
+    <p><span class="ex-num" style="background:rgba(100,220,180,0.2);color:#64dcb4">3</span><span class="ex-title">经济转型的"换挡期"阵痛</span></p>
+    <p class="ex-desc">从投资驱动转向消费驱动、从制造业主导转向服务业主导。传统产业收缩，新兴产业扩张，但后者体量不足以弥补前者缺口。</p>
+    <p class="ex-insight">关键洞察：转型期的数据背离不是"问题"，而是"过程"。</p>
+  </div>
+</div>
+
+<!-- S5: 解释4-6 -->
+<div class="slide" id="s5">
+  <h2>五、六种解释（下）</h2>
+  <div class="explain-card explain-4">
+    <p><span class="ex-num" style="background:rgba(240,194,127,0.2);color:#f0c27f">4</span><span class="ex-title">资产负债表衰退（辜朝明）</span></p>
+    <p class="ex-desc">资产价格暴跌导致资产负债表受损，经济主体从"利润最大化"转向"债务最小化"。生产是存量活动，需求是增量决策——当所有人都在修复资产负债表时，增量需求消失。</p>
+    <p class="ex-insight">证据：M2高但M1低，居民提前还房贷，企业提前还贷。</p>
+  </div>
+  <div class="explain-card explain-5">
+    <p><span class="ex-num" style="background:rgba(252,92,125,0.2);color:#fc5c7d">5</span><span class="ex-title">全球产业链重构的外部冲击</span></p>
+    <p class="ex-desc">中美贸易摩擦、供应链重组导致外循环和内循环不同步。出口部门受益于全球需求，但内需部门受信心和收入双重压制。</p>
+    <p class="ex-insight">关键洞察：生产在中国，利润和消费在海外——生产和消费发生地理上的分离。</p>
+  </div>
+  <div class="explain-card explain-6">
+    <p><span class="ex-num" style="background:rgba(255,160,80,0.2);color:#ffa050">6</span><span class="ex-title">收入分配结构恶化的长期后果</span></p>
+    <p class="ex-desc">劳动报酬占GDP比重持续下降，企业利润和政府收入增速长期高于居民收入增速。高收入群体消费倾向低，低收入群体消费倾向高但没钱可花。</p>
+    <p class="ex-insight">关键洞察：这不是周期性问题，是结构性问题——需要制度改革而非政策刺激。</p>
+  </div>
+</div>
+
+<!-- S6: 综合判断 -->
+<div class="slide" id="s6">
+  <h2>六、综合判断：三重力量叠加</h2>
+  <p style="margin-bottom:1rem">六种解释不是互斥的，而是不同层次的互补：</p>
+  <div class="table-wrap"><table>
+    <tr><th>解释</th><th>时间维度</th><th>核心机制</th><th>政策含义</th></tr>
+    <tr><td>统计口径调整</td><td>短期</td><td>技术性</td><td>改进统计方法</td></tr>
+    <tr><td>结构性失衡</td><td>中期</td><td>经济结构</td><td>扩大内需、提升消费</td></tr>
+    <tr><td>转型阵痛</td><td>中长期</td><td>产业变迁</td><td>加速转型、管理过渡期</td></tr>
+    <tr><td>资产负债表衰退</td><td>中期</td><td>债务-通缩</td><td>财政刺激、债务重组</td></tr>
+    <tr><td>全球产业链重构</td><td>中长期</td><td>外部冲击</td><td>双循环、自主可控</td></tr>
+    <tr><td>收入分配恶化</td><td>长期</td><td>制度性</td><td>税制改革、社保完善</td></tr>
+  </table></div>
+  <div class="highlight">
+    <p><strong>最可能的综合判断：三重力量叠加</strong><br>
+    ① 周期性的需求不足（最紧迫）<br>
+    ② 结构性的转型阵痛（中期）<br>
+    ③ 制度性的分配失衡（长期根源）</p>
+  </div>
+</div>
+
+<!-- S7: 五大理论流派1-3 -->
+<div class="slide" id="s7">
+  <h2>七、五大理论流派的碰撞（上）</h2>
+  <div class="theory-card">
+    <div class="theory-name">📚 新古典综合派 — 萨缪尔森、萨默斯</div>
+    <div class="theory-quote">"长期停滞——潜在增长率下降、总需求持续不足。"</div>
+    <p>解决方案：财政扩张而非货币宽松。人口老龄化导致潜在增长率下降，需要大规模财政刺激投入民生领域。</p>
+    <div class="theory-crit">批判：过度强调需求侧，忽视供给侧结构性问题</div>
+  </div>
+  <div class="theory-card">
+    <div class="theory-name">🏛️ 奥地利学派 — 哈耶克、米塞斯</div>
+    <div class="theory-quote">"人为繁荣的必然清算——过去的信贷扩张导致了错误的投资。"</div>
+    <p>生产法数据不错是因为错误投资还在生产，但需求法已反映市场否定。不应延缓调整，应让市场完成出清。</p>
+    <div class="theory-crit">批判：过于理想化"市场出清"，忽视社会成本和政治风险</div>
+  </div>
+  <div class="theory-card">
+    <div class="theory-name">⚠️ 后凯恩斯/明斯基学派 — 明斯基、兰德尔·雷</div>
+    <div class="theory-quote">"明斯基时刻的前兆——债务累积正在引发连锁反应。"</div>
+    <p>地方政府债务、企业债务、居民债务都处于高位，任何一环的违约都可能引发连锁反应。</p>
+    <div class="theory-crit">批判：对债务风险的判断可能过于悲观</div>
+  </div>
+</div>
+
+<!-- S8: 五大理论流派4-5 -->
+<div class="slide" id="s8">
+  <h2>八、五大理论流派的碰撞（下）</h2>
+  <div class="theory-card">
+    <div class="theory-name">🌱 发展经济学/结构主义 — 林毅夫、罗德里克</div>
+    <div class="theory-quote">"结构转型的正常现象——关键在于是否在正确的方向上转型。"</div>
+    <p>中国仍有后发优势（产业升级空间、城市化潜力），当前是"转型中的阵痛"而非"系统性危机"。</p>
+    <div class="theory-crit">批判：接近技术前沿时后发优势会消失，需切换到前沿创新模式</div>
+  </div>
+  <div class="theory-card">
+    <div class="theory-name">🔴 马克思主义政治经济学</div>
+    <div class="theory-quote">"相对过剩的经典表现——生产社会化与购买力不足的矛盾。"</div>
+    <p>生产端可以无限扩张，但消费端受限于劳动者的购买力。解决方案不是刺激需求，而是改变分配结构。</p>
+    <div class="theory-crit">批判：分析框架适用于资本主义，中国是社会主义市场经济</div>
+  </div>
+  <div class="highlight" style="margin-top:0.5rem">
+    <p><strong>没有哪个理论能独立解释全部背离。</strong> 每个流派都看到了真实的一部分，也都忽略了一部分。真正的理解需要跨流派的综合视角。</p>
+  </div>
+</div>
+
+<!-- S9: GDP框架的局限 -->
+<div class="slide" id="s9">
+  <h2>九、一个更本质的问题</h2>
+  <p style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1rem">我们是否在用旧框架理解新经济？</p>
+  <div class="highlight">
+    <p>GDP是20世纪30年代为工业经济设计的核算体系。在工业经济时代，生产和消费紧密耦合。但在数字经济时代：</p>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="icon">📱</div>
+      <h4>免费产品</h4>
+      <p>微信、抖音、搜索引擎创造了巨大的消费者剩余，但不计入GDP</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔄</div>
+      <h4>平台经济</h4>
+      <p>生产和消费的边界模糊化——用户既是消费者也是生产者</p>
+    </div>
+    <div class="card">
+      <div class="icon">💾</div>
+      <h4>数据要素</h4>
+      <p>数据作为生产要素的价值没有被充分计入GDP</p>
+    </div>
+    <div class="card">
+      <div class="icon">📈</div>
+      <h4>质量提升</h4>
+      <p>手机性能提升但价格不变——GDP体现为"价格不变"而非"价值提升"</p>
+    </div>
+  </div>
+</div>
+
+<!-- S10: 需要新框架 -->
+<div class="slide" id="s10">
+  <h2>十、从总量思维到结构思维</h2>
+  <p style="margin-bottom:1rem">总量思维问"经济在增长吗？"<br>结构思维问"经济的哪些部分在增长？增长的质量如何？"</p>
+  <div class="three-col">
+    <div class="col">
+      <div class="big">📊</div>
+      <h4 style="margin-top:0.5rem">增长的质量</h4>
+      <p>增长是否带来了就业增加、收入提升、环境改善？</p>
+    </div>
+    <div class="col">
+      <div class="big">🤝</div>
+      <h4 style="margin-top:0.5rem">增长的包容性</h4>
+      <p>增长的成果是否被广泛分享？还是集中在少数人手中？</p>
+    </div>
+    <div class="col">
+      <div class="big">♻️</div>
+      <h4 style="margin-top:0.5rem">增长的可持续性</h4>
+      <p>增长是否以透支未来为代价？债务、资源、环境是否可持续？</p>
+    </div>
+  </div>
+  <div class="highlight">
+    <p><strong>核心问题：</strong>我们是否在用20世纪的工具理解21世纪的经济？当地图出现矛盾时，问题可能不在"地形"，而在"地图"本身。</p>
+  </div>
+</div>
+
+<!-- S11: 结语 -->
+<div class="slide" id="s11">
+  <h2>十一、数据是地图，不是领土</h2>
+  <p style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1.5rem">中国经济正在经历一场深刻的转型</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="icon">🗺️</div>
+      <h4>旧框架看到的是"矛盾"</h4>
+      <p>需求法衰退 vs 生产法增长——这是"问题"还是"过程"？</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔭</div>
+      <h4>新框架看到的是"重构"</h4>
+      <p>从一种增长模式切换到另一种增长模式的必经之路</p>
+    </div>
+    <div class="card">
+      <div class="icon">💡</div>
+      <h4>最有价值的问题</h4>
+      <p>不是"经济是好是坏"<br>而是"增长的底层逻辑正在发生什么变化"</p>
+    </div>
+  </div>
+  <div class="highlight">
+    <p style="font-size:clamp(1rem,1.6vw,1.3rem)">六个解释、五种理论、一个元问题——<br>不是为了给出答案，而是为了提供思考的框架。<br>真正的答案，需要在实践中不断检验和修正。</p>
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <button data-dir="prev">◀</button>
+  <span class="page-indicator" id="pageNum">1 / 12</span>
+  <div class="progress-bar"><div class="fill" style="width:8.3%"></div></div>
+  <button data-dir="next">▶</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+let cur=0;
+const tot=slides.length;
+function show(i){
+  slides.forEach(s=>s.classList.remove('active'));
+  slides[i].classList.add('active');
+  cur=i;
+  document.getElementById('pageNum').textContent=(i+1)+' / '+tot;
+  document.querySelector('.progress-bar .fill').style.width=((i+1)/tot*100)+'%';
+}
+document.addEventListener('keydown',e=>{
+  if((e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')&&cur<tot-1){e.preventDefault();show(cur+1)}
+  else if((e.key==='ArrowLeft'||e.key==='ArrowUp')&&cur>0){e.preventDefault();show(cur-1)}
+  else if(e.key==='Home'){e.preventDefault();show(0)}
+  else if(e.key==='End'){e.preventDefault();show(tot-1)}
+});
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.dir==='prev'&&cur>0)show(cur-1);
+  else if(b.dataset.dir==='next'&&cur<tot-1)show(cur+1);
+}));
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});
+document.addEventListener('touchend',e=>{
+  const d=tx-e.changedTouches[0].screenX;
+  if(Math.abs(d)>50){if(d>0&&cur<tot-1)show(cur+1);else if(d<0&&cur>0)show(cur-1)}
+});
+document.addEventListener('wheel',e=>{
+  if(e.deltaY>0&&cur<tot-1){e.preventDefault();show(cur+1)}
+  else if(e.deltaY<0&&cur>0){e.preventDefault();show(cur-1)}
+},{passive:false});
+show(0);
+</script>
+
+</body>
+</html>
