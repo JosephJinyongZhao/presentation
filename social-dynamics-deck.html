@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社交动力随年龄的深层变化</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a28;--text:#e8e6e3;--text2:#a8a6a3;--text3:#706e6b;--accent:#c8a86e;--accent2:#8b6f4a;--accent3:#e8c88a;--blue:#6a8fc8;--red:#c86a6a;--green:#6ac88a;--yellow:#c8b86a;--purple:#9a6ac8;--line:rgba(200,168,110,0.15);--glow:rgba(200,168,110,0.08)}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.slides{height:100vh;width:100vw;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6vh 8vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}
+.slide-inner{max-width:1100px;width:100%;margin:auto}
+h1{font-family:'Noto Serif SC',serif;font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;line-height:1.3;letter-spacing:0.04em;color:var(--accent)}
+h2{font-family:'Noto Serif SC',serif;font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:700;line-height:1.4;letter-spacing:0.03em;color:var(--accent);margin-bottom:1.2em}
+p,li{font-size:clamp(1rem,1.6vw,1.35rem);line-height:1.8;color:var(--text)}
+.subtitle{font-size:clamp(1rem,1.8vw,1.5rem);color:var(--text2);line-height:1.6;margin-top:.5em}
+.meta{font-size:clamp(.75rem,1vw,.9rem);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1em}
+.highlight{color:var(--accent3);font-weight:600}
+.blue{color:var(--blue)}.red{color:var(--red)}.green{color:var(--green)}.yellow{color:var(--yellow)}.purple{color:var(--purple)}
+.nav{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1.2vw;z-index:100;padding:.6em 1.5em;background:rgba(10,10,15,.7);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:2em}
+.nav-btn{width:2.8em;height:2.8em;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--text2);font-size:clamp(.7rem,1vw,.9rem);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--glow)}
+.dots{display:flex;gap:.5vw;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text3);border:none;cursor:pointer;transition:all .3s;padding:0}
+.dot.active{background:var(--accent);width:24px;border-radius:4px}
+.dot:hover{background:var(--text2)}
+.page-num{font-size:clamp(.65rem,.8vw,.75rem);color:var(--text3);letter-spacing:.05em;min-width:4em;text-align:center}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent3));z-index:200;transition:width .4s ease}
+.title-slide{text-align:center}
+.title-slide .divider{width:80px;height:2px;background:var(--accent);margin:1.5em auto}
+.title-slide .tags{display:flex;gap:1em;justify-content:center;flex-wrap:wrap;margin-top:2em}
+.title-slide .tag{padding:.3em 1em;border:1px solid var(--line);border-radius:2em;font-size:clamp(.7rem,.9vw,.8rem);color:var(--text2);letter-spacing:.05em}
+.card-grid{display:grid;gap:1.5em;margin-top:1em}
+.card-grid.cols-2{grid-template-columns:1fr 1fr}
+.card-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.card-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:1.5em;transition:all .3s}
+.card:hover{border-color:var(--accent2);background:var(--bg3)}
+.card .label{font-size:clamp(.65rem,.8vw,.75rem);color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5em}
+.card h4{font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--accent3);margin-bottom:.5em}
+.card p,.card li{font-size:clamp(.8rem,1.1vw,1rem);line-height:1.6;color:var(--text2)}
+.comp-table{width:100%;border-collapse:collapse;margin:1em 0}
+.comp-table th,.comp-table td{padding:.8em 1em;text-align:left;border-bottom:1px solid var(--line);font-size:clamp(.8rem,1.1vw,1rem)}
+.comp-table th{color:var(--accent2);font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-size:clamp(.65rem,.8vw,.75rem)}
+.comp-table td{color:var(--text2);line-height:1.6}
+.callout{background:var(--bg2);border-left:3px solid var(--accent);padding:1.2em 1.5em;border-radius:0 8px 8px 0;margin:1em 0}
+.callout p,.callout li{font-size:clamp(.85rem,1.2vw,1.05rem);color:var(--text2);line-height:1.7}
+.expert-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:1.5em;position:relative;overflow:hidden}
+.expert-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.expert-card.support::before{background:var(--blue)}
+.expert-card.oppose::before{background:var(--red)}
+.expert-card.question::before{background:var(--yellow)}
+.expert-card.disrupt::before{background:var(--purple)}
+.expert-card .role{font-size:clamp(.65rem,.8vw,.75rem);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3em}
+.expert-card .name{font-family:'Noto Serif SC',serif;font-size:clamp(1rem,1.4vw,1.2rem);font-weight:700;margin-bottom:.2em}
+.expert-card .title{font-size:clamp(.7rem,.9vw,.8rem);color:var(--text3);margin-bottom:.8em}
+.expert-card .quote{font-style:italic;color:var(--text2);font-size:clamp(.8rem,1.1vw,.95rem);line-height:1.6;padding:.8em;background:rgba(255,255,255,.03);border-radius:6px}
+.expert-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2em;margin-top:1em}
+.collision{background:linear-gradient(135deg,rgba(200,168,110,.05),rgba(200,168,110,.1));border:1px solid var(--accent2);border-radius:10px;padding:1.2em 1.5em;margin:1em 0}
+.collision .title{color:var(--accent3);font-weight:600;margin-bottom:.5em;font-size:clamp(.85rem,1.2vw,1rem)}
+.collision p{font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2);line-height:1.6}
+.model-diagram{display:flex;flex-direction:column;align-items:center;gap:.8em;margin:1.5em 0}
+.model-node{padding:.8em 2em;border-radius:8px;font-size:clamp(.85rem,1.2vw,1rem);text-align:center;min-width:200px}
+.model-node.decision{border:2px solid var(--accent);color:var(--accent3);background:rgba(200,168,110,.08)}
+.model-node.action{background:var(--bg2);border:1px solid var(--line);color:var(--text2)}
+.model-node.result{background:var(--bg3);border:1px solid var(--accent2);color:var(--accent3)}
+.model-arrow{color:var(--text3);font-size:clamp(.7rem,1vw,.8rem)}
+.action-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5em;margin-top:1em}
+.action-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:1.5em}
+.action-card .period{font-size:clamp(1.2rem,1.8vw,1.6rem);margin-bottom:.5em}
+.action-card ul{list-style:none;padding:0}
+.action-card li{padding:.4em 0;padding-left:1.2em;position:relative;font-size:clamp(.8rem,1.1vw,.95rem);line-height:1.6;color:var(--text2)}
+.action-card li::before{content:'\2192';position:absolute;left:0;color:var(--accent2)}
+.principle-list{display:flex;flex-direction:column;gap:1em;margin-top:1em}
+.principle-item{display:flex;gap:1em;align-items:flex-start;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:1.2em 1.5em}
+.principle-num{font-family:'Noto Serif SC',serif;font-size:clamp(1.2rem,1.8vw,1.5rem);font-weight:900;color:var(--accent2);min-width:2em;line-height:1.4}
+.principle-text h4{font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--accent3);margin-bottom:.3em}
+.principle-text p{font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2);line-height:1.6}
+.summary-table{width:100%;border-collapse:collapse;margin:1em 0}
+.summary-table th,.summary-table td{padding:.6em .8em;border-bottom:1px solid var(--line);font-size:clamp(.75rem,1vw,.9rem);text-align:left;color:var(--text2);line-height:1.5}
+.summary-table th{color:var(--accent2);font-weight:500;font-size:clamp(.6rem,.75vw,.7rem);letter-spacing:.05em;text-transform:uppercase}
+@media(max-width:768px){.slide{padding:4vh 5vw}.card-grid.cols-2,.card-grid.cols-3,.card-grid.cols-4{grid-template-columns:1fr}.action-grid{grid-template-columns:1fr}.expert-grid{grid-template-columns:1fr}.nav{gap:2vw;padding:.4em 1em}}
+.slide.active .fade-in{animation:fadeUp .6s ease forwards}
+.slide.active .fade-in-d1{animation:fadeUp .6s ease .1s forwards;opacity:0}
+.slide.active .fade-in-d2{animation:fadeUp .6s ease .2s forwards;opacity:0}
+.slide.active .fade-in-d3{animation:fadeUp .6s ease .3s forwards;opacity:0}
+.slide.active .fade-in-d4{animation:fadeUp .6s ease .4s forwards;opacity:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="slides" id="slides">
+
+<div class="slide active" data-index="0">
+  <div class="slide-inner title-slide">
+    <p class="meta fade-in">2026 · 从一场两个人的聚会说起</p>
+    <h1 class="fade-in-d1">社交动力随年龄的<br>深层变化</h1>
+    <div class="divider fade-in-d2"></div>
+    <p class="subtitle fade-in-d2">从表象感受到本质分析 · 批判性审视 · 跨学科智囊团碰撞</p>
+    <div class="tags fade-in-d3">
+      <span class="tag">社会学</span><span class="tag">心理学</span><span class="tag">历史学</span>
+      <span class="tag">人类学</span><span class="tag">网络科学</span><span class="tag">生物学</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <p class="meta fade-in">现象层</p>
+    <h2 class="fade-in-d1">一个场景引发的追问</h2>
+    <p class="subtitle fade-in-d2" style="margin-bottom:1.5em">昨晚的聚会，说好很多人来，最后只来了杨卓曌。</p>
+    <table class="comp-table fade-in-d3">
+      <tr><th>现象</th><th>表层解读</th><th>深层信号</th></tr>
+      <tr><td>很多人说来但没来</td><td>大家不重视</td><td>社交的承诺成本在上升</td></tr>
+      <tr><td>杨卓曌来了</td><td>他是靠谱的人</td><td>有真实连接而非事务性连接</td></tr>
+      <tr><td>剥核桃吃得很开心</td><td>活动本身有意义</td><td>深度交流远胜表面热闹</td></tr>
+      <tr><td>"这就是EMBA聚会"</td><td>玩笑</td><td>被普遍感知但少被说破的群体现象</td></tr>
+    </table>
+    <div class="callout fade-in-d4">
+      <p><strong>关键洞察</strong>：不是活动不够好，不是人不够好，而是<strong class="highlight">社交的供需结构变了</strong>——供给方的期待和需求方的决策逻辑之间出现了错位。</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <p class="meta fade-in">本质层</p>
+    <h2 class="fade-in-d1">社交动力的四个根本性迁移</h2>
+    <p class="subtitle fade-in-d2" style="margin-bottom:1.5em;font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3)">不是衰减，而是转型</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">迁移一</div>
+        <h4>机会导向 &rarr; 成本敏感</h4>
+        <p>社交的机会成本结构发生根本性变化。时间被家庭、事业、健康高度分割，每一次参与都是"放弃其他选项"的决策。</p>
+      </div>
+      <div class="card">
+        <div class="label">迁移二</div>
+        <h4>广度积累 &rarr; 深度筛选</h4>
+        <p>认知资源变得稀缺，大脑启动筛选机制——不再追求认识多少人，而是追求与谁在一起时能真正放松和充电。</p>
+      </div>
+      <div class="card">
+        <div class="label">迁移三</div>
+        <h4>社交作为工具 &rarr; 社交作为目的</h4>
+        <p>对虚假社交的容忍度急剧下降。剥核桃有心流，因为它没有目的——不是为了谈成什么，就是为了在一起。</p>
+      </div>
+      <div class="card">
+        <div class="label">迁移四</div>
+        <h4>价值驱动 &rarr; 节点驱动</h4>
+        <p>核心人物是信任的锚点。弱连接网络靠信息价值驱动，强连接网络靠信任节点驱动。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <p class="meta fade-in">框架层</p>
+    <h2 class="fade-in-d1">社交参与决策的三层模型</h2>
+    <div class="model-diagram fade-in-d2">
+      <div class="model-node decision">社交邀请到达</div>
+      <div class="model-arrow">&darr; 第一层过滤</div>
+      <div class="model-node decision">工作必须？</div>
+      <div class="model-arrow">&darr; 否</div>
+      <div class="model-node decision">有信任的核心人物在场？</div>
+      <div class="model-arrow">&darr; 否</div>
+      <div class="model-node decision">预期收益明确且高？</div>
+      <div class="model-arrow">&darr; 否</div>
+      <div class="model-node result">大概率不参加</div>
+    </div>
+    <div class="callout fade-in-d3">
+      <p><strong>核心结论</strong>：中年后的社交参与决策，<strong class="highlight">核心人物的存在是第一过滤器</strong>，内容价值是第二过滤器。</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <p class="meta fade-in">原则层</p>
+    <h2 class="fade-in-d1">五条实践原则</h2>
+    <div class="principle-list fade-in-d2">
+      <div class="principle-item">
+        <div class="principle-num">一</div>
+        <div class="principle-text">
+          <h4>先锚定节点，再设计活动</h4>
+          <p>找到3-5个核心人物，他们的出席决定了活动的基调和他人的参与意愿。</p>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">二</div>
+        <div class="principle-text">
+          <h4>小即是多</h4>
+          <p>2-3人的深度交流，效果远好于10-20人的表面社交。社交的"单位质量"比"总人数"重要得多。</p>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">三</div>
+        <div class="principle-text">
+          <h4>创造"共同做一件事"的场景</h4>
+          <p>吃饭喝酒是"社交的壳"，共同做一件事才是"社交的核"。优先考虑共同体验而非共同消费。</p>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">四</div>
+        <div class="principle-text">
+          <h4>接受"不来"是常态</h4>
+          <p>把精力放在真正愿意来的人身上，和他们建立更深的连接。少而深，优于多而浅。</p>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-num">五</div>
+        <div class="principle-text">
+          <h4>区分"社交"和"社群"</h4>
+          <p>中年后，社群（持续的共同身份）比社交（单次的活动）更有生命力。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <p class="meta fade-in">行动层</p>
+    <h2 class="fade-in-d1">你可以做什么</h2>
+    <div class="action-grid fade-in-d2">
+      <div class="action-card">
+        <div class="period">本周</div>
+        <ul>
+          <li>复盘社交网络表，识别3-5个核心节点</li>
+          <li>把"约人吃饭"改成"约人做一件事"</li>
+        </ul>
+      </div>
+      <div class="action-card">
+        <div class="period">本月</div>
+        <ul>
+          <li>从"组织活动等人来"转向"以节点为中心"</li>
+          <li>为"不来"建立心理预期（30-50%到场率）</li>
+        </ul>
+      </div>
+      <div class="action-card">
+        <div class="period">本季</div>
+        <ul>
+          <li>从社交网络升级为社群网络</li>
+          <li>把深度交流变成你的社交品牌</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout fade-in-d3" style="margin-top:1.5em">
+      <p><strong>一句话总结</strong>：中年后的社交，本质是从"机会的社交"转向"存在的社交"——不再为了什么而社交，而是因为在一起本身就有意义。</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <p class="meta fade-in">批判性审视</p>
+    <h2 class="fade-in-d1">从多学科视角拆解盲区</h2>
+    <p class="subtitle fade-in-d2" style="margin-bottom:1.2em;font-size:clamp(.8rem,1.1vw,.9rem);color:var(--text3)">不是否定，而是把前文放在更大的坐标系中审视</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">社会学</div>
+        <h4>"个体选择"叙事掩盖了结构性约束</h4>
+        <p>"从广度到深度"是知识中产阶级的社交审美，不是普遍规律。布迪厄指出，对"深度""纯粹"的追求是文化资本的区隔策略。</p>
+      </div>
+      <div class="card">
+        <div class="label">历史学</div>
+        <h4>"中年社交收缩"是历史特例</h4>
+        <p>在人类历史大部分时期，中年是社交网络的巅峰期。后工业社会知识工作者的社交收缩，是时代效应而非年龄效应。</p>
+      </div>
+      <div class="card">
+        <div class="label">生物学</div>
+        <h4>社交收缩是能量分配策略</h4>
+        <p>大脑只占体重2%却消耗20%能量。社交是高认知负荷活动。这不是"认知进化"，而是"认知回归"到部落本能。</p>
+      </div>
+      <div class="card">
+        <div class="label">逻辑</div>
+        <h4>"从X到Y"是虚假二分</h4>
+        <p>这不是迁移，是叠加。因果方向可能颠倒——社交失望&rarr;合理化退缩。基于单一数据点的过度推论。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <p class="meta fade-in">智囊团 · 跨学科碰撞</p>
+    <h2 class="fade-in-d1">四位真实学者的多元视角</h2>
+    <div class="expert-grid fade-in-d2">
+      <div class="expert-card support">
+        <div class="role blue">支持方 · 社会心理学</div>
+        <div class="name">Laura Carstensen</div>
+        <div class="title">斯坦福大学心理学教授 · SST理论</div>
+        <div class="quote">"时间知觉决定社交偏好。当时间有限时，人们把社交预算从'可能有用'转向'确定有益'，这是完全理性的适应行为。"</div>
+      </div>
+      <div class="expert-card oppose">
+        <div class="role red">反对方 · 经济社会学</div>
+        <div class="name">Mark Granovetter</div>
+        <div class="title">斯坦福大学社会学教授 · 弱连接理论</div>
+        <div class="quote">"弱连接的价值没有变，是支付意愿变了。不要放弃弱连接，要提高弱连接的'信号价值'。"</div>
+      </div>
+      <div class="expert-card question">
+        <div class="role yellow">质疑方 · 文化人类学</div>
+        <div class="name">Clifford Geertz</div>
+        <div class="title">普林斯顿高等研究院教授 · 解释人类学</div>
+        <div class="quote">"'深度社交'是一种非常特定的、现代知识中产阶级的、个人主义的社交审美。不要把你的社交审美当成普遍真理。"</div>
+      </div>
+      <div class="expert-card disrupt">
+        <div class="role purple">搅局者 · 网络社会学</div>
+        <div class="name">Ronald Burt</div>
+        <div class="title">芝加哥大学社会学教授 · 结构洞理论</div>
+        <div class="quote">"从网络拓扑看，过度追求深度反而降低韧性。最优策略是双模网络——同时维持稀疏的弱连接层和稠密的强连接层。"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <p class="meta fade-in">智囊团 · 交叉碰撞</p>
+    <h2 class="fade-in-d1">当四位专家互相对话</h2>
+    <div class="collision fade-in-d2">
+      <div class="title">卡斯坦森 vs 格兰诺维特</div>
+      <p><strong class="blue">卡斯坦森</strong>：偏好转变是健康的适应行为，接受它。</p>
+      <p><strong class="red">格兰诺维特</strong>：这是自我实现的预言。保持社交活跃度的中年人，职业发展和生活满意度明显更高。"适应"和"放弃"之间的界限很模糊。</p>
+    </div>
+    <div class="collision fade-in-d3">
+      <div class="title">格茨 vs 伯特</div>
+      <p><strong class="yellow">格茨</strong>：深度社交是一种文化建构，不同文明对"好的社交"有完全不同的定义。</p>
+      <p><strong class="purple">伯特</strong>：从网络拓扑看，分类有时会遮蔽本质。最优策略不是二选一，而是双模网络。</p>
+    </div>
+    <div class="collision fade-in-d4">
+      <div class="title">格茨的插话</div>
+      <p><strong class="yellow">格茨</strong>：你们西方学者太喜欢分类了。我在印尼看到的社交模式——人们花几个小时在集市上闲逛——当地人不会把它分成"有用"和"舒服"。</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <p class="meta fade-in">智囊团 · 综合结论</p>
+    <h2 class="fade-in-d1">双模网络：最优策略</h2>
+    <div class="card-grid cols-2 fade-in-d2" style="margin-bottom:1.5em">
+      <div class="card">
+        <div class="label">稀疏的弱连接层</div>
+        <h4>维持网络韧性</h4>
+        <p>保持信息多样性，提供结构洞位置的机会优势。失去几个节点不影响整体。</p>
+      </div>
+      <div class="card">
+        <div class="label">稠密的强连接层</div>
+        <h4>提供深度连接</h4>
+        <p>满足情感支持需求，提供"在一起"的存在感。核心圈5-15人。</p>
+      </div>
+    </div>
+    <table class="summary-table fade-in-d3">
+      <tr><th>专家</th><th>核心观点</th><th>对前文的修正</th></tr>
+      <tr><td><strong class="blue">卡斯坦森</strong></td><td>时间知觉决定社交偏好</td><td>转变是可逆的，取决于时间知觉而非年龄</td></tr>
+      <tr><td><strong class="red">格兰诺维特</strong></td><td>弱连接价值未变</td><td>不要放弃弱连接，要优化信号设计</td></tr>
+      <tr><td><strong class="yellow">格茨</strong></td><td>"深度社交"是文化建构</td><td>不要把个人偏好自然化为普遍规律</td></tr>
+      <tr><td><strong class="purple">伯特</strong></td><td>网络韧性需要广度</td><td>最优策略是双模网络，非二选一</td></tr>
+    </table>
+    <div class="callout fade-in-d4">
+      <p><strong>综合结论</strong>：前文的"从X到Y"框架把"叠加"误认为"迁移"。中年后的社交不是单向迁移，而是<strong class="highlight">在保持广度的基础上增加深度的权重</strong>。两者缺一不可。</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="10">
+  <div class="slide-inner title-slide">
+    <p class="meta fade-in">终章</p>
+    <h1 class="fade-in-d1">剥核桃的夜晚<br>就是最好的注脚</h1>
+    <div class="divider fade-in-d2"></div>
+    <p class="subtitle fade-in-d2">中年后的社交，本质是从"机会的社交"转向"存在的社交"<br>——不再为了什么而社交，而是因为在一起本身就有意义。</p>
+    <div class="tags fade-in-d3" style="margin-top:3em">
+      <span class="tag">完整文档：事业发展知识库</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<nav class="nav" id="nav">
+  <button class="nav-btn" id="prevBtn">&larr;</button>
+  <div class="dots" id="dots"></div>
+  <span class="page-num" id="pageNum">1 / 11</span>
+  <button class="nav-btn" id="nextBtn">&rarr;</button>
+</nav>
+
+<script>
+const slides=document.querySelectorAll('.slide'),total=slides.length;let current=0;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<total;i++){const d=document.createElement('button');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d)}
+function update(){
+  slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+  document.getElementById('progress').style.width=((current+1)/total*100)+'%';
+  document.getElementById('pageNum').textContent=(current+1)+' / '+total;
+  document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i===current)});
+}
+function goTo(n){if(n<0||n>=total)return;current=n;update()}
+document.getElementById('prevBtn').onclick=()=>goTo(current-1);
+document.getElementById('nextBtn').onclick=()=>goTo(current+1);
+document.onkeydown=e=>{if(e.key==='ArrowRight')goTo(current+1);if(e.key==='ArrowLeft')goTo(current-1)};
+</script>
+</body>
+</html>
