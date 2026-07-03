@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>历史周期思维 · 在时间的长河中做判断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a28;--text:#e8e6e3;--text-dim:#88869e;--accent:#f0c040;--accent2:#e8744a;--accent3:#4a9eff;--accent4:#6bcf7f;--border:#2a2a3e}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.deck{display:flex;transition:transform 0.7s cubic-bezier(0.65,0,0.35,1);height:100vh;will-change:transform}
+.slide{min-width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:6vh 8vw;position:relative;overflow:hidden}
+.slide::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(240,192,64,0.03) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(74,158,255,0.02) 0%,transparent 50%);pointer-events:none}
+.grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:4vh 4vh;pointer-events:none}
+h1{font-family:'Noto Serif SC',serif;font-size:clamp(2.8rem,5.5vw,5.5rem);font-weight:900;line-height:1.2;letter-spacing:0.04em;color:var(--text)}
+h2{font-family:'Noto Serif SC',serif;font-size:clamp(1.8rem,3.2vw,3.2rem);font-weight:700;line-height:1.3;margin-bottom:1.2em;letter-spacing:0.02em}
+h2 .num{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.6em;color:var(--accent);margin-right:0.5em;opacity:0.6}
+h3{font-family:'Noto Serif SC',serif;font-size:clamp(1.2rem,1.8vw,1.8rem);font-weight:600;margin-bottom:0.6em;color:var(--accent)}
+p,li{font-size:clamp(1rem,1.6vw,1.6rem);line-height:1.7;color:var(--text);max-width:80vw}
+.subtitle{font-size:clamp(1rem,1.4vw,1.4rem);color:var(--text-dim);margin-top:1.5em;letter-spacing:0.1em;font-weight:300}
+.quote{font-family:'Noto Serif SC',serif;font-size:clamp(1.4rem,2.4vw,2.4rem);line-height:1.6;color:var(--accent);padding:1.5em 2em;border-left:3px solid var(--accent);background:linear-gradient(90deg,rgba(240,192,64,0.06),transparent);margin:1em 0;max-width:75vw}
+.quote-attrib{font-size:0.7em;color:var(--text-dim);margin-top:0.5em;font-family:'Noto Sans SC',sans-serif}
+.slide-num{position:absolute;bottom:4vh;right:4vw;font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--text-dim);opacity:0.4;letter-spacing:0.1em}
+.nav{position:fixed;bottom:4vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1.2vw;z-index:100;background:rgba(10,10,15,0.8);backdrop-filter:blur(12px);padding:0.8em 1.6em;border-radius:2em;border:1px solid var(--border)}
+.nav-btn{background:none;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;padding:0.3em 0.6em;transition:all 0.2s;border-radius:0.3em;font-family:'JetBrains Mono',monospace}
+.nav-btn:hover{color:var(--accent);background:rgba(240,192,64,0.1)}
+.nav-btn:disabled{opacity:0.2;cursor:default}
+.nav-dots{display:flex;gap:0.4vw}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);opacity:0.3;cursor:pointer;transition:all 0.3s}
+.nav-dot.active{opacity:1;background:var(--accent);width:20px;border-radius:3px}
+.nav-dot:hover{opacity:0.6}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5em;margin-top:1em}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:1em;padding:1.8em;transition:all 0.3s}
+.card:hover{border-color:rgba(240,192,64,0.3);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.3)}
+.card-icon{font-size:2em;margin-bottom:0.5em}
+.card h4{font-size:1.1em;color:var(--accent);margin-bottom:0.5em}
+.card p{font-size:0.85em;line-height:1.6;color:var(--text-dim)}
+.timeline{position:relative;padding-left:2em;margin:1.5em 0}
+.timeline::before{content:'';position:absolute;left:0.5em;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent3),transparent)}
+.tl-item{position:relative;margin-bottom:1.8em;padding-left:1.5em}
+.tl-item::before{content:'';position:absolute;left:-1.65em;top:0.5em;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+.tl-item .tl-label{font-family:'JetBrains Mono',monospace;font-size:0.8em;color:var(--accent2);margin-bottom:0.3em}
+.tl-item p{font-size:0.95em;line-height:1.6}
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2em;margin-top:1em}
+.dim-card{background:var(--bg2);border:1px solid var(--border);border-radius:0.8em;padding:1.5em;position:relative;overflow:hidden}
+.dim-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+.dim-card:nth-child(1)::before{background:var(--accent)}
+.dim-card:nth-child(2)::before{background:var(--accent2)}
+.dim-card:nth-child(3)::before{background:var(--accent3)}
+.dim-card:nth-child(4)::before{background:var(--accent4)}
+.dim-card .dim-num{font-family:'JetBrains Mono',monospace;font-size:0.7em;color:var(--text-dim);opacity:0.5;margin-bottom:0.3em}
+.dim-card h4{font-size:1em;margin-bottom:0.4em}
+.dim-card p{font-size:0.8em;line-height:1.5;color:var(--text-dim)}
+.trap-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1em;margin-top:1em}
+.trap-card{background:rgba(232,116,74,0.08);border:1px solid rgba(232,116,74,0.2);border-radius:0.8em;padding:1.5em;text-align:center}
+.trap-card .trap-icon{font-size:2em;margin-bottom:0.4em}
+.trap-card h4{font-size:1em;color:var(--accent2);margin-bottom:0.4em}
+.trap-card p{font-size:0.8em;color:var(--text-dim);line-height:1.5}
+.expert-chat{display:flex;flex-direction:column;gap:0.8em;margin-top:0.8em;max-height:68vh;overflow-y:auto;padding-right:0.5em}
+.expert-chat::-webkit-scrollbar{width:3px}
+.expert-chat::-webkit-scrollbar-track{background:transparent}
+.expert-chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.expert-msg{background:var(--bg2);border:1px solid var(--border);border-radius:0.8em;padding:1em 1.3em}
+.expert-msg .expert-tag{display:inline-block;font-size:0.7em;font-weight:600;padding:0.15em 0.5em;border-radius:0.3em;margin-bottom:0.3em}
+.expert-msg .expert-tag.green{background:rgba(107,207,127,0.15);color:var(--accent4)}
+.expert-msg .expert-tag.blue{background:rgba(74,158,255,0.15);color:var(--accent3)}
+.expert-msg .expert-tag.red{background:rgba(232,116,74,0.15);color:var(--accent2)}
+.expert-msg .expert-tag.yellow{background:rgba(240,192,64,0.15);color:var(--accent)}
+.expert-msg p{font-size:0.8em;line-height:1.5;color:var(--text)}
+.expert-msg p strong{color:var(--accent)}
+.comp-table{width:100%;border-collapse:collapse;margin-top:1em;font-size:clamp(0.75rem,1vw,1rem)}
+.comp-table th{text-align:left;padding:0.6em 1em;border-bottom:2px solid var(--accent);color:var(--accent);font-weight:600}
+.comp-table td{padding:0.5em 1em;border-bottom:1px solid var(--border);color:var(--text)}
+.comp-table tr:hover td{background:rgba(240,192,64,0.03)}
+.slide-cover{text-align:center;align-items:center}
+.slide-cover h1{margin-bottom:0.3em}
+.cover-line{width:60px;height:2px;background:var(--accent);margin:1.5em auto}
+.cover-tag{display:inline-block;padding:0.3em 1em;border:1px solid var(--border);border-radius:2em;font-size:0.8em;color:var(--text-dim);margin-top:1em}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .slide-content{animation:fadeInUp 0.6s ease-out}
+.slide-content{position:relative;z-index:2}
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:200;transition:width 0.5s ease}
+.section-marker{position:absolute;top:4vh;left:4vw;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-dim);opacity:0.2;letter-spacing:0.15em}
+ul,ol{padding-left:1.5em;max-width:80vw}
+li{margin-bottom:0.5em}
+.big-number{font-family:'JetBrains Mono',monospace;font-size:3em;font-weight:600;color:var(--accent);opacity:0.3;line-height:1;margin-bottom:0.2em}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2em;margin-top:1em}
+@media(max-width:768px){.slide{padding:4vh 5vw}.dim-grid,.trap-grid,.card-grid{grid-template-columns:1fr}.nav{gap:0.8vw;padding:0.5em 1em}.nav-dot{width:5px;height:5px}p,li,.quote{max-width:90vw}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="deck" id="deck">
+
+<!-- COVER -->
+<div class="slide slide-cover active" data-index="0">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="cover-tag">认知工具 · 决策框架</div>
+<h1 style="margin-top:0.5em">历史周期思维</h1>
+<p style="font-size:clamp(1.2rem,2vw,2rem);color:var(--text-dim);margin-top:0.3em">在时间的长河中做判断</p>
+<div class="cover-line"></div>
+<p style="font-size:clamp(0.9rem,1.3vw,1.3rem);color:var(--text-dim);max-width:600px;margin:0 auto;line-height:1.6">不是算命，是定位。<br>知道自己在周期的什么位置，<br>比知道明天会发生什么重要一万倍。</p>
+<p class="subtitle">2026 · 赵锦勇</p>
+</div>
+<div class="slide-num">01</div>
+</div>
+
+<!-- 1. 什么是历史周期思维 -->
+<div class="slide" data-index="1">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第一章</div>
+<h2><span class="num">01</span>什么是历史周期思维？</h2>
+<p style="margin-bottom:1.5em;color:var(--text-dim);font-size:clamp(0.9rem,1.3vw,1.3rem)">不是"以史为鉴"的简单翻版。它有三个层次：</p>
+<div class="card-grid">
+<div class="card"><div class="card-icon">📜</div><h4>第一层：以史为鉴</h4><p>"历史会重演"，所以知道过去就知道未来。这是最浅的层次，也是最危险的。因为历史不会简单重复，只会押韵。</p></div>
+<div class="card"><div class="card-icon">🔄</div><h4>第二层：理解周期</h4><p>"历史有周期"，繁荣与衰退、和平与战争、开放与封闭，交替出现。理解周期位置，比预测具体事件更重要。</p></div>
+<div class="card"><div class="card-icon">🌊</div><h4>第三层：在周期中做判断</h4><p>"历史不是背景，是变量"。真正的高手不是站在历史之外观察周期，而是把自己放在历史进程之中。</p></div>
+</div>
+<div class="quote" style="margin-top:1em">胡应湘属于第三层。<div class="quote-attrib">——用五十年周期做投资的人</div></div>
+</div>
+<div class="slide-num">02</div>
+</div>
+
+<!-- 2. 胡应湘 -->
+<div class="slide" data-index="2">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第二章</div>
+<h2><span class="num">02</span>胡应湘：用五十年周期做投资的人</h2>
+<p style="color:var(--text-dim);margin-bottom:1em">合和实业创办人 · 香港基建巨头</p>
+<div class="two-col">
+<div>
+<div class="timeline">
+<div class="tl-item"><div class="tl-label">1980s · 广深高速</div><p>在"不可能"时看到"必然"——投资数十亿美元，回收周期20年以上。他赌的不是"这条路能赚钱"，而是"中国一定会发展"。</p></div>
+<div class="tl-item"><div class="tl-label">1990s · 虎门大桥</div><p>在别人看到"桥"的地方看到"格局"——周边一片荒芜时投资，20年后日均车流量超10万辆。</p></div>
+<div class="tl-item"><div class="tl-label">核心理念</div><p>"基础设施投资不是看现在的需求，而是看50年后的需求。"</p></div>
+</div>
+</div>
+<div>
+<div class="card" style="margin-bottom:1em"><h4>启示一</h4><p>真正的长期主义不是"持有不动"，而是<strong>"在历史拐点下注"</strong>。</p></div>
+<div class="card" style="margin-bottom:1em"><h4>启示二</h4><p>基础设施投资是<strong>"押注文明进程"</strong>——做的不是工程评估，而是文明进程评估。</p></div>
+<div class="card"><h4>启示三</h4><p>历史周期思维需要<strong>"反共识"的勇气</strong>——当共识形成时，周期已经走了一半。</p></div>
+</div>
+</div>
+</div>
+<div class="slide-num">03</div>
+</div>
+
+<!-- 3. 五个案例 -->
+<div class="slide" data-index="3">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第三章</div>
+<h2><span class="num">03</span>历史周期思维的五个经典案例</h2>
+<div class="card-grid" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr">
+<div class="card" style="text-align:center"><div style="font-size:2.5em;margin-bottom:0.3em">🏛️</div><h4>范蠡</h4><p style="font-size:0.75em">"旱则资舟，水则资车"——两千年前的周期操作手册。在周期底部布局，在周期顶部兑现。</p></div>
+<div class="card" style="text-align:center"><div style="font-size:2.5em;margin-bottom:0.3em">🛢️</div><h4>洛克菲勒</h4><p style="font-size:0.75em">在"夕阳产业"中看到工业文明的血液。当所有人说石油要被取代时，他看到了被重新定义。</p></div>
+<div class="card" style="text-align:center"><div style="font-size:2.5em;margin-bottom:0.3em">🏗️</div><h4>李嘉诚</h4><p style="font-size:0.75em">"不赚最后一个铜板"——在周期顶部之前撤退，把利润和风险都留给别人。</p></div>
+<div class="card" style="text-align:center"><div style="font-size:2.5em;margin-bottom:0.3em">🌐</div><h4>孙正义</h4><p style="font-size:0.75em">正面（互联网趋势）与反面（忽略利率周期逆转）——既要看趋势方向，也要看周期位置。</p></div>
+<div class="card" style="text-align:center"><div style="font-size:2.5em;margin-bottom:0.3em">📊</div><h4>达利欧</h4><p style="font-size:0.75em">用五百年数据做投资。历史不是故事，是数据。债务周期模型：短期/长期/帝国。</p></div>
+</div>
+<div class="quote" style="margin-top:1em;font-size:clamp(0.9rem,1.2vw,1.2rem)">孙正义的教训：历史周期思维不能忽略"周期本身会终结"。既要看到趋势的方向，也要看到周期的位置。</div>
+</div>
+<div class="slide-num">04</div>
+</div>
+
+<!-- 4. 四个维度 -->
+<div class="slide" data-index="4">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第四章</div>
+<h2><span class="num">04</span>底层逻辑：四个核心维度</h2>
+<p style="color:var(--text-dim);margin-bottom:1em">为什么历史周期思维有效？<strong style="color:var(--text)">因为人性不变。</strong></p>
+<div class="dim-grid">
+<div class="dim-card"><div class="dim-num">维度一</div><h4>⏳ 时间尺度</h4><p>用天看，全是噪音。用年看，能看到趋势。用十年看，能看到周期。用五十年看，能看到文明进程。</p></div>
+<div class="dim-card"><div class="dim-num">维度二</div><h4>📍 周期位置</h4><p>同样的事件，发生在周期不同位置，意义完全不同。在周期底部，坏消息是买入机会；在周期顶部，好消息是卖出信号。</p></div>
+<div class="dim-card"><div class="dim-num">维度三</div><h4>🏗️ 结构 vs 事件</h4><p>结构是长期不变的底层框架。事件是短期表面现象。高手关注结构，普通人关注事件。</p></div>
+<div class="dim-card"><div class="dim-num">维度四</div><h4>🔄 反共识的时间差</h4><p>共识形成时，周期已走了一半。核心能力不是预测，而是在共识形成之前做出判断。</p></div>
+</div>
+</div>
+<div class="slide-num">05</div>
+</div>
+
+<!-- 5. 三个陷阱 -->
+<div class="slide" data-index="5">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第四章</div>
+<h2><span class="num">05</span>三个陷阱</h2>
+<div class="trap-grid">
+<div class="trap-card"><div class="trap-icon">⚠️</div><h4>过度类比</h4><p>"这次不一样"是投资中最危险的话。但"这次和历史上完全一样"同样危险。每一次周期都有新的变量。</p></div>
+<div class="trap-card"><div class="trap-icon">🎯</div><h4>确认偏误</h4><p>当你相信某个历史类比时，会自动忽略不符合这个类比的信息。只看到支持自己判断的数据。</p></div>
+<div class="trap-card"><div class="trap-icon">⏰</div><h4>时间尺度错配</h4><p>用历史的尺度做判断，但用当下的尺度做评估。3个月后因为"还没涨"而怀疑10年的判断。</p></div>
+</div>
+</div>
+<div class="slide-num">06</div>
+</div>
+
+<!-- 6. 如何培养 -->
+<div class="slide" data-index="6">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第五章</div>
+<h2><span class="num">06</span>如何培养历史周期思维？</h2>
+<div class="card-grid" style="grid-template-columns:1fr 1fr">
+<div class="card"><div class="card-icon">📖</div><h4>读历史，但不是读故事</h4><p>读历史不是为了记住"哪年发生了什么事"，而是为了理解<strong>模式</strong>。读同一时期的不同视角——正史、地方志、经济史。</p></div>
+<div class="card"><div class="card-icon">🧭</div><h4>建立自己的"周期坐标"</h4><p>短期（1年内）→ 关注变化<br>中期（1-5年）→ 关注趋势<br>长期（5-20年）→ 关注结构<br>超长期（20年+）→ 关注不变</p></div>
+<div class="card"><div class="card-icon">💪</div><h4>训练"反共识肌肉"</h4><p>定期问自己：现在大家都在相信什么？如果这个共识是错的，会怎样？共识的反面有没有可能成立？</p></div>
+<div class="card"><div class="card-icon">🔍</div><h4>用历史数据检验判断</h4><p>对某个趋势做出判断后，去历史中找"模式相似"的案例，看看那些案例后来发生了什么。</p></div>
+</div>
+</div>
+<div class="slide-num">07</div>
+</div>
+
+<!-- 7. 结语 -->
+<div class="slide" data-index="7">
+<div class="grid-overlay"></div>
+<div class="slide-content" style="text-align:center">
+<div class="section-marker">第六章</div>
+<div class="big-number">✦</div>
+<h2 style="margin-bottom:0.5em">不是算命，是定位</h2>
+<div class="quote" style="max-width:700px;margin:1em auto;text-align:left;font-size:clamp(1.2rem,1.8vw,1.8rem)">历史周期思维最容易被误解的地方是：<br>它不是为了预测未来，而是为了定位当下。<div class="quote-attrib">——就像地图，不是用来预测"明天会发生什么"，而是告诉你"你现在在哪里"</div></div>
+<p style="font-size:clamp(1.4rem,2.2vw,2.2rem);font-weight:700;color:var(--accent);margin-top:0.8em">知道自己在周期的什么位置，<br>比知道明天会发生什么重要一万倍。</p>
+</div>
+<div class="slide-num">08</div>
+</div>
+
+<!-- 8. 批判性审视 -->
+<div class="slide" data-index="8">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第七章 · 批判</div>
+<h2><span class="num">07</span>批判性审视</h2>
+<p style="color:var(--text-dim);margin-bottom:0.8em;font-size:clamp(0.85rem,1.1vw,1.1rem)">一个框架的价值不仅在于它能解释什么，更在于它承认自己不能解释什么。</p>
+<div class="dim-grid">
+<div class="dim-card"><div class="dim-num">假设一</div><h4>🧬 "人性不变"</h4><p>定性层面大致成立，但制度和技术放大了人性后果的量级。人性不变≠人性后果不变。</p></div>
+<div class="dim-card"><div class="dim-num">假设二</div><h4>🔁 "周期会重复"</h4><p>归纳法的经典困境。AI等技术跃迁本身就是"周期中断"的事件，而非"周期重复"的事件。</p></div>
+<div class="dim-card"><div class="dim-num">假设三</div><h4>🏗️ "结构vs事件"</h4><p>二分法过于干净。结构本身也在变化，事件也可以改变结构，分类本身就是一种选择。</p></div>
+<div class="dim-card"><div class="dim-num">偏差</div><h4>🎯 幸存者偏差</h4><p>全部是成功案例。LTCM的诺贝尔奖得主用历史数据建模却破产——同样的方法论，不同的结局。</p></div>
+</div>
+</div>
+<div class="slide-num">09</div>
+</div>
+
+<!-- 9. 逻辑问题 -->
+<div class="slide" data-index="9">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第七章 · 逻辑问题</div>
+<h2><span class="num">08</span>逻辑层面的深层问题</h2>
+<div class="card-grid" style="grid-template-columns:1fr 1fr">
+<div class="card"><h4>⚠️ 周期思维与宿命论的边界</h4><p>"周期会重复"→"现在和历史上一样"→"所以结局也会一样"。可能让人放弃主动干预。</p></div>
+<div class="card"><h4>⏳ 时间尺度悖论</h4><p>长尺度判断无法被短期验证。真正有价值的长期判断，恰恰无法在短期内证伪。</p></div>
+<div class="card"><h4>🎯 周期位置精度</h4><p>2007年很多人说"泡沫"，2008年才崩盘。周期判断最难的不是方向，而是时机。</p></div>
+<div class="card"><h4>🔄 反共识的自我悖论</h4><p>当"历史周期思维"本身成为共识时，"反共识"就不再是反共识。达利欧已是主流叙事。</p></div>
+</div>
+</div>
+<div class="slide-num">10</div>
+</div>
+
+<!-- 10. 被忽略的维度 -->
+<div class="slide" data-index="10">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第七章 · 盲区</div>
+<h2><span class="num">09</span>被忽略的重要维度</h2>
+<div class="card-grid" style="grid-template-columns:1fr 1fr 1fr">
+<div class="card"><div class="card-icon">👑</div><h4>权力结构的变化</h4><p>18世纪商人驱动→19-20世纪工业资本家和央行驱动→21世纪科技巨头和算法驱动。不同权力结构产生不同周期形态。</p></div>
+<div class="card"><div class="card-icon">📡</div><h4>信息环境的变化</h4><p>古代恐慌需数月传播，现代只需几分钟。信息速度可能改变了周期的基本形态——从"长周期"变成"短周期、高频次"。</p></div>
+<div class="card"><div class="card-icon">🌍</div><h4>全球化的不对称性</h4><p>历史上从未出现过所有主要经济体同时处于同一周期的局面。全球耦合使得历史类比更加困难。</p></div>
+</div>
+</div>
+<div class="slide-num">11</div>
+</div>
+
+<!-- 11. 批判小结 -->
+<div class="slide" data-index="11">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第七章 · 小结</div>
+<h2><span class="num">10</span>批判性小结</h2>
+<table class="comp-table">
+<tr><th>维度</th><th>框架的优势</th><th>框架的盲区</th></tr>
+<tr><td>时间尺度</td><td>帮助跳出短期噪音</td><td>长尺度判断无法短期验证</td></tr>
+<tr><td>人性不变</td><td>定性层面有效</td><td>制度和技术改变了量级</td></tr>
+<tr><td>结构vs事件</td><td>实用的分类工具</td><td>二分法过于干净</td></tr>
+<tr><td>案例选择</td><td>生动的学习素材</td><td>幸存者偏差</td></tr>
+<tr><td>反共识</td><td>避免被共识绑架</td><td>反共识本身可能成为新共识</td></tr>
+</table>
+<div class="quote" style="margin-top:1em;font-size:clamp(0.9rem,1.2vw,1.2rem)">核心结论：历史周期思维是一个强大的<strong>解释工具</strong>，但不是一个可靠的<strong>预测工具</strong>。把解释工具当预测工具使用，是最危险的误用。</div>
+</div>
+<div class="slide-num">12</div>
+</div>
+
+<!-- 12. 智囊团：搅局者 -->
+<div class="slide" data-index="12">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第八章 · 智囊团</div>
+<h2><span class="num">11</span>智囊团碰撞：多元视角</h2>
+<p style="color:var(--text-dim);margin-bottom:0.5em;font-size:clamp(0.8rem,1vw,1rem)">跨学科讨论 · 四位专家 · 真实学术背景</p>
+<div class="expert-chat">
+<div class="expert-msg"><span class="expert-tag green">🟢 搅局者 · 复杂系统科学家</span><p><strong>"历史周期思维本身可能是一个认知幻觉。"</strong> 经济系统不是钟表，是复杂适应系统。你们说的"周期"是涌现模式——当足够多人相信并据此行动时，周期就不再是原来的周期了。</p></div>
+<div class="expert-msg"><span class="expert-tag blue">🔵 支持方 · 经济史学家</span><p><strong>"不是预测工具，而是约束条件识别工具。"</strong> 债务积累到一定程度必然去杠杆——这不是预测，是会计恒等式。资产价格脱离基本面必然回归——这是均值回归的数学必然性。</p></div>
+<div class="expert-msg"><span class="expert-tag red">🔴 反对方 · 行为经济学家</span><p><strong>"最大的风险不是它错了，而是它让你觉得自己对了。"</strong> 事后聪明偏误、叙事谬误、过度自信——历史周期思维容易让你失去对"这次可能不一样"的警觉。</p></div>
+<div class="expert-msg"><span class="expert-tag yellow">🟡 质疑方 · 科学哲学家</span><p><strong>"它的认识论地位不是科学理论，而是启发式工具。"</strong> 它有价值，但它的价值不在于"正确"，而在于"有用"——就像地图不是"正确"的，而是"有用"的一样。</p></div>
+</div>
+</div>
+<div class="slide-num">13</div>
+</div>
+
+<!-- 13. 智囊团：AI挑战 -->
+<div class="slide" data-index="13">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第八章 · AI挑战</div>
+<h2><span class="num">12</span>AI对历史周期思维的颠覆</h2>
+<div class="expert-chat">
+<div class="expert-msg"><span class="expert-tag green">🟢 搅局者（复杂系统科学家）</span><p><strong>"历史周期思维建立在一个即将过时的前提上——人类是经济系统的主要决策者。"</strong> 算法交易已占美股70%以上。AI驱动的市场可能表现出完全不同的波动模式——不是"人性周期"，而是"模型周期"。</p></div>
+<div class="expert-msg"><span class="expert-tag blue">🔵 支持方（经济史学家）</span><p><strong>"无论决策者是人类还是AI，债务积累到一定程度后必须去杠杆——这个约束条件不会改变。"</strong> AI可以加速交易，但不能改变会计恒等式。历史周期思维的有效性不依赖于"人性不变"，而依赖于"约束条件不变"。</p></div>
+<div class="expert-msg"><span class="expert-tag yellow">🟡 质疑方（科学哲学家）</span><p><strong>"如果历史周期思维只是定位工具，那么它的价值如何被验证？"</strong> 预测可以被证伪，定位很难被验证。一个无法被证伪的框架，它的认知价值在哪里？</p></div>
+<div class="expert-msg"><span class="expert-tag red">🔴 反对方（行为经济学家）</span><p><strong>"历史周期思维的价值不在于它'正确'，而在于它让你'清醒'。"</strong> 它让你在狂热中保持冷静，在恐慌中保持理性，在共识中保持怀疑。但不要把它从"清醒剂"升级为"水晶球"。</p></div>
+</div>
+</div>
+<div class="slide-num">14</div>
+</div>
+
+<!-- 14. 智囊团：最终一击 -->
+<div class="slide" data-index="14">
+<div class="grid-overlay"></div>
+<div class="slide-content">
+<div class="section-marker">第八章 · 最终共识</div>
+<h2><span class="num">13</span>智囊团共识与分歧</h2>
+<table class="comp-table">
+<tr><th>维度</th><th>共识</th><th>分歧</th></tr>
+<tr><td>定位vs预测</td><td>✅ 定位工具而非预测工具</td><td>❌ 定位的价值如何验证？</td></tr>
+<tr><td>人性不变</td><td>✅ 定性层面有效</td><td>❌ 制度/技术是否改变了量级？</td></tr>
+<tr><td>案例选择</td><td>✅ 有学习价值</td><td>❌ 幸存者偏差是否致命？</td></tr>
+<tr><td>AI的挑战</td><td>✅ 值得关注</td><td>❌ 是否颠覆了前提？</td></tr>
+<tr><td>认识论地位</td><td>✅ 启发式工具</td><td>❌ 是否被包装成了"规律"？</td></tr>
+</table>
+<div class="quote" style="margin-top:1em;font-size:clamp(0.9rem,1.2vw,1.2rem)">
+🟢 搅局者的最终一击：历史周期思维的最高境界不是"用历史预测未来"，而是<strong>"用历史识别结构变化的信号"</strong>。胡应湘真正的洞察不是"周期会重复"，而是"中国正在经历一个结构性的变化"。
+</div>
+</div>
+<div class="slide-num">15</div>
+</div>
+
+<!-- 15. 对用户的建议 -->
+<div class="slide" data-index="15">
+<div class="grid-overlay"></div>
+<div class="slide-content" style="text-align:center">
+<div class="section-marker">终章</div>
+<div class="big-number">✦</div>
+<h2 style="margin-bottom:0.8em">对用户的建议</h2>
+<div class="card-grid" style="grid-template-columns:1fr 1fr;max-width:70vw;margin:0 auto">
+<div class="card" style="text-align:left"><h4>① 使用但不迷信</h4><p>历史周期思维是强大的定位工具，但不要把它升级为预测工具。</p></div>
+<div class="card" style="text-align:left"><h4>② 关注结构变化</h4><p>框架的真正价值在于帮你识别"结构何时在变化"，而不是告诉你"周期会重复"。</p></div>
+<div class="card" style="text-align:left"><h4>③ 保持证伪意识</h4><p>定期问自己"如果这个框架是错的，什么证据能让我发现？"</p></div>
+<div class="card" style="text-align:left"><h4>④ 警惕过度自信</h4><p>理解历史规律不等于能预测未来——这两者之间的差距，就是认知偏误的空间。</p></div>
+</div>
+<p style="font-size:clamp(1rem,1.4vw,1.4rem);color:var(--text-dim);margin-top:1.5em;max-width:600px;margin-left:auto;margin-right:auto">任何单一框架都有盲区，交叉验证是避免系统性误判的最佳方法。</p>
+</div>
+<div class="slide-num">16</div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+<button class="nav-btn" id="prevBtn">◀</button>
+<div class="nav-dots" id="navDots"></div>
+<button class="nav-btn" id="nextBtn">▶</button>
+</div>
+
+<script>
+const deck = document.getElementById('deck');
+const slides = deck.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+// Build dots
+const dotsContainer = document.getElementById('navDots');
+for (let i = 0; i < total; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.dataset.index = i;
+  dot.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(dot);
+}
+
+function goTo(index) {
+  if (index < 0) index = 0;
+  if (index >= total) index = total - 1;
+  current = index;
+  deck.style.transform = 'translateX(-' + (current * 100) + 'vw)';
+  
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === current);
+  });
+  
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+  
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+  document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    goTo(current + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goTo(current - 1);
+  }
+});
+
+// Touch
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    goTo(current + (diff > 0 ? 1 : -1));
+  }
+});
+
+// Init
+goTo(0);
+</script>
+</body>
+</html>
