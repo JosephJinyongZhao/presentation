@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>观者即被观之物：克里希那穆提三论</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a28;--text:#e8e6e3;--text2:#a8a6a3;--text3:#706e6b;--accent:#c8a86e;--accent2:#8b6f4a;--accent3:#e8c88a;--blue:#6a8fc8;--red:#c86a6a;--green:#6ac88a;--yellow:#c8b86a;--purple:#9a6ac8;--line:rgba(200,168,110,0.15);--glow:rgba(200,168,110,0.08)}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.slides{height:100vh;width:100vw;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6vh 8vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}
+.slide-inner{max-width:1100px;width:100%;margin:auto}
+h1{font-family:'Noto Serif SC',serif;font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;line-height:1.3;letter-spacing:0.04em;color:var(--accent)}
+h2{font-family:'Noto Serif SC',serif;font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:700;line-height:1.4;letter-spacing:0.03em;color:var(--accent);margin-bottom:1.2em}
+p,li{font-size:clamp(1rem,1.6vw,1.35rem);line-height:1.8;color:var(--text)}
+.subtitle{font-size:clamp(1rem,1.8vw,1.5rem);color:var(--text2);line-height:1.6;margin-top:.5em}
+.meta{font-size:clamp(.75rem,1vw,.9rem);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1em}
+.highlight{color:var(--accent3);font-weight:600}
+.blue{color:var(--blue)}.red{color:var(--red)}.green{color:var(--green)}.yellow{color:var(--yellow)}.purple{color:var(--purple)}
+.nav{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1.2vw;z-index:100;padding:.6em 1.5em;background:rgba(10,10,15,.7);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:2em}
+.nav-btn{width:2.8em;height:2.8em;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--text2);font-size:clamp(.7rem,1vw,.9rem);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--glow)}
+.dots{display:flex;gap:.5vw;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text3);border:none;cursor:pointer;transition:all .3s;padding:0}
+.dot.active{background:var(--accent);width:24px;border-radius:4px}
+.dot:hover{background:var(--text2)}
+.page-num{font-size:clamp(.65rem,.8vw,.75rem);color:var(--text3);letter-spacing:.05em;min-width:4em;text-align:center}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent3));z-index:200;transition:width .4s ease}
+.title-slide{text-align:center}
+.title-slide .divider{width:80px;height:2px;background:var(--accent);margin:1.5em auto}
+.title-slide .tags{display:flex;gap:1em;justify-content:center;flex-wrap:wrap;margin-top:2em}
+.title-slide .tag{padding:.3em 1em;border:1px solid var(--line);border-radius:2em;font-size:clamp(.7rem,.9vw,.8rem);color:var(--text2);letter-spacing:.05em}
+.card-grid{display:grid;gap:1.5em;margin-top:1em}
+.card-grid.cols-2{grid-template-columns:1fr 1fr}
+.card-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:1.5em;transition:all .3s}
+.card:hover{border-color:var(--accent2);background:var(--bg3)}
+.card .label{font-size:clamp(.65rem,.8vw,.75rem);color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5em}
+.card h4{font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--accent3);margin-bottom:.5em}
+.card p,.card li{font-size:clamp(.8rem,1.1vw,1rem);line-height:1.6;color:var(--text2)}
+.callout{background:var(--bg2);border-left:3px solid var(--accent);padding:1.2em 1.5em;border-radius:0 8px 8px 0;margin:1em 0}
+.callout p,.callout li{font-size:clamp(.85rem,1.2vw,1.05rem);color:var(--text2);line-height:1.7}
+.comp-table{width:100%;border-collapse:collapse;margin:1em 0}
+.comp-table th,.comp-table td{padding:.8em 1em;text-align:left;border-bottom:1px solid var(--line);font-size:clamp(.8rem,1.1vw,1rem)}
+.comp-table th{color:var(--accent2);font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-size:clamp(.65rem,.8vw,.75rem)}
+.comp-table td{color:var(--text2);line-height:1.6}
+.step-flow{display:flex;flex-direction:column;align-items:center;gap:.6em;margin:1.5em 0}
+.step-node{padding:.8em 2em;border-radius:8px;font-size:clamp(.9rem,1.3vw,1.1rem);text-align:center;min-width:240px}
+.step-node.s1{border:2px solid var(--blue);color:var(--blue);background:rgba(106,143,200,.08)}
+.step-node.s2{border:2px solid var(--yellow);color:var(--yellow);background:rgba(200,184,106,.08)}
+.step-node.s3{border:2px solid var(--green);color:var(--green);background:rgba(106,200,138,.08)}
+.step-arrow{color:var(--text3);font-size:clamp(.8rem,1.1vw,.9rem)}
+.practice-card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:1.2em 1.5em;margin:.6em 0}
+.practice-card .p-label{font-size:clamp(.6rem,.75vw,.7rem);color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3em}
+.practice-card h4{font-size:clamp(.85rem,1.2vw,1rem);color:var(--accent3);margin-bottom:.3em}
+.practice-card p{font-size:clamp(.75rem,1vw,.85rem);color:var(--text2);line-height:1.5}
+.warn-box{background:rgba(200,106,106,.08);border:1px solid rgba(200,106,106,.3);border-radius:10px;padding:1.2em 1.5em;margin:1em 0}
+.warn-box .w-label{color:var(--red);font-weight:600;margin-bottom:.3em;font-size:clamp(.8rem,1.1vw,.95rem)}
+.warn-box li{font-size:clamp(.75rem,1vw,.85rem);color:var(--text2);line-height:1.5;padding:.15em 0;padding-left:1em;position:relative;list-style:none}
+.warn-box li::before{content:'\2192';position:absolute;left:0;color:var(--red)}
+.three-step{display:flex;justify-content:center;gap:1.5em;margin:1.5em 0}
+.step-item{text-align:center;flex:1;max-width:200px}
+.step-num{font-family:'Noto Serif SC',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:900;color:var(--accent2);margin-bottom:.3em}
+.step-item h4{font-size:clamp(1rem,1.4vw,1.2rem);color:var(--accent3);margin-bottom:.3em}
+.step-item p{font-size:clamp(.75rem,1vw,.85rem);color:var(--text2);line-height:1.4}
+@media(max-width:768px){.slide{padding:4vh 5vw}.card-grid.cols-2,.card-grid.cols-3{grid-template-columns:1fr}.three-step{flex-direction:column;align-items:center}.nav{gap:2vw;padding:.4em 1em}}
+.slide.active .fade-in{animation:fadeUp .6s ease forwards}
+.slide.active .fade-in-d1{animation:fadeUp .6s ease .1s forwards;opacity:0}
+.slide.active .fade-in-d2{animation:fadeUp .6s ease .2s forwards;opacity:0}
+.slide.active .fade-in-d3{animation:fadeUp .6s ease .3s forwards;opacity:0}
+.slide.active .fade-in-d4{animation:fadeUp .6s ease .4s forwards;opacity:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="slides" id="slides">
+
+<!-- Slide 0: Title -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner title-slide">
+    <p class="meta fade-in">克里希那穆提 · 觉醒三论</p>
+    <h1 class="fade-in-d1">观者即被观之物</h1>
+    <div class="divider fade-in-d2"></div>
+    <p class="subtitle fade-in-d2">那个一直在"观察""评价""保护"的"我"，本身就是问题所在。</p>
+    <div class="tags fade-in-d3">
+      <span class="tag">观者即被观之物</span>
+      <span class="tag">形象即受伤之源</span>
+      <span class="tag">洞见即终结</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 1: 提醒 -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <p class="meta fade-in">写在前面</p>
+    <h2 class="fade-in-d1">一个必要的提醒</h2>
+    <div class="callout fade-in-d2">
+      <p><strong>"洞见本身就是纯然的行动。"</strong></p>
+    </div>
+    <p class="fade-in-d3" style="margin-top:1.5em">如果你只是在"理解"它、"分析"它、"记住"它——那你恰恰错过了它要说的东西。</p>
+    <p class="fade-in-d4" style="margin-top:1em;color:var(--text2)">思辨可以成为逃避行动的完美借口。你可以把"观者即被观之物"分析得头头是道，然后合上文档，继续用同样的模式生活。</p>
+    <div class="callout fade-in-d4" style="margin-top:1.5em;border-left-color:var(--yellow)">
+      <p><strong>约定</strong>：每读一个观点，停下来问自己一次——<strong class="highlight">"这个观点在我的哪一段经历里出现过？"</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: 观者即被观之物 -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <p class="meta fade-in">第一论</p>
+    <h2 class="fade-in-d1">观者即被观之物</h2>
+    <p class="subtitle fade-in-d2" style="font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3);margin-bottom:1.2em">观察者与被观察者的二元对立</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">日常经验中的分裂</div>
+        <h4>"我"和"我的情绪"是分开的吗？</h4>
+        <p>当你生气时，你说"我在生气"——这里有一个"我"和一个"生气"。克里希那穆提说：<strong>这个分裂本身就是问题的根源。</strong></p>
+      </div>
+      <div class="card">
+        <div class="label">为什么分裂是问题</div>
+        <h4>"观者"本身就是过去的集合</h4>
+        <p>那个"观察者"是你过去经验的集合——对愤怒的记忆、判断、处理方式。观者和被观之物不是两个东西，而是一个动态过程的两个端点。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d4">
+      <p><strong>"全然的秩序"</strong>——不是外部强加的规则，不是自律，不是计划。而是当分裂消失后，自然呈现的和谐状态。就像走路时不需要"观察"左脚和右脚，走路本身就是完整的秩序。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: 实践：第三人称日记 -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <p class="meta fade-in">第一论 · 实践</p>
+    <h2 class="fade-in-d1">第三人称日记法</h2>
+    <p class="subtitle fade-in-d2" style="margin-bottom:1.2em">把自己也变成被观察之物</p>
+    <div class="callout fade-in-d3">
+      <p>"小勇今天早上六点十分醒来，看到小鱼还在酣睡。"——这个"小勇"既是观察者，也是被观察者。不是在"分析"自己，而是在"呈现"自己。这个呈现本身，就是观者和被观之物合一的瞬间。</p>
+    </div>
+    <div class="card-grid cols-3 fade-in-d4" style="margin-top:1.5em">
+      <div class="card">
+        <div class="label">练习一</div>
+        <h4>记录情绪时刻</h4>
+        <p>每天选一个情绪强烈的时刻，事后用第三人称写一段描述——不评价、不分析、不解释，只呈现。</p>
+      </div>
+      <div class="card">
+        <div class="label">练习二</div>
+        <h4>追问"我在哪里"</h4>
+        <p>当情绪来临时，问自己："这个情绪正在发生，但那个'正在经历情绪的我'在哪里？"</p>
+      </div>
+      <div class="card">
+        <div class="label">练习三</div>
+        <h4>不要消除观者</h4>
+        <p>消除观者本身就是一个观者的行为。只需要觉察到观者的存在，分裂就开始消融。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: 形象即受伤之源 -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <p class="meta fade-in">第二论</p>
+    <h2 class="fade-in-d1">形象即受伤之源</h2>
+    <p class="subtitle fade-in-d2" style="font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3);margin-bottom:1.2em">我们如何为自己树立囚笼</p>
+    <p class="fade-in-d3">"形象"不是镜子中的样子，而是<strong class="highlight">你为自己建立的一套关于"我是谁"的心理结构</strong>。</p>
+    <div class="card-grid cols-2 fade-in-d4" style="margin-top:1em">
+      <div class="card">
+        <div class="label">常见的形象</div>
+        <ul style="list-style:none;padding:0">
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)">"我是一个好父亲"</li>
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)">"我是一个负责任的人"</li>
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)">"我是一个有深度思考能力的人"</li>
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)">"我是一个独立的人"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">为什么形象是受伤的原因</div>
+        <p>不是别人伤害了你，是你为自己树立的形象，在被挑战时产生了痛苦。孩子说"你从来不陪我"——受伤的不是你，是"好父亲"的形象。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: 你的形象拆解 -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <p class="meta fade-in">第二论 · 你的案例</p>
+    <h2 class="fade-in-d1">"独立的人"——你的核心形象</h2>
+    <p class="fade-in-d2" style="margin-bottom:1em">你在情感模式分析中触及的深层形象：<strong class="highlight">"我是一个独立的人，不需要依赖别人。"</strong></p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">来源</div>
+        <h4>童年被迫独立</h4>
+        <p>父母忙于创业，长期独自生活，被迫学会"独立"。这个形象曾经保护了你，让你在孤独中生存下来。</p>
+      </div>
+      <div class="card">
+        <div class="label">牢笼</div>
+        <h4>婚姻中的阻碍</h4>
+        <p>它让你无法表达情感需求，因为"独立的人不需要依赖"。情感表达的系统性缺席，根源在此。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d4">
+      <p><strong>关键洞察</strong>：不是"你"有问题，是"你为自己树立的独立形象"在阻碍你。而洞见到这个形象是"被树立的"而非"天生的"，就是形象建立者的终结。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: 洞见即终结 -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <p class="meta fade-in">第三论</p>
+    <h2 class="fade-in-d1">洞见即形象建立者的终结</h2>
+    <p class="subtitle fade-in-d2" style="font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3);margin-bottom:1.2em">看到的同时，被看到的东西就变了</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">洞见的四个特征</div>
+        <ul style="list-style:none;padding:0">
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)"><strong class="blue">瞬间性</strong> — "啪"的一下，全亮了</li>
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)"><strong class="yellow">整体性</strong> — 看到整个结构，而非侧面</li>
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)"><strong class="green">直接性</strong> — 自己直接看到，不通过中介</li>
+          <li style="padding:.3em 0;font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2)"><strong class="red">转化性</strong> — 看到的同时，被看到的东西就变了</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">为什么洞见就是终结</div>
+        <p>就像照镜子时突然意识到自己在皱眉——不需要"努力"去放松眉头，意识到的那一瞬间，眉头就自然松开了。</p>
+        <p style="margin-top:.8em"><strong>洞见本身就是行动。</strong>不需要在洞见之后再加一个"行动"的步骤。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: 思辨 vs 洞见 -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <p class="meta fade-in">第三论 · 陷阱</p>
+    <h2 class="fade-in-d1">思辨可以成为逃避洞见的完美方式</h2>
+    <p class="fade-in-d2" style="margin-bottom:1em">你可以读十本书、写一篇论文、在饭桌上滔滔不绝——然后呢？生活有变化吗？</p>
+    <table class="comp-table fade-in-d3">
+      <tr><th>思辨</th><th>洞见</th></tr>
+      <tr><td>在头脑中运转</td><td>在全身发生（身体有反应）</td></tr>
+      <tr><td>可以持续很久</td><td>发生在瞬间</td></tr>
+      <tr><td>可以用语言完整描述</td><td>语言只能指向它，无法描述它</td></tr>
+      <tr><td>之后需要"决定去行动"</td><td>本身就是行动</td></tr>
+      <tr><td>让你觉得"我懂了"</td><td>让你觉得"我看到了"</td></tr>
+      <tr><td>可以重复和复制</td><td>每一次都是新鲜的</td></tr>
+    </table>
+    <div class="warn-box fade-in-d4">
+      <div class="w-label">⚠️ 警惕信号</div>
+      <li>你开始跟别人"讲解"克里希那穆提的观点</li>
+      <li>你开始把"观者即被观之物"当作一个理论去分析</li>
+      <li>你开始觉得自己"懂了"，但生活没有任何变化</li>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: 你今天的洞见 -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <p class="meta fade-in">第三论 · 你的实例</p>
+    <h2 class="fade-in-d1">你今天早上的认知闭环</h2>
+    <div class="step-flow fade-in-d2">
+      <div class="step-node s1">感受：聚会只来了一个人</div>
+      <div class="step-arrow">&darr;</div>
+      <div class="step-node s1">框架：提炼"四个迁移"</div>
+      <div class="step-arrow">&darr;</div>
+      <div class="step-node s1">批判：多学科拆解盲区</div>
+      <div class="step-arrow">&darr;</div>
+      <div class="step-node s1">碰撞：四位专家对话</div>
+      <div class="step-arrow">&darr;</div>
+      <div class="step-node s3" style="border-color:var(--green);color:var(--green)">洞见："框架不是错的，是不完整的"</div>
+    </div>
+    <div class="callout fade-in-d3">
+      <p>那个"框架不是错的，是不完整的"的瞬间，不是分析出来的——它是你经历了整个闭环后，突然"看到"的。这个看到本身，就是洞见。而它带来的自然行动是：<strong class="highlight">你不再把"四个迁移"当作真理去捍卫，而是把它当作一个工具去使用。</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: 三论统一路径 -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <p class="meta fade-in">统一路径</p>
+    <h2 class="fade-in-d1">三论：一条完整的觉醒路径</h2>
+    <div class="step-flow fade-in-d2">
+      <div class="step-node s1">第一步：看到观者</div>
+      <div class="step-arrow">&darr;</div>
+      <div class="step-node s2">第二步：看到形象</div>
+      <div class="step-arrow">&darr;</div>
+      <div class="step-node s3">第三步：看到即终结</div>
+    </div>
+    <div class="card-grid cols-3 fade-in-d3" style="margin-top:1.5em">
+      <div class="card">
+        <div class="label blue">第一步</div>
+        <h4>看到观者</h4>
+        <p>意识到那个一直在观察、评价、控制的"我"不是独立的实体，而是过去经验的集合。当观者和被观之物合一，分裂消失。</p>
+      </div>
+      <div class="card">
+        <div class="label yellow">第二步</div>
+        <h4>看到形象</h4>
+        <p>意识到你为自己树立的各种形象是受伤的根源。不是别人伤害你，是你的形象被挑战时产生了痛苦。</p>
+      </div>
+      <div class="card">
+        <div class="label green">第三步</div>
+        <h4>看到即终结</h4>
+        <p>不需要"努力"去改变什么。真正看到的那一瞬间，改变已经发生。洞见本身就是行动。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: 实践框架 -->
+<div class="slide" data-index="10">
+  <div class="slide-inner">
+    <p class="meta fade-in">行动</p>
+    <h2 class="fade-in-d1">知行合一的实践框架</h2>
+    <div class="practice-card fade-in-d2">
+      <div class="p-label">每日三问（睡前五分钟）</div>
+      <ol style="padding-left:1.2em;margin-top:.3em">
+        <li style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2);line-height:1.6">今天有没有一个时刻，我清楚地"看到"了自己在扮演某个形象？</li>
+        <li style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2);line-height:1.6">今天有没有一个时刻，观者和被观之物是合一的？</li>
+        <li style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2);line-height:1.6">今天有没有一个"啊哈"时刻？</li>
+      </ol>
+    </div>
+    <div class="practice-card fade-in-d3">
+      <div class="p-label">情绪触发时的三步法</div>
+      <div class="three-step" style="margin-top:.8em">
+        <div class="step-item">
+          <div class="step-num">停</div>
+          <p>不要反应，不要说话，不要行动。只是停住。</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">看</div>
+          <p>看着这个情绪，不分析，不评价，不试图改变。</p>
+        </div>
+        <div class="step-item">
+          <div class="step-num">问</div>
+          <p>是"我"在痛，还是"我的形象"在痛？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: 终章 -->
+<div class="slide" data-index="11">
+  <div class="slide-inner title-slide">
+    <p class="meta fade-in">终章</p>
+    <h1 class="fade-in-d1">真理是无路之国</h1>
+    <div class="divider fade-in-d2"></div>
+    <p class="subtitle fade-in-d2">没有任何方法、任何体系、任何老师能带你到达那里。</p>
+    <p class="subtitle fade-in-d3" style="font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--accent3);margin-top:1.5em">你只能自己走。</p>
+    <p class="subtitle fade-in-d4" style="font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3);margin-top:1em">而走的第一步，就是<strong class="highlight">看到你正在走</strong>。</p>
+    <div class="tags fade-in-d4" style="margin-top:3em">
+      <span class="tag">完整文档：研究思考知识库</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<nav class="nav" id="nav">
+  <button class="nav-btn" id="prevBtn">&larr;</button>
+  <div class="dots" id="dots"></div>
+  <span class="page-num" id="pageNum">1 / 12</span>
+  <button class="nav-btn" id="nextBtn">&rarr;</button>
+</nav>
+
+<script>
+const slides=document.querySelectorAll('.slide'),total=slides.length;let current=0;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<total;i++){const d=document.createElement('button');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d)}
+function update(){
+  slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+  document.getElementById('progress').style.width=((current+1)/total*100)+'%';
+  document.getElementById('pageNum').textContent=(current+1)+' / '+total;
+  document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i===current)});
+}
+function goTo(n){if(n<0||n>=total)return;current=n;update()}
+document.getElementById('prevBtn').onclick=()=>goTo(current-1);
+document.getElementById('nextBtn').onclick=()=>goTo(current+1);
+document.onkeydown=e=>{if(e.key==='ArrowRight')goTo(current+1);if(e.key==='ArrowLeft')goTo(current-1)};
+</script>
+</body>
+</html>
