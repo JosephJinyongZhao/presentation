@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>递归的觉知：观者即被观之物中的缘起与自指</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a28;--text:#e8e6e3;--text2:#a8a6a3;--text3:#706e6b;--accent:#c8a86e;--accent2:#8b6f4a;--accent3:#e8c88a;--blue:#6a8fc8;--red:#c86a6a;--green:#6ac88a;--yellow:#c8b86a;--purple:#9a6ac8;--line:rgba(200,168,110,0.15);--glow:rgba(200,168,110,0.08)}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.slides{height:100vh;width:100vw;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6vh 8vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}
+.slide-inner{max-width:1100px;width:100%;margin:auto}
+h1{font-family:'Noto Serif SC',serif;font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;line-height:1.3;letter-spacing:0.04em;color:var(--accent)}
+h2{font-family:'Noto Serif SC',serif;font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:700;line-height:1.4;letter-spacing:0.03em;color:var(--accent);margin-bottom:1.2em}
+p,li{font-size:clamp(1rem,1.6vw,1.35rem);line-height:1.8;color:var(--text)}
+.subtitle{font-size:clamp(1rem,1.8vw,1.5rem);color:var(--text2);line-height:1.6;margin-top:.5em}
+.meta{font-size:clamp(.75rem,1vw,.9rem);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1em}
+.highlight{color:var(--accent3);font-weight:600}
+.blue{color:var(--blue)}.red{color:var(--red)}.green{color:var(--green)}.yellow{color:var(--yellow)}.purple{color:var(--purple)}
+.nav{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1.2vw;z-index:100;padding:.6em 1.5em;background:rgba(10,10,15,.7);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:2em}
+.nav-btn{width:2.8em;height:2.8em;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--text2);font-size:clamp(.7rem,1vw,.9rem);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--glow)}
+.dots{display:flex;gap:.5vw;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text3);border:none;cursor:pointer;transition:all .3s;padding:0}
+.dot.active{background:var(--accent);width:24px;border-radius:4px}
+.dot:hover{background:var(--text2)}
+.page-num{font-size:clamp(.65rem,.8vw,.75rem);color:var(--text3);letter-spacing:.05em;min-width:4em;text-align:center}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent3));z-index:200;transition:width .4s ease}
+.title-slide{text-align:center}
+.title-slide .divider{width:80px;height:2px;background:var(--accent);margin:1.5em auto}
+.title-slide .tags{display:flex;gap:1em;justify-content:center;flex-wrap:wrap;margin-top:2em}
+.title-slide .tag{padding:.3em 1em;border:1px solid var(--line);border-radius:2em;font-size:clamp(.7rem,.9vw,.8rem);color:var(--text2);letter-spacing:.05em}
+.card-grid{display:grid;gap:1.5em;margin-top:1em}
+.card-grid.cols-2{grid-template-columns:1fr 1fr}
+.card-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:1.5em;transition:all .3s}
+.card:hover{border-color:var(--accent2);background:var(--bg3)}
+.card .label{font-size:clamp(.65rem,.8vw,.75rem);color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5em}
+.card h4{font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--accent3);margin-bottom:.5em}
+.card p,.card li{font-size:clamp(.8rem,1.1vw,1rem);line-height:1.6;color:var(--text2)}
+.callout{background:var(--bg2);border-left:3px solid var(--accent);padding:1.2em 1.5em;border-radius:0 8px 8px 0;margin:1em 0}
+.callout p,.callout li{font-size:clamp(.85rem,1.2vw,1.05rem);color:var(--text2);line-height:1.7}
+.comp-table{width:100%;border-collapse:collapse;margin:1em 0}
+.comp-table th,.comp-table td{padding:.8em 1em;text-align:left;border-bottom:1px solid var(--line);font-size:clamp(.8rem,1.1vw,1rem)}
+.comp-table th{color:var(--accent2);font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-size:clamp(.65rem,.8vw,.75rem)}
+.comp-table td{color:var(--text2);line-height:1.6}
+.recursion-flow{display:flex;flex-direction:column;align-items:center;gap:.4em;margin:1.5em 0;font-family:monospace;font-size:clamp(.8rem,1.1vw,.95rem)}
+.recursion-flow .line{color:var(--text2);letter-spacing:.02em}
+.recursion-flow .highlight-line{color:var(--accent3);font-weight:600}
+.step-flow{display:flex;flex-direction:column;align-items:center;gap:.6em;margin:1.5em 0}
+.step-node{padding:.8em 2em;border-radius:8px;font-size:clamp(.9rem,1.3vw,1.1rem);text-align:center;min-width:240px}
+.step-node.s1{border:2px solid var(--blue);color:var(--blue);background:rgba(106,143,200,.08)}
+.step-node.s2{border:2px solid var(--yellow);color:var(--yellow);background:rgba(200,184,106,.08)}
+.step-node.s3{border:2px solid var(--green);color:var(--green);background:rgba(106,200,138,.08)}
+.step-arrow{color:var(--text3);font-size:clamp(.8rem,1.1vw,.9rem)}
+.practice-card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:1.2em 1.5em;margin:.6em 0}
+.practice-card .p-label{font-size:clamp(.6rem,.75vw,.7rem);color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3em}
+.practice-card h4{font-size:clamp(.85rem,1.2vw,1rem);color:var(--accent3);margin-bottom:.3em}
+.practice-card p{font-size:clamp(.75rem,1vw,.85rem);color:var(--text2);line-height:1.5}
+.warn-box{background:rgba(200,106,106,.08);border:1px solid rgba(200,106,106,.3);border-radius:10px;padding:1.2em 1.5em;margin:1em 0}
+.warn-box .w-label{color:var(--red);font-weight:600;margin-bottom:.3em;font-size:clamp(.8rem,1.1vw,.95rem)}
+.warn-box li{font-size:clamp(.75rem,1vw,.85rem);color:var(--text2);line-height:1.5;padding:.15em 0;padding-left:1em;position:relative;list-style:none}
+.warn-box li::before{content:'\2192';position:absolute;left:0;color:var(--red)}
+@media(max-width:768px){.slide{padding:4vh 5vw}.card-grid.cols-2,.card-grid.cols-3{grid-template-columns:1fr}.nav{gap:2vw;padding:.4em 1em}}
+.slide.active .fade-in{animation:fadeUp .6s ease forwards}
+.slide.active .fade-in-d1{animation:fadeUp .6s ease .1s forwards;opacity:0}
+.slide.active .fade-in-d2{animation:fadeUp .6s ease .2s forwards;opacity:0}
+.slide.active .fade-in-d3{animation:fadeUp .6s ease .3s forwards;opacity:0}
+.slide.active .fade-in-d4{animation:fadeUp .6s ease .4s forwards;opacity:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="slides" id="slides">
+
+<!-- Slide 0: Title -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner title-slide">
+    <p class="meta fade-in">递归 · 缘起 · 自指</p>
+    <h1 class="fade-in-d1">递归的觉知</h1>
+    <p class="subtitle fade-in-d1" style="font-size:clamp(1rem,1.8vw,1.5rem);color:var(--accent3);margin-top:.3em">观者即被观之物中的缘起与自指</p>
+    <div class="divider fade-in-d2"></div>
+    <p class="subtitle fade-in-d2">真正的觉醒不是跳出递归，而是意识到递归本身就是全部。</p>
+    <div class="tags fade-in-d3">
+      <span class="tag">递归</span><span class="tag">缘起</span><span class="tag">哥德尔</span>
+      <span class="tag">克里希那穆提</span><span class="tag">佛教</span><span class="tag">自指</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 1: 追问的起点 -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <p class="meta fade-in">起点</p>
+    <h2 class="fade-in-d1">一个追问</h2>
+    <div class="callout fade-in-d2">
+      <p>"观察者并不是一个独立于被观察者的实体，它本身就是由过去的经验、记忆、判断构成的。当观察者意识到自己也是被观察的一部分时，分裂消失，全然的秩序自然呈现。"</p>
+    </div>
+    <p class="fade-in-d3" style="margin-top:1.5em">这段话里藏着一个让人不安的结构：<strong class="highlight">那个在"看"的东西，本身也是"被看"的东西。</strong></p>
+    <p class="fade-in-d4" style="margin-top:1em;color:var(--text2)">如果观者由过去的被观之物构成，而被观之物又不断被观者塑造——那它们之间不是因果关系，而是一个<strong class="highlight">递归循环</strong>。</p>
+  </div>
+</div>
+
+<!-- Slide 2: 递归是什么 -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <p class="meta fade-in">概念澄清</p>
+    <h2 class="fade-in-d1">递归的三个特征</h2>
+    <p class="subtitle fade-in-d2" style="font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3);margin-bottom:1.2em">递归≠循环。循环是A→B→C→A，递归是A→A'→A''→A'''</p>
+    <div class="card-grid cols-3 fade-in-d3">
+      <div class="card">
+        <div class="label">特征一</div>
+        <h4>自指</h4>
+        <p>过程在其定义中引用自身。观者由过去的被观之物构成。</p>
+      </div>
+      <div class="card">
+        <div class="label">特征二</div>
+        <h4>无限嵌套</h4>
+        <p>每一层都包含下一层。被观之物中包含过去的观者。</p>
+      </div>
+      <div class="card">
+        <div class="label">特征三</div>
+        <h4>无根基</h4>
+        <p>没有"第一层"。没有一个原始的、独立的"我"。</p>
+      </div>
+    </div>
+    <div class="recursion-flow fade-in-d4">
+      <div class="line">观者ₙ = f(被观之物ₙ₋₁)</div>
+      <div class="line">被观之物ₙ₋₁ = 观者ₙ₋₁ 所观察的对象</div>
+      <div class="line">观者ₙ₋₁ = f(被观之物ₙ₋₂)</div>
+      <div class="highlight-line">...</div>
+      <div class="line" style="color:var(--text3)">没有第一项。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: 自我意识的截断 -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <p class="meta fade-in">克里希那穆提</p>
+    <h2 class="fade-in-d1">自我意识做的"截断"</h2>
+    <p class="fade-in-d2" style="margin-bottom:1em">日常经验中有一个强烈的"我"的感觉——稳定、连续、独立。克里希那穆提说：<strong class="highlight">这个"我"是递归过程中的一个人为截断。</strong></p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">截断之前</div>
+        <div class="recursion-flow" style="margin:0">
+          <div class="line">我 = f(过去的经验)</div>
+          <div class="line">过去的经验 = 过去的我所经历的</div>
+          <div class="line">过去的我 = f(更过去的经验)</div>
+          <div class="highlight-line">...</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">截断之后</div>
+        <p>自我意识在无限递归中选了一个点，说：<strong>"从这里开始，我是观察者。"</strong></p>
+        <p style="margin-top:.8em">这个截断制造了一个虚假的二元对立——"我"和"我的经验"被分开了。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d4">
+      <p><strong>问题不是递归，而是在递归中插入了一个"我"。</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: 全然的秩序 -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <p class="meta fade-in">克里希那穆提</p>
+    <h2 class="fade-in-d1">"全然的秩序"就是递归的自然状态</h2>
+    <p class="fade-in-d2" style="margin-bottom:1.2em">当递归没有被截断时，它是什么状态？</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">树的比喻</div>
+        <p>树的每一个分叉都包含了之前所有分叉的信息，但没有任何一个"管理者"在指挥它怎么长。树就是递归本身。</p>
+      </div>
+      <div class="card">
+        <div class="label">走路的比喻</div>
+        <p>走路时不需要"观察"左脚和右脚——走路本身就是完整的秩序。只有当脚受伤了，分裂才出现。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d4">
+      <p><strong>全然的秩序</strong>——不是外部强加的规则，不是自律，不是计划。而是当分裂消失后，递归系统自然呈现的和谐状态。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: 佛教缘起 -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <p class="meta fade-in">佛教</p>
+    <h2 class="fade-in-d1">缘起中的递归结构</h2>
+    <p class="fade-in-d2" style="margin-bottom:1em">十二缘起支就是一条递归链：</p>
+    <div class="recursion-flow fade-in-d3" style="gap:.3em">
+      <div class="line" style="font-size:clamp(.7rem,.9vw,.8rem)">无明 → 行 → 识 → 名色 → 六入 → 触 → 受 → 爱 → 取 → 有 → 生 → 老死</div>
+    </div>
+    <table class="comp-table fade-in-d4" style="margin-top:1.5em">
+      <tr><th>克里希那穆提</th><th>佛教缘起</th><th>递归对应</th></tr>
+      <tr><td>观者由过去的被观之物构成</td><td>诸法因缘生</td><td>每一层由前一层的条件构成</td></tr>
+      <tr><td>没有独立的"我"</td><td>无我（anātman）</td><td>递归没有第一项</td></tr>
+      <tr><td>截断制造了虚假的二元对立</td><td>无明（avidyā）</td><td>在递归中错误地插入了一个主体</td></tr>
+      <tr><td>全然的秩序</td><td>涅槃（nirvāṇa）</td><td>递归的自然状态，未被截断</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Slide 6: 差异 -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <p class="meta fade-in">差异</p>
+    <h2 class="fade-in-d1">一个重要的差异</h2>
+    <div class="card-grid cols-2 fade-in-d2">
+      <div class="card">
+        <div class="label blue">克里希那穆提</div>
+        <h4>过程性的觉察</h4>
+        <p>在每一个当下，觉察到分裂的虚幻性。观者即被观之物——强调当下的、直接的觉察。</p>
+      </div>
+      <div class="card">
+        <div class="label yellow">佛教缘起</div>
+        <h4>结构性的洞察</h4>
+        <p>从根本上，一切存在都没有独立实体。诸法无我——强调对事物本质的洞察。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d3">
+      <p>你的直觉——"某种递归的本质"——更接近佛教缘起的结构性分析。而克里希那穆提的路径更接近<strong class="highlight">"在递归运行中，不再截断"</strong>。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: 类比的边界 -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <p class="meta fade-in">边界</p>
+    <h2 class="fade-in-d1">这是过分类比吗？</h2>
+    <table class="comp-table fade-in-d2">
+      <tr><th>维度</th><th>递归（数学）</th><th>缘起（佛教）</th><th>等价？</th></tr>
+      <tr><td>时间</td><td>离散的步骤</td><td>连续的因果流</td><td>⚠️ 不完全</td></tr>
+      <tr><td>主体</td><td>函数/过程</td><td>生命/意识</td><td>❌ 不同层面</td></tr>
+      <tr><td>目标</td><td>理解结构</td><td>解脱痛苦</td><td>❌ 不同目的</td></tr>
+      <tr><td>验证</td><td>逻辑证明</td><td>亲身体证</td><td>❌ 不同方法</td></tr>
+    </table>
+    <div class="callout fade-in-d3">
+      <p><strong>递归是一个数学概念，缘起是一个实修洞察。</strong>用递归来理解缘起，可以帮助理清结构，但不能替代实修体验。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: 第三条路径 -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <p class="meta fade-in">第三条路径</p>
+    <h2 class="fade-in-d1">递归视角的独特之处</h2>
+    <div class="card-grid cols-3 fade-in-d2">
+      <div class="card">
+        <div class="label blue">克里希那穆提</div>
+        <p>觉察到观者即被观之物，分裂消失。</p>
+      </div>
+      <div class="card">
+        <div class="label yellow">佛教</div>
+        <p>洞见诸法无我，执着止息。</p>
+      </div>
+      <div class="card">
+        <div class="label green">递归视角</div>
+        <p>递归本身没有问题，问题是在递归中插入了一个"我"的位置。但"插入"本身也是递归的一部分。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d3">
+      <p><strong>不需要"消除"我，也不需要"觉察"我——只需要看到"我"是递归中的一个节点，和其他节点没有本质区别。</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: 哥德尔 -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <p class="meta fade-in">递归的尽头</p>
+    <h2 class="fade-in-d1">哥德尔的自指</h2>
+    <p class="fade-in-d2" style="margin-bottom:1em">哥德尔不完备定理：在任何足够强大的形式系统中，都存在一个自指的命题——"这个命题不可证明"。</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">观者</div>
+        <p>观者说："我存在。"——但"我"是由被观之物构成的。</p>
+      </div>
+      <div class="card">
+        <div class="label">哥德尔句</div>
+        <p>"我不可证明。"——但这个句子本身就在系统中。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d4">
+      <p><strong>两者指向同一个东西：系统无法从内部完全描述自身。</strong>观者无法在观者的框架内完全理解观者——因为理解观者需要跳出观者，但跳出观者的那个"东西"本身又是观者。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: 递归的底部 -->
+<div class="slide" data-index="10">
+  <div class="slide-inner">
+    <p class="meta fade-in">递归的尽头</p>
+    <h2 class="fade-in-d1">没有base case的递归</h2>
+    <p class="fade-in-d2" style="margin-bottom:1em">递归函数需要有一个"基本情况"（base case）才能终止。但在观者-被观者的递归中，<strong class="highlight">没有基本情况</strong>。</p>
+    <div class="card-grid cols-2 fade-in-d3">
+      <div class="card">
+        <div class="label">要么</div>
+        <h4>递归是无限的</h4>
+        <p>永远在嵌套，永远没有终点。</p>
+      </div>
+      <div class="card">
+        <div class="label">要么</div>
+        <h4>递归本身就是基本情况</h4>
+        <p>不需要终止，因为它就是全部。</p>
+      </div>
+    </div>
+    <div class="callout fade-in-d4">
+      <p>克里希那穆提和佛教都选择了后者：<strong class="highlight">递归本身就是全部。</strong>不需要跳出递归，不需要找到一个"第一观者"。看到递归就是全部，就是觉醒。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: 回到你的问题 -->
+<div class="slide" data-index="11">
+  <div class="slide-inner">
+    <p class="meta fade-in">回答</p>
+    <h2 class="fade-in-d1">回到你的问题</h2>
+    <div class="callout fade-in-d2">
+      <p>"这段话描述的真相中似乎有某种递归的本质。是这样吗？还是过分类比了？"</p>
+    </div>
+    <p class="fade-in-d3" style="margin-top:1.5em;font-size:clamp(1.1rem,1.8vw,1.5rem)"><strong class="highlight">你的直觉是对的——但不是"某种"递归，递归就是它的运作方式。</strong></p>
+    <div class="callout fade-in-d4" style="margin-top:1.5em;border-left-color:var(--green)">
+      <p>自我意识做的"截断"，不是"截断了递归"（递归无法被截断），而是在递归中<strong>标记了一个特殊位置</strong>——"从这里开始，我是我"。</p>
+      <p style="margin-top:.8em">这个标记本身也是递归的一部分。标记"我"的那个动作，也是由过去的条件产生的。</p>
+      <p style="margin-top:.8em"><strong>真实的情况不是"递归被截断了"，而是"递归在运行，同时递归中有一个节点在说'我不是递归'"。</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: 实践 -->
+<div class="slide" data-index="12">
+  <div class="slide-inner">
+    <p class="meta fade-in">实践</p>
+    <h2 class="fade-in-d1">递归视角的实践含义</h2>
+    <div class="card-grid cols-3 fade-in-d2">
+      <div class="card">
+        <div class="label">不要</div>
+        <h4>寻找"第一观者"</h4>
+        <p>每一个"觉知"都是由之前的条件构成的。试图找到"纯粹的觉知"，就像试图找到递归的"第一项"——它不存在。</p>
+      </div>
+      <div class="card">
+        <div class="label">不要</div>
+        <h4>试图"停止递归"</h4>
+        <p>递归无法停止。停止递归就是停止生命本身。问题不是递归在运行，而是在递归中错误地插入了一个"我"的位置。</p>
+      </div>
+      <div class="card">
+        <div class="label">真正的实践</div>
+        <h4>看到递归</h4>
+        <p>看到每一个"我"都是由之前的条件构成的。看到截断。看到看到本身也是递归。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: 终章 -->
+<div class="slide" data-index="13">
+  <div class="slide-inner title-slide">
+    <p class="meta fade-in">终章</p>
+    <h1 class="fade-in-d1">递归的尽头<br>不是答案</h1>
+    <div class="divider fade-in-d2"></div>
+    <p class="subtitle fade-in-d2">是看到追问本身就是递归的一部分。</p>
+    <p class="subtitle fade-in-d3" style="font-size:clamp(.85rem,1.2vw,1rem);color:var(--text3);margin-top:2em">这篇文章本身就是一个递归——用思辨讨论"不要被思辨障碍"，<br>用概念分析"概念无法触及的东西"。</p>
+    <p class="subtitle fade-in-d4" style="font-size:clamp(.9rem,1.3vw,1.1rem);color:var(--accent3);margin-top:1.5em">如果你读到结尾时觉得"好像懂了，又好像什么都没懂"——<br>那可能恰恰是递归视角在起作用。</p>
+    <div class="tags fade-in-d4" style="margin-top:3em">
+      <span class="tag">完整文档：研究思考知识库</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<nav class="nav" id="nav">
+  <button class="nav-btn" id="prevBtn">&larr;</button>
+  <div class="dots" id="dots"></div>
+  <span class="page-num" id="pageNum">1 / 14</span>
+  <button class="nav-btn" id="nextBtn">&rarr;</button>
+</nav>
+
+<script>
+const slides=document.querySelectorAll('.slide'),total=slides.length;let current=0;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<total;i++){const d=document.createElement('button');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d)}
+function update(){
+  slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+  document.getElementById('progress').style.width=((current+1)/total*100)+'%';
+  document.getElementById('pageNum').textContent=(current+1)+' / '+total;
+  document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i===current)});
+}
+function goTo(n){if(n<0||n>=total)return;current=n;update()}
+document.getElementById('prevBtn').onclick=()=>goTo(current-1);
+document.getElementById('nextBtn').onclick=()=>goTo(current+1);
+document.onkeydown=e=>{if(e.key==='ArrowRight')goTo(current+1);if(e.key==='ArrowLeft')goTo(current-1)};
+</script>
+</body>
+</html>
