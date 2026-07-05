@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>节奏天国的游戏设计哲学 · 任天堂之道</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0f;
+  color: #e0dcd0;
+  font-family: 'Noto Sans SC', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6vh 8vw;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  overflow-y: auto;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-bar {
+  position: fixed;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+}
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(200, 168, 110, 0.25);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.nav-dot.active { background: #c8a86e; width: 24px; border-radius: 4px; }
+.nav-dot:hover { background: rgba(200, 168, 110, 0.6); }
+
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #c8a86e, #d4b87a);
+  transition: width 0.4s ease;
+  z-index: 100;
+}
+
+.slide-counter {
+  position: fixed;
+  bottom: 3.5vh;
+  right: 3vw;
+  font-size: 12px;
+  color: rgba(200, 168, 110, 0.4);
+  font-family: 'Noto Sans SC', sans-serif;
+  letter-spacing: 1px;
+  z-index: 100;
+}
+
+h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 900;
+  color: #f0ebe0;
+  line-height: 1.3;
+  text-align: center;
+}
+h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+  font-weight: 700;
+  color: #c8a86e;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-weight: 600;
+  color: #c8a86e;
+  margin-bottom: 0.6rem;
+}
+p, li {
+  font-size: clamp(0.95rem, 1.6vw, 1.3rem);
+  line-height: 1.8;
+  color: #d0ccc0;
+  max-width: 900px;
+}
+.subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+  color: rgba(200, 168, 110, 0.6);
+  margin-top: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.insight-box {
+  background: rgba(200, 168, 110, 0.08);
+  border-left: 3px solid #c8a86e;
+  padding: 1.5rem 2rem;
+  margin: 1.2rem 0;
+  border-radius: 0 8px 8px 0;
+  max-width: 900px;
+}
+.insight-box p {
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  font-weight: 500;
+  color: #f0ebe0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1000px;
+  width: 100%;
+  margin-top: 1rem;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  max-width: 1100px;
+  width: 100%;
+  margin-top: 1rem;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  max-width: 1100px;
+  width: 100%;
+  margin-top: 1rem;
+}
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(200, 168, 110, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(200, 168, 110, 0.4); }
+.card h3 { font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin-bottom: 0.5rem; }
+.card p, .card li { font-size: clamp(0.8rem, 1.1vw, 0.95rem); line-height: 1.6; }
+.card ul { list-style: none; padding: 0; }
+.card li { padding-left: 1rem; position: relative; margin-bottom: 0.3rem; }
+.card li::before { content: '·'; position: absolute; left: 0; color: #c8a86e; }
+
+.table-wrap {
+  max-width: 1000px;
+  width: 100%;
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+}
+th {
+  background: rgba(200, 168, 110, 0.12);
+  color: #c8a86e;
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid rgba(200, 168, 110, 0.2);
+}
+td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(200, 168, 110, 0.08);
+  color: #d0ccc0;
+}
+
+.quote {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-weight: 600;
+  color: #f0ebe0;
+  text-align: center;
+  line-height: 1.6;
+  max-width: 800px;
+  padding: 2rem;
+  border-top: 1px solid rgba(200, 168, 110, 0.3);
+  border-bottom: 1px solid rgba(200, 168, 110, 0.3);
+  margin: 1.5rem 0;
+}
+.quote cite {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  font-weight: 400;
+  color: rgba(200, 168, 110, 0.6);
+  font-style: normal;
+}
+
+.big-num {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  color: rgba(200, 168, 110, 0.15);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+/* Flow arrow */
+.flow-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 1000px;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+.flow-step {
+  flex: 1;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 10px;
+}
+.flow-step.s1 { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
+.flow-step.s2 { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); }
+.flow-step.s3 { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); }
+.flow-step .label { font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: rgba(200,168,110,0.5); }
+.flow-step .title { font-size: clamp(0.9rem, 1.3vw, 1.1rem); font-weight: 600; margin-top: 0.3rem; }
+.flow-arrow { color: rgba(200,168,110,0.3); font-size: 1.5rem; }
+
+/* Content slide layout */
+.content-slide {
+  justify-content: flex-start;
+  padding-top: 8vh;
+}
+.content-slide h2 {
+  margin-bottom: 0.5rem;
+}
+.content-slide .subtitle {
+  margin-bottom: 1.5rem;
+}
+
+/* Principle cards */
+.principle-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(200, 168, 110, 0.1);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 0.8rem;
+  max-width: 1000px;
+  width: 100%;
+}
+.principle-card .p-title {
+  font-weight: 600;
+  color: #c8a86e;
+  margin-bottom: 0.3rem;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+}
+.principle-card p {
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  line-height: 1.7;
+}
+
+/* Tag badges */
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+  font-size: clamp(0.65rem, 0.8vw, 0.75rem);
+  font-weight: 500;
+  margin-right: 0.3rem;
+}
+.tag-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.tag-gold { background: rgba(200, 168, 110, 0.15); color: #c8a86e; }
+.tag-green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+.tag-red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+@media (max-width: 768px) {
+  .slide { padding: 4vh 5vw; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; gap: 1rem; }
+  .flow-row { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SLIDE 1: Title -->
+<div class="slide title-slide active" data-index="0">
+  <h1>节奏天国的<br>游戏设计哲学</h1>
+  <p class="subtitle">从极简机制到无限乐趣的任天堂之道</p>
+  <div class="insight-box" style="margin-top: 2rem;">
+    <p>一个只有一个按钮的游戏，<br>为什么能比3A大作带来更多的快乐？</p>
+  </div>
+  <div style="margin-top: 2rem; text-align: center;">
+    <p style="color: rgba(200,168,110,0.4); font-size: 0.85rem;">2026年7月5日 · 由小鱼、卢卡、伊萨的快乐场景引发</p>
+  </div>
+</div>
+
+<!-- SLIDE 2: The Miracle -->
+<div class="slide content-slide" data-index="1">
+  <h2>一个按钮的奇迹</h2>
+  <p class="subtitle">《节奏天国》——任天堂最"离经叛道"的作品</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🎮 表面看</h3>
+      <ul>
+        <li>只有一个按钮（A键或触屏点击）</li>
+        <li>画面简陋到近乎幼稚</li>
+        <li>MIDI级别的音乐</li>
+        <li>每个关卡只有几十秒</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>✨ 实际上</h3>
+      <ul>
+        <li>全球玩家为之疯狂</li>
+        <li>创造了跨年龄的共享快乐</li>
+        <li>小鱼、卢卡、伊萨——笑声不断、情绪高昂</li>
+        <li>比大多数3A大作更丰富的游戏体验</li>
+      </ul>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p>技术的复杂度与游戏的趣味性没有正相关关系。<br>游戏的乐趣来自于玩法设计的深度，而不是技术实现的复杂度。</p>
+  </div>
+</div>
+
+<!-- SLIDE 3: Design Philosophy -->
+<div class="slide content-slide" data-index="2">
+  <h2>任天堂的"极简深度"设计哲学</h2>
+  <p class="subtitle">枯萎技术的水平思考</p>
+  <div class="card" style="max-width: 1000px; width: 100%; margin-bottom: 1rem;">
+    <h3>岩田聪的核心原则</h3>
+    <p style="color: #c8a86e; font-weight: 500;">用成熟甚至过时的技术，通过创造性的玩法设计，做出让人惊艳的游戏。</p>
+  </div>
+  <div class="grid-3">
+    <div class="card">
+      <div class="big-num">01</div>
+      <h3>削到只剩核心</h3>
+      <p>这个游戏最核心的交互是什么？削掉所有非必要元素后，剩下什么？</p>
+    </div>
+    <div class="card">
+      <div class="big-num">02</div>
+      <h3>把核心做到极致</h3>
+      <p>核心机制本身必须有足够的深度和趣味性。</p>
+    </div>
+    <div class="card">
+      <div class="big-num">03</div>
+      <h3>围绕核心做加法</h3>
+      <p>在核心机制稳定的基础上，逐步增加变化、难度、惊喜。</p>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p>节奏天国的核心机制简单到极致：<strong>听节奏，按按钮</strong>。</p>
+  </div>
+</div>
+
+<!-- SLIDE 4: Three-Layer Structure -->
+<div class="slide content-slide" data-index="3">
+  <h2>三层递进结构</h2>
+  <p class="subtitle">每个关卡都精密设计的"教学-练习-惊喜"循环</p>
+  <div class="flow-row">
+    <div class="flow-step s1">
+      <div class="label">第一层</div>
+      <div class="title">🎓 机制引入</div>
+      <p style="font-size: 0.8rem; margin-top: 0.3rem;">"哦，我懂了"</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step s2">
+      <div class="label">第二层</div>
+      <div class="title">⚙️ 机制深化</div>
+      <p style="font-size: 0.8rem; margin-top: 0.3rem;">"有点意思"</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step s3">
+      <div class="label">第三层</div>
+      <div class="title">🎉 惊喜表演</div>
+      <p style="font-size: 0.8rem; margin-top: 0.3rem;">"我太厉害了！"</p>
+    </div>
+  </div>
+  <div class="table-wrap" style="margin-top: 1.5rem;">
+    <table>
+      <tr><th>阶段</th><th>玩家心理</th><th>设计目标</th></tr>
+      <tr><td>🎓 机制引入</td><td>"哦，我懂了"</td><td>建立理解，消除焦虑</td></tr>
+      <tr><td>⚙️ 机制深化</td><td>"有点意思"</td><td>建立技能，产生投入</td></tr>
+      <tr><td>🎉 惊喜表演</td><td>"我太厉害了！"</td><td>建立自信，产生愉悦</td></tr>
+    </table>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p>三层结构共同创造了一个完整的心流通道：<strong>理解 → 掌握 → 超越</strong></p>
+  </div>
+</div>
+
+<!-- SLIDE 5: Layer 1 -->
+<div class="slide content-slide" data-index="4">
+  <h2>第一层 · 机制引入</h2>
+  <p class="subtitle">让玩家在玩之前就已经"理解"了规则</p>
+  <div class="grid-3">
+    <div class="card">
+      <h3>👁️ 视觉引导</h3>
+      <p>屏幕上的角色或物体会按照节奏做出动作，告诉你"这个节奏是这样的"。</p>
+    </div>
+    <div class="card">
+      <h3>🎵 听觉锚点</h3>
+      <p>音乐本身就在告诉你什么时候该按。节奏点"听起来"就是对的。</p>
+    </div>
+    <div class="card">
+      <h3>🛡️ 低风险练习</h3>
+      <p>最初的几个节拍通常很简单，即使按错也不会立刻失败。</p>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p><strong>关键设计原则：</strong>让玩家在玩之前就已经"理解"了规则，而不是通过文字说明。</p>
+    <p style="font-size: 0.85rem; color: rgba(200,168,110,0.6); margin-top: 0.3rem;">最好的教学是让玩家感觉不到自己在被教。</p>
+  </div>
+</div>
+
+<!-- SLIDE 6: Layer 2 -->
+<div class="slide content-slide" data-index="5">
+  <h2>第二层 · 机制深化</h2>
+  <p class="subtitle">在掌握之后，引入新的挑战</p>
+  <div class="grid-3">
+    <div class="card">
+      <h3>⏱️ 节奏变化</h3>
+      <p>从稳定的节拍变成切分音、附点、休止——节奏开始"不听话"了。</p>
+    </div>
+    <div class="card">
+      <h3>🧩 模式组合</h3>
+      <p>把之前学过的两种节奏模式组合在一起，需要同时处理多个信息。</p>
+    </div>
+    <div class="card">
+      <h3>⚡ 速度变化</h3>
+      <p>加快或减慢节奏，挑战你的适应能力。</p>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p><strong>核心设计理念：</strong>不要一次性教完所有内容，而是在玩家掌握了当前内容后，再引入新的挑战。</p>
+  </div>
+</div>
+
+<!-- SLIDE 7: Layer 3 -->
+<div class="slide content-slide" data-index="6">
+  <h2>第三层 · 惊喜表演</h2>
+  <p class="subtitle">让玩家觉得自己"做到了"——不是游戏简单，是我厉害</p>
+  <div class="grid-3">
+    <div class="card">
+      <h3>✨ 演出效果升级</h3>
+      <p>成功时画面变得华丽，角色有庆祝动作——努力得到了视觉奖励。</p>
+    </div>
+    <div class="card">
+      <h3>🎭 意料之外的桥段</h3>
+      <p>某个节拍点出现意想不到的视觉或音乐效果——惊喜打破单调。</p>
+    </div>
+    <div class="card">
+      <h3>🏆 难度突增后的成就感</h3>
+      <p>在看似简单的段落突然加速，成功通过时的爽快感无可替代。</p>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p><strong>核心设计理念：</strong>惊喜不是用来分散注意力的，是用来强化成就感的。每一次惊喜都是对玩家"我做到了"的确认。</p>
+  </div>
+</div>
+
+<!-- SLIDE 8: Seven Secrets Overview -->
+<div class="slide content-slide" data-index="7">
+  <h2>节奏天国的七个设计秘密</h2>
+  <p class="subtitle">极简背后的精妙设计</p>
+  <div class="grid-4">
+    <div class="card">
+      <div class="big-num">01</div>
+      <h3>节奏作为通用语言</h3>
+      <p>跨年龄、跨文化，没有学习门槛。</p>
+    </div>
+    <div class="card">
+      <div class="big-num">02</div>
+      <h3>失败的无痛化</h3>
+      <p>失败被包装成"表演失误"，玩家会笑而不是沮丧。</p>
+    </div>
+    <div class="card">
+      <div class="big-num">03</div>
+      <h3>视听精确同步</h3>
+      <p>多感官通道强化节奏感知。</p>
+    </div>
+    <div class="card">
+      <div class="big-num">04</div>
+      <h3>隐形难度梯度</h3>
+      <p>让玩家在不知不觉中变强。</p>
+    </div>
+    <div class="card">
+      <div class="big-num">05</div>
+      <h3>多人社交魔法</h3>
+      <p>游戏变成人和人的互动。</p>
+    </div>
+    <div class="card">
+      <div class="big-num">06</div>
+      <h3>惊喜的节奏化</h3>
+      <p>惊喜本身也有节奏，形成奖励闭环。</p>
+    </div>
+    <div class="card" style="grid-column: span 2;">
+      <div class="big-num">07</div>
+      <h3>极简美学作为设计约束</h3>
+      <p>约束不是限制，是创造力的催化剂。有限资源催生创新设计。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Secrets 1-2 -->
+<div class="slide content-slide" data-index="8">
+  <h2>秘密 · 节奏与失败</h2>
+  <p class="subtitle">两个底层设计选择</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🎵 节奏作为通用语言</h3>
+      <p>节奏是人类最底层的认知能力之一——不需要学习，不需要文化背景，所有人都能感知节奏。</p>
+      <p style="margin-top: 0.5rem; color: #c8a86e;">任天堂选择节奏作为核心机制，意味着这个游戏没有学习门槛。</p>
+      <p style="margin-top: 0.5rem; font-size: 0.85rem;">这也是为什么三个孩子能一起玩得那么开心。</p>
+    </div>
+    <div class="card">
+      <h3>💫 失败的无痛化设计</h3>
+      <ul>
+        <li>按错了不会扣分、不会死亡、不会重新开始</li>
+        <li>失败被包装成"表演失误"——角色做出滑稽动作</li>
+        <li>一个关卡只有几十秒，失败的成本极低</li>
+      </ul>
+      <p style="margin-top: 0.5rem; color: #c8a86e;">失败不是终点，是学习过程的一部分。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Secrets 3-4 -->
+<div class="slide content-slide" data-index="9">
+  <h2>秘密 · 同步与梯度</h2>
+  <p class="subtitle">精确执行与隐形成长</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3>👁️👂 视听精确同步</h3>
+      <p>角色的动作、物体的移动、画面的变化——全部精确到帧。音乐不仅仅是背景，它是游戏机制本身的一部分。</p>
+      <p style="margin-top: 0.5rem; color: #c8a86e;">眼睛和耳朵同时告诉你"就是现在"，降低判断难度。</p>
+    </div>
+    <div class="card">
+      <h3>📈 隐形难度梯度</h3>
+      <ul>
+        <li><strong>关卡内梯度</strong>——从简单到复杂，玩家几乎感觉不到难度在增加</li>
+        <li><strong>关卡间梯度</strong>——从第一关到最后一关，难度在不知不觉中大幅提升</li>
+        <li><strong>完美挑战</strong>——为高手提供了持续挑战</li>
+      </ul>
+      <p style="margin-top: 0.5rem; color: #c8a86e;">让玩家在不知不觉中变强。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Secrets 5-7 -->
+<div class="slide content-slide" data-index="10">
+  <h2>秘密 · 社交、惊喜与约束</h2>
+  <p class="subtitle">超越个体体验的设计</p>
+  <div class="grid-3">
+    <div class="card">
+      <h3>👥 多人社交魔法</h3>
+      <p>同步挑战、竞争与合作并存、观众效应。游戏不仅是人和机器的互动，更是人和人的互动。</p>
+      <p style="margin-top: 0.5rem; color: #c8a86e;">笑声不断、情绪高昂——这就是社交魔法。</p>
+    </div>
+    <div class="card">
+      <h3>🎁 惊喜的节奏化</h3>
+      <p>可预测的不可预测——玩家知道会有惊喜，但不知道具体什么时候。惊喜本身也有节奏，形成"奖励闭环"。</p>
+    </div>
+    <div class="card">
+      <h3>🎨 极简美学作为约束</h3>
+      <p>简单的几何图形、纯色块、儿童涂鸦风格——因为画面简单，玩家的注意力完全集中在节奏上。</p>
+      <p style="margin-top: 0.5rem; color: #c8a86e;">约束不是限制，是创造力的催化剂。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Five Principles -->
+<div class="slide content-slide" data-index="11">
+  <h2>五大深层原理</h2>
+  <p class="subtitle">任天堂游戏设计哲学的底层逻辑</p>
+  <div class="principle-card">
+    <div class="p-title">🎯 原理一：机制即乐趣</div>
+    <p>游戏的乐趣来自于机制本身，而不是来自于剧情、画面或音效。检验标准：如果把所有画面换成黑白方块，这个游戏还有趣吗？</p>
+  </div>
+  <div class="principle-card">
+    <div class="p-title">📖 原理二：先教再玩，而非先读再玩</div>
+    <p>任天堂的游戏几乎不需要说明书。它通过游戏本身来教玩家怎么玩——在玩家意识到"我在学习"之前就已经学会了。</p>
+  </div>
+  <div class="principle-card">
+    <div class="p-title">🌊 原理三：心流通道的精确设计</div>
+    <p>让玩家始终处于"挑战刚好比技能高一点点"的状态。太简单→无聊，太难→焦虑，刚好→心流。</p>
+  </div>
+  <div class="principle-card">
+    <div class="p-title">🔗 原理四：设计约束作为创造力催化剂</div>
+    <p>无限资源导致平庸设计，有限资源催生创新设计。FC时代的8位机、Wii的体感、节奏天国的"一个按钮"——约束是朋友。</p>
+  </div>
+  <div class="principle-card">
+    <div class="p-title">🧠 原理五：游戏是"人的体验"而非"技术的展示"</div>
+    <p>技术是手段，体验是目的。不要为了展示技术而牺牲体验。</p>
+  </div>
+</div>
+
+<!-- SLIDE 13: Flow Channel -->
+<div class="slide content-slide" data-index="12">
+  <h2>心流通道</h2>
+  <p class="subtitle">挑战刚好比技能高一点点</p>
+  <div style="max-width: 700px; width: 100%; margin-top: 1rem;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <!-- Y axis label -->
+      <div style="display: flex; width: 100%; margin-bottom: 0.5rem;">
+        <div style="width: 60px; text-align: right; padding-right: 10px; font-size: 0.75rem; color: rgba(200,168,110,0.4);">挑战</div>
+        <div style="flex: 1;"></div>
+      </div>
+      <!-- Chart area -->
+      <div style="display: flex; width: 100%;">
+        <div style="width: 60px; display: flex; flex-direction: column; align-items: flex-end; padding-right: 10px; font-size: 0.7rem; color: rgba(200,168,110,0.3);">
+          <span style="margin-bottom: auto;">高</span>
+          <span style="margin-top: auto;">低</span>
+        </div>
+        <div style="flex: 1; height: 200px; position: relative; border-left: 1px solid rgba(200,168,110,0.15); border-bottom: 1px solid rgba(200,168,110,0.15);">
+          <!-- Anxiety zone -->
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 25%; background: rgba(239,68,68,0.06); border-bottom: 1px dashed rgba(239,68,68,0.2); display: flex; align-items: center; justify-content: center;">
+            <span style="color: rgba(239,68,68,0.4); font-size: 0.8rem;">😰 焦虑</span>
+          </div>
+          <!-- Flow channel -->
+          <div style="position: absolute; top: 25%; left: 0; right: 0; height: 50%; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 80%; height: 70%; position: relative;">
+              <div style="position: absolute; bottom: 0; left: 5%; width: 90%; height: 100%; clip-path: polygon(0% 100%, 20% 80%, 40% 60%, 60% 40%, 80% 20%, 100% 0%); background: linear-gradient(135deg, rgba(200,168,110,0.15), rgba(200,168,110,0.05)); border-radius: 4px;"></div>
+              <div style="position: absolute; bottom: 0; left: 5%; width: 90%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <span style="color: #c8a86e; font-size: clamp(0.9rem, 1.3vw, 1.1rem); font-weight: 600;">🌈 心流通道</span>
+              </div>
+            </div>
+          </div>
+          <!-- Boredom zone -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 25%; border-top: 1px dashed rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); display: flex; align-items: center; justify-content: center;">
+            <span style="color: rgba(34,197,94,0.4); font-size: 0.8rem;">😴 无聊</span>
+          </div>
+          <!-- X axis -->
+          <div style="position: absolute; bottom: -25px; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: rgba(200,168,110,0.3);">技能水平 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p>节奏天国的三层结构（引入→深化→惊喜）就是心流通道的具体实现。</p>
+  </div>
+</div>
+
+<!-- SLIDE 14: Apply to Your Games -->
+<div class="slide content-slide" data-index="13">
+  <h2>迁移到你的游戏设计</h2>
+  <p class="subtitle">节奏天国原则 → 商业模拟游戏</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>节奏天国原则</th><th>商业模拟游戏中的应用</th></tr>
+      <tr><td>一个核心机制</td><td>一个核心决策（如定价/投资）</td></tr>
+      <tr><td>三层递进结构</td><td>教学关 → 练习关 → 实战关</td></tr>
+      <tr><td>失败无痛化</td><td>模拟中的失败不惩罚，而是学习机会</td></tr>
+      <tr><td>惊喜设计</td><td>随机事件、市场波动、意外收获</td></tr>
+      <tr><td>多人社交</td><td>组队竞争、合作决策、复盘讨论</td></tr>
+      <tr><td>难度隐形梯度</td><td>从简单案例到复杂场景的渐进</td></tr>
+    </table>
+  </div>
+  <div class="insight-box" style="margin-top: 1rem;">
+    <p><strong>核心问题清单：</strong>核心机制是什么？玩家怎么学会？失败是什么感觉？惊喜在哪里？多人怎么玩？难度怎么递进？</p>
+  </div>
+</div>
+
+<!-- SLIDE 15: Closing -->
+<div class="slide title-slide" data-index="14">
+  <h1 style="font-size: clamp(1.8rem, 3.5vw, 3rem);">简单是最高级的复杂</h1>
+  <div style="margin-top: 2rem; max-width: 800px;">
+    <div class="insight-box" style="margin-bottom: 1rem;">
+      <p>极简不是简陋，是聚焦。<br>削到只剩核心，然后把核心做到极致。</p>
+    </div>
+    <div class="insight-box" style="margin-bottom: 1rem; border-left-color: #4ade80;">
+      <p>一个好的游戏，应该是你玩了之后，<br>会想跟朋友分享的游戏。</p>
+      <p style="color: rgba(200,168,110,0.5); font-size: 0.85rem; margin-top: 0.3rem;">—— 宫本茂</p>
+    </div>
+  </div>
+  <div style="margin-top: 2rem; text-align: center;">
+    <p style="font-size: 0.85rem; color: rgba(200,168,110,0.3);">孩子们的笑声，是游戏设计成功与否的最终检验标准。</p>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar" id="navBar"></div>
+<div class="slide-counter" id="slideCounter"></div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+const navBar = document.getElementById('navBar');
+for (let i = 0; i < total; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.dataset.index = i;
+  dot.addEventListener('click', () => goTo(i));
+  navBar.appendChild(dot);
+}
+
+function goTo(index) {
+  if (index < 0) index = 0;
+  if (index >= total) index = total - 1;
+  slides.forEach((s, i) => s.classList.toggle('active', i === index));
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+  document.getElementById('progressBar').style.width = ((index + 1) / total * 100) + '%';
+  document.getElementById('slideCounter').textContent = (index + 1) + ' / ' + total;
+  current = index;
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    goTo(current + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goTo(current - 1);
+  }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    goTo(current + (diff > 0 ? 1 : -1));
+  }
+});
+
+goTo(0);
+</script>
+</body>
+</html>
