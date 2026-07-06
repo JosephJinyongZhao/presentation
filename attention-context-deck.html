@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注意力管理与上下文管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: clamp(14px, 1.6vw, 22px); }
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #07070d;
+    color: #d8d8e0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+  }
+  .slide.exit {
+    opacity: 0;
+    z-index: 5;
+  }
+
+  /* Typography */
+  h1 { font-family: 'Noto Serif SC', serif; font-size: 3.2rem; font-weight: 900; line-height: 1.25; color: #f0ede8; margin-bottom: 0.5em; }
+  h2 { font-family: 'Noto Serif SC', serif; font-size: 2.2rem; font-weight: 700; line-height: 1.3; color: #c8a86e; margin-bottom: 0.6em; }
+  h3 { font-size: 1.3rem; font-weight: 500; color: #c8a86e; margin-bottom: 0.5em; letter-spacing: 0.03em; }
+  p { font-size: 1.1rem; line-height: 1.7; margin-bottom: 0.7em; font-weight: 300; color: #c8c8d0; }
+  .gold { color: #c8a86e; }
+  .dim { color: #888; }
+  .small { font-size: 0.85rem; }
+
+  /* Layout helpers */
+  .flex-row { display: flex; gap: 2rem; align-items: stretch; }
+  .flex-col { flex: 1; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+
+  /* Cards */
+  .card {
+    background: rgba(200,168,110,0.06);
+    border: 1px solid rgba(200,168,110,0.15);
+    border-radius: 0.6rem;
+    padding: 1.2rem;
+  }
+  .card h4 { color: #c8a86e; font-size: 1rem; font-weight: 500; margin-bottom: 0.4rem; }
+  .card p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0; }
+
+  /* Callout */
+  .callout {
+    background: rgba(200,168,110,0.08);
+    border-left: 3px solid #c8a86e;
+    border-radius: 0.4rem;
+    padding: 1.2rem 1.5rem;
+    margin: 0.8rem 0;
+  }
+  .callout p { font-size: 1rem; margin-bottom: 0; }
+  .callout.warn { border-left-color: #e8a040; background: rgba(232,160,64,0.08); }
+  .callout.red { border-left-color: #d45; background: rgba(200,50,50,0.08); }
+
+  /* Table */
+  .deck-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .deck-table th {
+    background: rgba(200,168,110,0.12);
+    color: #c8a86e;
+    font-weight: 500;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(200,168,110,0.2);
+  }
+  .deck-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid rgba(200,168,110,0.08);
+    color: #c0c0c8;
+    font-weight: 300;
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    text-align: center;
+    padding: 2rem;
+    border: 1px solid rgba(200,168,110,0.25);
+    border-radius: 0.8rem;
+    background: radial-gradient(ellipse at center, rgba(200,168,110,0.06) 0%, transparent 70%);
+  }
+  .highlight-box .big { font-size: 2.4rem; font-weight: 700; color: #f0ede8; line-height: 1.3; }
+  .highlight-box .sub { font-size: 1rem; color: #999; margin-top: 0.8rem; }
+
+  /* Navigation */
+  #nav {
+    position: fixed;
+    bottom: 2.5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    z-index: 100;
+    background: rgba(7,7,13,0.8);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(200,168,110,0.15);
+  }
+  #nav .dot {
+    width: 0.5rem; height: 0.5rem;
+    border-radius: 50%;
+    background: rgba(200,168,110,0.25);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  #nav .dot.active { background: #c8a86e; width: 1.2rem; border-radius: 0.25rem; }
+  #nav .counter { color: #666; font-size: 0.75rem; margin-left: 0.5rem; letter-spacing: 0.05em; }
+  #nav .key-hint { color: #444; font-size: 0.65rem; margin-right: 0.5rem; }
+
+  /* Progress bar */
+  #progress {
+    position: fixed;
+    top: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, #c8a86e, #e8c88e);
+    transition: width 0.4s ease;
+    z-index: 200;
+  }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-right: 0.3rem;
+  }
+  .tag.blue { background: rgba(100,150,255,0.15); color: #7ab; }
+  .tag.green { background: rgba(100,200,100,0.15); color: #8c8; }
+  .tag.red { background: rgba(200,80,80,0.15); color: #d88; }
+  .tag.yellow { background: rgba(200,180,60,0.15); color: #dc8; }
+  .tag.purple { background: rgba(180,120,220,0.15); color: #b8a; }
+
+  /* Quote */
+  .quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    color: #e0dcd0;
+    padding: 1.5rem 2rem;
+    border-left: 2px solid #c8a86e;
+    margin: 1rem 0;
+    font-style: italic;
+  }
+  .quote .attribution { font-size: 0.85rem; color: #888; margin-top: 0.5rem; font-style: normal; }
+
+  /* List */
+  ul, ol { font-size: 1rem; line-height: 1.7; color: #c0c0c8; font-weight: 300; padding-left: 1.2rem; margin-bottom: 0.5rem; }
+  li { margin-bottom: 0.2rem; }
+
+  /* Expert card */
+  .expert { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 0.8rem; }
+  .expert .avatar {
+    flex-shrink: 0;
+    width: 2.2rem; height: 2.2rem;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    margin-top: 0.2rem;
+  }
+  .expert .body { flex: 1; }
+  .expert .body .name { font-size: 0.9rem; font-weight: 500; color: #c8a86e; margin-bottom: 0.2rem; }
+  .expert .body .title { font-size: 0.75rem; color: #777; margin-bottom: 0.3rem; }
+  .expert .body p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0; }
+
+  /* Mermaid placeholder */
+  .diagram {
+    background: rgba(200,168,110,0.04);
+    border: 1px solid rgba(200,168,110,0.1);
+    border-radius: 0.6rem;
+    padding: 1.5rem;
+    text-align: center;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .diagram .flow {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .diagram .flow .node {
+    background: rgba(200,168,110,0.1);
+    border: 1px solid rgba(200,168,110,0.2);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    white-space: nowrap;
+  }
+  .diagram .flow .arrow { color: #c8a86e; font-size: 1.2rem; }
+  .diagram .flow .arrow-down { display: block; color: #c8a86e; font-size: 1rem; margin: 0.2rem 0; }
+
+  /* Layer stack */
+  .layer-stack { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+  .layer-stack .layer {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 0.4rem;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 400;
+  }
+  .layer-stack .layer.l1 { background: rgba(200,168,110,0.12); border: 1px solid rgba(200,168,110,0.2); }
+  .layer-stack .layer.l2 { background: rgba(200,168,110,0.16); border: 1px solid rgba(200,168,110,0.25); }
+  .layer-stack .layer.l3 { background: rgba(200,168,110,0.20); border: 1px solid rgba(200,168,110,0.3); }
+  .layer-stack .layer.l4 { background: rgba(200,168,110,0.24); border: 1px solid rgba(200,168,110,0.35); }
+  .layer-stack .layer .l-label { color: #c8a86e; font-weight: 500; }
+  .layer-stack .layer .l-desc { color: #999; font-size: 0.75rem; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    html { font-size: 12px; }
+    .slide { padding: 4vh 5vw; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .flex-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-slide="0">
+  <div style="text-align:center; max-width: 48rem; margin: 0 auto;">
+    <div style="font-size:0.85rem; color:#666; letter-spacing:0.15em; margin-bottom:1.5rem; text-transform:uppercase;">认知框架 · 2026</div>
+    <h1 style="font-size:3.6rem; margin-bottom:0.3rem;">注意力与上下文管理</h1>
+    <p style="font-size:1.3rem; color:#c8a86e; margin-bottom:2rem;">比时间和精力更稀缺的资源</p>
+    <div style="width:3rem; height:2px; background:#c8a86e; margin:0 auto 1.5rem;"></div>
+    <p style="font-size:0.95rem; color:#888; max-width:32rem; margin:0 auto; line-height:1.6;">
+      时间和精力是资源容器，注意力和上下文是资源利用率。<br>
+      前者决定"有多少"，后者决定"用在哪、用多深"。
+    </p>
+  </div>
+</div>
+
+<!-- Slide 2: Core proposition -->
+<div class="slide" data-slide="1">
+  <h2>核心命题</h2>
+  <div class="highlight-box" style="margin: 1rem 0 1.5rem;">
+    <div class="big">当时间管理做到极致仍感低效时，<br>瓶颈往往不在时间，而在注意力。</div>
+  </div>
+  <div class="grid-2" style="margin-top:1rem;">
+    <div class="card">
+      <h4>📦 资源容器</h4>
+      <p>时间和精力是容器——决定"有多少"资源可用。可以量化、分配、追踪。</p>
+    </div>
+    <div class="card">
+      <h4>🎯 资源利用率</h4>
+      <p>注意力和上下文是利用率——决定"用在哪、用多深"。决定产出的质量。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Time management ceiling -->
+<div class="slide" data-slide="2">
+  <h2>时间管理的天花板</h2>
+  <p style="margin-bottom:1.2rem;">时间管理的前提假设——"只要把时间排好，效率就会高"——在信息过载时代已经失效。</p>
+  <div class="grid-3">
+    <div class="card">
+      <h4>⏱ 时间可分割，注意力不能</h4>
+      <p>同时处理两件事意味着每件事只获得部分注意力。真正的并行是幻觉。</p>
+    </div>
+    <div class="card">
+      <h4>📉 注意力有恢复周期</h4>
+      <p>连续开会2小时后，第3个会的注意力产出趋近于零。时间填满了，注意力耗尽了。</p>
+    </div>
+    <div class="card">
+      <h4>❓ 做什么 vs 在想什么</h4>
+      <p>时间管理解决"做什么"，不解决"做的时候在想什么"。后者才是效率的关键。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Energy management limits -->
+<div class="slide" data-slide="3">
+  <h2>精力管理的局限</h2>
+  <div class="flex-row" style="gap:2rem; align-items:center;">
+    <div style="flex:1;">
+      <p>精力管理比时间管理进了一步，承认生理状态有波动。但它仍然假设：<strong style="color:#c8a86e;">"精力充沛就能高效工作"</strong>——这个假设忽略了一个关键变量：注意力的方向。</p>
+      <div class="callout" style="margin-top:1rem;">
+        <p>精力充沛但注意力分散 → 产出仍然低效。<br>
+        精力一般但高度专注 → 可能产出高质量成果。</p>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="diagram">
+        <div style="font-size:0.85rem; color:#888; margin-bottom:0.8rem;">效率 ≠ 精力 × 时间</div>
+        <div style="font-size:1.5rem; font-weight:700; color:#c8a86e;">产出 = 时间 × 专注强度</div>
+        <div style="font-size:0.8rem; color:#666; margin-top:0.5rem;">——卡尔·纽波特《深度工作》</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Attention as ultimate scarcity -->
+<div class="slide" data-slide="4">
+  <h2>注意力：终极稀缺资源</h2>
+  <div class="quote">
+    "信息的丰富意味着注意力的贫乏。"
+    <div class="attribution">—— 赫伯特·西蒙，1971</div>
+  </div>
+  <div class="grid-3" style="margin-top:1rem;">
+    <div class="card">
+      <h4>🔒 绝对稀缺</h4>
+      <p>任何人在任何时刻，注意力只能指向一个焦点。时间可以并行，注意力不能。</p>
+    </div>
+    <div class="card">
+      <h4>🗑 不可存储</h4>
+      <p>今天的注意力不能存到明天用。浪费了就永远失去了，无法补回。</p>
+    </div>
+    <div class="card">
+      <h4>🔄 有恢复成本</h4>
+      <p>注意力消耗后需要休息来恢复，且恢复速度受睡眠、压力等多种因素影响。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Context as precondition -->
+<div class="slide" data-slide="5">
+  <h2>上下文：注意力的前置条件</h2>
+  <p>上下文管理是比注意力管理更底层的一层——它是注意力的"启动成本"。</p>
+  <div class="flex-row" style="gap:1.5rem; margin-top:1rem;">
+    <div class="card" style="flex:1;">
+      <h4>🔄 每次切换 = 重新加载</h4>
+      <p>每次切换任务，大脑需要重新加载情境记忆，消耗时间和注意力。重新进入深度状态需要15-25分钟。</p>
+    </div>
+    <div class="card" style="flex:1;">
+      <h4>💾 上下文丢失 = 重启进程</h4>
+      <p>上下文丢失意味着需要重新建立认知框架，相当于"重启"大脑的一个进程。</p>
+    </div>
+    <div class="card" style="flex:1;">
+      <h4>⚡ 好的管理 = 降低启动成本</h4>
+      <p>好的上下文管理可以大幅降低切换成本，让注意力更快进入深度状态。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Four-layer relationship -->
+<div class="slide" data-slide="6">
+  <h2>四层递进关系</h2>
+  <div class="flex-row" style="gap:2rem; align-items:center;">
+    <div style="flex:1;">
+      <div class="layer-stack">
+        <div class="layer l4"><span class="l-label">上下文管理</span><br><span class="l-desc">杠杆层 — 降低启动成本</span></div>
+        <div class="layer l3"><span class="l-label">注意力管理</span><br><span class="l-desc">效率层 — 决定投放方向和质量</span></div>
+        <div class="layer l2"><span class="l-label">精力管理</span><br><span class="l-desc">优化层 — 调节生理状态</span></div>
+        <div class="layer l1"><span class="l-label">时间管理</span><br><span class="l-desc">基础层 — 决定有没有时间做</span></div>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="card">
+        <p style="font-size:0.95rem;">每一层建立在前一层之上，越往上杠杆效应越大。大多数人停在第一层，少数人走到第二层，第三、四层才是真正拉开差距的地方。</p>
+      </div>
+      <div class="callout warn" style="margin-top:0.8rem;">
+        <p style="font-size:0.85rem;">⚠️ 但这不是替代关系——地基不稳，上层再精进也撑不住。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Multi-disciplinary overview -->
+<div class="slide" data-slide="7">
+  <h2>五学科视角</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h4>🧠 认知心理学</h4>
+      <p>工作记忆容量有限（约4个组块）。注意力残留——从A切换到B时，大脑仍有一部分停留在A上。</p>
+    </div>
+    <div class="card">
+      <h4>🔬 神经科学</h4>
+      <p>默认模式网络在"休息"时整合信息、产生创意。多巴胺过度刺激降低专注能力。</p>
+    </div>
+    <div class="card">
+      <h4>💰 经济学</h4>
+      <p>注意力经济——所有信息产品都在争夺注意力。边际效用递减：第3小时产出远低于第1小时。</p>
+    </div>
+    <div class="card">
+      <h4>💻 计算机科学</h4>
+      <p>人脑上下文切换成本远高于CPU。深度工作状态 = 大脑的"热缓存"状态。中断导致任务永远无法完成。</p>
+    </div>
+    <div class="card">
+      <h4>📊 管理学</h4>
+      <p>帕金森定律的注意力版本：工作膨胀到占满所有可用注意力。决策疲劳降低后续决策质量。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Attention three-layer structure -->
+<div class="slide" data-slide="8">
+  <h2>注意力的三层结构</h2>
+  <div class="diagram" style="margin-bottom:1rem;">
+    <div class="flow" style="flex-direction:column; gap:0.6rem;">
+      <div class="node" style="background:rgba(200,168,110,0.15); padding:0.6rem 1.5rem; font-size:1rem; font-weight:500; color:#c8a86e;">注意力系统</div>
+      <div class="arrow-down">↓</div>
+      <div class="flow" style="gap:1.5rem;">
+        <div class="node" style="padding:0.5rem 1rem;">
+          <div style="color:#7ab; font-weight:500;">警觉性</div>
+          <div style="font-size:0.75rem; color:#888;">维持清醒和警惕</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node" style="padding:0.5rem 1rem;">
+          <div style="color:#8c8; font-weight:500;">定向性</div>
+          <div style="font-size:0.75rem; color:#888;">选择关注什么、忽略什么</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node" style="padding:0.5rem 1rem;">
+          <div style="color:#dc8; font-weight:500;">执行控制</div>
+          <div style="font-size:0.75rem; color:#888;">抑制干扰、切换任务</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="callout">
+    <p>睡眠不足时，警觉性最先受损。这解释了为什么没睡好时注意力质量断崖式下降——不是意志力问题，是生理机制问题。</p>
+  </div>
+</div>
+
+<!-- Slide 10: Context management mechanisms -->
+<div class="slide" data-slide="9">
+  <h2>上下文管理的核心机制</h2>
+  <p>本质：<strong style="color:#c8a86e;">降低认知启动成本</strong></p>
+  <div class="grid-2" style="margin-top:1rem;">
+    <div class="card">
+      <h4>📝 外部化</h4>
+      <p>把需要记住的信息写到外部系统（笔记、文档、看板），释放工作记忆。大脑不该当存储器。</p>
+    </div>
+    <div class="card">
+      <h4>🏗 结构化</h4>
+      <p>为不同类型的工作建立固定的"上下文模板"，减少每次重新构建的成本。</p>
+    </div>
+    <div class="card">
+      <h4>📦 批处理</h4>
+      <p>把相似的任务集中处理，利用"上下文缓存"减少切换损耗。</p>
+    </div>
+    <div class="card">
+      <h4>🚧 边界化</h4>
+      <p>为不同任务设置明确的开始和结束信号，帮助大脑完成上下文的加载和卸载。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: Four principles -->
+<div class="slide" data-slide="10">
+  <h2>四大原则</h2>
+  <div class="callout" style="margin-bottom:1rem;">
+    <p><strong>核心原则</strong>：不是管理时间，是管理注意力投放的方向和质量。不是管理任务列表，是管理上下文的切换成本和连续性。</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h4>🎯 注意力预算优先于时间预算</h4>
+      <p>每天先分配注意力预算——今天最重要的注意力投放点在哪里？注意力预算用完后，只做低需求任务或休息。</p>
+    </div>
+    <div class="card">
+      <h4>🔗 上下文连续性优先于任务完成</h4>
+      <p>保护上下文的连续性比"完成一个任务"更重要。一个上下文被打断后，重新进入需要15-25分钟。</p>
+    </div>
+    <div class="card">
+      <h4>📦 批处理优于多任务</h4>
+      <p>相似任务集中处理，利用"上下文缓存"。写作集中、沟通集中、决策集中。</p>
+    </div>
+    <div class="card">
+      <h4>💾 外部化优于脑内存储</h4>
+      <p>把上下文从大脑中卸载到外部系统。笔记、看板、模板——减少重复性认知劳动。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: Attention audit -->
+<div class="slide" data-slide="11">
+  <h2>注意力审计（每日5分钟）</h2>
+  <p>每晚花5分钟回顾当天的注意力投放质量：</p>
+  <table class="deck-table" style="margin:0.8rem 0;">
+    <tr><th>时段</th><th>注意力投放点</th><th>质量</th></tr>
+    <tr><td>08:00-10:00</td><td>写方案</td><td style="color:#8c8;">8（深度）</td></tr>
+    <tr><td>10:00-12:00</td><td>开会+回复消息</td><td style="color:#dc8;">4（碎片化）</td></tr>
+    <tr><td>14:00-16:00</td><td>处理邮件+杂务</td><td style="color:#d88;">3（低效）</td></tr>
+  </table>
+  <div class="grid-3" style="margin-top:0.5rem;">
+    <div class="card"><h4>❓ 最高质量时段</h4><p>今天注意力最高质量的时段用在了哪里？</p></div>
+    <div class="card"><h4>❓ 最大浪费</h4><p>今天注意力浪费在了什么地方？</p></div>
+    <div class="card"><h4>❓ 明日调整</h4><p>明天如何调整注意力分配？</p></div>
+  </div>
+</div>
+
+<!-- Slide 13: Switching cost -->
+<div class="slide" data-slide="12">
+  <h2>上下文切换成本计算</h2>
+  <p>在决定切换任务前，先问自己三个问题：</p>
+  <div class="grid-3" style="margin:1rem 0;">
+    <div class="card">
+      <h4>1️⃣ 切换成本</h4>
+      <p>离开当前任务再回来，需要多少时间重新进入状态？</p>
+    </div>
+    <div class="card">
+      <h4>2️⃣ 切换收益</h4>
+      <p>切换到新任务能获得什么？值得付出切换成本吗？</p>
+    </div>
+    <div class="card">
+      <h4>3️⃣ 替代方案</h4>
+      <p>能不能推迟新任务？能不能用更短的时间处理？</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p><strong>经验法则</strong>：如果切换成本 &gt; 5分钟，且新任务可以在30分钟后处理，就推迟。</p>
+  </div>
+</div>
+
+<!-- Slide 14: Attention blocks -->
+<div class="slide" data-slide="13">
+  <h2>注意力区块法</h2>
+  <p>把一天分成几个注意力区块，每个区块只做一种类型的任务：</p>
+  <table class="deck-table" style="margin:0.8rem 0;">
+    <tr><th>区块</th><th>时间</th><th>任务类型</th><th>注意力需求</th></tr>
+    <tr><td style="color:#c8a86e;">深度区块</td><td>08:00-10:30</td><td>创作、分析、决策</td><td style="color:#8c8;">高</td></tr>
+    <tr><td>沟通区块</td><td>10:30-12:00</td><td>会议、沟通、协作</td><td style="color:#dc8;">中</td></tr>
+    <tr><td>恢复区块</td><td>12:00-13:30</td><td>午餐、散步、小睡</td><td>低（恢复）</td></tr>
+    <tr><td>事务区块</td><td>13:30-15:00</td><td>邮件、审批、杂务</td><td style="color:#888;">低</td></tr>
+    <tr><td style="color:#c8a86e;">深度区块2</td><td>15:00-16:30</td><td>第二优先级深度工作</td><td style="color:#dc8;">中高</td></tr>
+    <tr><td>收尾区块</td><td>16:30-17:30</td><td>回顾、计划、收尾</td><td style="color:#888;">低</td></tr>
+  </table>
+</div>
+
+<!-- Slide 15: Context management three tools -->
+<div class="slide" data-slide="14">
+  <h2>上下文管理三板斧</h2>
+  <div class="grid-3" style="margin-top:1rem;">
+    <div class="card">
+      <h4>📓 上下文笔记</h4>
+      <p>开始前花2分钟写下上下文状态。被打断时花1分钟记录"中断点"和"下一步行动"。回来后花1分钟恢复状态。</p>
+    </div>
+    <div class="card">
+      <h4>📋 上下文模板</h4>
+      <p>为重复性任务建立模板（思考框架、写作结构、会议议程），减少从零构建的成本。</p>
+    </div>
+    <div class="card">
+      <h4>🚧 上下文边界</h4>
+      <p>深度工作时关闭通知、关闭浏览器标签、进入"勿扰模式"。用不同工作空间区分不同任务。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 16: Meta questions -->
+<div class="slide" data-slide="15">
+  <h2>元问题</h2>
+  <div class="quote">
+    注意力管理的前提是"知道什么值得关注"。如果连这个都不清楚，注意力管理就变成了"更高效地做错误的事"。
+  </div>
+  <div class="grid-3" style="margin-top:1rem;">
+    <div class="card">
+      <h4>👀 你希望</h4>
+      <p>自己的注意力被什么事物占据？</p>
+    </div>
+    <div class="card">
+      <h4>🔭 五年后</h4>
+      <p>回头看，今天的注意力分配会让你满意吗？</p>
+    </div>
+    <div class="card">
+      <h4>🎮 主动还是被动</h4>
+      <p>你是在主动选择注意力的方向，还是在被动响应外部的刺激？</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 17: Critical examination - title -->
+<div class="slide" data-slide="16">
+  <h2>批判性审视</h2>
+  <div class="callout red" style="margin-bottom:1.2rem;">
+    <p><strong>重要说明</strong>：以下是对前文论述的自我批判。不是为了否定，而是揭示论述的边界和隐含前提——任何框架都有适用范围，知道框架在哪失效比知道在哪有效更重要。</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h4>⚠️ 假设一：注意力"优于"时间管理</h4>
+      <p>不是递进关系，而是<strong style="color:#c8a86e;">正交关系</strong>。时间管理是"有没有"，注意力管理是"好不好"。没有"有没有"，"好不好"没有意义。</p>
+    </div>
+    <div class="card">
+      <h4>⚠️ 假设二：注意力是绝对稀缺资源</h4>
+      <p>注意力不是均匀稀缺的。<strong style="color:#c8a86e;">高密度注意力</strong>才是稀缺资源，低密度注意力（洗碗、整理文件）不是。</p>
+    </div>
+    <div class="card">
+      <h4>⚠️ 假设三：切换成本总是负面</h4>
+      <p>上下文切换的<strong style="color:#c8a86e;">收益面</strong>被忽略了：跨领域切换可能带来创造性连接，管理者的核心工作就是切换。</p>
+    </div>
+    <div class="card">
+      <h4>⚠️ 假设四：个体能完全控制注意力</h4>
+      <p>把注意力管理包装成"个人选择"，本质上是<strong style="color:#c8a86e;">把系统性问题个体化</strong>。管理者、创业者、父母——你的注意力被结构劫持。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 18: Logic problems -->
+<div class="slide" data-slide="17">
+  <h2>逻辑问题</h2>
+  <div class="grid-2" style="margin-top:0.5rem;">
+    <div class="card">
+      <h4>🔗 因果混淆</h4>
+      <p>"睡眠不足时警觉性受损"→推导出"注意力管理比精力管理更底层"。但睡眠不足本身就是精力问题——把精力不足的表现当成了注意力独立的证据。</p>
+    </div>
+    <div class="card">
+      <h4>🔄 循环论证</h4>
+      <p>注意力管理的价值建立在"注意力是稀缺资源"这个前提上，而"注意力是稀缺资源"这个判断又建立在注意力管理的必要性上。</p>
+    </div>
+    <div class="card">
+      <h4>📚 选择性举证</h4>
+      <p>只引用了支持"注意力稀缺"的文献（西蒙、纽波特），没有引用质疑该观点的研究（如神经可塑性研究）。</p>
+    </div>
+    <div class="card">
+      <h4>📐 框架锁定</h4>
+      <p>用"四层递进"框架统摄整个论述，但框架本身没有经过验证——它只是一个隐喻，却被当成了分析工具。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 19: Real motivation -->
+<div class="slide" data-slide="18">
+  <h2>追问真实问题</h2>
+  <div class="callout warn" style="margin-bottom:0.8rem;">
+    <p><strong>元问题比问题本身更重要。</strong> 一个人问"如何管理注意力"时，他真正在问的往往不是技术，而是某个更深层的焦虑。</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h4>🧩 注意力碎片化的痛苦</h4>
+      <p>"我的注意力被撕碎了，我想把它收回来。"——多重角色的争夺。</p>
+    </div>
+    <div class="card">
+      <h4>🧭 寻找"正确的事"</h4>
+      <p>不是在问"怎么管理"，而是在问"什么值得我关注"——价值观问题。</p>
+    </div>
+    <div class="card">
+      <h4>🛡 方法论掩盖选择焦虑</h4>
+      <p>"我到底应该把生命花在什么事情上？"——方法论是安全的，选择是危险的。</p>
+    </div>
+    <div class="card">
+      <h4>🎭 自我责备的工具</h4>
+      <p>"如果我注意力管理得更好，我就能做得更多。"——但问题可能是对自己的期待不合理。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 20: Think tank - title -->
+<div class="slide" data-slide="19">
+  <h2>智囊团讨论</h2>
+  <p style="margin-bottom:1.5rem;">四位真实学者/实践者围绕"注意力管理是否比时间和精力管理更底层"展开碰撞。</p>
+  <div class="grid-2">
+    <div class="card">
+      <h4>🔵 卡尔·纽波特</h4>
+      <p style="font-size:0.8rem; color:#777;">乔治城大学计算机科学教授，《深度工作》作者</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem;">支持方：注意力决定产出质量</p>
+    </div>
+    <div class="card">
+      <h4>🔴 戴维·艾伦</h4>
+      <p style="font-size:0.8rem; color:#777;">GTD方法论创始人</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem;">反对方：最稀缺的是清晰度，不是注意力</p>
+    </div>
+    <div class="card">
+      <h4>🟡 丹尼尔·卡尼曼</h4>
+      <p style="font-size:0.8rem; color:#777;">普林斯顿心理学教授，诺贝尔经济学奖得主</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem;">质疑方：注意力不是单一资源，是关系的产物</p>
+    </div>
+    <div class="card">
+      <h4>🟢 纳西姆·塔勒布</h4>
+      <p style="font-size:0.8rem; color:#777;">作家，《黑天鹅》《反脆弱》作者</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem;">搅局者："管理"这个概念本身就是问题</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 21: Newport vs Allen -->
+<div class="slide" data-slide="20">
+  <h2>🔵 纽波特 vs 🔴 艾伦</h2>
+  <div class="flex-row" style="gap:1.5rem;">
+    <div class="card" style="flex:1; border-left:3px solid #7ab;">
+      <h4 style="color:#7ab;">纽波特：注意力决定产出</h4>
+      <p style="font-size:0.9rem;">高质量产出 = 投入时间 × 专注强度。2小时100%专注可能超过4小时50%专注。</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem; color:#888;">但深度工作不是所有人的答案——对于需要频繁协作的岗位，深度工作反而可能是一种失职。</p>
+    </div>
+    <div class="card" style="flex:1; border-left:3px solid #d88;">
+      <h4 style="color:#d88;">艾伦：最稀缺的是清晰度</h4>
+      <p style="font-size:0.9rem;">GTD核心洞见：当大脑没有清空时，注意力自然涣散。你不需要管理注意力，你需要管理承诺。</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem; color:#888;">有了完整的外部系统，注意力问题会自动解决——因为大脑不再需要记住不该记住的东西。</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:0.8rem;">
+    <p><strong>分歧本质</strong>：纽波特认为问题是"如何提高专注强度"；艾伦认为问题是"如何清空大脑"。</p>
+  </div>
+</div>
+
+<!-- Slide 22: Kahneman vs Taleb -->
+<div class="slide" data-slide="21">
+  <h2>🟡 卡尼曼 vs 🟢 塔勒布</h2>
+  <div class="flex-row" style="gap:1.5rem;">
+    <div class="card" style="flex:1; border-left:3px solid #dc8;">
+      <h4 style="color:#dc8;">卡尼曼：注意力不是单一资源</h4>
+      <p style="font-size:0.9rem;">System 1和System 2使用不同的注意力资源。不能同时做两件System 2的事。切换成本因人而异。</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem; color:#c8a86e;">最大的质疑：把注意力当作"资源"来管理，本身就是危险的隐喻。注意力是关系的产物——这是意义问题，不是管理问题。</p>
+    </div>
+    <div class="card" style="flex:1; border-left:3px solid #8c8;">
+      <h4 style="color:#8c8;">塔勒布：痴迷比管理重要</h4>
+      <p style="font-size:0.9rem;">你不需要"管理"注意力，你需要创造让它自然集中的条件。减少噪音、留出空白、做真正在意的事。</p>
+      <p style="font-size:0.85rem; margin-top:0.3rem; color:#c8a86e;">历史上最有创造力的人——没有一个人是靠"注意力管理技巧"取得成就的。他们只是对某件事痴迷到无法自拔。</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:0.8rem;">
+    <p><strong>分歧本质</strong>：卡尼曼认为问题是"如何理解注意力的机制"；塔勒布认为问题是"你在乎什么"。</p>
+  </div>
+</div>
+
+<!-- Slide 23: Key disagreements table -->
+<div class="slide" data-slide="22">
+  <h2>观点碰撞：关键分歧</h2>
+  <table class="deck-table" style="margin-top:0.8rem;">
+    <tr><th style="width:22%;">分歧点</th><th style="width:19.5%;">纽波特</th><th style="width:19.5%;">艾伦</th><th style="width:19.5%;">卡尼曼</th><th style="width:19.5%;">塔勒布</th></tr>
+    <tr><td style="color:#c8a86e;">注意力是否稀缺</td><td>✅ 是</td><td>❌ 清晰度更稀缺</td><td>⚠️ 不是单一资源</td><td>❌ 痴迷更重要</td></tr>
+    <tr><td style="color:#c8a86e;">是否需要管理</td><td>✅ 需要系统方法</td><td>✅ 需要外部系统</td><td>⚠️ 需要理解机制</td><td>❌ 不需要管理</td></tr>
+    <tr><td style="color:#c8a86e;">个体能控制吗</td><td>✅ 可以</td><td>✅ 通过系统</td><td>⚠️ 个体差异</td><td>❌ 受限于痴迷</td></tr>
+    <tr><td style="color:#c8a86e;">核心问题</td><td>专注强度</td><td>系统清晰度</td><td>意义与关系</td><td>重要性与痴迷</td></tr>
+  </table>
+  <div class="callout" style="margin-top:1rem;">
+    <p><strong>关键发现</strong>：四位专家的分歧不是"要不要管理注意力"，而是<strong style="color:#c8a86e;">问题被定义错了</strong>。没有一个答案是对的，但每个答案都揭示了问题的一个维度。</p>
+  </div>
+</div>
+
+<!-- Slide 24: Framework reconstruction -->
+<div class="slide" data-slide="23">
+  <h2>框架重构</h2>
+  <div class="highlight-box" style="margin:0.5rem 0 1rem;">
+    <div class="big" style="font-size:1.8rem;">注意力不是一个需要"管理"的资源，<br>而是一个需要"理解"的现象。</div>
+  </div>
+  <div class="grid-2" style="margin-top:0.5rem;">
+    <div class="card">
+      <h4>🔬 理解机制</h4>
+      <p>卡尼曼的提醒：理解System 1和System 2的运作方式，接受注意力有波动。</p>
+    </div>
+    <div class="card">
+      <h4>🌱 创造条件</h4>
+      <p>塔勒布的提醒：减少噪音、留出空白、做真正在意的事——让注意力自然集中。</p>
+    </div>
+    <div class="card">
+      <h4>🏗 建立系统</h4>
+      <p>艾伦的提醒：建立外部系统清空大脑，别让大脑当存储器。</p>
+    </div>
+    <div class="card">
+      <h4>🎯 集中使用</h4>
+      <p>纽波特的提醒：在需要时保护深度时段，但不要神化深度工作。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 25: Personal insights -->
+<div class="slide" data-slide="24">
+  <h2>对你个人的启示</h2>
+  <p>你同时扮演多重角色——父亲、丈夫、管理者、创业者、思考者。注意力管理不是学术问题，是每天的生存问题。</p>
+  <div class="grid-2" style="margin-top:1rem;">
+    <div class="card">
+      <h4>🎯 先问"什么值得关注"</h4>
+      <p>塔勒布的提醒：注意力管理的前提是知道什么重要。价值观优先于方法论。</p>
+    </div>
+    <div class="card">
+      <h4>💾 建立外部系统</h4>
+      <p>艾伦的提醒：GTD的收集和处理环节可以大幅降低认知负荷。别让大脑当存储器。</p>
+    </div>
+    <div class="card">
+      <h4>🌊 接受注意力有波动</h4>
+      <p>卡尼曼的提醒：睡眠不足时，接受低效率比强迫专注更明智。不要对抗生理规律。</p>
+    </div>
+    <div class="card">
+      <h4>🛡 保护深度，但不神化</h4>
+      <p>纽波特的提醒：你的角色需要切换，关键是提高切换效率而非消除切换。</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:1rem;">
+    <p><strong>最终总结</strong>：这篇论述最大的问题不是"错了"，而是太自信了。真正的洞见不是"注意力比时间重要"，而是：<strong style="color:#c8a86e;">你问这个问题的原因，可能比问题的答案更重要。</strong></p>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div id="nav">
+  <span class="key-hint">← →</span>
+  <div id="dots"></div>
+  <span class="counter" id="counter">1 / 25</span>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let isAnimating = false;
+
+  // Build dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function update() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function goTo(index) {
+    if (isAnimating || index === current || index < 0 || index >= total) return;
+    isAnimating = true;
+    current = index;
+    update();
+    setTimeout(() => { isAnimating = false; }, 450);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) {
+      goTo(current + (diff > 0 ? 1 : -1));
+    }
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
