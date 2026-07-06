@@ -111,30 +111,19 @@
 
   /* Navigation */
   #nav {
-    position: fixed;
-    bottom: 2.5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    z-index: 100;
-    background: rgba(7,7,13,0.8);
-    backdrop-filter: blur(8px);
-    padding: 0.5rem 1.2rem;
-    border-radius: 2rem;
-    border: 1px solid rgba(200,168,110,0.15);
+    position: fixed; bottom: 1.5vh; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 0.4rem; z-index: 100;
+    background: rgba(7,7,13,0.7); backdrop-filter: blur(6px);
+    padding: 0.3rem 0.8rem; border-radius: 1.2rem;
+    border: 1px solid rgba(200,168,110,0.12);
   }
   #nav .dot {
-    width: 0.5rem; height: 0.5rem;
-    border-radius: 50%;
-    background: rgba(200,168,110,0.25);
-    transition: all 0.3s;
-    cursor: pointer;
+    width: 0.4rem; height: 0.4rem; border-radius: 50%;
+    background: rgba(200,168,110,0.2); transition: all 0.3s; cursor: pointer;
   }
-  #nav .dot.active { background: #c8a86e; width: 1.2rem; border-radius: 0.25rem; }
-  #nav .counter { color: #666; font-size: 0.75rem; margin-left: 0.5rem; letter-spacing: 0.05em; }
-  #nav .key-hint { color: #444; font-size: 0.65rem; margin-right: 0.5rem; }
+  #nav .dot.active { background: #c8a86e; width: 0.8rem; border-radius: 0.2rem; }
+  #nav .counter { color: #555; font-size: 0.65rem; margin-left: 0.3rem; letter-spacing: 0.03em; }
+  #nav .key-hint { color: #333; font-size: 0.55rem; margin-right: 0.3rem; }
 
   /* Progress bar */
   #progress {
