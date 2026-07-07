@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资本、权力与创新</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f18;
+    --bg3: #14141f;
+    --gold: #c8a86e;
+    --gold-light: #e8d4a8;
+    --gold-dim: #8a7a5a;
+    --text: #e8e4dc;
+    --text-dim: #8a8680;
+    --text-muted: #5a5650;
+    --accent: #d4a84a;
+    --border: rgba(200, 168, 110, 0.15);
+    --glow: rgba(200, 168, 110, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* === Slide Container === */
+  .slides { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  .slide-inner {
+    width: 100%; max-width: 1100px;
+    position: relative;
+  }
+
+  /* === Typography === */
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.4rem, 4.5vw, 4.8rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+  }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3vw, 3.2rem);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.3;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.6em;
+  }
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1.4;
+    margin-bottom: 0.5em;
+  }
+  p, li {
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 300;
+  }
+  .text-sm { font-size: clamp(0.85rem, 1.2vw, 1.2rem); }
+  .text-xs { font-size: clamp(0.7rem, 0.95vw, 0.95rem); }
+  .gold { color: var(--gold); }
+  .gold-light { color: var(--gold-light); }
+  .dim { color: var(--text-dim); }
+  .muted { color: var(--text-muted); }
+  .bold { font-weight: 500; }
+
+  /* === Title Slide === */
+  .title-slide .slide-inner { text-align: center; }
+  .title-slide .subtitle {
+    font-size: clamp(1rem, 1.4vw, 1.4rem);
+    color: var(--text-dim);
+    margin-top: 1.5em;
+    letter-spacing: 0.2em;
+    font-weight: 300;
+  }
+  .title-slide .date {
+    font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+    color: var(--text-muted);
+    margin-top: 3em;
+  }
+  .title-accent {
+    width: 60px; height: 2px;
+    background: var(--gold);
+    margin: 1.5em auto;
+  }
+
+  /* === Content Layouts === */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw;
+    margin-top: 1em;
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2vw;
+    margin-top: 1em;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.8em;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: rgba(200,168,110,0.3); }
+  .card .label {
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.6em;
+    font-weight: 500;
+  }
+  .card h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1rem, 1.3vw, 1.3rem);
+    color: var(--gold);
+    margin-bottom: 0.5em;
+    font-weight: 600;
+  }
+  .card p, .card li {
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    line-height: 1.6;
+  }
+  .card ul { list-style: none; padding: 0; }
+  .card li {
+    padding: 0.25em 0;
+    padding-left: 1em;
+    position: relative;
+  }
+  .card li::before {
+    content: '—';
+    position: absolute; left: 0;
+    color: var(--gold-dim);
+  }
+
+  /* === Lists === */
+  .content-list { list-style: none; padding: 0; margin-top: 0.8em; }
+  .content-list li {
+    padding: 0.4em 0;
+    padding-left: 1.2em;
+    position: relative;
+  }
+  .content-list li::before {
+    content: '◆';
+    position: absolute; left: 0;
+    color: var(--gold-dim);
+    font-size: 0.6em;
+    top: 0.7em;
+  }
+  .content-list .highlight {
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+
+  /* === Numbered items === */
+  .num-item {
+    display: flex; gap: 1em;
+    margin-bottom: 0.8em;
+    align-items: flex-start;
+  }
+  .num {
+    flex-shrink: 0;
+    width: 2em; height: 2em;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .num-item .content { padding-top: 0.2em; }
+
+  /* === Diagram / Visual === */
+  .diagram-flow {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1.5vw;
+    margin: 1.5em 0;
+    flex-wrap: wrap;
+  }
+  .diagram-node {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1em 1.5em;
+    text-align: center;
+    min-width: 120px;
+    font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+  .diagram-arrow {
+    color: var(--gold-dim);
+    font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+  }
+  .diagram-bracket {
+    color: var(--gold-dim);
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    text-align: center;
+    margin-top: 0.5em;
+  }
+
+  /* === Four modes grid === */
+  .mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5vw;
+    margin-top: 1em;
+  }
+  .mode-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5em;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--gold);
+    opacity: 0.3;
+  }
+  .mode-card .mode-label {
+    font-size: clamp(0.65rem, 0.8vw, 0.8rem);
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    margin-bottom: 0.3em;
+  }
+  .mode-card h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 1.4vw, 1.4rem);
+    color: var(--gold);
+    margin-bottom: 0.4em;
+  }
+  .mode-card p {
+    font-size: clamp(0.75rem, 0.95vw, 0.95rem);
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+  .mode-card .tag {
+    display: inline-block;
+    font-size: clamp(0.6rem, 0.7vw, 0.7rem);
+    padding: 0.2em 0.6em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--gold-dim);
+    margin-top: 0.6em;
+  }
+
+  /* === Table === */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+    font-size: clamp(0.75rem, 1vw, 1rem);
+  }
+  .compare-table th {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: left;
+    padding: 0.6em 1em;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+  .compare-table td {
+    padding: 0.5em 1em;
+    border-bottom: 1px solid rgba(200,168,110,0.06);
+    color: var(--text);
+    font-weight: 300;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child {
+    color: var(--gold-dim);
+    font-weight: 400;
+  }
+
+  /* === Quote / Highlight box === */
+  .insight-box {
+    background: linear-gradient(135deg, rgba(200,168,110,0.06), transparent);
+    border-left: 2px solid var(--gold);
+    padding: 1.2em 1.5em;
+    margin: 1em 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .insight-box p {
+    font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+    color: var(--gold-light);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  .insight-box .attribution {
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    color: var(--text-muted);
+    margin-top: 0.5em;
+  }
+
+  /* === Progress === */
+  .progress-bar {
+    position: fixed; bottom: 0; left: 0;
+    height: 2px; background: var(--gold);
+    transition: width 0.5s ease;
+    z-index: 100;
+  }
+  .progress-dots {
+    position: fixed; bottom: 2.5vh;
+    left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px;
+    z-index: 100;
+  }
+  .progress-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+  .progress-dot.active { background: var(--gold); width: 18px; border-radius: 3px; }
+  .progress-dot:hover { background: var(--gold-dim); }
+
+  /* === Navigation hint === */
+  .nav-hint {
+    position: fixed; bottom: 6vh; right: 3vw;
+    color: var(--text-muted);
+    font-size: clamp(0.6rem, 0.75vw, 0.75rem);
+    letter-spacing: 0.1em;
+    z-index: 100;
+    opacity: 0.5;
+  }
+
+  /* === Slide number === */
+  .slide-num {
+    position: fixed; bottom: 6vh; left: 3vw;
+    color: var(--text-muted);
+    font-size: clamp(0.6rem, 0.75vw, 0.75rem);
+    z-index: 100;
+  }
+
+  /* === Animations === */
+  .slide.active .fade-in {
+    animation: fadeUp 0.7s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .fade-in-d1 { animation-delay: 0.1s; }
+  .slide.active .fade-in-d2 { animation-delay: 0.2s; }
+  .slide.active .fade-in-d3 { animation-delay: 0.3s; }
+  .slide.active .fade-in-d4 { animation-delay: 0.4s; }
+  .slide.active .fade-in-d5 { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === Decorative elements === */
+  .deco-line {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 1em 0;
+  }
+
+  /* === Responsive === */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .two-col, .three-col, .mode-grid { grid-template-columns: 1fr; gap: 1em; }
+    .diagram-flow { flex-direction: column; }
+    .diagram-arrow { transform: rotate(90deg); }
+    .progress-dots { display: none; }
+  }
+
+  /* === Special: center emphasis === */
+  .center-em {
+    text-align: center;
+    padding: 1.5em 0;
+  }
+  .big-number {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.1;
+  }
+  .big-number-label {
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    color: var(--text-dim);
+    margin-top: 0.3em;
+  }
+
+  /* tag style */
+  .tag-pill {
+    display: inline-block;
+    font-size: clamp(0.6rem, 0.7vw, 0.7rem);
+    padding: 0.2em 0.7em;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--gold-dim);
+    margin: 0.2em;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ==================== SLIDE 1: TITLE ==================== -->
+  <div class="slide title-slide active" data-index="0">
+    <div class="slide-inner">
+      <div class="fade-in">
+        <p class="dim text-xs" style="letter-spacing:0.3em;margin-bottom:2em;">赵锦勇 · 认知笔记</p>
+        <h1>资本、权力与创新</h1>
+        <div class="title-accent"></div>
+        <p style="font-size:clamp(1rem,1.6vw,1.6rem);color:var(--text-dim);line-height:1.6;max-width:700px;margin:0 auto;">
+          商业逐利冲动与权力结构的永恒博弈
+        </p>
+        <p class="subtitle">从 Anthropic 到恒大 · 从阿里巴巴到中世纪行会</p>
+        <p class="date">2026年7月7日</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2: 三环交叉 ==================== -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2 class="fade-in">问题的提出</h2>
+      <p class="dim fade-in fade-in-d1" style="margin-bottom:1.5em;">当技术变革创造巨大价值，这些价值最终被谁攫取？</p>
+      <div class="diagram-flow fade-in fade-in-d2">
+        <div class="diagram-node">逐利冲动<br><span class="text-xs dim">企业家/资本</span></div>
+        <span class="diagram-arrow">⇌</span>
+        <div class="diagram-node">攫取本能<br><span class="text-xs dim">权力结构</span></div>
+        <span class="diagram-arrow">⇌</span>
+        <div class="diagram-node">制度环境<br><span class="text-xs dim">国别差异</span></div>
+      </div>
+      <div class="deco-line fade-in fade-in-d3"></div>
+      <ul class="content-list fade-in fade-in-d4">
+        <li><span class="highlight">企业家/资本的逐利冲动</span> — 永远在寻找最有效率、最能创造价值的商业机会</li>
+        <li><span class="highlight">权力结构的攫取本能</span> — 权力天然倾向于占有财富、控制资源</li>
+        <li><span class="highlight">制度环境的国别差异</span> — 中国需"高举高打"，西方有制度性优势也有资本异化</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: 历史原点 ==================== -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2 class="fade-in">历史原点</h2>
+      <h3 class="fade-in fade-in-d1">资本主义为何要"为自己创造秩序"？</h3>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>封建权力以土地和人身依附为基础，商业资本以货币和契约为基础——<br>两种逻辑天然冲突。</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d3">
+          <div class="label">路径一 · 欧陆模式</div>
+          <h4>与权力结盟</h4>
+          <p>商业资本与王权形成同盟——国王用商业税收对抗贵族，商人用王权保护对抗地方势力。结果是商业繁荣但受制于王权。</p>
+          <div class="tag">法国 · 普鲁士</div>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">路径二 · 英美模式</div>
+          <h4>为自己立法</h4>
+          <p>商人阶层通过议会掌握立法权，将财产权、契约自由写入法律。商业秩序成为国家秩序的基础。</p>
+          <div class="tag">英国 · 荷兰</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 4: 资本异化 ==================== -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2 class="fade-in">资本异化的另一面</h2>
+      <p class="dim fade-in fade-in-d1" style="margin-bottom:1em;">资本主义在创造生产力的同时，也产生了对人的异化和奴役</p>
+      <div class="two-col">
+        <div class="card fade-in fade-in-d2">
+          <h4>圈地运动</h4>
+          <p>农民失去土地，被迫进入工厂</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <h4>血汗工厂</h4>
+          <p>童工、超长工时、恶劣环境</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <h4>金融资本</h4>
+          <p>2008年金融危机，普通人为华尔街的贪婪买单</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <h4>平台剥削</h4>
+          <p>零工经济中的算法控制</p>
+        </div>
+      </div>
+      <div class="insight-box fade-in fade-in-d5" style="margin-top:1em;">
+        <p>这不是资本主义的"副作用"，而是其内在逻辑的必然结果——<br>资本追求效率最大化，而人只是效率函数中的一个变量。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 5: 四种模式概览 ==================== -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2 class="fade-in">商业与权力的四种关系模式</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">同一企业可能在不同阶段采取不同模式</p>
+      <div class="mode-grid">
+        <div class="mode-card fade-in fade-in-d2">
+          <div class="mode-label">模式一</div>
+          <h4>对抗</h4>
+          <p>商业资本与既有权力结构正面冲突。Uber挑战出租车牌照、比特币挑战央行主权。</p>
+          <div class="tag">高风险 · 高回报</div>
+        </div>
+        <div class="mode-card fade-in fade-in-d3">
+          <div class="mode-label">模式二</div>
+          <h4>依赖</h4>
+          <p>商业资本依附于权力结构，换取保护和特权。恒大与地方政府、沙特阿美与王室。</p>
+          <div class="tag">稳定 · 但可被反噬</div>
+        </div>
+        <div class="mode-card fade-in fade-in-d4">
+          <div class="mode-label">模式三</div>
+          <h4>共生</h4>
+          <p>互利共赢，各自独立但相互需要。Anthropic与政府AI安全合作、淡马锡模式。</p>
+          <div class="tag">最优 · 可持续</div>
+        </div>
+        <div class="mode-card fade-in fade-in-d5">
+          <div class="mode-label">模式四</div>
+          <h4>超越</h4>
+          <p>试图建立独立于既有权力结构的新秩序。DAO、加密货币经济体、暗网市场。</p>
+          <div class="tag">颠覆性 · 面临围剿</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 6: 动态转化 ==================== -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2 class="fade-in">四种模式的动态转化</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1.5em;">以阿里巴巴为例</p>
+      <div class="diagram-flow fade-in fade-in-d2">
+        <div class="diagram-node">1999-2010<br><span class="text-xs dim">共生期</span></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node">2010-2020<br><span class="text-xs dim">依赖期</span></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node">2020-2022<br><span class="text-xs dim">对抗期</span></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node">2022-今<br><span class="text-xs dim">再共生</span></div>
+      </div>
+      <div class="deco-line fade-in fade-in-d3"></div>
+      <div class="insight-box fade-in fade-in-d4">
+        <p>选择哪种模式，取决于三个变量：<br><span class="gold">行业属性</span> · <span class="gold">制度环境</span> · <span class="gold">企业规模</span></p>
+      </div>
+      <p class="text-sm dim fade-in fade-in-d5" style="margin-top:0.8em;">当企业规模大到"系统重要性"时，它就不再只是商业实体，而是社会治理的一部分。</p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 7: 中国语境 ==================== -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2 class="fade-in">中国语境</h2>
+      <h3 class="fade-in fade-in-d1">为什么需要"高举高打"？</h3>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>权力的碎片化与权力的集中并存——越往下越难缠，越往上越好说话。</p>
+      </div>
+      <div class="three-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d3">
+          <div class="label">第一层</div>
+          <h4>合法性背书</h4>
+          <p>政治合法性可转化为商业信用。有领导视察过的企业，银行更愿贷款、客户更愿合作。</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">第二层</div>
+          <h4>穿透执行</h4>
+          <p>基层阻力（审批拖延、地方保护）可通过高层批示消除。"一把手工程"效率远高于常规流程。</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <div class="label">第三层</div>
+          <h4>风险对冲</h4>
+          <p>政策风险（行业整顿、税务稽查）可通过政治关系缓冲。有"靠山"的企业在风暴中更容易存活。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 8: 高举高打的代价 ==================== -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2 class="fade-in">"高举高打"的代价</h2>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <div class="num-item fade-in fade-in-d1">
+            <div class="num">1</div>
+            <div class="content"><span class="gold">政治风险传染</span><br><span class="dim text-sm">靠山倒了，企业也跟着倒</span></div>
+          </div>
+          <div class="num-item fade-in fade-in-d2">
+            <div class="num">2</div>
+            <div class="content"><span class="gold">自主性丧失</span><br><span class="dim text-sm">拿了政府的资源，就要听政府的话</span></div>
+          </div>
+          <div class="num-item fade-in fade-in-d3">
+            <div class="num">3</div>
+            <div class="content"><span class="gold">战略扭曲</span><br><span class="dim text-sm">为迎合政治意愿，可能偏离商业最优路径</span></div>
+          </div>
+          <div class="num-item fade-in fade-in-d4">
+            <div class="num">4</div>
+            <div class="content"><span class="gold">退出成本高</span><br><span class="dim text-sm">一旦绑定，很难脱身</span></div>
+          </div>
+        </div>
+        <div class="card fade-in fade-in-d5" style="border-color:rgba(200,168,110,0.25);">
+          <div class="label">案例</div>
+          <h4>恒大的教训</h4>
+          <p>依赖模式走到极致，就是被权力反噬。许家印曾经是"领导关怀"的典范，最后成了"监管风暴"的靶心。</p>
+          <div class="tag" style="margin-top:0.8em;">权力可以给你一切，也可以拿走一切</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 9: 先进技术方向 ==================== -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <h2 class="fade-in">"代表先进技术方向"的深层优势</h2>
+      <div class="insight-box fade-in fade-in-d1">
+        <p>不是简单地"讨好政府"，而是让自己的商业目标与国家的战略目标形成共振。</p>
+      </div>
+      <div class="three-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d2">
+          <div class="label">1</div>
+          <h4>政治收益</h4>
+          <p>支持先进技术符合"高质量发展""科技自立自强"的国家叙事，政府有动机给予支持</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">2</div>
+          <h4>谈判地位</h4>
+          <p>技术领先者拥有稀缺性，政府需要你多于你需要政府</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">3</div>
+          <h4>制度保护</h4>
+          <p>战略性新兴产业有政策护城河，不容易被"小鬼"骚扰</p>
+        </div>
+      </div>
+      <p class="fade-in fade-in-d5 center-em" style="margin-top:1em;">
+        <span class="gold-light">Anthropic 和 DeepSeek 的策略本质</span><br>
+        <span class="dim text-sm">——不是服从权力，而是让自己变得对权力来说不可或缺</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 10: 西方制度性优势 ==================== -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <h2 class="fade-in">西方语境</h2>
+      <h3 class="fade-in fade-in-d1">制度性优势的真相与局限</h3>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <h4 class="gold fade-in fade-in-d2" style="margin-bottom:0.5em;">制度性优势</h4>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">法治独立</span> — 财产权保护不因政治变动而动摇</li>
+            <li><span class="highlight">权力制衡</span> — 行政、立法、司法相互制约</li>
+            <li><span class="highlight">舆论监督</span> — 媒体可曝光权力寻租</li>
+            <li><span class="highlight">司法救济</span> — 企业可以起诉政府</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="gold fade-in fade-in-d4" style="margin-bottom:0.5em;">正在被侵蚀</h4>
+          <ul class="content-list fade-in fade-in-d5">
+            <li><span class="highlight">政治极化</span> — 企业被迫"选边站"</li>
+            <li><span class="highlight">监管武器化</span> — 国家安全审查成政治工具</li>
+            <li><span class="highlight">游说产业</span> — "谁有钱谁有话语权"</li>
+            <li><span class="highlight">资本异化</span> — 华尔街短期主义牺牲长期价值</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 11: 中西方对比 ==================== -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <h2 class="fade-in">中西方模式深层比较</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:0.5em;">两种模式各有其异化形式</p>
+      <table class="compare-table fade-in fade-in-d2">
+        <tr><th>维度</th><th>中国模式</th><th>西方模式</th></tr>
+        <tr><td>权力关系</td><td>依赖 / 共生为主</td><td>对抗 / 共生为主</td></tr>
+        <tr><td>制度保障</td><td>政治背书</td><td>法治独立</td></tr>
+        <tr><td>风险类型</td><td>政治风险</td><td>市场风险</td></tr>
+        <tr><td>退出机制</td><td>退出成本高</td><td>退出相对容易</td></tr>
+        <tr><td>创新激励</td><td>政策驱动</td><td>市场驱动</td></tr>
+        <tr><td>异化形式</td><td><span class="gold">权力异化</span></td><td><span class="gold">资本异化</span></td></tr>
+      </table>
+      <div class="insight-box fade-in fade-in-d3" style="margin-top:1em;">
+        <p>中国的问题是权力对资本的异化（企业变成权力的工具），<br>西方的问题是资本对权力的异化（权力变成资本的工具）。<br>没有一种模式是完美的。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 12: Anthropic ==================== -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <h2 class="fade-in">案例：Anthropic</h2>
+      <h3 class="fade-in fade-in-d1">共生模式的典范</h3>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d2">
+            <li><span class="highlight">安全对齐</span> — 主动将AI安全作为核心使命，与政府监管目标一致</li>
+            <li><span class="highlight">制度嵌入</span> — 参与AI政策制定，与国会、白宫保持密切沟通</li>
+            <li><span class="highlight">价值输出</span> — 用"负责任的AI"叙事建立公共信任</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">关键洞察</div>
+          <p>AI行业正处于"规则尚未建立"的阶段，谁参与制定规则，谁就获得了先发优势。</p>
+          <p style="margin-top:0.8em;" class="gold">Anthropic不是在"服从权力"，而是在"塑造权力"。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 13: 阿里 + 恒大 ==================== -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner">
+      <h2 class="fade-in">案例对比</h2>
+      <div class="two-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d1">
+          <div class="label">阿里巴巴</div>
+          <h4>从共生到对抗再到共生</h4>
+          <p class="text-sm">1999-2010 共生期 → 2010-2020 依赖期 → 2020-2022 对抗期 → 2022-今 再共生</p>
+          <div class="deco-line" style="margin:0.8em 0;"></div>
+          <p class="text-sm dim">教训：当企业规模大到"系统重要性"时，权力会重新定义游戏规则。</p>
+        </div>
+        <div class="card fade-in fade-in-d2" style="border-color:rgba(200,168,110,0.2);">
+          <div class="label">恒大</div>
+          <h4>依赖模式的极限</h4>
+          <p class="text-sm">政治背书 + 政策套利 + 利益绑定 → 三条红线政策一出，权力转向去杠杆，政治关系无法阻止崩塌。</p>
+          <div class="deco-line" style="margin:0.8em 0;"></div>
+          <p class="text-sm gold">依赖模式的致命弱点：权力可以给你一切，也可以拿走一切。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 14: 理论升华 ==================== -->
+  <div class="slide" data-index="13">
+    <div class="slide-inner">
+      <h2 class="fade-in">理论升华</h2>
+      <h3 class="fade-in fade-in-d1">商业与权力的永恒张力</h3>
+      <div class="two-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d2">
+          <div class="label">商业逻辑</div>
+          <p class="gold-light" style="font-size:clamp(1rem,1.3vw,1.3rem);">效率 · 创新 · 竞争 · 利润最大化</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">权力逻辑</div>
+          <p class="gold-light" style="font-size:clamp(1rem,1.3vw,1.3rem);">稳定 · 控制 · 秩序 · 权力最大化</p>
+        </div>
+      </div>
+      <div class="insight-box fade-in fade-in-d4" style="margin-top:1em;">
+        <p>两种逻辑在根本上是矛盾的，但又在功能上相互需要。<br>最优解不是消除张力，而是管理张力。<br>力的对抗恰恰是结构稳定的来源。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 15: 企业家精神 ==================== -->
+  <div class="slide" data-index="14">
+    <div class="slide-inner">
+      <h2 class="fade-in">企业家精神的本质</h2>
+      <div class="insight-box fade-in fade-in-d1">
+        <p>不是"发现机会"，而是在商业逻辑和权力逻辑之间找到可操作的平衡点。</p>
+      </div>
+      <p class="fade-in fade-in-d2 center-em" style="margin:1.5em 0;">
+        <span class="big-number">3</span><br>
+        <span class="big-number-label">个判断问题</span>
+      </p>
+      <div class="three-col">
+        <div class="card fade-in fade-in-d3">
+          <h4>价值一致？</h4>
+          <p class="text-sm dim">行业的价值创造是否与权力目标一致？</p>
+          <p class="text-xs gold" style="margin-top:0.5em;">一致→共生 | 冲突→对抗</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <h4>资源依赖？</h4>
+          <p class="text-sm dim">行业的资源是否依赖权力分配？</p>
+          <p class="text-xs gold" style="margin-top:0.5em;">依赖→依赖模式 | 不依赖→自主空间</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <h4>系统重要？</h4>
+          <p class="text-sm dim">规模是否达到"系统重要性"？</p>
+          <p class="text-xs gold" style="margin-top:0.5em;">达到→权力必然介入</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 16: 结语 ==================== -->
+  <div class="slide" data-index="15">
+    <div class="slide-inner">
+      <h2 class="fade-in">不是选择模式，而是理解位置</h2>
+      <div class="mode-grid" style="margin-top:1em;">
+        <div class="mode-card fade-in fade-in-d1">
+          <div class="mode-label">如果你做的是</div>
+          <h4>符合国家战略的先进技术</h4>
+          <p>选择共生模式——让权力成为你的盟友而非对手</p>
+        </div>
+        <div class="mode-card fade-in fade-in-d2">
+          <div class="mode-label">如果你做的是</div>
+          <h4>传统行业、高度受监管</h4>
+          <p>可能需要依赖模式——但要控制依赖的深度</p>
+        </div>
+        <div class="mode-card fade-in fade-in-d3">
+          <div class="mode-label">如果你做的是</div>
+          <h4>边缘创新、监管未覆盖</h4>
+          <p>可以尝试对抗模式——但要准备好退出策略</p>
+        </div>
+        <div class="mode-card fade-in fade-in-d4">
+          <div class="mode-label">如果你足够强大</div>
+          <h4>超越模式</h4>
+          <p>但要准备好面对全球权力的围剿</p>
+        </div>
+      </div>
+      <div class="insight-box fade-in fade-in-d5" style="margin-top:1em;">
+        <p>商业的终极价值不在于战胜权力，<br>而在于创造权力无法替代的价值。</p>
+        <p class="attribution">当你的价值足够大、足够稀缺、足够不可替代时，权力会来找你，而不是你去找权力。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 17: END ==================== -->
+  <div class="slide" data-index="16">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-in">
+        <div style="width:40px;height:2px;background:var(--gold);margin:0 auto 2em;"></div>
+        <p class="dim" style="font-size:clamp(0.9rem,1.2vw,1.2rem);letter-spacing:0.15em;">基于与赵锦勇的对话展开</p>
+        <p style="font-size:clamp(0.75rem,0.9vw,0.9rem);color:var(--text-muted);margin-top:3em;">2026年7月7日</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Progress -->
+<div class="progress-bar" id="progressBar"></div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="slide-num" id="slideNum"></div>
+<div class="nav-hint">←  →  翻页</div>
+
+<script>
+  (function() {
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+
+    const progressBar = document.getElementById('progressBar');
+    const slideNum = document.getElementById('slideNum');
+    const dotsContainer = document.getElementById('progressDots');
+
+    // Build dots
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    function goTo(index) {
+      if (index < 0 || index >= total) return;
+      slides[current].classList.remove('active');
+      slides[index].classList.add('active');
+      current = index;
+
+      // Progress bar
+      progressBar.style.width = ((current + 1) / total * 100) + '%';
+
+      // Dots
+      document.querySelectorAll('.progress-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+
+      // Slide number
+      slideNum.textContent = (current + 1) + ' / ' + total;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        goTo(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        goTo(current - 1);
+      }
+    });
+
+    // Touch support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        goTo(current + (diff > 0 ? 1 : -1));
+      }
+    });
+
+    // Init
+    goTo(0);
+  })();
+</script>
+
+</body>
+</html>
