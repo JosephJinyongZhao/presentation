@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI创造价值的系统框架</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f18;
+    --bg3: #14141f;
+    --gold: #c8a86e;
+    --gold-light: #e8d4a8;
+    --gold-dim: #8a7a5a;
+    --text: #e8e4dc;
+    --text-dim: #8a8680;
+    --text-muted: #5a5650;
+    --border: rgba(200, 168, 110, 0.15);
+    --blue: #6a9ec8;
+    --blue-dim: #4a7aa8;
+    --green: #6ac88a;
+    --green-dim: #4aa86a;
+    --purple: #a86ac8;
+    --teal: #6ac8a8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .slides { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  .slide-inner {
+    width: 100%; max-width: 1100px;
+    position: relative;
+  }
+
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.4rem, 4.5vw, 4.8rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+  }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3vw, 3.2rem);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.3;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.6em;
+  }
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1.4;
+    margin-bottom: 0.5em;
+  }
+  p, li {
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 300;
+  }
+  .text-sm { font-size: clamp(0.85rem, 1.2vw, 1.2rem); }
+  .text-xs { font-size: clamp(0.7rem, 0.95vw, 0.95rem); }
+  .gold { color: var(--gold); }
+  .gold-light { color: var(--gold-light); }
+  .dim { color: var(--text-dim); }
+  .muted { color: var(--text-muted); }
+  .bold { font-weight: 500; }
+  .blue { color: var(--blue); }
+  .green { color: var(--green); }
+  .purple { color: var(--purple); }
+  .teal { color: var(--teal); }
+
+  .title-slide .slide-inner { text-align: center; }
+  .title-slide .subtitle {
+    font-size: clamp(1rem, 1.4vw, 1.4rem);
+    color: var(--text-dim);
+    margin-top: 1.5em;
+    letter-spacing: 0.2em;
+    font-weight: 300;
+  }
+  .title-slide .date {
+    font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+    color: var(--text-muted);
+    margin-top: 3em;
+  }
+  .title-accent {
+    width: 60px; height: 2px;
+    background: var(--gold);
+    margin: 1.5em auto;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw;
+    margin-top: 1em;
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2vw;
+    margin-top: 1em;
+  }
+  .four-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1.5vw;
+    margin-top: 1em;
+  }
+  .six-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2vw;
+    margin-top: 1em;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.8em;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: rgba(200,168,110,0.3); }
+  .card .label {
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.6em;
+    font-weight: 500;
+  }
+  .card h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1rem, 1.3vw, 1.3rem);
+    color: var(--gold);
+    margin-bottom: 0.5em;
+    font-weight: 600;
+  }
+  .card p, .card li {
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    line-height: 1.6;
+  }
+  .card ul { list-style: none; padding: 0; }
+  .card li {
+    padding: 0.25em 0;
+    padding-left: 1em;
+    position: relative;
+  }
+  .card li::before {
+    content: '—';
+    position: absolute; left: 0;
+    color: var(--gold-dim);
+  }
+
+  .content-list { list-style: none; padding: 0; margin-top: 0.8em; }
+  .content-list li {
+    padding: 0.4em 0;
+    padding-left: 1.2em;
+    position: relative;
+  }
+  .content-list li::before {
+    content: '◆';
+    position: absolute; left: 0;
+    color: var(--gold-dim);
+    font-size: 0.6em;
+    top: 0.7em;
+  }
+  .content-list .highlight { color: var(--gold-light); font-weight: 500; }
+
+  .num-item {
+    display: flex; gap: 1em;
+    margin-bottom: 0.8em;
+    align-items: flex-start;
+  }
+  .num {
+    flex-shrink: 0;
+    width: 2em; height: 2em;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .num-item .content { padding-top: 0.2em; }
+
+  .diagram-flow {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1vw;
+    margin: 1.5em 0;
+    flex-wrap: wrap;
+  }
+  .diagram-node {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8em 1.2em;
+    text-align: center;
+    min-width: 100px;
+    font-size: clamp(0.7rem, 0.9vw, 0.9rem);
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+  .diagram-arrow {
+    color: var(--gold-dim);
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+  }
+
+  .insight-box {
+    background: linear-gradient(135deg, rgba(200,168,110,0.06), transparent);
+    border-left: 2px solid var(--gold);
+    padding: 1.2em 1.5em;
+    margin: 1em 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .insight-box p {
+    font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+    color: var(--gold-light);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .big-number {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.1;
+  }
+  .big-number-label {
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    color: var(--text-dim);
+    margin-top: 0.2em;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+    font-size: clamp(0.75rem, 1vw, 1rem);
+  }
+  .compare-table th {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: left;
+    padding: 0.6em 1em;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+  .compare-table td {
+    padding: 0.5em 1em;
+    border-bottom: 1px solid rgba(200,168,110,0.06);
+    color: var(--text);
+    font-weight: 300;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child { color: var(--gold-dim); font-weight: 400; }
+
+  .deco-line {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 1em 0;
+  }
+
+  .progress-bar {
+    position: fixed; bottom: 0; left: 0;
+    height: 2px; background: var(--gold);
+    transition: width 0.5s ease;
+    z-index: 100;
+  }
+  .progress-dots {
+    position: fixed; bottom: 2.5vh;
+    left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px;
+    z-index: 100;
+  }
+  .progress-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+  .progress-dot.active { background: var(--gold); width: 18px; border-radius: 3px; }
+  .progress-dot:hover { background: var(--gold-dim); }
+
+  .nav-hint {
+    position: fixed; bottom: 6vh; right: 3vw;
+    color: var(--text-muted);
+    font-size: clamp(0.6rem, 0.75vw, 0.75rem);
+    letter-spacing: 0.1em;
+    z-index: 100;
+    opacity: 0.5;
+  }
+  .slide-num {
+    position: fixed; bottom: 6vh; left: 3vw;
+    color: var(--text-muted);
+    font-size: clamp(0.6rem, 0.75vw, 0.75rem);
+    z-index: 100;
+  }
+
+  .slide.active .fade-in {
+    animation: fadeUp 0.7s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .fade-in-d1 { animation-delay: 0.1s; }
+  .slide.active .fade-in-d2 { animation-delay: 0.2s; }
+  .slide.active .fade-in-d3 { animation-delay: 0.3s; }
+  .slide.active .fade-in-d4 { animation-delay: 0.4s; }
+  .slide.active .fade-in-d5 { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .center-em { text-align: center; padding: 1.5em 0; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .two-col, .three-col, .four-col, .six-col { grid-template-columns: 1fr; gap: 1em; }
+    .diagram-flow { flex-direction: column; }
+    .diagram-arrow { transform: rotate(90deg); }
+    .progress-dots { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ==================== SLIDE 1: TITLE ==================== -->
+  <div class="slide title-slide active" data-index="0">
+    <div class="slide-inner">
+      <div class="fade-in">
+        <p class="dim text-xs" style="letter-spacing:0.3em;margin-bottom:2em;">硅基路逐风 · 探索指南</p>
+        <h1>AI创造价值<br>的系统框架</h1>
+        <div class="title-accent"></div>
+        <p style="font-size:clamp(1rem,1.6vw,1.6rem);color:var(--text-dim);line-height:1.6;max-width:700px;margin:0 auto;">
+          从"AI能做什么"到"AI如何创造价值"
+        </p>
+        <p class="subtitle">六层光谱 · 三维矩阵 · 五种方法 · 六条原则</p>
+        <p class="date">2026年7月7日</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2: 问题的起点 ==================== -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2 class="fade-in">问题的起点</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">我们默认假设"AI创造价值"，但真正需要追问的是：</p>
+      <div class="center-em fade-in fade-in-d2">
+        <p style="font-size:clamp(1.2rem,2vw,2rem);color:var(--gold-light);line-height:1.6;">
+          以什么方式？<br>
+          通过什么机制？<br>
+          在什么条件下？
+        </p>
+      </div>
+      <div class="deco-line fade-in fade-in-d3"></div>
+      <div class="two-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d4">
+          <div class="label">供给侧</div>
+          <h4>降本增效</h4>
+          <p class="text-sm dim">AI替代或辅助完成原本需要更多时间、金钱、人力的任务</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <div class="label">需求侧</div>
+          <h4>创造新需求</h4>
+          <p class="text-sm dim">让原本过于昂贵无法做的事变得可行，激发想象不到的需求</p>
+        </div>
+      </div>
+      <p class="text-sm dim fade-in fade-in-d5" style="margin-top:1em;text-align:center;">但二分法太静态、太抽象——中间有大量价值形态被跳过</p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: 六层光谱概览 ==================== -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2 class="fade-in">AI创造价值的六层光谱</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:0.5em;">从表层到深层，从易复制到高壁垒</p>
+      <div class="diagram-flow fade-in fade-in-d2" style="gap:0.5vw;">
+        <div class="diagram-node" style="border-color:var(--text-muted);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:70px;padding:0.5em 0.6em;">替代<br>执行</div>
+        <span class="diagram-arrow" style="font-size:clamp(0.7rem,0.9vw,0.9rem);">→</span>
+        <div class="diagram-node" style="border-color:var(--blue-dim);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:70px;padding:0.5em 0.6em;">能力<br>增强</div>
+        <span class="diagram-arrow" style="font-size:clamp(0.7rem,0.9vw,0.9rem);">→</span>
+        <div class="diagram-node" style="border-color:var(--gold-dim);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:70px;padding:0.5em 0.6em;">流程<br>重构</div>
+        <span class="diagram-arrow" style="font-size:clamp(0.7rem,0.9vw,0.9rem);">→</span>
+        <div class="diagram-node" style="border-color:var(--gold);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:70px;padding:0.5em 0.6em;">规模<br>突破</div>
+        <span class="diagram-arrow" style="font-size:clamp(0.7rem,0.9vw,0.9rem);">→</span>
+        <div class="diagram-node" style="border-color:var(--green);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:70px;padding:0.5em 0.6em;">新能力<br>创造</div>
+        <span class="diagram-arrow" style="font-size:clamp(0.7rem,0.9vw,0.9rem);">→</span>
+        <div class="diagram-node" style="border-color:var(--purple);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:70px;padding:0.5em 0.6em;">范式<br>转移</div>
+      </div>
+      <div class="deco-line fade-in fade-in-d3"></div>
+      <div class="insight-box fade-in fade-in-d4">
+        <p>越往深层，价值越大、壁垒越高、持续时间越长，但也越难识别和量化。一个健康的探索组织应该同时关注所有六层。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 4: 第一层 ==================== -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2 class="fade-in">第一层：替代执行</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">AI直接替代人类完成原本由人执行的任务</p>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>用AI的边际成本替代人的固定成本</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">典型场景</span> — 客服机器人、AI翻译、RPA数据录入</li>
+            <li><span class="highlight">价值度量</span> — 节省的人力成本 × 效率提升倍数</li>
+            <li><span class="highlight">局限</span> — 最表层，容易被复制，竞争壁垒最低</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">探索问题</div>
+          <p class="text-sm">哪些行业的哪些岗位，AI替代的成本优势已经超过人工？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 5: 第二层 ==================== -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2 class="fade-in">第二层：能力增强</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">AI不是替代人，而是让人做得更好、更快、更准</p>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>不是"AI做了什么"，而是"人+AI一起做了什么以前做不到的事"</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">典型场景</span> — 医生用AI辅助诊断、程序员用AI辅助编码</li>
+            <li><span class="highlight">价值度量</span> — 个人产出提升幅度 × 质量改善程度</li>
+            <li><span class="highlight">关键</span> — 人机协作，AI放大人类的能力边界</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">探索问题</div>
+          <p class="text-sm">在哪些领域，人+AI的组合效果显著超过单独的人或单独的AI？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 6: 第三层 ==================== -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2 class="fade-in">第三层：流程重构</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">AI改变了工作流程本身，而不仅仅是替代某个环节</p>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>不是"用AI做旧事"，而是"因为AI，事情可以换一种方式做"</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">典型场景</span> — AI同时生成文案+配图+排版；AI实时生成报告，人类验证调整</li>
+            <li><span class="highlight">价值度量</span> — 流程周期缩短 × 环节减少 × 质量提升</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">探索问题</div>
+          <p class="text-sm">哪些传统流程，如果从零开始用AI设计，会完全不同？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 7: 第四层 ==================== -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2 class="fade-in">第四层：规模突破</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">AI让原本无法规模化的事情变得可以规模化</p>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>过去"个性化=昂贵"，现在"个性化=可规模化"</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">典型场景</span> — 个性化教育（每个学生一个AI tutor）、个性化医疗、千人千面营销</li>
+            <li><span class="highlight">价值度量</span> — 服务覆盖人数 × 个性化程度</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">探索问题</div>
+          <p class="text-sm">哪些领域存在"大规模个性化"的需求，但传统技术无法满足？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 8: 第五层 ==================== -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2 class="fade-in">第五层：新能力创造</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">AI创造了人类原本不具备的能力</p>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>不是"做得更好"，而是"以前根本做不到"</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">典型场景</span> — 实时翻译100种语言、从蛋白质序列预测结构、文字生成视频</li>
+            <li><span class="highlight">价值度量</span> — 新能力的稀缺性 × 应用场景的广度</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">探索问题</div>
+          <p class="text-sm">AI最近解锁了哪些人类从未拥有过的能力？可以应用到什么领域？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 9: 第六层 ==================== -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <h2 class="fade-in">第六层：范式转移</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">AI改变了某个领域的基本假设和方法论</p>
+      <div class="insight-box fade-in fade-in-d2">
+        <p>因为AI的存在，整个领域的"正确做法"被重新定义</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <ul class="content-list fade-in fade-in-d3">
+            <li><span class="highlight">典型场景</span> — AlphaFold改变结构生物学：从"实验解结构"到"AI预测+验证"</li>
+            <li><span class="highlight">价值度量</span> — 范式转移的深度 × 影响的领域范围</li>
+          </ul>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">探索问题</div>
+          <p class="text-sm">哪些领域正在经历"因为AI，旧方法论被彻底抛弃"的时刻？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 10: 三维矩阵 ==================== -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <h2 class="fade-in">三维分析矩阵</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:0.5em;">价值深度 × 价值范围 × 价值类型</p>
+      <div class="three-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d2">
+          <div class="label">维度一</div>
+          <h4>价值深度</h4>
+          <p class="text-sm dim">六层光谱：替代执行 → 范式转移</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">维度二</div>
+          <h4>价值范围</h4>
+          <p class="text-sm dim">个人 → 团队 → 组织 → 行业 → 社会</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">维度三</div>
+          <h4>价值类型</h4>
+          <p class="text-sm dim">效率 · 质量 · 体验 · 创新 · 决策 · 连接</p>
+        </div>
+      </div>
+      <div class="insight-box fade-in fade-in-d5" style="margin-top:1em;">
+        <p>每个AI应用可以在这个矩阵中定位。<br>
+        AI客服 = 替代执行 × 组织 × 效率价值<br>
+        AI药物发现 = 新能力创造 × 行业 × 创新价值</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 11: 价值范围 ==================== -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <h2 class="fade-in">价值范围与价值类型</h2>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <h4 class="gold fade-in fade-in-d1" style="margin-bottom:0.5em;">价值范围</h4>
+          <table class="compare-table fade-in fade-in-d2">
+            <tr><td>个人</td><td>提升单个人的能力或效率</td></tr>
+            <tr><td>团队</td><td>改变团队协作方式</td></tr>
+            <tr><td>组织</td><td>重构组织运作模式</td></tr>
+            <tr><td>行业</td><td>改变行业竞争格局</td></tr>
+            <tr><td>社会</td><td>影响社会结构和运行方式</td></tr>
+          </table>
+        </div>
+        <div>
+          <h4 class="gold fade-in fade-in-d3" style="margin-bottom:0.5em;">价值类型</h4>
+          <table class="compare-table fade-in fade-in-d4">
+            <tr><td>效率价值</td><td>更快、更便宜、更省力</td></tr>
+            <tr><td>质量价值</td><td>更好、更准、更可靠</td></tr>
+            <tr><td>体验价值</td><td>更爽、更个性化、更有趣</td></tr>
+            <tr><td>创新价值</td><td>以前做不到的事</td></tr>
+            <tr><td>决策价值</td><td>更好的判断和选择</td></tr>
+            <tr><td>连接价值</td><td>打破信息孤岛和认知壁垒</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 12: 动态演化 ==================== -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <h2 class="fade-in">价值创造的动态演化</h2>
+      <p class="dim fade-in fade-in-d1 text-sm" style="margin-bottom:1em;">三条演化路径</p>
+      <div class="three-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d2">
+          <div class="label">路径一</div>
+          <h4>从表层到深层</h4>
+          <p class="text-sm dim">替代执行 → 能力增强 → 流程重构 → 规模突破 → 新能力 → 范式转移</p>
+          <p class="text-xs gold" style="margin-top:0.5em;">不要低估起点，它可能正在演化</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">路径二</div>
+          <h4>从点到面</h4>
+          <p class="text-sm dim">个人工具 → 团队协作 → 组织变革 → 行业重塑 → 社会影响</p>
+          <p class="text-xs gold" style="margin-top:0.5em;">关注扩展潜力</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">路径三</div>
+          <h4>价值类型叠加</h4>
+          <p class="text-sm dim">先解决效率 → 再提升质量 → 优化体验 → 创造新可能</p>
+          <p class="text-xs gold" style="margin-top:0.5em;">看未来可能叠加的价值</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 13: 五种方法 ==================== -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner">
+      <h2 class="fade-in">五种探索方法</h2>
+      <div class="six-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d1">
+          <div class="label">方法一</div>
+          <h4>扫描法</h4>
+          <p class="text-sm dim">行业×能力×场景交叉扫描，确保不遗漏</p>
+          <p class="text-xs gold" style="margin-top:0.3em;">每月一次</p>
+        </div>
+        <div class="card fade-in fade-in-d2">
+          <div class="label">方法二</div>
+          <h4>挖掘法</h4>
+          <p class="text-sm dim">追问核心瓶颈，用三维矩阵定位</p>
+          <p class="text-xs gold" style="margin-top:0.3em;">每两周一次</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">方法三</div>
+          <h4>案例法</h4>
+          <p class="text-sm dim">拆解真实案例，提炼可迁移规律</p>
+          <p class="text-xs gold" style="margin-top:0.3em;">每周1-2个</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">方法四</div>
+          <h4>实验法</h4>
+          <p class="text-sm dim">亲自试用AI工具，获得一手感知</p>
+          <p class="text-xs gold" style="margin-top:0.3em;">每周1-2个</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <div class="label">方法五</div>
+          <h4>连接法</h4>
+          <p class="text-sm dim">跨领域联想，迁移解决方案</p>
+          <p class="text-xs gold" style="margin-top:0.3em;">每次讨论加入</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 14: 六条原则 ==================== -->
+  <div class="slide" data-index="13">
+    <div class="slide-inner">
+      <h2 class="fade-in">探索组织的六条运作原则</h2>
+      <div class="three-col" style="margin-top:1em;">
+        <div class="card fade-in fade-in-d1">
+          <div class="label">原则一</div>
+          <h4>探索与变现分离</h4>
+          <p class="text-sm dim">核心层只做探索，商业转化另设独立层</p>
+        </div>
+        <div class="card fade-in fade-in-d2">
+          <div class="label">原则二</div>
+          <h4>输出即知识</h4>
+          <p class="text-sm dim">每次探索产出结构化知识文档，集中管理</p>
+        </div>
+        <div class="card fade-in fade-in-d3">
+          <div class="label">原则三</div>
+          <h4>多样性输入</h4>
+          <p class="text-sm dim">不只技术，也看商业、政策、社会、全球</p>
+        </div>
+        <div class="card fade-in fade-in-d4">
+          <div class="label">原则四</div>
+          <h4>框架迭代</h4>
+          <p class="text-sm dim">每季度复盘框架本身，框架是工具不是真理</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <div class="label">原则五</div>
+          <h4>定期复盘</h4>
+          <p class="text-sm dim">每周分享、每月深度、每季复盘、每半年调整</p>
+        </div>
+        <div class="card fade-in fade-in-d5">
+          <div class="label">原则六</div>
+          <h4>保持"不知道"</h4>
+          <p class="text-sm dim">对每个结论保持怀疑，主动寻找反例</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 15: 探索节奏 ==================== -->
+  <div class="slide" data-index="14">
+    <div class="slide-inner">
+      <h2 class="fade-in">探索节奏</h2>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <h4 class="gold fade-in fade-in-d1" style="margin-bottom:0.5em;">每周</h4>
+          <table class="compare-table fade-in fade-in-d2">
+            <tr><td>周一</td><td>扫描本周AI动态</td><td class="dim">简报（轮值）</td></tr>
+            <tr><td>周三</td><td>深度聚焦一个案例</td><td class="dim">案例分析文档</td></tr>
+            <tr><td>周五</td><td>分享本周试用工具</td><td class="dim">工具评测记录</td></tr>
+          </table>
+        </div>
+        <div>
+          <h4 class="gold fade-in fade-in-d3" style="margin-bottom:0.5em;">每月</h4>
+          <table class="compare-table fade-in fade-in-d4">
+            <tr><td>第一周</td><td>行业扫描</td><td class="dim">AI价值地图</td></tr>
+            <tr><td>第二周</td><td>能力扫描</td><td class="dim">能力价值分析</td></tr>
+            <tr><td>第三周</td><td>案例深度拆解</td><td class="dim">研究报告</td></tr>
+            <tr><td>第四周</td><td>月度总结</td><td class="dim">探索报告</td></tr>
+          </table>
+        </div>
+      </div>
+      <p class="text-sm dim fade-in fade-in-d5" style="margin-top:1em;text-align:center;">每季：框架复盘 + 方向评估 + 知识库整理</p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 16: 结语 ==================== -->
+  <div class="slide" data-index="15">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-in">
+        <div style="width:40px;height:2px;background:var(--gold);margin:0 auto 2em;"></div>
+        <p style="font-size:clamp(1.2rem,1.8vw,1.8rem);color:var(--gold-light);line-height:1.8;max-width:800px;margin:0 auto;">
+          硅基路逐风的使命不是<br>
+          "找到AI的终极答案"，<br><br>
+          而是建立一个<br>
+          <span class="gold">持续理解AI价值创造的认知系统</span>。<br><br>
+          这个系统本身就在创造价值——<br>
+          <span class="gold">在不确定性中识别方向的判断力</span>。
+        </p>
+        <div class="title-accent" style="margin:2em auto;"></div>
+        <p class="dim text-sm">保持探索，保持好奇，保持"不知道"的勇气</p>
+        <p class="muted text-xs" style="margin-top:2em;">硅基路逐风 · 2026年7月7日</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Progress -->
+<div class="progress-bar" id="progressBar"></div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="slide-num" id="slideNum"></div>
+<div class="nav-hint">←  →  翻页</div>
+
+<script>
+  (function() {
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+
+    const progressBar = document.getElementById('progressBar');
+    const slideNum = document.getElementById('slideNum');
+    const dotsContainer = document.getElementById('progressDots');
+
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    function goTo(index) {
+      if (index < 0 || index >= total) return;
+      slides[current].classList.remove('active');
+      slides[index].classList.add('active');
+      current = index;
+      progressBar.style.width = ((current + 1) / total * 100) + '%';
+      document.querySelectorAll('.progress-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+      slideNum.textContent = (current + 1) + ' / ' + total;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        goTo(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        goTo(current - 1);
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        goTo(current + (diff > 0 ? 1 : -1));
+      }
+    });
+
+    goTo(0);
+  })();
+</script>
+
+</body>
+</html>
