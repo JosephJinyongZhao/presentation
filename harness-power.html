@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness的力量</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f18;
+    --bg3: #14141f;
+    --gold: #c8a86e;
+    --gold-light: #e8d4a8;
+    --gold-dim: #8a7a5a;
+    --text: #e8e4dc;
+    --text-dim: #8a8680;
+    --text-muted: #5a5650;
+    --border: rgba(200,168,110,0.15);
+    --blue: #6a9ec8;
+    --blue-dim: #4a7aa8;
+    --green: #6ac88a;
+    --green-dim: #4aa86a;
+    --purple: #a86ac8;
+    --teal: #6ac8a8;
+    --red: #c86a6a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body {
+    width:100%; height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans SC',sans-serif;
+    overflow:hidden;
+    user-select:none;
+  }
+  .slides { position:relative; width:100vw; height:100vh; }
+  .slide {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    justify-content:center; align-items:center;
+    padding:6vh 8vw;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .slide.active { opacity:1; pointer-events:auto; }
+  .slide-inner { width:100%; max-width:1100px; position:relative; }
+
+  h1 {
+    font-family:'Noto Serif SC',serif;
+    font-size:clamp(2.4rem,4.5vw,4.8rem);
+    font-weight:900;
+    color:var(--gold);
+    line-height:1.25;
+    letter-spacing:0.04em;
+  }
+  h2 {
+    font-family:'Noto Serif SC',serif;
+    font-size:clamp(1.6rem,3vw,3.2rem);
+    font-weight:700;
+    color:var(--gold);
+    line-height:1.3;
+    margin-bottom:0.6em;
+  }
+  h3 {
+    font-family:'Noto Serif SC',serif;
+    font-size:clamp(1.1rem,1.8vw,1.8rem);
+    font-weight:600;
+    color:var(--gold-light);
+    line-height:1.4;
+    margin-bottom:0.5em;
+  }
+  p, li {
+    font-size:clamp(1rem,1.6vw,1.6rem);
+    line-height:1.7;
+    color:var(--text);
+    font-weight:300;
+  }
+  .text-sm { font-size:clamp(0.85rem,1.2vw,1.2rem); }
+  .text-xs { font-size:clamp(0.7rem,0.95vw,0.95rem); }
+  .gold { color:var(--gold); }
+  .gold-light { color:var(--gold-light); }
+  .dim { color:var(--text-dim); }
+  .muted { color:var(--text-muted); }
+  .bold { font-weight:500; }
+  .blue { color:var(--blue); }
+  .green { color:var(--green); }
+  .purple { color:var(--purple); }
+  .teal { color:var(--teal); }
+  .red { color:var(--red); }
+
+  .title-slide .slide-inner { text-align:center; }
+  .title-slide .subtitle {
+    font-size:clamp(1rem,1.4vw,1.4rem);
+    color:var(--text-dim);
+    margin-top:1.5em;
+    letter-spacing:0.2em;
+    font-weight:300;
+  }
+  .title-slide .date {
+    font-size:clamp(0.75rem,0.9vw,0.9rem);
+    color:var(--text-muted);
+    margin-top:3em;
+  }
+  .title-accent {
+    width:60px; height:2px;
+    background:var(--gold);
+    margin:1.5em auto;
+  }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:3vw; margin-top:1em; }
+  .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2vw; margin-top:1em; }
+  .four-col { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1.5vw; margin-top:1em; }
+
+  .card {
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.8em;
+    transition:border-color 0.3s;
+  }
+  .card:hover { border-color:rgba(200,168,110,0.3); }
+  .card .label {
+    font-size:clamp(0.7rem,0.85vw,0.85rem);
+    color:var(--gold-dim);
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    margin-bottom:0.6em;
+    font-weight:500;
+  }
+  .card h4 {
+    font-family:'Noto Serif SC',serif;
+    font-size:clamp(1rem,1.3vw,1.3rem);
+    color:var(--gold);
+    margin-bottom:0.5em;
+    font-weight:600;
+  }
+  .card p, .card li {
+    font-size:clamp(0.8rem,1vw,1rem);
+    line-height:1.6;
+  }
+  .card ul { list-style:none; padding:0; }
+  .card li { padding:0.25em 0; padding-left:1em; position:relative; }
+  .card li::before { content:'—'; position:absolute; left:0; color:var(--gold-dim); }
+
+  .content-list { list-style:none; padding:0; margin-top:0.8em; }
+  .content-list li {
+    padding:0.4em 0;
+    padding-left:1.2em;
+    position:relative;
+  }
+  .content-list li::before {
+    content:'◆';
+    position:absolute; left:0;
+    color:var(--gold-dim);
+    font-size:0.6em;
+    top:0.7em;
+  }
+  .content-list .highlight { color:var(--gold-light); font-weight:500; }
+
+  .num-item { display:flex; gap:1em; margin-bottom:0.8em; align-items:flex-start; }
+  .num {
+    flex-shrink:0;
+    width:2em; height:2em;
+    border-radius:50%;
+    border:1px solid var(--gold-dim);
+    display:flex; align-items:center; justify-content:center;
+    font-size:clamp(0.75rem,0.9vw,0.9rem);
+    color:var(--gold);
+    font-weight:500;
+  }
+  .num-item .content { padding-top:0.2em; }
+
+  .diagram-flow {
+    display:flex; align-items:center; justify-content:center;
+    gap:1vw; margin:1.5em 0; flex-wrap:wrap;
+  }
+  .diagram-node {
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:0.8em 1.2em;
+    text-align:center;
+    min-width:100px;
+    font-size:clamp(0.7rem,0.9vw,0.9rem);
+    color:var(--gold-light);
+    font-weight:500;
+  }
+  .diagram-arrow { color:var(--gold-dim); font-size:clamp(1rem,1.2vw,1.2rem); }
+
+  .insight-box {
+    background:linear-gradient(135deg,rgba(200,168,110,0.06),transparent);
+    border-left:2px solid var(--gold);
+    padding:1.2em 1.5em;
+    margin:1em 0;
+    border-radius:0 8px 8px 0;
+  }
+  .insight-box p {
+    font-size:clamp(0.9rem,1.3vw,1.3rem);
+    color:var(--gold-light);
+    font-weight:400;
+    line-height:1.6;
+  }
+
+  .big-number {
+    font-family:'Noto Serif SC',serif;
+    font-size:clamp(2rem,3.5vw,3.5rem);
+    font-weight:900;
+    color:var(--gold);
+    line-height:1.1;
+  }
+  .big-number-label {
+    font-size:clamp(0.7rem,0.85vw,0.85rem);
+    color:var(--text-dim);
+    margin-top:0.2em;
+  }
+
+  .compare-table { width:100%; border-collapse:collapse; margin-top:1em; font-size:clamp(0.75rem,1vw,1rem); }
+  .compare-table th {
+    font-family:'Noto Serif SC',serif;
+    font-weight:600; color:var(--gold);
+    text-align:left; padding:0.6em 1em;
+    border-bottom:1px solid var(--border);
+    letter-spacing:0.05em;
+  }
+  .compare-table td {
+    padding:0.5em 1em;
+    border-bottom:1px solid rgba(200,168,110,0.06);
+    color:var(--text); font-weight:300;
+  }
+  .compare-table tr:last-child td { border-bottom:none; }
+  .compare-table td:first-child { color:var(--gold-dim); font-weight:400; }
+
+  .deco-line { width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:1em 0; }
+
+  .progress-bar {
+    position:fixed; bottom:0; left:0;
+    height:2px; background:var(--gold);
+    transition:width 0.5s ease;
+    z-index:100;
+  }
+  .progress-dots {
+    position:fixed; bottom:2.5vh;
+    left:50%; transform:translateX(-50%);
+    display:flex; gap:6px;
+    z-index:100;
+  }
+  .progress-dot {
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--text-muted);
+    transition:all 0.4s;
+    cursor:pointer;
+  }
+  .progress-dot.active { background:var(--gold); width:18px; border-radius:3px; }
+  .progress-dot:hover { background:var(--gold-dim); }
+
+  .nav-hint {
+    position:fixed; bottom:6vh; right:3vw;
+    color:var(--text-muted);
+    font-size:clamp(0.6rem,0.75vw,0.75rem);
+    letter-spacing:0.1em;
+    z-index:100;
+    opacity:0.5;
+  }
+  .slide-num {
+    position:fixed; bottom:6vh; left:3vw;
+    color:var(--text-muted);
+    font-size:clamp(0.6rem,0.75vw,0.75rem);
+    z-index:100;
+  }
+
+  .slide.active .fade-in { animation:fadeUp 0.7s ease forwards; opacity:0; }
+  .slide.active .d1 { animation-delay:0.1s; }
+  .slide.active .d2 { animation-delay:0.2s; }
+  .slide.active .d3 { animation-delay:0.3s; }
+  .slide.active .d4 { animation-delay:0.4s; }
+  .slide.active .d5 { animation-delay:0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .center-em { text-align:center; padding:1.5em 0; }
+
+  @media (max-width:768px) {
+    .slide { padding:4vh 5vw; }
+    .two-col, .three-col, .four-col { grid-template-columns:1fr; gap:1em; }
+    .diagram-flow { flex-direction:column; }
+    .diagram-arrow { transform:rotate(90deg); }
+    .progress-dots { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide title-slide active" data-index="0">
+    <div class="slide-inner">
+      <div class="fade-in">
+        <p class="dim text-xs" style="letter-spacing:0.3em;margin-bottom:2em;">硅基路逐风 · 探索笔记</p>
+        <h1>Harness的力量</h1>
+        <div class="title-accent"></div>
+        <p style="font-size:clamp(1rem,1.6vw,1.6rem);color:var(--text-dim);line-height:1.6;max-width:700px;margin:0 auto;">
+          AI价值实现的关键瓶颈<br>从模型转向架构
+        </p>
+        <p class="subtitle">DeepSeek-V4-Pro：3.5% → 80% · 同样的权重</p>
+        <p class="date">2026年7月7日</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: 反直觉发现 -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2 class="fade-in">一个反直觉的发现</h2>
+      <div class="center-em fade-in d1">
+        <div class="big-number">3.5%</div>
+        <div class="big-number-label">DeepSeek-V4-Pro 基础分</div>
+      </div>
+      <div class="diagram-flow fade-in d2">
+        <div class="diagram-node" style="border-color:var(--red);">裸模型</div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node" style="border-color:var(--gold-dim);">3.5%</div>
+        <span class="diagram-arrow" style="font-size:clamp(1.5rem,2vw,2rem);">⬇</span>
+        <div class="diagram-node" style="border-color:var(--green);">+ Harness</div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node" style="border-color:var(--green);">80%</div>
+      </div>
+      <div class="insight-box fade-in d3">
+        <p>模型本身的能力可能早就够了，瓶颈在于"怎么把模型的能力正确地调动出来"。开源模型不是不行，是"用不出来"。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: 什么是Harness -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2 class="fade-in">什么是Harness？</h2>
+      <p class="dim fade-in d1 text-sm" style="margin-bottom:0.5em;">围绕模型构建的"外层"系统——不改变权重，但决定能力能否被释放</p>
+      <div class="insight-box fade-in d2">
+        <p>模型是引擎，harness是变速箱、传动轴、方向盘和导航系统。引擎决定上限，但harness决定实际输出。</p>
+      </div>
+      <div class="four-col" style="margin-top:1em;">
+        <div class="card fade-in d3">
+          <div class="label">组件一</div>
+          <h4>任务分解</h4>
+          <p class="text-sm dim">将复杂任务拆解为可执行的子任务</p>
+        </div>
+        <div class="card fade-in d4">
+          <div class="label">组件二</div>
+          <h4>工具调用编排</h4>
+          <p class="text-sm dim">决定何时调用什么工具、如何组合结果</p>
+        </div>
+        <div class="card fade-in d5">
+          <div class="label">组件三</div>
+          <h4>自我反思/自检</h4>
+          <p class="text-sm dim">中间步骤检查输出质量，必要时回溯修正</p>
+        </div>
+        <div class="card fade-in d5">
+          <div class="label">组件四</div>
+          <h4>记忆管理</h4>
+          <p class="text-sm dim">区分短期和长期记忆，保持上下文连贯</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 模型×Harness公式 -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2 class="fade-in">模型 × Harness = 实际表现</h2>
+      <div class="two-col" style="margin-top:1em;">
+        <div class="card fade-in d1" style="border-color:rgba(200,106,106,0.3);">
+          <div class="label" style="color:var(--red);">传统认知</div>
+          <div class="center-em">
+            <div class="big-number" style="font-size:clamp(1.5rem,2.5vw,2.5rem);">90% × 100%</div>
+            <div class="big-number-label">模型能力 → 实际表现</div>
+          </div>
+          <p class="text-sm dim">假设模型能力直接决定表现</p>
+        </div>
+        <div class="card fade-in d2" style="border-color:rgba(106,200,138,0.3);">
+          <div class="label" style="color:var(--green);">更接近现实</div>
+          <div class="center-em">
+            <div class="big-number" style="font-size:clamp(1.5rem,2.5vw,2.5rem);">90% × 30% = 27%</div>
+            <div class="big-number-label">模型能力 × Harness效率</div>
+          </div>
+          <p class="text-sm dim">同样的模型，harness效率从30%到90%，表现从27%到81%</p>
+        </div>
+      </div>
+      <div class="insight-box fade-in d3">
+        <p>未来12-24个月，AI实际表现的最大增量可能不来自更好的模型，而来自更好的harness。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 为什么被低估 -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2 class="fade-in">为什么Harness被低估？</h2>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <h4 class="gold fade-in d1" style="margin-bottom:0.5em;">看得见的竞争</h4>
+          <ul class="content-list fade-in d2">
+            <li>模型参数规模（175B → 1T）</li>
+            <li>训练数据质量</li>
+            <li>基准测试分数</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="gold fade-in d3" style="margin-bottom:0.5em;">看不见的竞争</h4>
+          <ul class="content-list fade-in d4">
+            <li><span class="highlight">Harness设计</span> — 不在benchmark里</li>
+            <li><span class="highlight">工具编排</span> — 不在宣传稿里</li>
+            <li><span class="highlight">错误恢复</span> — 只在实际体验中</li>
+          </ul>
+        </div>
+      </div>
+      <div class="deco-line fade-in d5"></div>
+      <p class="fade-in d5 gold" style="text-align:center;">模型能力的边际收益在递减，但harness的优化空间才刚刚打开。</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 六条原则 -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2 class="fade-in">Harness设计的六条核心原则</h2>
+      <div class="three-col" style="margin-top:1em;">
+        <div class="card fade-in d1">
+          <div class="label">原则一</div>
+          <h4>任务分解优先</h4>
+          <p class="text-sm dim">在把任务交给模型之前，先把它拆解好。模型在简单任务上的表现远好于复杂任务。</p>
+        </div>
+        <div class="card fade-in d2">
+          <div class="label">原则二</div>
+          <h4>工具调用是放大器</h4>
+          <p class="text-sm dim">没有工具的模型只是"知识回忆器"。有工具的模型是"问题解决器"。</p>
+        </div>
+        <div class="card fade-in d3">
+          <div class="label">原则三</div>
+          <h4>自我反思保质量</h4>
+          <p class="text-sm dim">在关键节点插入自检步骤，大部分错误可以在内部被捕获和修正。</p>
+        </div>
+        <div class="card fade-in d4">
+          <div class="label">原则四</div>
+          <h4>记忆管理定连续性</h4>
+          <p class="text-sm dim">区分短期和长期记忆，有记忆的系统越用越好。</p>
+        </div>
+        <div class="card fade-in d5">
+          <div class="label">原则五</div>
+          <h4>错误恢复定鲁棒性</h4>
+          <p class="text-sm dim">一个80%正确但能自动恢复的系统，好过完美但一错就崩溃的系统。</p>
+        </div>
+        <div class="card fade-in d5">
+          <div class="label">原则六</div>
+          <h4>成本意识驱动架构</h4>
+          <p class="text-sm dim">用1/7的成本达到顶级闭源模型的效果，是harness设计的核心目标。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 三层结构 -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2 class="fade-in">Harness的三层结构</h2>
+      <p class="dim fade-in d1 text-sm" style="margin-bottom:0.5em;">Cursor、Claude Code是具体实现，不是概念本身</p>
+      <div class="card fade-in d2" style="border-color:var(--purple);text-align:center;padding:1em;">
+        <div class="label" style="color:var(--purple);">抽象层 · Harness模式</div>
+        <p class="gold">"围绕模型构建外层系统"的设计哲学</p>
+      </div>
+      <div class="diagram-arrow" style="text-align:center;margin:0.3em 0;">⬇</div>
+      <div class="card fade-in d3" style="border-color:var(--blue);text-align:center;padding:1em;">
+        <div class="label" style="color:var(--blue);">设计层 · 架构模式</div>
+        <p class="gold">Agent架构 · ReAct · 工具编排 · 自我反思</p>
+      </div>
+      <div class="diagram-arrow" style="text-align:center;margin:0.3em 0;">⬇</div>
+      <div class="card fade-in d4" style="border-color:var(--green);text-align:center;padding:1em;">
+        <div class="label" style="color:var(--green);">实现层 · 产品</div>
+        <p class="gold">Cursor · Claude Code · Codex · Cline · AutoGPT</p>
+      </div>
+      <div class="insight-box fade-in d5">
+        <p>把Cursor等同于"harness"，就像把特斯拉等同于"电动车技术"。只有抽象层的认知才是真正可迁移的。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 竞争逻辑变化 -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2 class="fade-in">竞争逻辑的变化</h2>
+      <div class="diagram-flow fade-in d1" style="gap:0.8vw;">
+        <div class="diagram-node" style="border-color:var(--red);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:80px;">模型竞争期<br><span class="text-xs dim">参数 · 数据</span></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node" style="border-color:var(--gold);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:80px;">Harness竞争期<br><span class="text-xs dim">架构 · 编排</span></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-node" style="border-color:var(--green);font-size:clamp(0.55rem,0.7vw,0.7rem);min-width:80px;">生态竞争期<br><span class="text-xs dim">平台 · 网络</span></div>
+      </div>
+      <div class="deco-line fade-in d2"></div>
+      <p class="fade-in d3 gold" style="text-align:center;margin-top:1em;">我们正处于从"模型竞争期"到"Harness竞争期"的转折点。</p>
+      <div class="two-col" style="margin-top:1em;">
+        <div class="card fade-in d4">
+          <div class="label">之前</div>
+          <h4>模型能力决定一切</h4>
+          <p class="text-sm dim">谁有最大的模型、最好的数据，谁就赢</p>
+        </div>
+        <div class="card fade-in d5">
+          <div class="label">之后</div>
+          <h4>Harness决定实际表现</h4>
+          <p class="text-sm dim">谁的工具编排、任务分解做得更好，谁就有竞争优势</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 成本结构 -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <h2 class="fade-in">成本结构的变化</h2>
+      <div class="insight-box fade-in d1">
+        <p>如果1/7的成本能达到顶级闭源模型的效果，那未来的竞争不在模型本身，而在谁的harness设计得好。</p>
+      </div>
+      <div class="two-col" style="margin-top:1em;">
+        <div>
+          <h4 class="gold fade-in d2" style="margin-bottom:0.5em;">新成本公式</h4>
+          <p class="fade-in d3" style="font-size:clamp(0.85rem,1.2vw,1.2rem);">
+            总成本 = <span class="gold">模型调用</span> + <span class="gold">Harness开发</span> + <span class="gold">维护</span>
+          </p>
+          <p class="text-sm dim fade-in d4" style="margin-top:0.5em;">Harness成熟后，开发成本可能成为新的主要成本项</p>
+        </div>
+        <div>
+          <h4 class="gold fade-in d5" style="margin-bottom:0.5em;">对创业公司的意义</h4>
+          <ul class="content-list fade-in d5">
+            <li>模型不再是护城河</li>
+            <li>Harness设计是新的护城河</li>
+            <li>垂直领域harness可能更有价值</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: 探索重点转移 -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <h2 class="fade-in">对探索组织的启示</h2>
+      <table class="compare-table fade-in d1">
+        <tr><th>之前</th><th>之后</th></tr>
+        <tr><td>关注哪个模型最强</td><td>关注哪个harness最成熟</td></tr>
+        <tr><td>比较模型基准分数</td><td>比较实际任务完成率</td></tr>
+        <tr><td>追求最新最强模型</td><td>追求最优模型+harness组合</td></tr>
+        <tr><td>模型能力决定一切</td><td>Harness决定实际表现</td></tr>
+      </table>
+      <div class="insight-box fade-in d2" style="margin-top:1em;">
+        <p>评估AI工具时，问三个问题：<br>
+        ① 它用了什么模型？<br>
+        ② 它围绕模型搭了什么外层系统？<br>
+        ③ 这些外层系统中有哪些是可迁移的设计模式？</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: 结语 -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-in">
+        <div style="width:40px;height:2px;background:var(--gold);margin:0 auto 2em;"></div>
+        <p style="font-size:clamp(1.2rem,1.8vw,1.8rem);color:var(--gold-light);line-height:1.8;max-width:800px;margin:0 auto;">
+          <span class="gold">模型决定了"能不能"，</span><br>
+          <span class="gold">Harness决定了"好不好"。</span><br><br>
+          在AI能力已经足够强大的今天，<br>
+          "能不能"的问题正在被解决，<br>
+          <span class="gold">"好不好"的问题才刚刚开始。</span>
+        </p>
+        <div class="title-accent" style="margin:2em auto;"></div>
+        <p class="dim text-sm">模型是引擎，Harness是变速箱。引擎再强，没有好的变速箱，也跑不快。</p>
+        <p class="muted text-xs" style="margin-top:2em;">硅基路逐风 · 2026年7月7日</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="slide-num" id="slideNum"></div>
+<div class="nav-hint">←  →  翻页</div>
+
+<script>
+  (function() {
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+    const progressBar = document.getElementById('progressBar');
+    const slideNum = document.getElementById('slideNum');
+    const dotsContainer = document.getElementById('progressDots');
+
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    function goTo(index) {
+      if (index < 0 || index >= total) return;
+      slides[current].classList.remove('active');
+      slides[index].classList.add('active');
+      current = index;
+      progressBar.style.width = ((current + 1) / total * 100) + '%';
+      document.querySelectorAll('.progress-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+      slideNum.textContent = (current + 1) + ' / ' + total;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault(); goTo(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault(); goTo(current - 1);
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+    });
+
+    goTo(0);
+  })();
+</script>
+
+</body>
+</html>
