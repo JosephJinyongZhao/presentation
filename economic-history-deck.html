@@ -8,16 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1a1a2e;
-    --ink-light: #2d2d4a;
+    --ink: #0f0f1f;
+    --ink-mid: #1e1e38;
     --gold: #c9a84c;
     --gold-light: #e8d48b;
     --cream: #f5f0e8;
     --paper: #faf8f3;
     --text: #2c2c3a;
     --text-light: #6b6b7a;
-    --accent-red: #b8453a;
-    --shadow: rgba(26,26,46,0.08);
+    --accent: #b8453a;
+    --shadow: rgba(15,15,31,0.12);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -27,6 +27,7 @@
     color: var(--text);
     overflow: hidden;
     height: 100vh;
+    width: 100vw;
   }
   .slides-container {
     position: relative;
@@ -42,11 +43,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 60px 80px;
+    padding: 5vh 6vw;
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
     transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     pointer-events: none;
+    text-align: center;
   }
   .slide.active {
     opacity: 1;
@@ -55,191 +57,208 @@
   }
   .slide.exit {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-40px);
   }
 
-  /* Slide backgrounds */
+  /* Title slide */
   .slide-title {
-    background: linear-gradient(135deg, var(--ink) 0%, #2a2a4a 100%);
+    background: linear-gradient(135deg, var(--ink) 0%, #25254a 100%);
     color: var(--cream);
-    text-align: center;
+  }
+  .slide-title .gold-bar {
+    width: 80px; height: 4px;
+    background: var(--gold);
+    margin-bottom: 40px;
+    border-radius: 2px;
   }
   .slide-title h1 {
     font-family: 'Noto Serif SC', serif;
-    font-size: 3.2rem;
+    font-size: clamp(3rem, 5vw, 5rem);
     font-weight: 900;
-    letter-spacing: 0.08em;
-    margin-bottom: 20px;
-    line-height: 1.3;
+    letter-spacing: 0.1em;
+    line-height: 1.35;
+    margin-bottom: 24px;
   }
   .slide-title .subtitle {
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
     color: var(--gold-light);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     font-weight: 300;
-    margin-bottom: 40px;
+    margin-bottom: 48px;
+    max-width: 80%;
   }
   .slide-title .meta {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
-    letter-spacing: 0.1em;
-  }
-  .slide-title .gold-line {
-    width: 60px; height: 3px;
-    background: var(--gold);
-    margin: 20px auto;
+    font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
   }
 
+  /* Section slides */
   .slide-section {
-    background: var(--paper);
-    text-align: left;
-    align-items: flex-start;
+    text-align: center;
+    justify-content: center;
   }
-  .slide-section .section-number {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 0.85rem;
+  .slide-section .section-label {
+    font-size: clamp(0.75rem, 1vw, 1rem);
     color: var(--gold);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     font-weight: 600;
   }
   .slide-section h2 {
     font-family: 'Noto Serif SC', serif;
-    font-size: 2rem;
+    font-size: clamp(2rem, 3.6vw, 3.6rem);
     font-weight: 700;
     color: var(--ink);
-    margin-bottom: 24px;
-    line-height: 1.3;
-    position: relative;
-    padding-bottom: 16px;
+    line-height: 1.4;
+    margin-bottom: 28px;
+    max-width: 85%;
   }
-  .slide-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 40px; height: 3px;
-    background: var(--gold);
-  }
-  .slide-section .content {
-    max-width: 900px;
-    width: 100%;
-  }
-  .slide-section .content p {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    margin-bottom: 12px;
+  .slide-section .body-text {
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+    line-height: 1.7;
+    max-width: 80%;
+    margin-bottom: 16px;
     color: var(--text);
   }
-  .slide-section .content .highlight {
-    color: var(--accent-red);
-    font-weight: 500;
+  .slide-section .body-text.small {
+    font-size: clamp(0.95rem, 1.4vw, 1.4rem);
   }
-  .slide-section .content .quote {
-    border-left: 3px solid var(--gold);
-    padding-left: 20px;
-    font-style: italic;
+  .slide-section .highlight-text {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .slide-section .quote-text {
+    font-size: clamp(0.95rem, 1.5vw, 1.5rem);
     color: var(--text-light);
-    margin: 16px 0;
-    font-size: 0.95rem;
+    font-style: italic;
+    max-width: 75%;
+    line-height: 1.6;
+    margin-top: 12px;
+    padding: 16px 32px;
+    border-top: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
   }
-  .slide-section .content ul {
-    list-style: none;
-    padding: 0;
+  .slide-section .item-list {
+    text-align: left;
+    max-width: 75%;
+    margin: 0 auto;
   }
-  .slide-section .content ul li {
-    position: relative;
-    padding-left: 24px;
+  .slide-section .item-list .item {
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    line-height: 1.6;
     margin-bottom: 10px;
-    line-height: 1.7;
-    font-size: 1rem;
+    padding-left: 28px;
+    position: relative;
   }
-  .slide-section .content ul li::before {
+  .slide-section .item-list .item::before {
     content: '◆';
     position: absolute;
     left: 0;
     color: var(--gold);
-    font-size: 0.7rem;
-    top: 4px;
+    font-size: 0.7em;
+    top: 2px;
   }
-  .slide-section .content .grid-2 {
+
+  /* Dark section */
+  .slide-dark {
+    background: linear-gradient(135deg, var(--ink) 0%, #1a1a35 100%);
+    color: var(--cream);
+  }
+  .slide-dark h2 { color: var(--cream); }
+  .slide-dark .body-text { color: rgba(255,255,255,0.88); }
+  .slide-dark .body-text.small { color: rgba(255,255,255,0.7); }
+  .slide-dark .quote-text { color: var(--gold-light); border-color: var(--gold); }
+  .slide-dark .item-list .item { color: rgba(255,255,255,0.88); }
+  .slide-dark .item-list .item::before { color: var(--gold); }
+
+  /* Grid layout for comparison slides */
+  .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin: 20px 0;
+    gap: 24px;
+    max-width: 80%;
+    width: 100%;
+    margin-top: 12px;
   }
-  .slide-section .content .card {
-    background: white;
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 2px 12px var(--shadow);
+  .grid-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 20px var(--shadow);
+    text-align: center;
   }
-  .slide-section .content .card h4 {
-    font-size: 1rem;
-    color: var(--ink);
+  .slide-dark .grid-card {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(8px);
+  }
+  .grid-card .card-title {
+    font-size: clamp(1rem, 1.5vw, 1.5rem);
+    font-weight: 700;
     margin-bottom: 8px;
-    font-weight: 600;
+    color: var(--ink);
   }
-  .slide-section .content .card p {
-    font-size: 0.9rem;
+  .slide-dark .grid-card .card-title { color: var(--gold-light); }
+  .grid-card .card-body {
+    font-size: clamp(0.85rem, 1.2vw, 1.2rem);
     line-height: 1.6;
     color: var(--text-light);
   }
-  .slide-section .content .tag {
-    display: inline-block;
-    background: var(--ink);
-    color: var(--gold-light);
-    padding: 2px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    margin-right: 6px;
-    margin-bottom: 6px;
-  }
+  .slide-dark .grid-card .card-body { color: rgba(255,255,255,0.7); }
 
-  /* Dark section slides */
-  .slide-dark {
-    background: linear-gradient(135deg, var(--ink) 0%, #1e1e38 100%);
-    color: var(--cream);
+  /* Wave list for tech cycles */
+  .wave-list {
+    max-width: 75%;
+    width: 100%;
+    margin-top: 8px;
   }
-  .slide-dark h2 {
-    color: var(--cream);
+  .wave-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
   }
-  .slide-dark h2::after {
-    background: var(--gold);
+  .slide-dark .wave-row { border-color: rgba(255,255,255,0.06); }
+  .wave-row:last-child { border: none; }
+  .wave-year {
+    font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+    font-weight: 700;
+    color: var(--gold);
+    width: 80px;
+    flex-shrink: 0;
+    text-align: right;
+    margin-right: 20px;
   }
-  .slide-dark .content p {
-    color: rgba(255,255,255,0.85);
+  .wave-desc {
+    font-size: clamp(0.95rem, 1.4vw, 1.4rem);
+    color: var(--text);
+    text-align: left;
   }
-  .slide-dark .content .quote {
-    color: var(--gold-light);
-    border-left-color: var(--gold);
-  }
-  .slide-dark .content ul li {
-    color: rgba(255,255,255,0.85);
-  }
-  .slide-dark .content .card {
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(10px);
-  }
-  .slide-dark .content .card h4 { color: var(--gold-light); }
-  .slide-dark .content .card p { color: rgba(255,255,255,0.7); }
+  .slide-dark .wave-desc { color: rgba(255,255,255,0.85); }
+  .wave-row.current .wave-desc { font-weight: 700; color: var(--gold); }
+  .slide-dark .wave-row.current .wave-desc { color: var(--gold-light); }
 
   /* End slide */
   .slide-end {
-    background: linear-gradient(135deg, var(--ink) 0%, #1a1a2e 100%);
+    background: linear-gradient(135deg, var(--ink) 0%, #0f0f1f 100%);
     color: var(--cream);
-    text-align: center;
+  }
+  .slide-end .gold-bar {
+    width: 60px; height: 3px;
+    background: var(--gold);
+    margin: 24px auto;
+    border-radius: 2px;
   }
   .slide-end h2 {
     font-family: 'Noto Serif SC', serif;
-    font-size: 2.4rem;
+    font-size: clamp(2.5rem, 4vw, 4rem);
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
   .slide-end p {
+    font-size: clamp(1rem, 1.5vw, 1.5rem);
     color: var(--gold-light);
-    font-size: 1rem;
     letter-spacing: 0.1em;
   }
 
@@ -248,12 +267,12 @@
     position: fixed;
     bottom: 0; left: 0;
     width: 100%;
-    height: 56px;
+    height: 48px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 40px;
-    background: rgba(250,248,243,0.9);
+    padding: 0 32px;
+    background: rgba(250,248,243,0.92);
     backdrop-filter: blur(12px);
     border-top: 1px solid rgba(0,0,0,0.06);
     z-index: 100;
@@ -261,7 +280,7 @@
   .slide-dark ~ .nav-bar,
   .slide-title ~ .nav-bar,
   .slide-end ~ .nav-bar {
-    background: rgba(26,26,46,0.9);
+    background: rgba(15,15,31,0.92);
     border-top-color: rgba(255,255,255,0.06);
   }
   .nav-bar .page-info {
@@ -269,22 +288,17 @@
     color: var(--text-light);
     letter-spacing: 0.05em;
   }
-  .nav-bar .nav-btns {
-    display: flex;
-    gap: 12px;
-  }
+  .nav-bar .nav-btns { display: flex; gap: 10px; }
   .nav-bar .nav-btns button {
     background: none;
     border: 1px solid rgba(0,0,0,0.15);
     color: var(--text);
-    width: 36px; height: 36px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
   .slide-dark ~ .nav-bar .nav-btns button,
   .slide-title ~ .nav-bar .nav-btns button,
@@ -292,14 +306,10 @@
     border-color: rgba(255,255,255,0.2);
     color: rgba(255,255,255,0.7);
   }
-  .nav-bar .nav-btns button:hover {
-    background: rgba(0,0,0,0.06);
-  }
+  .nav-bar .nav-btns button:hover { background: rgba(0,0,0,0.06); }
   .slide-dark ~ .nav-bar .nav-btns button:hover,
   .slide-title ~ .nav-bar .nav-btns button:hover,
-  .slide-end ~ .nav-bar .nav-btns button:hover {
-    background: rgba(255,255,255,0.1);
-  }
+  .slide-end ~ .nav-bar .nav-btns button:hover { background: rgba(255,255,255,0.1); }
   .nav-bar .progress {
     position: absolute;
     top: 0; left: 0;
@@ -308,25 +318,27 @@
     transition: width 0.4s ease;
   }
 
-  /* Keyboard hint */
   .keyboard-hint {
     position: fixed;
-    bottom: 70px;
+    bottom: 60px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.7rem;
     color: var(--text-light);
-    opacity: 0.4;
+    opacity: 0.3;
     letter-spacing: 0.05em;
     z-index: 99;
   }
 
   @media (max-width: 768px) {
-    .slide { padding: 40px 30px; }
-    .slide-title h1 { font-size: 2rem; }
-    .slide-section h2 { font-size: 1.5rem; }
-    .slide-section .content .grid-2 { grid-template-columns: 1fr; }
-    .nav-bar { padding: 0 20px; }
+    .slide { padding: 30px 20px; }
+    .slide-section h2 { font-size: clamp(1.5rem, 5vw, 2rem); }
+    .slide-section .body-text { font-size: clamp(0.9rem, 3vw, 1.1rem); max-width: 95%; }
+    .grid-2 { grid-template-columns: 1fr; max-width: 95%; }
+    .slide-section .item-list { max-width: 95%; }
+    .wave-list { max-width: 95%; }
+    .slide-section .quote-text { max-width: 95%; padding: 12px 16px; }
+    .nav-bar { padding: 0 16px; }
   }
 </style>
 </head>
@@ -336,274 +348,204 @@
 
   <!-- 1. Title -->
   <div class="slide slide-title active" data-index="0">
-    <div class="gold-line"></div>
+    <div class="gold-bar"></div>
     <h1>经济史视野下的<br>经济与社会</h1>
     <div class="subtitle">从历史变迁中理解技术、组织与创新的底层逻辑</div>
     <div class="meta">北京大学光华管理学院 · 滕飞</div>
-    <div class="gold-line" style="margin-top:30px;"></div>
   </div>
 
   <!-- 2. 核心问题 -->
   <div class="slide slide-section slide-dark" data-index="1">
-    <div class="content">
-      <div class="section-number">核心问题</div>
-      <h2>为什么有些社会持续创新，<br>有些却陷入停滞？</h2>
-      <p style="margin-top:20px;">技术变革不是孤立发生的。它嵌入在特定的经济结构、社会关系、制度安排和文化土壤之中。</p>
-      <div class="quote" style="margin-top:20px;">
-        "相对价格的变化改变不同群体/阶级的谈判能力，带来经济社会的变迁。"
-      </div>
-      <p style="margin-top:20px; font-size:0.9rem; color:var(--gold-light);">—— 理解历史变迁的元规则</p>
-    </div>
+    <div class="section-label">核心问题</div>
+    <h2>为什么有些社会持续创新，<br>有些却陷入停滞？</h2>
+    <div class="body-text">技术变革不是孤立发生的。它嵌入在特定的经济结构、<br>社会关系、制度安排和文化土壤之中。</div>
+    <div class="quote-text">"相对价格的变化改变不同群体/阶级的谈判能力，<br>带来经济社会的变迁。"</div>
+    <div class="body-text small" style="margin-top:12px; color:var(--gold-light);">—— 理解历史变迁的元规则</div>
   </div>
 
-  <!-- 3. 故事：黑死病后的劳工 -->
+  <!-- 3. 黑死病后的英国 -->
   <div class="slide slide-section" data-index="2">
-    <div class="content">
-      <div class="section-number">历史故事 · 1349</div>
-      <h2>一场瘟疫如何改变<br>整个社会的权力结构</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h4>📜 黑死病后的英国</h4>
-          <p>1349年，黑死病夺走英国近一半人口。劳动力突然稀缺，工人要求加薪，地主慌了。</p>
-        </div>
-        <div class="card">
-          <h4>⚖️ 《劳工条例》的失败</h4>
-          <p>国王试图冻结工资，但"雇主没有选择——如果不迎合工人的傲慢与贪婪，粮食就无法收割。"</p>
-        </div>
+    <div class="section-label">历史故事 · 1349</div>
+    <h2>一场瘟疫如何改变<br>整个社会的权力结构</h2>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="card-title">📜 黑死病后的英国</div>
+        <div class="card-body">1349年，黑死病夺走英国近一半人口。劳动力突然稀缺，工人要求加薪，地主慌了。</div>
       </div>
-      <p style="margin-top:16px;"><span class="highlight">启示：</span> 要素稀缺性改变 → 谈判能力改变 → 制度变迁。今天AI对劳动力的替代，也在改变同样的方程。</p>
+      <div class="grid-card">
+        <div class="card-title">⚖️ 《劳工条例》的失败</div>
+        <div class="card-body">国王试图冻结工资，但"雇主没有选择——不迎合工人的要求，粮食就无法收割。"</div>
+      </div>
     </div>
+    <div class="body-text small highlight-text" style="margin-top:20px;">启示：要素稀缺性改变 → 谈判能力改变 → 制度变迁</div>
   </div>
 
-  <!-- 4. 中国的高水平均衡陷阱 -->
+  <!-- 4. 高水平均衡陷阱 -->
   <div class="slide slide-section slide-dark" data-index="3">
-    <div class="content">
-      <div class="section-number">历史案例 · 中国</div>
-      <h2>"高水平均衡陷阱"<br>——为什么传统越精越难创新</h2>
-      <p>中国在明清时期拥有世界上最精细的农业技术，但恰恰因此阻碍了工业革命的发生。</p>
-      <ul style="margin-top:16px;">
-        <li>人口增加与传统技术不断精细化 → 经济中没有足够剩余支持其他技术创新</li>
-        <li>廉价剩余劳动的存在 → 地主/企业家没有激励使用更有效率的技术</li>
-        <li>技术进步是劳动增进型的，而非劳动替代性的 → 长远阻碍了更有效率的技术进步</li>
-      </ul>
-      <div class="quote" style="margin-top:16px;">
-        "传统生产方式在当下是最有效率的——但恰恰是这种'当下最优'，锁定了长期路径。"
-      </div>
-      <p style="margin-top:16px;"><span class="highlight">对创业者的追问：</span> 你的企业是否也在某个"高水平均衡"里，用精细化的传统方法回避真正的技术变革？</p>
+    <div class="section-label">历史案例 · 中国</div>
+    <h2>"高水平均衡陷阱"<br>——为什么传统越精越难创新</h2>
+    <div class="item-list">
+      <div class="item">人口增加与传统技术不断精细化 → 没有足够剩余支持其他创新</div>
+      <div class="item">廉价剩余劳动 → 地主/企业家没有激励使用更有效率的技术</div>
+      <div class="item">技术进步是劳动增进型而非劳动替代型 → 长远阻碍更有效率的技术进步</div>
     </div>
+    <div class="quote-text" style="margin-top:20px;">"传统生产方式在当下是最有效率的——<br>但恰恰是这种'当下最优'，锁定了长期路径。"</div>
   </div>
 
   <!-- 5. 六次技术周期 -->
   <div class="slide slide-section" data-index="4">
-    <div class="content">
-      <div class="section-number">技术变迁</div>
-      <h2>六次技术周期：<br>我们站在哪里？</h2>
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
-        <span class="tag">1785 水力/纺织/制铁</span>
-        <span class="tag">1845 蒸汽/铁轨/制钢</span>
-        <span class="tag">1900 电力/化工/内燃机</span>
-        <span class="tag">1950 石油化工/电子/航空</span>
-        <span class="tag">1990 数字网络/软件/新媒体</span>
-        <span class="tag" style="background:var(--gold); color:var(--ink); font-weight:600;">2020 智能与物联网/机器人/节能</span>
-      </div>
-      <div class="grid-2">
-        <div class="card">
-          <h4>核心机制</h4>
-          <p>持续不断的技术进步（熊彼特）。经济引擎熄火，发展问题就变成社会管理问题。</p>
-        </div>
-        <div class="card">
-          <h4>产业升级 vs 产业转移</h4>
-          <p>先发国家演化 → 后发国家追赶 → 全球化重启资本主义进程。直到创新之火熄灭。</p>
-        </div>
-      </div>
-      <p style="margin-top:12px;"><span class="highlight">关键判断：</span> 我们正处在第六波技术周期的早期。每一次周期转换，都是创业者的结构性机会窗口。</p>
+    <div class="section-label">技术变迁</div>
+    <h2>六次技术周期：我们站在哪里？</h2>
+    <div class="wave-list">
+      <div class="wave-row"><span class="wave-year">1785</span><span class="wave-desc">水力、纺织、制铁</span></div>
+      <div class="wave-row"><span class="wave-year">1845</span><span class="wave-desc">蒸汽动力、铁轨、制钢</span></div>
+      <div class="wave-row"><span class="wave-year">1900</span><span class="wave-desc">电力、化工、内燃机</span></div>
+      <div class="wave-row"><span class="wave-year">1950</span><span class="wave-desc">石油化工、电子、航空</span></div>
+      <div class="wave-row"><span class="wave-year">1990</span><span class="wave-desc">数字网络、软件、新媒体</span></div>
+      <div class="wave-row current"><span class="wave-year">2020 →</span><span class="wave-desc">智能与物联网 · 机器人 · 节能技术</span></div>
     </div>
+    <div class="body-text small highlight-text" style="margin-top:16px;">每一次周期转换，都是创业者的结构性机会窗口</div>
   </div>
 
   <!-- 6. 能源革命与组织变革 -->
   <div class="slide slide-section slide-dark" data-index="5">
-    <div class="content">
-      <div class="section-number">能源 · 组织</div>
-      <h2>能源技术如何重塑<br>企业组织形态</h2>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
-        <div class="card">
-          <h4>🔥 煤 + 蒸汽</h4>
-          <p>第一次工业革命。集中化工厂、工人阶级形成、工会运动兴起。能源流动依赖于矿工和路工。</p>
-        </div>
-        <div class="card">
-          <h4>⛽ 石油 + 内燃机</h4>
-          <p>第二次工业革命。垄断大公司、托拉斯、全球化。能源流动从国内阶级问题变成国际问题。</p>
-        </div>
-        <div class="card">
-          <h4>⚡ 电力 + 信息</h4>
-          <p>第三次工业革命。分布式工厂、网络化组织、平台经济。"看不见的手"变成了平台的手。</p>
-        </div>
-        <div class="card">
-          <h4>🌱 碳中和 + AI</h4>
-          <p>第四次能源革命。低碳化、电气化、分散化、数智化。组织形态正在发生根本性质变。</p>
-        </div>
-      </div>
+    <div class="section-label">能源 · 组织</div>
+    <h2>能源技术如何重塑<br>企业组织形态</h2>
+    <div class="grid-2">
+      <div class="grid-card"><div class="card-title">🔥 煤 + 蒸汽</div><div class="card-body">第一次工业革命。集中化工厂、工人阶级形成、工会运动兴起。</div></div>
+      <div class="grid-card"><div class="card-title">⛽ 石油 + 内燃机</div><div class="card-body">第二次工业革命。垄断大公司、托拉斯、全球化。</div></div>
+      <div class="grid-card"><div class="card-title">⚡ 电力 + 信息</div><div class="card-body">第三次工业革命。分布式工厂、网络化组织、平台经济。</div></div>
+      <div class="grid-card"><div class="card-title">🌱 碳中和 + AI</div><div class="card-body">第四次能源革命。低碳化、电气化、分散化、数智化。</div></div>
     </div>
   </div>
 
-  <!-- 7. 从托拉斯到平台 -->
+  <!-- 7. 组织形态百年演变 -->
   <div class="slide slide-section" data-index="6">
-    <div class="content">
-      <div class="section-number">组织演化</div>
-      <h2>从洛克菲勒到字节跳动：<br>组织形态的百年演变</h2>
-      <div class="quote">
-        "标准石油公司的托拉斯协定设有：内销委员会、出口贸易委员会、制造委员会、输油管委员会、润滑油委员会、生产委员会、诉讼委员会……大工业生产组织形式本质上是计划经济的源头。"
-      </div>
-      <p style="margin-top:16px;">今天，平台企业用算法取代了委员会。但底层逻辑一样：<span class="highlight">谁掌握信息流和能量流，谁就掌握权力。</span></p>
-      <ul style="margin-top:12px;">
-        <li>第一次工业革命：作坊 → 工厂（集中化）</li>
-        <li>第二次工业革命：工厂 → 托拉斯（垄断化）</li>
-        <li>第三次工业革命：托拉斯 → 平台（网络化）</li>
-        <li>AI时代：平台 → ？ （去中心化还是超级中心化？）</li>
-      </ul>
+    <div class="section-label">组织演化</div>
+    <h2>从洛克菲勒到字节跳动</h2>
+    <div class="item-list">
+      <div class="item">作坊 → 工厂（集中化）</div>
+      <div class="item">工厂 → 托拉斯（垄断化）</div>
+      <div class="item">托拉斯 → 平台（网络化）</div>
+      <div class="item" style="color:var(--accent); font-weight:600;">AI时代：平台 → ？（去中心化还是超级中心化？）</div>
     </div>
+    <div class="quote-text" style="margin-top:20px;">"谁掌握信息流和能量流，谁就掌握权力"</div>
   </div>
 
-  <!-- 8. 技术类型与收入分配 -->
+  <!-- 8. AI时代的赢家和输家 -->
   <div class="slide slide-section slide-dark" data-index="7">
-    <div class="content">
-      <div class="section-number">技术 · 分配</div>
-      <h2>AI时代：谁受益，谁被替代？</h2>
-      <p>技术进步有三种类型，每种对收入分配的影响截然不同：</p>
-      <ul style="margin-top:16px;">
-        <li><strong>劳动偏向型</strong>：传统内卷社会，技术进步让劳动者更"能干"但收入不涨</li>
-        <li><strong>资本偏向型</strong>：第一次工业革命早期，机器替代工人，劳动收入份额下降</li>
-        <li><strong>技能偏向型</strong>：AI时代——技能劳动替代非技能劳动，不平等上升；但随着人力资本扩散，非技能劳动力重新稀缺，不平等下降</li>
-      </ul>
-      <div class="quote" style="margin-top:16px;">
-        "每一次技术浪潮，都会经历一个'替代恐慌期→适应调整期→新均衡期'的循环。"
-      </div>
-      <p style="margin-top:12px;"><span class="highlight">创业启示：</span> 理解技术的社会效应，才能把握商业方向。替代恐慌期正是新商业模式诞生的窗口。</p>
+    <div class="section-label">技术 · 分配</div>
+    <h2>AI时代：谁受益，谁被替代？</h2>
+    <div class="item-list">
+      <div class="item"><strong>劳动偏向型</strong>：传统内卷社会，技术进步让劳动者更"能干"但收入不涨</div>
+      <div class="item"><strong>资本偏向型</strong>：机器替代工人，劳动收入份额下降</div>
+      <div class="item"><strong>技能偏向型（AI时代）</strong>：技能劳动替代非技能劳动 → 不平等上升 → 随着人力资本扩散，重新平衡</div>
     </div>
+    <div class="quote-text" style="margin-top:20px;">"每一次技术浪潮：替代恐慌期 → 适应调整期 → 新均衡期。<br>替代恐慌期正是新商业模式诞生的窗口。"</div>
   </div>
 
-  <!-- 9. 制度与创新 -->
+  <!-- 9. 创新的土壤 -->
   <div class="slide slide-section" data-index="8">
-    <div class="content">
-      <div class="section-number">制度 · 文化</div>
-      <h2>创新的土壤：<br>制度重要，但不是全部</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h4>制度的作用</h4>
-          <p>集权vs分权、极权vs限权——近代西欧分/限权后经历了更快增长。但制度移植到殖民地后，发展结果差异巨大。</p>
-        </div>
-        <div class="card">
-          <h4>文化的深层影响</h4>
-          <p>家庭结构、社会信任、时间偏好（耐心）、风险厌恶——这些根植于千百年的地理、气候、农作物特征。</p>
-        </div>
+    <div class="section-label">制度 · 文化</div>
+    <h2>创新的土壤：<br>制度重要，但不是全部</h2>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="card-title">🏛️ 制度的作用</div>
+        <div class="card-body">集权vs分权、极权vs限权。但制度移植到殖民地后，发展结果差异巨大。</div>
       </div>
-      <div class="quote" style="margin-top:16px;">
-        "各经济体繁荣程度差异中，约2/5归结为地理气候因素，约1/4归结为社会多样性，约1/5归结为族群文化，仅约1/10归结为政治制度。"
+      <div class="grid-card">
+        <div class="card-title">🌿 文化的深层影响</div>
+        <div class="card-body">家庭结构、社会信任、时间偏好、风险厌恶——根植于千百年地理、气候、农作物特征。</div>
       </div>
     </div>
+    <div class="body-text small" style="margin-top:16px; color:var(--text-light);">繁荣差异中：地理气候≈2/5，社会多样性≈1/4，族群文化≈1/5，政治制度≈1/10</div>
   </div>
 
-  <!-- 10. 水稻 vs 小麦 -->
+  <!-- 10. 水稻vs小麦 -->
   <div class="slide slide-section slide-dark" data-index="9">
-    <div class="content">
-      <div class="section-number">文化 · 行为</div>
-      <h2>你种什么，你成为什么<br>——水稻vs小麦的文化差异</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h4>🌾 水稻产区</h4>
-          <p>需要复杂的灌溉协作系统 → 更集体主义、更紧密的社会网络、更注重关系。中国南方。</p>
-        </div>
-        <div class="card">
-          <h4>🌿 小麦产区</h4>
-          <p>依赖降雨、个体劳作 → 更个人主义、更独立、更注重契约。中国北方。</p>
-        </div>
+    <div class="section-label">文化 · 行为</div>
+    <h2>你种什么，你成为什么</h2>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="card-title">🌾 水稻产区</div>
+        <div class="card-body">需要复杂的灌溉协作系统 → 更集体主义、更紧密的社会网络、更注重关系</div>
       </div>
-      <p style="margin-top:16px;">这不是"南北差异"的谈资——<span class="highlight">它深刻影响了不同地区的企业组织方式、创新模式和商业文化。</span></p>
-      <p style="font-size:0.9rem; color:var(--gold-light); margin-top:8px;">来源：Science, 2014 — "Large-Scale Psychological Differences Within China Explained by Rice Versus Wheat Agriculture"</p>
+      <div class="grid-card">
+        <div class="card-title">🌿 小麦产区</div>
+        <div class="card-body">依赖降雨、个体劳作 → 更个人主义、更独立、更注重契约</div>
+      </div>
     </div>
+    <div class="body-text small highlight-text" style="margin-top:16px;">它深刻影响了不同地区的企业组织方式、创新模式和商业文化</div>
+    <div class="body-text small" style="margin-top:8px; color:rgba(255,255,255,0.4);">Science · 2014</div>
   </div>
 
-  <!-- 11. 地理、气候与人性偏好 -->
+  <!-- 11. 地理气候与创业者基因 -->
   <div class="slide slide-section" data-index="10">
-    <div class="content">
-      <div class="section-number">深层因素</div>
-      <h2>地理气候如何塑造<br>创业者的基因？</h2>
-      <ul>
-        <li><strong>耐心（时间偏好）</strong>：农作物潜在产量更高地区的族群，更具长远眼光。因为"等待"有回报。</li>
-        <li><strong>风险偏好</strong>：气候波动大的地区 → 低风险厌恶（冒险的收益更高）；气候稳定的地区 → 高风险厌恶。</li>
-        <li><strong>集体vs个体</strong>：劳动密集型作物（水稻）→ 集体主义文化；劳动独立型作物（小麦）→ 个人主义文化。</li>
-      </ul>
-      <div class="quote" style="margin-top:16px;">
-        "我们不喜欢地理决定论——但理解这些深层因素，才能更清醒地设计制度和策略来弥补先天不足。"
-      </div>
+    <div class="section-label">深层因素</div>
+    <h2>地理气候如何塑造<br>创业者的基因？</h2>
+    <div class="item-list">
+      <div class="item"><strong>耐心</strong>：农作物潜在产量更高地区的族群，更具长远眼光</div>
+      <div class="item"><strong>风险偏好</strong>：气候波动大的地区 → 低风险厌恶；气候稳定的地区 → 高风险厌恶</div>
+      <div class="item"><strong>集体vs个体</strong>：劳动密集型作物（水稻）→ 集体主义；劳动独立型（小麦）→ 个人主义</div>
     </div>
+    <div class="quote-text" style="margin-top:20px;">"理解这些深层因素，才能更清醒地设计制度和策略来弥补先天不足。"</div>
   </div>
 
-  <!-- 12. 中国的创新双引擎 -->
+  <!-- 12. 中国创新双引擎 -->
   <div class="slide slide-section slide-dark" data-index="11">
-    <div class="content">
-      <div class="section-number">中国模式</div>
-      <h2>"集中力量办大事"<br>+ "开盲盒"</h2>
-      <p style="margin-top:16px;">既能保持凝聚力又能不断创新的经济体，发展更有保障。</p>
-      <div class="grid-2" style="margin-top:16px;">
-        <div class="card">
-          <h4>🏛️ 集中力量办大事</h4>
-          <p>国家战略导向、基础设施投资、产业政策引导。降低创新的系统性风险。</p>
-        </div>
-        <div class="card">
-          <h4>🎲 开盲盒</h4>
-          <p>市场化试错、草根创业、地方竞争。让多元化的创新方向自然涌现。</p>
-        </div>
+    <div class="section-label">中国模式</div>
+    <h2>"集中力量办大事"<br>+ "开盲盒"</h2>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="card-title">🏛️ 集中力量办大事</div>
+        <div class="card-body">国家战略导向、基础设施投资、产业政策引导。降低创新的系统性风险。</div>
       </div>
-      <p style="margin-top:16px;"><span class="highlight">创业者的位置：</span> 在"集中力量"的框架下找到"开盲盒"的空间。理解政策方向，但不依赖政策红利。</p>
+      <div class="grid-card">
+        <div class="card-title">🎲 开盲盒</div>
+        <div class="card-body">市场化试错、草根创业、地方竞争。让多元化的创新方向自然涌现。</div>
+      </div>
     </div>
+    <div class="body-text small highlight-text" style="margin-top:16px;">创业者的位置：在"集中力量"的框架下找到"开盲盒"的空间</div>
   </div>
 
-  <!-- 13. 给创业者的历史视角 -->
+  <!-- 13. 三个创业视角 -->
   <div class="slide slide-section" data-index="12">
-    <div class="content">
-      <div class="section-number">启示</div>
-      <h2>从历史中汲取的<br>三个创业视角</h2>
-      <div style="display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px;">
-        <div class="card">
-          <h4>1️⃣ 技术周期定位</h4>
-          <p>你处在第几波技术周期？第六波（智能与物联网）的早期，是结构性机会窗口。但要注意"高水平均衡陷阱"——别用精细化回避真变革。</p>
-        </div>
-        <div class="card">
-          <h4>2️⃣ 组织形态匹配</h4>
-          <p>能源和信息流动方式决定了最优组织形态。AI时代，你的组织是"工厂""托拉斯"还是"平台"？还是某种全新的形态？</p>
-        </div>
-        <div class="card">
-          <h4>3️⃣ 文化土壤意识</h4>
-          <p>理解你所处的创新生态位。西安的"水稻vs小麦"基因是什么？如何利用本地文化优势，同时弥补结构性不足？</p>
-        </div>
+    <div class="section-label">启示</div>
+    <h2>从历史中汲取的<br>三个创业视角</h2>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="card-title">1️⃣ 技术周期定位</div>
+        <div class="card-body">你在第几波？第六波早期是结构性机会窗口。但要注意"高水平均衡陷阱"。</div>
+      </div>
+      <div class="grid-card">
+        <div class="card-title">2️⃣ 组织形态匹配</div>
+        <div class="card-body">能源和信息流动方式决定最优组织形态。不要用上一波周期的组织方式做下一波的事。</div>
+      </div>
+      <div class="grid-card" style="grid-column: 1 / -1;">
+        <div class="card-title">3️⃣ 文化土壤意识</div>
+        <div class="card-body">理解你的创新生态位。西安的文化基因是什么？如何利用本地优势，弥补结构性不足？</div>
       </div>
     </div>
   </div>
 
   <!-- 14. 总结 -->
   <div class="slide slide-section slide-dark" data-index="13">
-    <div class="content">
-      <div class="section-number">总结</div>
-      <h2>历史不是用来预测的，<br>是用来定位的</h2>
-      <p style="margin-top:20px;">知道自己在周期的什么位置，比知道明天会发生什么重要一万倍。</p>
-      <ul style="margin-top:20px;">
-        <li>表层和短期：技术进步与经济增长的关系</li>
-        <li>内层和中期：制度和文化特征根植于地理气候等因素</li>
-        <li>最深层和长期：社会凝聚力与创新力这对关系——"集中力量办大事"+"开盲盒"</li>
-      </ul>
-      <div class="quote" style="margin-top:20px;">
-        "我们需要让多元化社会实现更强的凝聚力，让同质性社会更多受益于不同观念的交流。"
-      </div>
+    <div class="section-label">总结</div>
+    <h2>历史不是用来预测的，<br>是用来定位的</h2>
+    <div class="body-text" style="margin-bottom:20px;">知道自己在周期的什么位置，<br>比知道明天会发生什么重要一万倍。</div>
+    <div class="item-list">
+      <div class="item">表层和短期：技术进步与经济增长的关系</div>
+      <div class="item">内层和中期：制度和文化特征根植于地理气候等因素</div>
+      <div class="item">最深层和长期：社会凝聚力与创新力</div>
     </div>
   </div>
 
   <!-- 15. End -->
   <div class="slide slide-end" data-index="14">
     <h2>感谢聆听</h2>
-    <div class="gold-line" style="width:40px; height:2px; background:var(--gold); margin:20px auto;"></div>
+    <div class="gold-bar"></div>
     <p>欢迎交流讨论</p>
-    <p style="margin-top:30px; font-size:0.8rem; color:rgba(255,255,255,0.4);">北京大学光华管理学院 · 滕飞</p>
+    <div style="margin-top:40px; font-size:clamp(0.8rem,1.1vw,1.1rem); color:rgba(255,255,255,0.35);">北京大学光华管理学院 · 滕飞</div>
   </div>
 
 </div>
@@ -618,7 +560,7 @@
   </div>
 </div>
 
-<div class="keyboard-hint">←  →  键盘翻页</div>
+<div class="keyboard-hint">←  →  键盘翻页 · 触屏滑动</div>
 
 <script>
 const slides = document.querySelectorAll('.slide');
@@ -643,8 +585,6 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
 });
-
-// Touch support
 let touchStartX = 0;
 document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
 document.addEventListener('touchend', (e) => {
