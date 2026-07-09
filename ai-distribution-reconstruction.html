@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI通缩时代的分配重构</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a28;
+    --border: #2a2a3e;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --accent: #6c5ce7;
+    --accent2: #00cec9;
+    --accent3: #fd79a8;
+    --gold: #fdcb6e;
+    --green: #00b894;
+    --red: #e17055;
+    --blue: #74b9ff;
+  }
+  
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  .presentation {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  
+  /* Background decorations */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 100%;
+    background: radial-gradient(ellipse, rgba(108,92,231,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  
+  /* Content */
+  .slide-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1100px;
+  }
+  
+  .slide-number {
+    position: absolute;
+    bottom: 4vh;
+    right: 5vw;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+  
+  h1 {
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  h2 {
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 0.6em;
+    color: var(--text);
+  }
+  
+  h2 .highlight {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  h3 {
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    font-weight: 500;
+    color: var(--accent2);
+    margin-bottom: 0.5em;
+    letter-spacing: 1px;
+  }
+  
+  p {
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    line-height: 1.8;
+    color: var(--text);
+    font-weight: 300;
+    margin-bottom: 0.8em;
+  }
+  
+  p.dim {
+    color: var(--text-dim);
+    font-size: clamp(0.9rem, 1.4vw, 1.2rem);
+  }
+  
+  .subtitle {
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 3px;
+    margin-bottom: 1.5em;
+  }
+  
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2vw;
+    margin-top: 1.5em;
+  }
+  
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5vw;
+    margin-top: 1.5em;
+  }
+  
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.8vw;
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(108,92,231,0.15);
+  }
+  
+  .card .icon {
+    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    margin-bottom: 0.5em;
+  }
+  
+  .card h4 {
+    font-size: clamp(0.9rem, 1.3vw, 1.2rem);
+    font-weight: 700;
+    margin-bottom: 0.4em;
+    color: var(--text);
+  }
+  
+  .card p {
+    font-size: clamp(0.75rem, 1vw, 0.95rem);
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-bottom: 0;
+  }
+  
+  .card .tag {
+    display: inline-block;
+    padding: 0.2em 0.8em;
+    border-radius: 20px;
+    font-size: clamp(0.65rem, 0.8vw, 0.8rem);
+    font-weight: 500;
+    margin-top: 0.6em;
+  }
+  
+  .tag-purple { background: rgba(108,92,231,0.2); color: var(--accent); }
+  .tag-green { background: rgba(0,206,201,0.2); color: var(--accent2); }
+  .tag-pink { background: rgba(253,121,168,0.2); color: var(--accent3); }
+  .tag-gold { background: rgba(253,203,110,0.2); color: var(--gold); }
+  .tag-blue { background: rgba(116,185,255,0.2); color: var(--blue); }
+  .tag-red { background: rgba(225,112,85,0.2); color: var(--red); }
+  
+  /* Big number */
+  .big-number {
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  
+  .big-number-label {
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    color: var(--text-dim);
+    margin-top: 0.3em;
+  }
+  
+  /* Data bar */
+  .data-bar-container {
+    margin: 1em 0;
+  }
+  
+  .data-bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8em;
+  }
+  
+  .data-bar-label {
+    width: 120px;
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  
+  .data-bar-track {
+    flex: 1;
+    height: 28px;
+    background: var(--surface2);
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .data-bar-fill {
+    height: 100%;
+    border-radius: 14px;
+    transition: width 1.5s ease;
+    position: relative;
+  }
+  
+  .data-bar-fill.labor {
+    background: linear-gradient(90deg, var(--accent), var(--blue));
+  }
+  
+  .data-bar-fill.capital {
+    background: linear-gradient(90deg, var(--accent3), var(--red));
+  }
+  
+  .data-bar-value {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+    margin: 1.5em 0;
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  
+  .timeline-item {
+    position: relative;
+    margin-bottom: 1.2em;
+  }
+  
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -26px;
+    top: 0.5em;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  
+  .timeline-item h4 {
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    font-weight: 600;
+    color: var(--text);
+  }
+  
+  .timeline-item p {
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    color: var(--text-dim);
+    margin-bottom: 0;
+  }
+  
+  /* Divider */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin: 1em 0;
+  }
+  
+  /* Path cards */
+  .path-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5vw;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .path-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+  }
+  
+  .path-card.path-1::before { background: var(--accent); }
+  .path-card.path-2::before { background: var(--accent2); }
+  .path-card.path-3::before { background: var(--gold); }
+  
+  .path-card .path-label {
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    font-weight: 500;
+    margin-bottom: 0.3em;
+  }
+  
+  .path-card h4 {
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    font-weight: 700;
+    margin-bottom: 0.4em;
+  }
+  
+  .path-card p {
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    color: var(--text-dim);
+    margin-bottom: 0;
+  }
+  
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--surface2);
+    z-index: 100;
+  }
+  
+  .nav-bar-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  
+  .nav-arrows {
+    position: fixed;
+    bottom: 4vh;
+    left: 5vw;
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+  }
+  
+  .nav-arrows button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .nav-arrows button:hover {
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+  
+  .nav-arrows button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  
+  /* Quote */
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding: 1em 1.5em;
+    margin: 1.5em 0;
+    background: rgba(108,92,231,0.05);
+    border-radius: 0 12px 12px 0;
+  }
+  
+  .quote p {
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    color: var(--text);
+    margin-bottom: 0.3em;
+  }
+  
+  .quote .author {
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    color: var(--text-dim);
+    font-style: normal;
+  }
+  
+  /* Centered */
+  .center {
+    text-align: center;
+  }
+  
+  /* Flex */
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Arrow hint */
+  .arrow-hint {
+    position: fixed;
+    bottom: 4vh;
+    right: 5vw;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    animation: pulse 2s infinite;
+    z-index: 100;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-4 { grid-template-columns: 1fr; gap: 1em; }
+    .card { padding: 1em; }
+    .path-card { padding: 1em; }
+    .data-bar-label { width: 80px; font-size: 0.8rem; }
+    .nav-arrows { display: none; }
+  }
+  
+  /* Animated elements */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease 0.2s;
+  }
+  
+  .slide.active .fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .slide.active .fade-in-d1 { transition-delay: 0.1s; }
+  .slide.active .fade-in-d2 { transition-delay: 0.2s; }
+  .slide.active .fade-in-d3 { transition-delay: 0.3s; }
+  .slide.active .fade-in-d4 { transition-delay: 0.4s; }
+  .slide.active .fade-in-d5 { transition-delay: 0.5s; }
+  
+  /* Flow arrow */
+  .flow-arrow {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    margin: 0.3em 0;
+  }
+  
+  /* Stat row */
+  .stat-row {
+    display: flex;
+    justify-content: space-around;
+    margin: 2em 0;
+    gap: 1em;
+  }
+  
+  .stat-item {
+    text-align: center;
+    flex: 1;
+  }
+  
+  .stat-item .number {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  
+  .stat-item .number.historical { color: var(--blue); }
+  .stat-item .number.current { color: var(--accent3); }
+  
+  .stat-item .label {
+    font-size: clamp(0.7rem, 1vw, 0.9rem);
+    color: var(--text-dim);
+    margin-top: 0.3em;
+  }
+  
+  .stat-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--accent3);
+    font-size: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="presentation" id="presentation">
+  
+  <!-- Slide 1: Title -->
+  <div class="slide active" data-index="0">
+    <div class="slide-content center">
+      <div class="subtitle fade-in fade-in-d1">光华管理学院西安分院 · 研究笔记</div>
+      <h1 class="fade-in fade-in-d2">AI通缩时代的<br>分配重构</h1>
+      <div class="divider" style="margin: 1em auto;"></div>
+      <p class="dim fade-in fade-in-d3" style="font-size: clamp(0.9rem, 1.4vw, 1.1rem);">
+        从宋雪涛的"建仓vs健身"<br>到劳动-资本循环的终极追问
+      </p>
+      <p class="dim fade-in fade-in-d4" style="margin-top: 3em; font-size: 0.8rem;">
+        2026年7月9日
+      </p>
+    </div>
+    <div class="slide-number">01 / 12</div>
+  </div>
+  
+  <!-- Slide 2: 核心数据锚点 -->
+  <div class="slide" data-index="1">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">一个正在发生的结构转变</h3>
+      <h2 class="fade-in fade-in-d2">分配格局的<span class="highlight">历史性转折</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="stat-row fade-in fade-in-d4">
+        <div class="stat-item">
+          <div class="number historical">67%</div>
+          <div class="label">历史 · 劳动所得占比</div>
+        </div>
+        <div class="stat-arrow">→</div>
+        <div class="stat-item">
+          <div class="number current">60~70%</div>
+          <div class="label">当前 · 劳动所得占比</div>
+        </div>
+      </div>
+      
+      <div class="stat-row fade-in fade-in-d5" style="margin-top: 0;">
+        <div class="stat-item">
+          <div class="number historical" style="color: var(--accent3);">33%</div>
+          <div class="label">历史 · 资本所得占比</div>
+        </div>
+        <div class="stat-arrow">→</div>
+        <div class="stat-item">
+          <div class="number current" style="color: var(--red);">30~40%</div>
+          <div class="label">当前 · 资本所得占比</div>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 2em;">
+        <p>这不是一个边际变化——这是结构性转折。<br>它意味着过去半个世纪支撑消费社会的分配基础正在松动。</p>
+      </div>
+    </div>
+    <div class="slide-number">02 / 12</div>
+  </div>
+  
+  <!-- Slide 3: 微观框架 -->
+  <div class="slide" data-index="2">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">微观层面 · 个人战略</h3>
+      <h2 class="fade-in fade-in-d2">"<span class="highlight">建仓</span> vs <span class="highlight">健身</span>" 框架</h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-4 fade-in fade-in-d4">
+        <div class="card">
+          <div class="icon">🔭</div>
+          <h4>AI原生组织</h4>
+          <p>OpenAI、Anthropic类<br>尚不知如何发挥作用</p>
+          <div class="tag tag-purple">建模 · 观察等待</div>
+        </div>
+        <div class="card">
+          <div class="icon">🏋️</div>
+          <h4>严重替代者</h4>
+          <p>码农、知识工作者<br>快速被替代</p>
+          <div class="tag tag-red">健身 · 快速转型</div>
+        </div>
+        <div class="card">
+          <div class="icon">🏗️</div>
+          <h4>受益者</h4>
+          <p>蓝领、运动员<br>无法被替代</p>
+          <div class="tag tag-green">建仓 · 巩固壁垒</div>
+        </div>
+        <div class="card">
+          <div class="icon">🚀</div>
+          <h4>AI原生受益者</h4>
+          <p>AI创业者、超级个体<br>利用AI放大能力</p>
+          <div class="tag tag-gold">建仓 · 建立AI能力</div>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 1.5em;">
+        <p>知道自己属于哪一类，比知道趋势更重要。</p>
+      </div>
+    </div>
+    <div class="slide-number">03 / 12</div>
+  </div>
+  
+  <!-- Slide 4: 框架互补 -->
+  <div class="slide" data-index="3">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">框架互补</h3>
+      <h2 class="fade-in fade-in-d2">Harness + 建仓健身 = <span class="highlight">完整拼图</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 2em;">
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <h4 style="font-size: clamp(1.1rem, 1.5vw, 1.4rem);">🔧 Harness框架</h4>
+          <p style="font-size: clamp(0.85rem, 1.1vw, 1rem); margin-top: 0.5em;">
+            AI的价值如何实现？<br>
+            <strong>架构 > 模型</strong>
+          </p>
+          <p class="dim" style="margin-top: 0.8em; font-size: 0.8rem;">
+            模型能力 × Harness效率 = 实际表现
+          </p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent2);">
+          <h4 style="font-size: clamp(1.1rem, 1.5vw, 1.4rem);">🎯 建仓vs健身框架</h4>
+          <p style="font-size: clamp(0.85rem, 1.1vw, 1rem); margin-top: 0.5em;">
+            人在AI时代如何定位？<br>
+            <strong>知道自己属于哪一类</strong>
+          </p>
+          <p class="dim" style="margin-top: 0.8em; font-size: 0.8rem;">
+            建仓 = 建立资产性优势<br>健身 = 快速转型避免淘汰
+          </p>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 1.5em;">
+        <p>AI时代最大的增量不来自更好的模型，<br>而来自更好的架构和更清晰的人的战略定位。</p>
+      </div>
+    </div>
+    <div class="slide-number">04 / 12</div>
+  </div>
+  
+  <!-- Slide 5: 宏观分配 -->
+  <div class="slide" data-index="4">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">宏观层面</h3>
+      <h2 class="fade-in fade-in-d2">分配格局的<span class="highlight">结构性转变</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="data-bar-container fade-in fade-in-d4">
+        <div class="data-bar-row">
+          <div class="data-bar-label">劳动所得</div>
+          <div class="data-bar-track">
+            <div class="data-bar-fill labor" style="width: 67%;">
+              <span class="data-bar-value">67%</span>
+            </div>
+          </div>
+        </div>
+        <div class="data-bar-row">
+          <div class="data-bar-label">资本所得</div>
+          <div class="data-bar-track">
+            <div class="data-bar-fill capital" style="width: 33%;">
+              <span class="data-bar-value">33%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <p class="dim fade-in fade-in-d4" style="text-align: center; font-size: clamp(0.8rem, 1.1vw, 0.95rem);">
+        历史基准 · 美国
+      </p>
+      
+      <div class="flow-arrow fade-in fade-in-d4">↓</div>
+      
+      <div class="data-bar-container fade-in fade-in-d5">
+        <div class="data-bar-row">
+          <div class="data-bar-label">劳动所得</div>
+          <div class="data-bar-track">
+            <div class="data-bar-fill labor" style="width: 63%; opacity: 0.7;">
+              <span class="data-bar-value">~63%</span>
+            </div>
+          </div>
+        </div>
+        <div class="data-bar-row">
+          <div class="data-bar-label">资本所得</div>
+          <div class="data-bar-track">
+            <div class="data-bar-fill capital" style="width: 37%;">
+              <span class="data-bar-value">~37%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <p class="dim fade-in fade-in-d5" style="text-align: center; font-size: clamp(0.8rem, 1.1vw, 0.95rem);">
+        当前偏移 · 资本占比从33%升至30-40%
+      </p>
+    </div>
+    <div class="slide-number">05 / 12</div>
+  </div>
+  
+  <!-- Slide 6: 为什么这次不一样 -->
+  <div class="slide" data-index="5">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">三个根本性的不同</h3>
+      <h2 class="fade-in fade-in-d2">为什么<span class="highlight">这次不一样</span>？</h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 1.5em;">
+        <div class="card">
+          <div class="icon">🧠</div>
+          <h4>替代范围：体力 → 脑力</h4>
+          <p>人类历史上第一次，两种劳动（体力+脑力）同时面临系统性替代。知识工作者无处可去。</p>
+        </div>
+        <div class="card">
+          <div class="icon">✂️</div>
+          <h4>剪刀差：r > g 极端化</h4>
+          <p>AI降低劳动稀缺性 → 劳动价格下降。AI规模效应趋零边际成本 → 资本回报率上升。</p>
+        </div>
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="icon">⛓️</div>
+          <h4>消费循环断裂风险</h4>
+          <p>收入流向资本（少数人）→ 大多数人失去收入 → 谁来消费？消费不足 → 生产过剩 → 经济循环断裂。<br>
+          <strong>需求本质上是分配问题，不是供给问题。</strong></p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">06 / 12</div>
+  </div>
+  
+  <!-- Slide 7: 税基结构 -->
+  <div class="slide" data-index="6">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">税基结构</h3>
+      <h2 class="fade-in fade-in-d2">劳动 vs 资本的<span class="highlight">税收镜像</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 1.5em;">
+        <div class="card" style="border-left: 4px solid var(--blue);">
+          <h4>劳动税收（约80%）</h4>
+          <div class="data-bar-container" style="margin: 0.8em 0;">
+            <div class="data-bar-row" style="margin-bottom: 0.5em;">
+              <div class="data-bar-label" style="width: 100px; font-size: 0.8rem;">个税</div>
+              <div class="data-bar-track" style="height: 20px;">
+                <div class="data-bar-fill labor" style="width: 62%;">
+                  <span class="data-bar-value" style="font-size: 0.7rem;">~50%</span>
+                </div>
+              </div>
+            </div>
+            <div class="data-bar-row" style="margin-bottom: 0.5em;">
+              <div class="data-bar-label" style="width: 100px; font-size: 0.8rem;">社保企业</div>
+              <div class="data-bar-track" style="height: 20px;">
+                <div class="data-bar-fill labor" style="width: 25%;">
+                  <span class="data-bar-value" style="font-size: 0.7rem;">~20%</span>
+                </div>
+              </div>
+            </div>
+            <div class="data-bar-row">
+              <div class="data-bar-label" style="width: 100px; font-size: 0.8rem;">消费税</div>
+              <div class="data-bar-track" style="height: 20px;">
+                <div class="data-bar-fill labor" style="width: 12%;">
+                  <span class="data-bar-value" style="font-size: 0.7rem;">~10%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--red);">
+          <h4>资本税收（约18%）</h4>
+          <div class="data-bar-container" style="margin: 0.8em 0;">
+            <div class="data-bar-row">
+              <div class="data-bar-label" style="width: 100px; font-size: 0.8rem;">资本利得</div>
+              <div class="data-bar-track" style="height: 20px;">
+                <div class="data-bar-fill capital" style="width: 100%;">
+                  <span class="data-bar-value" style="font-size: 0.7rem;">~18%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 1.5em;">
+        <p>当资本占比从33%升至40%，税收基础在转移。<br>支撑福利国家的劳动税基正在被侵蚀。</p>
+      </div>
+    </div>
+    <div class="slide-number">07 / 12</div>
+  </div>
+  
+  <!-- Slide 8: 深层追问 -->
+  <div class="slide" data-index="7">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">深层追问</h3>
+      <h2 class="fade-in fade-in-d2">从<span class="highlight">分配问题</span>到<span class="highlight">存在方式问题</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 1.5em;">
+        <div class="card" style="border-left: 4px solid var(--red);">
+          <h4>分配循环如何维持？</h4>
+          <p>没有劳动收入 → 没有消费能力 → 经济循环断裂</p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <h4>人的存在方式如何定义？</h4>
+          <p>如果"工作"不再是人的核心活动，人靠什么获得意义？</p>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 1.5em;">
+        <p>这不是遥远的问题。当资本分配占比从33%升至40%，我们已经在路上。</p>
+      </div>
+    </div>
+    <div class="slide-number">08 / 12</div>
+  </div>
+  
+  <!-- Slide 9: 三条路径 -->
+  <div class="slide" data-index="8">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">三种可能的未来路径</h3>
+      <h2 class="fade-in fade-in-d2">从<span class="highlight">制度托底</span>到<span class="highlight">意义重构</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 1.5em;">
+        <div class="path-card path-1">
+          <div class="path-label" style="color: var(--accent);">路径一 · 过渡方案</div>
+          <h4>制度托底</h4>
+          <p>UBI全民基本收入 · AI税/机器人税 · 数据分红</p>
+          <p class="dim" style="margin-top: 0.5em; font-size: 0.75rem;">治标不治本，不触及所有权</p>
+        </div>
+        <div class="path-card path-2">
+          <div class="path-label" style="color: var(--accent2);">路径二 · 中期方案</div>
+          <h4>所有制重构</h4>
+          <p>AI作为公共基础设施 · 全民数字资本账户 · 数据收益权全民共享</p>
+          <p class="dim" style="margin-top: 0.5em; font-size: 0.75rem;">需要制度变革，阻力巨大</p>
+        </div>
+        <div class="path-card path-3" style="grid-column: 1 / -1;">
+          <div class="path-label" style="color: var(--gold);">路径三 · 终极方案</div>
+          <h4>意义重构</h4>
+          <p>从"生产者"到"意义创造者" · AI接管劳动和工作，人类聚焦"行动"</p>
+          <p class="dim" style="margin-top: 0.5em; font-size: 0.75rem;">人类是否有能力在没有生存压力的情况下自主创造意义？</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">09 / 12</div>
+  </div>
+  
+  <!-- Slide 10: 核心悖论 -->
+  <div class="slide" data-index="9">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">核心悖论</h3>
+      <h2 class="fade-in fade-in-d2"><span class="highlight">效率</span>与<span class="highlight">分配</span>的鸿沟</h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 2em;">
+        <div class="card center" style="border: 2px solid var(--accent);">
+          <div style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.3em;">⚡</div>
+          <h4 style="color: var(--accent); font-size: clamp(1.2rem, 1.8vw, 1.6rem);">技术问题</h4>
+          <p style="font-size: clamp(1rem, 1.5vw, 1.3rem); font-weight: 700;">解决速度快</p>
+          <p class="dim" style="font-size: 0.8rem;">AI效率提升是指数级的</p>
+        </div>
+        <div class="card center" style="border: 2px solid var(--red);">
+          <div style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.3em;">🏛️</div>
+          <h4 style="color: var(--red); font-size: clamp(1.2rem, 1.8vw, 1.6rem);">政治问题</h4>
+          <p style="font-size: clamp(1rem, 1.5vw, 1.3rem); font-weight: 700;">解决速度慢</p>
+          <p class="dim" style="font-size: 0.8rem;">制度适应是渐进式的</p>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 1.5em; border-left-color: var(--red);">
+        <p>最危险的不是AI太强大，而是制度太脆弱。</p>
+      </div>
+    </div>
+    <div class="slide-number">10 / 12</div>
+  </div>
+  
+  <!-- Slide 11: 知识体系连接 -->
+  <div class="slide" data-index="10">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">知识体系连接</h3>
+      <h2 class="fade-in fade-in-d2">三篇文档的<span class="highlight">互补结构</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 1.5em;">
+        <div class="card" style="border-left: 4px solid var(--blue);">
+          <h4>📄 AI与经济</h4>
+          <p>四维度理论框架：需求侧 · 制度侧 · 哲学侧 · 历史侧</p>
+          <p class="dim" style="font-size: 0.75rem; margin-top: 0.5em;">理论推演 → 本文补充了实证数据</p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <h4>📄 AI就业替代的微观机制</h4>
+          <p>谁被替代？如何替代？</p>
+          <p class="dim" style="font-size: 0.75rem; margin-top: 0.5em;">替代机制 → 本文补充了分配维度</p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--gold); grid-column: 1 / -1;">
+          <h4>📄 资本、权力与创新</h4>
+          <p>商业与权力的博弈逻辑</p>
+          <p class="dim" style="font-size: 0.75rem; margin-top: 0.5em;">博弈逻辑 → 本文补充了经济基础：资本集中化是权力博弈的经济根源</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">11 / 12</div>
+  </div>
+  
+  <!-- Slide 12: 开放问题 + 结语 -->
+  <div class="slide" data-index="11">
+    <div class="slide-content">
+      <h3 class="fade-in fade-in-d1">结语</h3>
+      <h2 class="fade-in fade-in-d2">四个<span class="highlight">开放性问题</span></h2>
+      <div class="divider fade-in fade-in-d3"></div>
+      
+      <div class="grid-2 fade-in fade-in-d4" style="margin-top: 1.5em;">
+        <div class="card">
+          <div class="icon">❓</div>
+          <h4>框架的边界</h4>
+          <p>"建仓vs健身"是否适用于所有行业？是否存在"既不能建仓也不能健身"的群体？</p>
+        </div>
+        <div class="card">
+          <div class="icon">🌏</div>
+          <h4>国别差异</h4>
+          <p>数据基于美国，中国的分配格局如何？中国劳动收入占比的历史趋势是什么？</p>
+        </div>
+        <div class="card">
+          <div class="icon">⏳</div>
+          <h4>制度适应速度</h4>
+          <p>分配结构的变化速度是否超过了制度的适应能力？危机倒逼还是主动设计？</p>
+        </div>
+        <div class="card">
+          <div class="icon">🧘</div>
+          <h4>终极追问</h4>
+          <p>当AI替代全部劳动，人类还需要"工作"吗？如果不需要，人类靠什么获得意义？</p>
+        </div>
+      </div>
+      
+      <div class="quote fade-in fade-in-d5" style="margin-top: 1.5em;">
+        <p>这是一个非常有意思和深刻、正在变革中的问题。</p>
+        <div class="author">—— 宋雪涛</div>
+      </div>
+    </div>
+    <div class="slide-number">12 / 12</div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="nav-bar">
+    <div class="nav-bar-progress" id="progress"></div>
+  </div>
+  
+  <div class="nav-arrows">
+    <button id="prevBtn" disabled>←</button>
+    <button id="nextBtn">→</button>
+  </div>
+  
+  <div class="arrow-hint" id="arrowHint">← 方向键翻页 →</div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  
+  const progress = document.getElementById('progress');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const arrowHint = document.getElementById('arrowHint');
+  
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active', 'prev');
+      if (i === index) {
+        slide.classList.add('active');
+      } else if (i < index) {
+        slide.classList.add('prev');
+      }
+    });
+    
+    progress.style.width = ((index + 1) / total * 100) + '%';
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === total - 1;
+    
+    if (index === total - 1) {
+      arrowHint.style.opacity = '0';
+    } else {
+      arrowHint.style.opacity = '1';
+    }
+  }
+  
+  function nextSlide() {
+    if (current < total - 1) {
+      current++;
+      showSlide(current);
+    }
+  }
+  
+  function prevSlide() {
+    if (current > 0) {
+      current--;
+      showSlide(current);
+    }
+  }
+  
+  prevBtn.addEventListener('click', prevSlide);
+  nextBtn.addEventListener('click', nextSlide);
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      prevSlide();
+    }
+  });
+  
+  // Touch support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  
+  document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  });
+  
+  showSlide(0);
+</script>
+
+</body>
+</html>
