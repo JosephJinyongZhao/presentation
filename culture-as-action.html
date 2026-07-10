@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文化是行动塑造的</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a28;
+    --accent: #7c6df0;
+    --accent2: #5a4bd8;
+    --accent-light: #a99aff;
+    --gold: #f0c86d;
+    --text: #e8e6f0;
+    --text-dim: #8884a0;
+    --text-bright: #ffffff;
+    --border: #2a2a40;
+    --red: #f06d6d;
+    --green: #6df0a0;
+    --blue: #6da0f0;
+    --orange: #f0a06d;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Slide container */
+  .slides {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100vh;
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background decoration */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 80vh;
+    height: 80vh;
+    background: radial-gradient(circle, rgba(124,109,240,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .slide::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -20%;
+    width: 60vh;
+    height: 60vh;
+    background: radial-gradient(circle, rgba(240,200,109,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .slide-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-align: center;
+  }
+
+  h1 .highlight {
+    background: linear-gradient(135deg, var(--accent-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 0.6em;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+
+  h2 .accent-line {
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--accent);
+    margin: 0.4em auto 0;
+    border-radius: 2px;
+  }
+
+  h3 {
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    font-weight: 500;
+    color: var(--accent-light);
+    margin-bottom: 0.5em;
+  }
+
+  p, li {
+    font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+    line-height: 1.7;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  .subtitle {
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-top: 0.5em;
+  }
+
+  /* Quote block */
+  .quote-block {
+    background: var(--bg2);
+    border-left: 4px solid var(--accent);
+    padding: 1.5em 2em;
+    margin: 1em 0;
+    border-radius: 0 12px 12px 0;
+    max-width: 900px;
+  }
+
+  .quote-block p {
+    font-size: clamp(1.3rem, 2.2vw, 2rem);
+    font-weight: 400;
+    color: var(--text-bright);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .quote-block .source {
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    color: var(--text-dim);
+    margin-top: 0.5em;
+    font-style: normal;
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2vw;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5vw;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1.2vw;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5em;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+  }
+
+  .card .icon {
+    font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+    margin-bottom: 0.3em;
+  }
+
+  .card h4 {
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 0.3em;
+  }
+
+  .card p {
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    max-width: 1100px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: clamp(0.9rem, 1.3vw, 1.2rem);
+  }
+
+  .compare-table th {
+    background: var(--bg3);
+    color: var(--text-bright);
+    font-weight: 700;
+    padding: 0.8em 1em;
+    text-align: center;
+  }
+
+  .compare-table th:first-child {
+    border-radius: 12px 0 0 0;
+    text-align: left;
+  }
+
+  .compare-table th:last-child { border-radius: 0 12px 0 0; }
+
+  .compare-table td {
+    padding: 0.7em 1em;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .compare-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-bright);
+  }
+
+  .compare-table tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+  .compare-table tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+
+  .compare-table tr:hover td { background: var(--bg3); }
+
+  .tag-pku { color: var(--blue); font-weight: 500; }
+  .tag-thu { color: var(--orange); font-weight: 500; }
+
+  /* Flow diagram */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5vw;
+    width: 100%;
+    max-width: 1100px;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    text-align: center;
+    min-width: 100px;
+    flex: 1;
+  }
+
+  .flow-step .label {
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    color: var(--text-dim);
+  }
+
+  .flow-step .value {
+    font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+    font-weight: 500;
+    color: var(--text-bright);
+    margin-top: 0.2em;
+  }
+
+  .flow-arrow {
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Layer diagram */
+  .layer-diagram {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .layer {
+    padding: 1em 2em;
+    text-align: center;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .layer:first-child {
+    border-radius: 16px 16px 0 0;
+    background: rgba(124,109,240,0.15);
+  }
+
+  .layer:nth-child(2) {
+    background: rgba(124,109,240,0.10);
+    border-top: none;
+  }
+
+  .layer:nth-child(3) {
+    background: rgba(124,109,240,0.05);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .layer .l-title {
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .layer .l-desc {
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    color: var(--text-dim);
+    margin-top: 0.2em;
+  }
+
+  .layer .l-tag {
+    display: inline-block;
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    padding: 0.2em 0.8em;
+    border-radius: 20px;
+    margin-top: 0.3em;
+  }
+
+  .tag-easy { background: rgba(109,240,160,0.15); color: var(--green); }
+  .tag-medium { background: rgba(240,200,109,0.15); color: var(--gold); }
+  .tag-hard { background: rgba(240,109,109,0.15); color: var(--red); }
+
+  /* Lever cards */
+  .lever-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.2em;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .lever-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .lever-card .num {
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.5;
+  }
+
+  .lever-card h4 {
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 0.3em 0;
+  }
+
+  .lever-card p {
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Numbered list */
+  .numbered-list {
+    list-style: none;
+    counter-reset: item;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .numbered-list li {
+    counter-increment: item;
+    padding: 0.6em 0 0.6em 3em;
+    position: relative;
+    font-size: clamp(1rem, 1.6vw, 1.4rem);
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(42,42,64,0.5);
+  }
+
+  .numbered-list li::before {
+    content: counter(item);
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 2em;
+    height: 2em;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    font-weight: 700;
+  }
+
+  .numbered-list li:last-child { border-bottom: none; }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5vw;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .summary-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5em;
+  }
+
+  .summary-card .s-num {
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 0.3em;
+  }
+
+  .summary-card h4 {
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 0.3em;
+  }
+
+  .summary-card p {
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.6em 1.2em;
+    border-radius: 40px;
+    border: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .nav-btn:disabled:hover {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .page-indicator {
+    font-size: clamp(0.85rem, 1vw, 1rem);
+    color: var(--text-dim);
+    min-width: 60px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .dot.active {
+    background: var(--accent);
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  .dot:hover {
+    background: var(--text-dim);
+  }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed;
+    bottom: 10vh;
+    right: 2vw;
+    font-size: 0.75rem;
+    color: rgba(136,132,160,0.3);
+    z-index: 50;
+  }
+
+  /* Slide-specific */
+  .slide-title {
+    text-align: center;
+  }
+
+  .slide-title .meta {
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    color: var(--text-dim);
+    margin-top: 1.5em;
+    letter-spacing: 0.1em;
+  }
+
+  .center-text {
+    text-align: center;
+    max-width: 900px;
+  }
+
+  .tagline {
+    font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+    font-weight: 300;
+    color: var(--text-dim);
+    text-align: center;
+    max-width: 900px;
+    line-height: 1.6;
+  }
+
+  .tagline strong {
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+
+  .big-number {
+    font-size: clamp(4rem, 10vw, 8rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  /* Bullet list */
+  .bullet-list {
+    list-style: none;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .bullet-list li {
+    padding: 0.4em 0 0.4em 1.8em;
+    position: relative;
+    font-size: clamp(1rem, 1.5vw, 1.35rem);
+    line-height: 1.6;
+  }
+
+  .bullet-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.6em;
+    top: 0.7em;
+  }
+
+  /* Inline SVG chart */
+  .bar-chart {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+
+  .bar-label {
+    min-width: 120px;
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    color: var(--text);
+    text-align: right;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 32px;
+    background: var(--bg3);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 16px;
+    transition: width 1s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 1em;
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .bar-fill.pku { background: linear-gradient(90deg, #6da0f0, #4a80d0); }
+  .bar-fill.thu { background: linear-gradient(90deg, #f0a06d, #d0804a); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3, .grid-4, .summary-grid { grid-template-columns: 1fr; }
+    .compare-table { font-size: 0.8rem; }
+    .compare-table th, .compare-table td { padding: 0.5em; }
+    .nav-bar { gap: 0.5vw; padding: 0.4em 0.8em; }
+    .nav-btn { width: 36px; height: 36px; font-size: 1rem; }
+    .bar-label { min-width: 80px; font-size: 0.8rem; }
+    .flow-diagram { gap: 0.3em; }
+    .flow-step { padding: 0.5em 0.8em; min-width: 60px; }
+    .key-hint { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 3vh 4vw; }
+    .progress-dots { display: none; }
+  }
+
+  /* Animation */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide.active .slide-content > * {
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .slide.active .slide-content > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .slide-content > *:nth-child(3) { animation-delay: 0.2s; }
+  .slide.active .slide-content > *:nth-child(4) { animation-delay: 0.3s; }
+  .slide.active .slide-content > *:nth-child(5) { animation-delay: 0.4s; }
+  .slide.active .slide-content > *:nth-child(6) { animation-delay: 0.5s; }
+
+  /* Page number */
+  .page-num {
+    position: absolute;
+    bottom: 12vh;
+    right: 8vw;
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    color: rgba(136,132,160,0.3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Special: final quote */
+  .final-quote {
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    text-align: center;
+    line-height: 1.4;
+    max-width: 1000px;
+  }
+
+  .final-quote .highlight {
+    background: linear-gradient(135deg, var(--accent-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Cycle diagram */
+  .cycle-container {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 1em auto;
+  }
+
+  .cycle-container svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cycle-label {
+    position: absolute;
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    color: var(--text-dim);
+    text-align: center;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Three-pillar */
+  .pillar-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1.5vw;
+    width: 100%;
+    max-width: 900px;
+    height: 300px;
+  }
+
+  .pillar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    flex: 1;
+  }
+
+  .pillar-bar {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    font-weight: 700;
+    color: #fff;
+    transition: height 1s ease;
+    min-height: 60px;
+  }
+
+  .pillar .p-label {
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .pillar .p-desc {
+    font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    color: var(--text-dim);
+    text-align: center;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" data-index="0">
+    <div class="slide-content slide-title">
+      <div class="meta">组织文化 · 底层逻辑</div>
+      <h1>文化是<br><span class="highlight">行动塑造</span>的</h1>
+      <p class="subtitle">从北大清华差异到组织文化的底层逻辑</p>
+      <p class="meta" style="margin-top:2em;">赵锦勇 · 2026年7月</p>
+    </div>
+    <div class="page-num">01 / 12</div>
+  </div>
+
+  <!-- Slide 2: The Core Question -->
+  <div class="slide" data-index="1">
+    <div class="slide-content center-text">
+      <h2>问题的起点</h2>
+      <div class="quote-block" style="text-align:left;">
+        <p>文化不是你说自己是什么，<br>而是你<strong style="color:var(--accent-light);">实际做了什么</strong>。</p>
+      </div>
+      <p class="tagline" style="margin-top:1em;">
+        不能一方面宣称自己是<strong>长期主义者</strong>，<br>但实际做着<strong style="color:var(--red);">投机行为</strong>。
+      </p>
+      <p class="tagline" style="margin-top:0.5em;">
+        不能一方面追求<strong>思想自由和独立</strong>，<br>但实际做着<strong style="color:var(--red);">抱团和讲究阶层</strong>的事。
+      </p>
+    </div>
+    <div class="page-num">02 / 12</div>
+  </div>
+
+  <!-- Slide 3: What is Culture -->
+  <div class="slide" data-index="2">
+    <div class="slide-content center-text">
+      <h2>文化的本质</h2>
+      <p class="tagline" style="margin-bottom:1em;">
+        <strong>行动的总和</strong>，而非宣言的总和
+      </p>
+      <div class="layer-diagram">
+        <div class="layer">
+          <div class="l-title">表层文化</div>
+          <div class="l-desc">仪式 · 符号 · 着装 · 语言</div>
+          <span class="l-tag tag-easy">容易看到</span>
+        </div>
+        <div class="layer">
+          <div class="l-title">中层文化</div>
+          <div class="l-desc">规则 · 制度 · 流程</div>
+          <span class="l-tag tag-medium">可以分析</span>
+        </div>
+        <div class="layer">
+          <div class="l-title">底层文化</div>
+          <div class="l-desc">共享的假设 · 信念 · 价值观</div>
+          <span class="l-tag tag-hard">难以察觉，但最根本</span>
+        </div>
+      </div>
+      <p style="margin-top:1em; color:var(--red); font-weight:400;">
+        大多数组织的问题：表层和中层宣称一套，底层实际运行另一套
+      </p>
+    </div>
+    <div class="page-num">03 / 12</div>
+  </div>
+
+  <!-- Slide 4: Culture Formation Cycle -->
+  <div class="slide" data-index="3">
+    <div class="slide-content center-text">
+      <h2>文化不是设计出来的</h2>
+      <p class="tagline" style="margin-bottom:1em;">是<strong>长出来</strong>的</p>
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="label">第一步</div>
+          <div class="value">行动</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="label">第二步</div>
+          <div class="value">结果</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="label">第三步</div>
+          <div class="value">重复</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="label">第四步</div>
+          <div class="value">习惯</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="label">第五步</div>
+          <div class="value">默认假设</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color:var(--accent);">
+          <div class="label">第六步</div>
+          <div class="value" style="color:var(--accent-light);">文化</div>
+        </div>
+      </div>
+      <div class="quote-block" style="margin-top:1.5em; text-align:left;">
+        <p>改变文化的唯一路径是<strong style="color:var(--accent-light);">改变行动</strong>，<br>而不是改变宣言。</p>
+      </div>
+    </div>
+    <div class="page-num">04 / 12</div>
+  </div>
+
+  <!-- Slide 5: Cost of Inconsistency -->
+  <div class="slide" data-index="4">
+    <div class="slide-content center-text">
+      <h2>言行不一的代价</h2>
+      <div class="grid-2" style="margin-top:1em;">
+        <div class="card" style="border-color:rgba(240,109,109,0.3);">
+          <div class="icon">💔</div>
+          <h4>信任腐蚀</h4>
+          <p>成员发现"说的和做的不一样"，对领导层失去信任</p>
+        </div>
+        <div class="card" style="border-color:rgba(240,109,109,0.3);">
+          <div class="icon">⚖️</div>
+          <h4>双重标准</h4>
+          <p>对别人一套标准，对自己另一套</p>
+        </div>
+        <div class="card" style="border-color:rgba(240,109,109,0.3);">
+          <div class="icon">💥</div>
+          <h4>文化分裂</h4>
+          <p>正式文化和非正式文化并行，实际运行的是非正式文化</p>
+        </div>
+        <div class="card" style="border-color:rgba(240,109,109,0.3);">
+          <div class="icon">🔋</div>
+          <h4>能量内耗</h4>
+          <p>成员花大量精力在"表演合规"而非真正做事</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">05 / 12</div>
+  </div>
+
+  <!-- Slide 6: PKU vs THU -->
+  <div class="slide" data-index="5">
+    <div class="slide-content center-text">
+      <h2>北大 vs 清华</h2>
+      <p class="tagline" style="margin-bottom:0.8em;">两种文化的底层逻辑</p>
+      <table class="compare-table">
+        <tr>
+          <th>维度</th>
+          <th><span class="tag-pku">北大</span></th>
+          <th><span class="tag-thu">清华</span></th>
+        </tr>
+        <tr>
+          <td>核心价值</td>
+          <td class="tag-pku">思想自由，兼容并包</td>
+          <td class="tag-thu">自强不息，厚德载物</td>
+        </tr>
+        <tr>
+          <td>个体 vs 集体</td>
+          <td class="tag-pku">强调个体独立</td>
+          <td class="tag-thu">强调集体协作</td>
+        </tr>
+        <tr>
+          <td>对权威的态度</td>
+          <td class="tag-pku">质疑、批判</td>
+          <td class="tag-thu">尊重、服从</td>
+        </tr>
+        <tr>
+          <td>组织方式</td>
+          <td class="tag-pku">松散联盟</td>
+          <td class="tag-thu">紧密梯队</td>
+        </tr>
+        <tr>
+          <td>行动风格</td>
+          <td class="tag-pku">各自为战</td>
+          <td class="tag-thu">体系作战</td>
+        </tr>
+        <tr>
+          <td>风险偏好</td>
+          <td class="tag-pku">敢于突破</td>
+          <td class="tag-thu">稳健执行</td>
+        </tr>
+      </table>
+    </div>
+    <div class="page-num">06 / 12</div>
+  </div>
+
+  <!-- Slide 7: Historical Roots -->
+  <div class="slide" data-index="6">
+    <div class="slide-content">
+      <h2>百年历史塑造的差异</h2>
+      <div class="grid-2" style="margin-top:1em;">
+        <div class="card" style="border-color:rgba(109,160,240,0.3);">
+          <div class="icon" style="color:var(--blue);">🏛️</div>
+          <h4 style="color:var(--blue);">北大基因</h4>
+          <ul class="bullet-list" style="margin-top:0.5em;">
+            <li>从京师大学堂开始就是"为国育才"的最高学府</li>
+            <li>五四运动以来，始终站在思想解放前沿</li>
+            <li>蔡元培"思想自由，兼容并包"奠定学术独立基因</li>
+            <li>长期处于"挑战者"而非"建设者"的位置</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(240,160,109,0.3);">
+          <div class="icon" style="color:var(--orange);">🔧</div>
+          <h4 style="color:var(--orange);">清华基因</h4>
+          <ul class="bullet-list" style="margin-top:0.5em;">
+            <li>庚子赔款退款建立，实用主义基因</li>
+            <li>工科传统：团队协作、系统思维、工程落地</li>
+            <li>长期处于"建设者"位置，输送大量工程师</li>
+            <li>校友网络紧密，形成"清华帮"体系化力量</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">07 / 12</div>
+  </div>
+
+  <!-- Slide 8: THU Risk -->
+  <div class="slide" data-index="7">
+    <div class="slide-content center-text">
+      <h2>体系化的两面</h2>
+      <div class="grid-2" style="margin-top:1em;">
+        <div class="card" style="border-color:rgba(109,240,160,0.3);">
+          <div class="icon" style="color:var(--green);">✅</div>
+          <h4 style="color:var(--green);">优势</h4>
+          <ul class="bullet-list" style="margin-top:0.5em;">
+            <li>组织力强，校友网络紧密</li>
+            <li>体系化运作，能办大事</li>
+            <li>强烈的身份认同和互助意识</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(240,109,109,0.3);">
+          <div class="icon" style="color:var(--red);">⚠️</div>
+          <h4 style="color:var(--red);">风险</h4>
+          <ul class="bullet-list" style="margin-top:0.5em;">
+            <li>体系化 → 圈子化，只认自己人</li>
+            <li>集体行动 → 集体站队，丧失独立判断</li>
+            <li>校友互助 → 利益交换，偏离教育本质</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote-block" style="margin-top:1em; text-align:left;">
+        <p>当形式（成梯队、有体系）还在，但内核（做事、创造价值）已经变了——<strong style="color:var(--red);">文化已经异化</strong>。</p>
+      </div>
+    </div>
+    <div class="page-num">08 / 12</div>
+  </div>
+
+  <!-- Slide 9: Governance Pyramid -->
+  <div class="slide" data-index="8">
+    <div class="slide-content center-text">
+      <h2>完整的治理层次</h2>
+      <div class="layer-diagram" style="max-width:600px;">
+        <div class="layer" style="background:rgba(240,200,109,0.12); border-radius:16px 16px 0 0;">
+          <div class="l-title" style="color:var(--gold);">顶层 · 使命/愿景</div>
+          <div class="l-desc">为什么存在</div>
+        </div>
+        <div class="layer" style="background:rgba(124,109,240,0.10); border-top:none;">
+          <div class="l-title" style="color:var(--accent-light);">中层 · 战略/制度/政策</div>
+          <div class="l-desc">做什么、怎么做</div>
+        </div>
+        <div class="layer" style="background:rgba(124,109,240,0.15); border-top:none; border-radius:0 0 16px 16px;">
+          <div class="l-title" style="color:var(--text-bright);">底层 · 文化/价值观</div>
+          <div class="l-desc">不需要想就知道该怎么做</div>
+        </div>
+      </div>
+      <p style="margin-top:1em; font-weight:400;">
+        当制度和文化冲突时，<strong style="color:var(--accent-light);">文化永远赢</strong>
+      </p>
+    </div>
+    <div class="page-num">09 / 12</div>
+  </div>
+
+  <!-- Slide 10: Five Levers -->
+  <div class="slide" data-index="9">
+    <div class="slide-content center-text">
+      <h2>塑造文化的五个杠杆</h2>
+      <div class="grid-3" style="margin-top:1em;">
+        <div class="lever-card">
+          <div class="num">01</div>
+          <h4>创始人的行为</h4>
+          <p>一言一行是文化的第一来源</p>
+        </div>
+        <div class="lever-card">
+          <div class="num">02</div>
+          <h4>奖励什么</h4>
+          <p>组织真正奖励的行为会变成文化</p>
+        </div>
+        <div class="lever-card">
+          <div class="num">03</div>
+          <h4>容忍什么</h4>
+          <p>容忍的错误类型决定创新边界</p>
+        </div>
+        <div class="lever-card">
+          <div class="num">04</div>
+          <h4>谁被提拔</h4>
+          <p>提拔什么人，是文化最强烈的信号</p>
+        </div>
+        <div class="lever-card">
+          <div class="num">05</div>
+          <h4>如何做决定</h4>
+          <p>决策过程本身就是文化的一部分</p>
+        </div>
+        <div class="lever-card" style="border-color:var(--accent);">
+          <div class="num" style="color:var(--gold);">★</div>
+          <h4 style="color:var(--gold);">一致性</h4>
+          <p>平庸但一致 > 高尚但言行不一</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">10 / 12</div>
+  </div>
+
+  <!-- Slide 11: Four Steps -->
+  <div class="slide" data-index="10">
+    <div class="slide-content center-text">
+      <h2>改变文化的四步</h2>
+      <div class="grid-4" style="margin-top:1em;">
+        <div class="card" style="text-align:center;">
+          <div class="big-number" style="font-size:clamp(2rem,3vw,2.5rem);">01</div>
+          <h4>诊断</h4>
+          <p>识别当前的实际文化——看行动，不听宣言</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="big-number" style="font-size:clamp(2rem,3vw,2.5rem);">02</div>
+          <h4>对标</h4>
+          <p>明确想要的文化——具体到可观察的行为</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="big-number" style="font-size:clamp(2rem,3vw,2.5rem);">03</div>
+          <h4>干预</h4>
+          <p>在五个杠杆中选择2-3个，持续施加影响</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="big-number" style="font-size:clamp(2rem,3vw,2.5rem);">04</div>
+          <h4>固化</h4>
+          <p>通过制度、仪式、故事把新行为固化下来</p>
+        </div>
+      </div>
+      <div class="quote-block" style="margin-top:1em; text-align:left;">
+        <p>改变文化的唯一路径是<strong style="color:var(--accent-light);">改变行动</strong>——<br>在五个杠杆上持续施加影响，而不是靠喊口号。</p>
+      </div>
+    </div>
+    <div class="page-num">11 / 12</div>
+  </div>
+
+  <!-- Slide 12: Final -->
+  <div class="slide" data-index="11">
+    <div class="slide-content center-text">
+      <h2 style="margin-bottom:1em;">总结</h2>
+      <div class="summary-grid" style="margin-bottom:1.5em;">
+        <div class="summary-card">
+          <div class="s-num">01</div>
+          <h4>行动的总和</h4>
+          <p>看一个组织的文化，看它实际奖励什么、容忍什么、提拔什么人，而不是看它的官网</p>
+        </div>
+        <div class="summary-card">
+          <div class="s-num">02</div>
+          <h4>言行不一是最大杀手</h4>
+          <p>比"坏文化"更糟糕的是"虚假的文化"</p>
+        </div>
+        <div class="summary-card">
+          <div class="s-num">03</div>
+          <h4>百年塑造的差异</h4>
+          <p>北大清华各有优劣，关键在于是否与组织的使命匹配</p>
+        </div>
+        <div class="summary-card">
+          <div class="s-num">04</div>
+          <h4>制度与文化必须一致</h4>
+          <p>制度告诉"应该做什么"，文化告诉"不需要想就知道该怎么做"</p>
+        </div>
+      </div>
+      <div class="final-quote">
+        <span class="highlight">文化不是你说自己是什么，<br>而是你做了什么</span>
+        <span style="display:block; font-size:clamp(1.4rem,2.5vw,2.2rem); color:var(--text-dim); margin-top:0.3em;">
+          ——以及你<strong style="color:var(--red);">容忍</strong>了什么。
+        </span>
+      </div>
+    </div>
+    <div class="page-num">12 / 12</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">‹</button>
+  <div class="progress-dots" id="dots"></div>
+  <span class="page-indicator" id="pageIndicator">1 / 12</span>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">›</button>
+</div>
+
+<div class="key-hint">← → 方向键翻页</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // Create dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function update() {
+    document.getElementById('slides').style.transform = `translateX(-${current * 100}vw)`;
+    document.getElementById('pageIndicator').textContent = `${current + 1} / ${total}`;
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === total - 1;
+
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+      document.querySelectorAll('.dot')[i]?.classList.toggle('active', i === current);
+    });
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < total) {
+      current = next;
+      update();
+    }
+  }
+
+  function goTo(index) {
+    if (index >= 0 && index < total) {
+      current = index;
+      update();
+    }
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      navigate(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      navigate(-1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goTo(total - 1);
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      navigate(diff > 0 ? 1 : -1);
+    }
+  }, { passive: true });
+
+  update();
+</script>
+
+</body>
+</html>
