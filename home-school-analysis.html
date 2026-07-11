@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北美Home School深度解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a28;
+  --text: #e8e6f0;
+  --text-dim: #8888a0;
+  --accent: #5b8def;
+  --accent2: #f0c86a;
+  --accent3: #6af0a8;
+  --accent4: #f06a8a;
+  --accent5: #c084fc;
+  --border: #2a2a40;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.slides-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5vh 7vw;
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+  overflow-y: auto;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.slide.exit {
+  opacity: 0;
+  transform: scale(1.03);
+}
+
+.slide-inner {
+  max-width: 1100px;
+  width: 100%;
+  margin: auto;
+}
+
+h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5em;
+}
+
+h1 .highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 0.5em;
+  color: var(--accent2);
+}
+
+h3 {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  font-weight: 600;
+  margin-bottom: 0.4em;
+  color: var(--accent);
+}
+
+p, li {
+  font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  line-height: 1.8;
+  margin-bottom: 0.5em;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 1.6vw, 1.4rem);
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 1.2em;
+}
+
+/* Navigation */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(transparent, rgba(10,10,15,0.95));
+  z-index: 100;
+  padding: 0 24px;
+}
+
+.nav-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.nav-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+.page-indicator {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  min-width: 80px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 100;
+  transition: width 0.5s ease;
+}
+
+/* Cards */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.2rem 1.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.card-accent { border-left: 4px solid var(--accent); }
+.card-warn { border-left: 4px solid var(--accent2); background: rgba(240,200,106,0.04); }
+.card-danger { border-left: 4px solid var(--accent4); background: rgba(240,106,138,0.04); }
+.card-green { border-left: 4px solid var(--accent3); background: rgba(106,240,168,0.04); }
+.card-purple { border-left: 4px solid var(--accent5); background: rgba(192,132,252,0.04); }
+
+/* Grids */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8rem; }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8rem 0;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+}
+
+.data-table th {
+  background: var(--bg3);
+  color: var(--accent2);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent);
+}
+
+.data-table td {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+.data-table tr:hover td { background: rgba(91,141,239,0.05); }
+
+/* Expert card */
+.expert-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.expert-name {
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  margin-bottom: 0.2rem;
+}
+
+.expert-title {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.expert-quote {
+  font-size: clamp(0.85rem, 1.15vw, 1rem);
+  line-height: 1.7;
+}
+
+/* Key insight */
+.key-insight {
+  text-align: center;
+  padding: 1.8rem;
+  margin: 1.2rem 0;
+  border: 1px solid var(--accent2);
+  border-radius: 18px;
+  background: radial-gradient(ellipse at center, rgba(240,200,106,0.06), transparent);
+}
+
+.key-insight p {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* Quote block */
+.quote-block {
+  border-left: 3px solid var(--accent2);
+  padding: 0.8rem 1.2rem;
+  margin: 1rem 0;
+  background: rgba(240,200,106,0.03);
+  border-radius: 0 10px 10px 0;
+}
+
+.quote-block p {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-style: italic;
+  color: var(--accent2);
+  margin-bottom: 0;
+}
+
+/* Bullet list */
+.bullet-list { list-style: none; padding-left: 0; }
+.bullet-list li {
+  padding-left: 1.4em;
+  position: relative;
+  margin-bottom: 0.4em;
+}
+.bullet-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 0.55em;
+  top: 0.3em;
+}
+
+/* Numbered list */
+.num-list { list-style: none; counter-reset: item; }
+.num-list li {
+  counter-increment: item;
+  padding-left: 2.3em;
+  position: relative;
+  margin-bottom: 0.7em;
+}
+.num-list li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 1.6em;
+  height: 1.6em;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 0.15em 0.5em;
+  border-radius: 5px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin-right: 0.3em;
+}
+.tag-blue { background: rgba(91,141,239,0.2); color: var(--accent); }
+.tag-yellow { background: rgba(240,200,106,0.2); color: var(--accent2); }
+.tag-green { background: rgba(106,240,168,0.2); color: var(--accent3); }
+.tag-red { background: rgba(240,106,138,0.2); color: var(--accent4); }
+.tag-purple { background: rgba(192,132,252,0.2); color: var(--accent5); }
+
+/* Section divider */
+.section-divider {
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  margin: 0.8rem 0 1.2rem;
+  border-radius: 2px;
+}
+
+/* Title slide */
+.title-slide { text-align: center; }
+.title-slide .subtitle {
+  font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  color: var(--text-dim);
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+}
+.title-slide .meta {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 1.5rem;
+}
+
+/* Flow chain */
+.flow-chain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 1rem 0;
+}
+.flow-chain .item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
+  text-align: center;
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  min-width: 60px;
+}
+.flow-chain .arrow {
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+/* Kbd hint */
+.kbd-hint {
+  position: fixed;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: rgba(136,136,160,0.35);
+  z-index: 99;
+  pointer-events: none;
+}
+
+/* Scrollbar */
+.slide::-webkit-scrollbar { width: 4px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* English text */
+.en { font-family: 'Noto Sans SC', sans-serif; font-style: italic; }
+
+/* Comparison boxes */
+.comp-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.comp-box h4 { font-size: clamp(0.85rem, 1.15vw, 1rem); margin-bottom: 0.3rem; }
+.comp-box p { font-size: clamp(0.78rem, 1vw, 0.9rem); color: var(--text-dim); line-height: 1.5; margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slides-wrapper" id="slidesWrapper">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner title-slide">
+    <div style="margin-bottom:0.8rem;font-size:0.8rem;color:var(--accent);letter-spacing:0.15em;font-weight:500;">赵锦勇 · 家庭成长</div>
+    <h1>北美<span class="highlight">Home School</span>深度解析</h1>
+    <div class="section-divider" style="margin:1.2rem auto;"></div>
+    <p class="subtitle">意义、优势、局限与借鉴——从个体选择到社会契约</p>
+    <div class="flow-chain" style="margin:1.5rem 0;">
+      <span class="item" style="border-color:var(--accent);">个体视角</span>
+      <span class="arrow">→</span>
+      <span class="item" style="border-color:var(--accent2);">多学科审视</span>
+      <span class="arrow">→</span>
+      <span class="item" style="border-color:var(--accent3);">中国智囊团</span>
+      <span class="arrow">→</span>
+      <span class="item" style="border-color:var(--accent5);">国际智囊团</span>
+    </div>
+    <div class="meta">包含批判性审视 · 八位中外专家碰撞 · 家庭成长知识库</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Overview & Scale -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <h2>Home School在北美</h2>
+    <div class="section-divider"></div>
+    <div class="grid-2">
+      <div class="card card-accent">
+        <p style="font-size:clamp(1.8rem,3vw,2.8rem);font-weight:900;color:var(--accent);margin-bottom:0.2rem;">370万</p>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem);color:var(--text-dim);margin-bottom:0;">美国学龄儿童接受home school</p>
+      </div>
+      <div class="card card-warn">
+        <p style="font-size:clamp(1.8rem,3vw,2.8rem);font-weight:900;color:var(--accent2);margin-bottom:0.2rem;">6-7%</p>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem);color:var(--text-dim);margin-bottom:0;">疫情前3%，疫情期间翻倍</p>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>类型</th><th>动机</th><th>特点</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-blue">宗教型</span></td><td>避免世俗化价值观</td><td>最传统，占比最大</td></tr>
+        <tr><td><span class="tag tag-yellow">学术型</span></td><td>对学校教育质量不满</td><td>高知家庭，结构化课程</td></tr>
+        <tr><td><span class="tag tag-green">特殊需求型</span></td><td>学校无法满足特殊需求</td><td>个性化一对一支持</td></tr>
+        <tr><td><span class="tag tag-purple">生活方式型</span></td><td>追求灵活与反主流</td><td>最灵活，也最不结构化</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SLIDE 3: Core Advantages -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <h2>核心优势</h2>
+    <div class="section-divider"></div>
+    <div class="grid-3">
+      <div class="card card-accent">
+        <h3>📚 学术层面</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li>1对1教学效率翻倍</li>
+          <li>因材施教，节奏自定</li>
+          <li>深度探索兴趣领域</li>
+          <li>跨学科整合灵活</li>
+        </ul>
+      </div>
+      <div class="card card-green">
+        <h3>🏠 家庭层面</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li>亲子关系深化</li>
+          <li>价值观直接传递</li>
+          <li>生活方式灵活</li>
+          <li>避免校园霸凌</li>
+        </ul>
+      </div>
+      <div class="card card-warn">
+        <h3>⚡ 效率层面</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li>2-3小时完成学校一天</li>
+          <li>无课堂管理时间浪费</li>
+          <li>省时用于深度探索</li>
+          <li>随时学习机会转化</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card card-warn" style="margin-top:0.5rem;">
+      <p style="font-size:clamp(0.8rem,1.1vw,0.95rem);margin-bottom:0;">
+        <strong style="color:var(--accent2);">⚠️ 张馨野案例是"理想版本"</strong> — 经济宽裕+全职投入+环境优越，不是大多数home school家庭的常态
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Core Defects -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <h2>核心缺陷与风险</h2>
+    <div class="section-divider"></div>
+    <table class="data-table">
+      <thead><tr><th>维度</th><th>优势</th><th>缺陷/风险</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-blue">学术</span></td><td>因材施教、效率高</td><td>父母专业局限、评估不客观</td></tr>
+        <tr><td><span class="tag tag-yellow">社交</span></td><td>避免负面社交</td><td>同伴互动少、隐性规则学习缺失</td></tr>
+        <tr><td><span class="tag tag-green">家庭</span></td><td>亲子关系深化</td><td>一方全职压力大、经济负担</td></tr>
+        <tr><td><span class="tag tag-red">发展</span></td><td>灵活、个性化</td><td>大学申请复杂、社会适应期</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2" style="margin-top:0.8rem;">
+      <div class="card card-danger">
+        <h3 style="font-size:clamp(0.85rem,1.15vw,1rem);color:var(--accent4);">👤 家庭压力</h3>
+        <p style="font-size:clamp(0.78rem,1vw,0.9rem);">每天4-6小时教学+备课，双重角色倦怠，经济压力，社交孤立</p>
+      </div>
+      <div class="card card-purple">
+        <h3 style="font-size:clamp(0.85rem,1.15vw,1rem);color:var(--accent5);">🎓 专业局限</h3>
+        <p style="font-size:clamp(0.78rem,1vw,0.9rem);">学科深度不足，课程设计不专业，知识盲区传递，评估不客观</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: The Scale of Education -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <h2>教育的"规模性"</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">你提出的核心观点——教育需要规模性，这是被home school支持者经常忽略的关键</p>
+    <div class="grid-2">
+      <div class="card card-accent">
+        <h3>📖 显性教育（课程内容）</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li>知识传授</li>
+          <li>技能训练</li>
+          <li>考试评估</li>
+        </ul>
+      </div>
+      <div class="card card-warn">
+        <h3>🌐 隐性教育（群体过程）</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li><strong>社会比较</strong> — 激励与同理心</li>
+          <li><strong>规则内化</strong> — 公民意识起点</li>
+          <li><strong>多元视角</strong> — 批判性思维土壤</li>
+          <li><strong>竞争与合作</strong> — 何时进退</li>
+          <li><strong>权威多样性</strong> — 不同风格相处</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card card-green" style="margin-top:0.5rem;">
+      <p style="font-size:clamp(0.8rem,1.1vw,0.95rem);margin-bottom:0;">
+        <strong>核心结论</strong>：Home school的优势（个性化、灵活性）和学校教育的优势（专业性、群体化）不是谁替代谁，而是<strong style="color:var(--accent2);">不同维度的价值</strong>。最理想的是找到两者的结合点。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Critical Intro -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <h2>批判性审视</h2>
+    <div class="section-divider"></div>
+    <div class="card card-danger" style="padding:1.2rem;">
+      <p style="font-size:clamp(0.85rem,1.3vw,1.1rem);line-height:1.8;margin-bottom:0;">
+        任何教育选择都不是在真空中发生的——它嵌入在特定的历史阶段、社会结构、经济条件和政治制度中。以下审视试图从这些外部视角，重新理解home school现象的本质。
+      </p>
+    </div>
+    <div class="grid-3" style="margin-top:1rem;">
+      <div class="comp-box"><h4 style="color:var(--accent);">📜 历史视角</h4><p>Home school不是"回归传统"，而是现代性的产物——依赖互联网、出版业、高学历父母等现代条件</p></div>
+      <div class="comp-box"><h4 style="color:var(--accent2);">👥 社会学视角</h4><p>可能成为社会分层的新机制——"有选择权"的家庭的特权</p></div>
+      <div class="comp-box"><h4 style="color:var(--accent4);">⚔️ 政治学视角</h4><p>教育权归属的深层张力——家庭自主权 vs 公共责任</p></div>
+      <div class="comp-box"><h4 style="color:var(--accent3);">💰 经济学视角</h4><p>微观理性 vs 宏观效率的错位——投入是公立学校15-20倍</p></div>
+      <div class="comp-box"><h4 style="color:var(--accent5);">🎭 人类学视角</h4><p>文化传递与固化的双重可能——关键在开放还是封闭</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Critical Table -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <h2>五维度审视对照</h2>
+    <div class="section-divider"></div>
+    <table class="data-table">
+      <thead><tr><th>维度</th><th>核心挑战</th><th>对决策的启示</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-blue">历史</span></td><td>不是回归传统，是现代性的产物</td><td>不要浪漫化，清醒认识条件依赖</td></tr>
+        <tr><td><span class="tag tag-yellow">社会</span></td><td>可能成为社会分层新机制</td><td>警惕"精英退出公共教育"连锁反应</td></tr>
+        <tr><td><span class="tag tag-red">政治</span></td><td>教育权归属的深层张力</td><td>家庭自主权 vs 公共责任的平衡</td></tr>
+        <tr><td><span class="tag tag-green">经济</span></td><td>微观理性 vs 宏观效率错位</td><td>个人选择需纳入社会成本考量</td></tr>
+        <tr><td><span class="tag tag-purple">人类学</span></td><td>文化传递与固化的双重可能</td><td>关键在开放还是封闭</td></tr>
+      </tbody>
+    </table>
+    <div class="key-insight" style="margin-top:1rem;padding:1.2rem;">
+      <p style="font-size:clamp(0.9rem,1.3vw,1.15rem);margin-bottom:0;">
+        教育既是家庭的私事，也是社会的公事。<br>最理想的状态不是二选一，而是<strong style="color:var(--accent2);">让学校和家庭各司其职、相互补充</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: China Think Tank Intro -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <h2>中国智囊团</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">多学科视角下的Home School深度碰撞</p>
+    <div class="grid-2">
+      <div class="expert-card" style="border-left:4px solid var(--accent);">
+        <div class="expert-name" style="color:var(--accent);">🔵 林小英</div>
+        <div class="expert-title">北京大学教育学院 · 副教授</div>
+        <div class="expert-quote">"Home school提供了'教育想象力'——学习不一定等于上课，成长不一定等于考试。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent4);">
+        <div class="expert-name" style="color:var(--accent4);">🔴 李强</div>
+        <div class="expert-title">清华大学社会学系 · 教授</div>
+        <div class="expert-quote">"Home school是'用钱买教育'的升级版，会加速教育的社会阶层固化。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent2);">
+        <div class="expert-name" style="color:var(--accent2);">🟡 陈忻</div>
+        <div class="expert-title">发展心理学博士</div>
+        <div class="expert-quote">"学校中'不舒服'的经历恰恰是心理弹性的训练场。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent3);">
+        <div class="expert-name" style="color:var(--accent3);">🟢 钱颖一</div>
+        <div class="expert-title">清华大学经济管理学院 · 教授</div>
+        <div class="expert-quote">"Home school投入是公立学校的15-20倍，巨大的效率损失。"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: China Think Tank Collision -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <h2>中国智囊团 · 碰撞</h2>
+    <div class="section-divider"></div>
+    <div class="expert-card" style="border-left:4px solid var(--accent3);margin-bottom:0.6rem;">
+      <div class="expert-name" style="color:var(--accent3);font-size:clamp(0.85rem,1.15vw,1rem);">🟢 钱颖一 → 林小英</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"教育的产出不能只用考试成绩衡量。效率很重要，但教育不是工厂生产。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent4);margin-bottom:0.6rem;">
+      <div class="expert-name" style="color:var(--accent4);font-size:clamp(0.85rem,1.15vw,1rem);">🔴 李强 → 林小英</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"软产出不是home school独有的——家长的参与程度才是关键变量。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent2);margin-bottom:0.6rem;">
+      <div class="expert-name" style="color:var(--accent2);font-size:clamp(0.85rem,1.15vw,1rem);">🟡 陈忻</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"对孩子最有利的是'家校协同'——学校提供专业教学和群体环境，家庭提供情感支持和个性化补充。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent3);">
+      <div class="expert-name" style="color:var(--accent3);font-size:clamp(0.85rem,1.15vw,1rem);">🟢 钱颖一</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"比较优势——学校做专业教学，家庭做个性化支持，各司其职。"</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: China Think Tank Consensus -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <h2>中国智囊团 · 共识</h2>
+    <div class="section-divider"></div>
+    <ol class="num-list">
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        Home School本质上是<strong style="color:var(--accent);">"社会契约问题"</strong>——如何在社会层面组织"培养下一代"
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        最理想的教育模式是<strong style="color:var(--accent2);">"家校协同"</strong>——各司其职、相互补充
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        不能只谈"好不好"，还要谈<strong style="color:var(--accent4);">"对谁好"、"谁有资格选"</strong>
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        <strong style="color:var(--accent3);">家长参与程度</strong>比"在家还是在学校"更能预测教育效果
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);">
+        最好的教育政策是让不同家庭有<strong style="color:var(--accent2);">真正的选择权</strong>，同时防止选择权导致社会分裂
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- SLIDE 11: International Think Tank -->
+<div class="slide" data-index="10">
+  <div class="slide-inner">
+    <h2>国际智囊团</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">全球视野下的Home School再审视</p>
+    <div class="grid-2">
+      <div class="expert-card" style="border-left:4px solid var(--accent);">
+        <div class="expert-name" style="color:var(--accent);">🔵 Peter Gray</div>
+        <div class="expert-title">波士顿学院 · 心理学教授</div>
+        <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"核心不是学术，而是保护孩子与生俱来的学习热情。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent4);">
+        <div class="expert-name" style="color:var(--accent4);">🔴 Diane Ravitch</div>
+        <div class="expert-title">纽约大学 · 教育史教授</div>
+        <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"Home school是奢侈品而非教育模式——公立学校是民主的基石。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent2);">
+        <div class="expert-name" style="color:var(--accent2);">🟡 Sugata Mitra</div>
+        <div class="expert-title">纽卡斯尔大学 · 教育技术教授</div>
+        <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"20年后'在家vs在校'的区分将像'家庭医疗vs医院医疗'一样过时。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent3);">
+        <div class="expert-name" style="color:var(--accent3);">🟢 Michele Borba</div>
+        <div class="expert-title">教育心理学家 · UnSelfie作者</div>
+        <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"共情能力30年下降40%——教育的终极目标是培养'好人'。"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: International Collision -->
+<div class="slide" data-index="11">
+  <div class="slide-inner">
+    <h2>国际智囊团 · 交锋</h2>
+    <div class="section-divider"></div>
+    <div class="expert-card" style="border-left:4px solid var(--accent4);margin-bottom:0.6rem;">
+      <div class="expert-name" style="color:var(--accent4);font-size:clamp(0.85rem,1.15vw,1rem);">🔴 Ravitch → Gray</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"你描述的是理想化版本——你的研究存在严重的选择偏差。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent);margin-bottom:0.6rem;">
+      <div class="expert-name" style="color:var(--accent);font-size:clamp(0.85rem,1.15vw,1rem);">🔵 Gray → Ravitch</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"你把'概念'和'现状'混为一谈了——让home school更公平是政策问题，不是模式问题。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent2);margin-bottom:0.6rem;">
+      <div class="expert-name" style="color:var(--accent2);font-size:clamp(0.85rem,1.15vw,1rem);">🟡 Mitra</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"技术已经打破了'在家vs在校'的二元对立——未来是自组织学习环境（SOLE）。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent3);">
+      <div class="expert-name" style="color:var(--accent3);font-size:clamp(0.85rem,1.15vw,1rem);">🟢 Borba → Mitra</div>
+      <div class="expert-quote" style="font-size:clamp(0.78rem,1vw,0.9rem);">"SOLE模式令人兴奋，但关系性和情感性发展需要面对面的持续互动——屏幕无法替代。"</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: International Consensus -->
+<div class="slide" data-index="12">
+  <div class="slide-inner">
+    <h2>国际智囊团 · 共识</h2>
+    <div class="section-divider"></div>
+    <ol class="num-list">
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        争论不应是"在家vs在校"，而是如何创造<strong style="color:var(--accent);">尊重儿童自主性、提供丰富社交、对所有家庭可及</strong>的学习环境
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        技术已经打破了二元对立——未来将是<strong style="color:var(--accent2);">学习选项的连续谱</strong>
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        无论哪种模式，教育的终极目标是培养<strong style="color:var(--accent3);">"好人"</strong>——善良、有同理心、有韧性、有道德
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);margin-bottom:0.8rem;">
+        <strong style="color:var(--accent5);">芬兰模式</strong>证明：优秀的公立教育可以兼顾儿童自主性和共同学校理想
+      </li>
+      <li style="font-size:clamp(0.85rem,1.15vw,1rem);">
+        关系性和情感性发展需要<strong style="color:var(--accent4);">面对面的、与多样化他人的持续互动</strong>——技术无法完全替代
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- SLIDE 14: Practical Takeaways -->
+<div class="slide" data-index="13">
+  <div class="slide-inner">
+    <h2>可以借鉴的内容</h2>
+    <div class="section-divider"></div>
+    <div class="grid-2">
+      <div class="card card-accent">
+        <h3>💡 理念启发</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li>学习可以发生在任何地方</li>
+          <li>兴趣是最好的驱动力</li>
+          <li>1对1专注时间效率更高</li>
+          <li>父母参与是核心变量</li>
+        </ul>
+      </div>
+      <div class="card card-green">
+        <h3>🎯 实践建议</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.05vw,0.95rem);">
+          <li>每周2-3次"深度学习"时间</li>
+          <li>假期主题式学习项目</li>
+          <li>建立家庭学习文化</li>
+          <li>课外补充个性化内容</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card card-warn" style="margin-top:0.5rem;">
+      <p style="font-size:clamp(0.8rem,1.1vw,0.95rem);margin-bottom:0;">
+        <strong>需要警惕</strong>：浪漫化想象 · 过度否定学校 · 教育完全私有化 · 对孩子需求的误判
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: Final -->
+<div class="slide" data-index="14">
+  <div class="slide-inner title-slide">
+    <h2 style="margin-bottom:0.8rem;">教育既是家庭的私事</h2>
+    <h2 style="margin-bottom:1.5rem;color:var(--accent2);">也是社会的公事</h2>
+    <div class="key-insight" style="padding:2rem;border-color:var(--accent2);">
+      <p style="font-size:clamp(1.2rem,2.2vw,1.8rem);margin-bottom:0.8rem;color:var(--accent2);">
+        最理想的教育模式
+      </p>
+      <p style="font-size:clamp(1.4rem,2.8vw,2.4rem);font-weight:900;margin-bottom:0.8rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        不是二选一
+      </p>
+      <p style="font-size:clamp(1.1rem,1.8vw,1.5rem);color:var(--text-dim);margin-bottom:0;">
+        而是让学校和家庭各司其职、相互补充
+      </p>
+    </div>
+    <div style="margin-top:1.5rem;font-size:0.8rem;color:var(--text-dim);">
+      赵锦勇 · 2026年7月 · 家庭成长知识库
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">‹</button>
+  <span class="page-indicator" id="pageIndicator">1 / 15</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">›</button>
+</div>
+
+<div class="kbd-hint">← → 方向键翻页</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+
+function updateSlide() {
+  slides.forEach((slide, i) => {
+    slide.classList.remove('active', 'exit');
+    if (i === currentSlide) {
+      slide.classList.add('active');
+    } else if (i < currentSlide) {
+      slide.classList.add('exit');
+    }
+  });
+  document.getElementById('pageIndicator').textContent = `${currentSlide + 1} / ${totalSlides}`;
+  document.getElementById('progressBar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+}
+
+function changeSlide(direction) {
+  const newSlide = currentSlide + direction;
+  if (newSlide < 0 || newSlide >= totalSlides) return;
+  currentSlide = newSlide;
+  updateSlide();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    changeSlide(-1);
+  }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+});
+
+updateSlide();
+</script>
+
+</body>
+</html>
