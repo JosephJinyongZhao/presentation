@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>领导力即文化</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a28;
+  --text: #e8e6f0;
+  --text-dim: #8888a0;
+  --accent: #7c6af0;
+  --accent2: #f0c86a;
+  --accent3: #6af0a8;
+  --accent4: #f06a8a;
+  --border: #2a2a40;
+  --glow: rgba(124, 106, 240, 0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Slide container */
+.slides-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6vh 8vw;
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+  overflow-y: auto;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.slide.exit {
+  opacity: 0;
+  transform: scale(1.03);
+}
+
+/* Slide inner content */
+.slide-inner {
+  max-width: 1100px;
+  width: 100%;
+  margin: auto;
+}
+
+/* Typography */
+h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5em;
+}
+
+h1 .highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 0.6em;
+  color: var(--accent2);
+}
+
+h3 {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  color: var(--accent);
+}
+
+p, li {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 0.6em;
+}
+
+.subtitle {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 1.5em;
+}
+
+/* Navigation */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(transparent, rgba(10,10,15,0.95));
+  z-index: 100;
+  padding: 0 24px;
+}
+
+.nav-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.nav-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+.page-indicator {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  min-width: 80px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 100;
+  transition: width 0.5s ease;
+}
+
+/* Cards & Boxes */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1rem;
+}
+
+.card-accent {
+  border-left: 4px solid var(--accent);
+}
+
+.card-warn {
+  border-left: 4px solid var(--accent2);
+  background: rgba(240,200,106,0.05);
+}
+
+.card-danger {
+  border-left: 4px solid var(--accent4);
+  background: rgba(240,106,138,0.05);
+}
+
+.card-green {
+  border-left: 4px solid var(--accent3);
+  background: rgba(106,240,168,0.05);
+}
+
+/* Grid layouts */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+}
+
+.data-table th {
+  background: var(--bg3);
+  color: var(--accent2);
+  padding: 0.8rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent);
+}
+
+.data-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+.data-table tr:hover td { background: rgba(124,106,240,0.05); }
+
+/* Flow diagram */
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.flow-node {
+  background: var(--bg3);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  text-align: center;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  min-width: 80px;
+}
+
+.flow-node.highlight {
+  background: linear-gradient(135deg, rgba(124,106,240,0.2), rgba(240,200,106,0.1));
+  border-color: var(--accent2);
+}
+
+.flow-arrow {
+  color: var(--accent);
+  font-size: 1.3rem;
+  font-weight: 300;
+}
+
+.flow-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 0.2rem;
+}
+
+/* Cycle diagram */
+.cycle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.cycle-ring {
+  position: relative;
+  width: min(60vw, 500px);
+  height: min(60vw, 500px);
+}
+
+.cycle-item {
+  position: absolute;
+  width: 120px;
+  text-align: center;
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
+  line-height: 1.4;
+}
+
+.cycle-item .dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0 auto 6px;
+}
+
+/* Quote block */
+.quote-block {
+  border-left: 3px solid var(--accent2);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background: rgba(240,200,106,0.03);
+  border-radius: 0 12px 12px 0;
+}
+
+.quote-block p {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-style: italic;
+  color: var(--accent2);
+  margin-bottom: 0;
+}
+
+/* Expert card */
+.expert-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.expert-name {
+  font-weight: 700;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  margin-bottom: 0.3rem;
+}
+
+.expert-title {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 0.6rem;
+}
+
+.expert-quote {
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  line-height: 1.7;
+}
+
+/* Dimension cards */
+.dim-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+
+.dim-card h4 {
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+  margin-bottom: 0.4rem;
+}
+
+.dim-card p {
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* Key insight */
+.key-insight {
+  text-align: center;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  background: radial-gradient(ellipse at center, rgba(124,106,240,0.08), transparent);
+}
+
+.key-insight p {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* Numbered list */
+.num-list {
+  list-style: none;
+  counter-reset: item;
+}
+
+.num-list li {
+  counter-increment: item;
+  padding-left: 2.5em;
+  position: relative;
+  margin-bottom: 0.8em;
+}
+
+.num-list li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 1.8em;
+  height: 1.8em;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Bullet list */
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.bullet-list li {
+  padding-left: 1.5em;
+  position: relative;
+  margin-bottom: 0.5em;
+}
+
+.bullet-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 0.6em;
+  top: 0.3em;
+}
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+  font-size: 0.8em;
+  font-weight: 600;
+  margin-right: 0.3em;
+}
+
+.tag-blue { background: rgba(124,106,240,0.2); color: var(--accent); }
+.tag-yellow { background: rgba(240,200,106,0.2); color: var(--accent2); }
+.tag-green { background: rgba(106,240,168,0.2); color: var(--accent3); }
+.tag-red { background: rgba(240,106,138,0.2); color: var(--accent4); }
+
+/* Arrow chain */
+.arrow-chain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 1.5rem 0;
+}
+
+.arrow-chain .item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+  min-width: 70px;
+}
+
+.arrow-chain .arrow {
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+/* Scrollbar */
+.slide::-webkit-scrollbar { width: 4px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Title slide special */
+.title-slide {
+  text-align: center;
+}
+
+.title-slide .subtitle {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  color: var(--text-dim);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.title-slide .meta {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 2rem;
+}
+
+/* Keyboard hint */
+.kbd-hint {
+  position: fixed;
+  bottom: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(136,136,160,0.4);
+  z-index: 99;
+  pointer-events: none;
+}
+
+/* Section divider */
+.section-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  margin: 1rem 0 1.5rem;
+  border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .slide { padding: 4vh 5vw; }
+  .cycle-item { width: 80px; }
+  .cycle-item { font-size: 0.7rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slides-wrapper" id="slidesWrapper">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner title-slide">
+    <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--accent);letter-spacing:0.15em;font-weight:500;">赵锦勇 · 研究思考</div>
+    <h1>领导力<span class="highlight">即文化</span></h1>
+    <div class="section-divider" style="margin:1.5rem auto;"></div>
+    <p class="subtitle">创始人选择、制度合法性与企业文化的存在主义根基</p>
+    <div class="arrow-chain" style="margin:2rem 0;">
+      <span class="item" style="border-color:var(--accent);">合法性</span>
+      <span class="arrow">→</span>
+      <span class="item" style="border-color:var(--accent2);">选择</span>
+      <span class="arrow">→</span>
+      <span class="item" style="border-color:var(--accent3);">制度</span>
+      <span class="arrow">→</span>
+      <span class="item" style="border-color:var(--accent4);">文化</span>
+    </div>
+    <div class="meta">包含批判性审视 · 六维度反思 · 智囊团讨论</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Core Proposition -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <h2>核心命题</h2>
+    <div class="section-divider"></div>
+    <div class="card card-accent" style="padding:2rem;">
+      <p style="font-family:'Noto Serif SC',serif;font-size:clamp(1.1rem,1.8vw,1.5rem);line-height:1.8;margin-bottom:0;">
+        企业文化的本质不是宣导出来的价值观标语，而是创始人/领导团队在每一个真实选择中展现的「存在方式」。
+      </p>
+    </div>
+    <div class="quote-block" style="margin-top:1.5rem;">
+      <p>做企业，表面在做产品、业务、组织、流程；底层在做领导力和文化。</p>
+    </div>
+    <div class="grid-2" style="margin-top:1.5rem;">
+      <div class="card">
+        <p style="font-size:clamp(0.85rem,1.2vw,1rem);margin-bottom:0;">
+          <strong style="color:var(--accent);">表层</strong><br>
+          产品 · 业务 · 组织 · 流程
+        </p>
+      </div>
+      <div class="card card-accent">
+        <p style="font-size:clamp(0.85rem,1.2vw,1rem);margin-bottom:0;">
+          <strong style="color:var(--accent2);">底层</strong><br>
+          领导力 · 文化 · 选择 · 合法性
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: The Chain -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <h2>因果链</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">一个早晨的串联——四个主题指向同一个底层结构</p>
+    <div class="flow-diagram" style="flex-direction:column;gap:0.8rem;">
+      <div class="flow-node highlight" style="width:80%;max-width:400px;padding:1rem;">
+        <strong>创始人/继承人的合法性</strong>
+        <div class="flow-label">谁有权做选择？</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node" style="width:80%;max-width:400px;padding:1rem;">
+        <strong>关键选择的内容</strong>
+        <div class="flow-label">资源分配 · 人事 · 激励 · 流程</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="grid-2" style="width:100%;max-width:500px;gap:0.5rem;">
+        <div class="flow-node">正式制度</div>
+        <div class="flow-node">非正式制度</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node highlight" style="width:80%;max-width:400px;padding:1rem;">
+        <strong>文化的价值观内核</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Legitimacy -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <h2>合法性的源头</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">谁有资格做选择？</p>
+    <table class="data-table">
+      <thead>
+        <tr><th>合法性维度</th><th>核心问题</th><th>衰减条件</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--accent);">创始身份</strong></td>
+          <td>"这是你从零建立的"</td>
+          <td>规模远超个人能力边界时</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent2);">能力证明</strong></td>
+          <td>"你过去做对了关键决策"</td>
+          <td>连续重大失误后</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent3);">道德权威</strong></td>
+          <td>"你言行一致，说到做到"</td>
+          <td>言行不一、特权自居时</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card card-warn" style="margin-top:1rem;">
+      <p style="font-size:clamp(0.85rem,1.2vw,1rem);margin-bottom:0;">
+        <strong>关键洞察</strong>：合法性不是可以继承的资产，而是需要在新的时代背景下重新挣得的信用。继承人的合法性危机，本质上是"别人的信任"和"自己的证明"之间的时间差。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Formal & Informal Institutions -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <h2>选择如何塑造制度</h2>
+    <div class="section-divider"></div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="color:var(--accent);margin-bottom:0.6rem;">📋 正式制度</h3>
+        <p style="font-size:clamp(0.85rem,1.2vw,1rem);">看得见的规则</p>
+        <ul class="bullet-list" style="margin-top:0.8rem;">
+          <li><strong>资源分配</strong> — 钱投在哪里</li>
+          <li><strong>人事决策</strong> — 谁被提拔</li>
+          <li><strong>激励机制</strong> — 什么被奖励</li>
+          <li><strong>流程设计</strong> — 信息如何流动</li>
+        </ul>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-top:0.8rem;margin-bottom:0;">正式制度是价值观的物化形式</p>
+      </div>
+      <div class="card card-accent">
+        <h3 style="color:var(--accent2);margin-bottom:0.6rem;">🌊 非正式制度</h3>
+        <p style="font-size:clamp(0.85rem,1.2vw,1rem);">看不见的引力场</p>
+        <ul class="bullet-list" style="margin-top:0.8rem;">
+          <li><strong>惯例</strong> — "这事就是这么做的"</li>
+          <li><strong>默契</strong> — 有些话不用说</li>
+          <li><strong>禁忌</strong> — 有些话题不能碰</li>
+          <li><strong>英雄叙事</strong> — 谁的故事被传颂</li>
+        </ul>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-top:0.8rem;margin-bottom:0;">非正式制度是文化的真实载体</p>
+      </div>
+    </div>
+    <div class="card card-warn" style="margin-top:1rem;">
+      <p style="font-size:clamp(0.85rem,1.2vw,1rem);margin-bottom:0;">
+        <strong>核心矛盾</strong>：创始人嘴上说"创新最重要"，但非正式制度里"犯错就会被边缘化"——员工会相信哪个？
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Existential Foundation -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <h2>文化的存在主义根基</h2>
+    <div class="section-divider"></div>
+    <div class="key-insight">
+      <p style="font-size:clamp(1.3rem,2.5vw,2.2rem);color:var(--accent2);">存在先于本质</p>
+      <p style="font-size:clamp(0.9rem,1.3vw,1.1rem);color:var(--text-dim);margin-top:0.5rem;margin-bottom:0;">萨特</p>
+    </div>
+    <div class="grid-3" style="margin-top:1.5rem;">
+      <div class="card card-danger" style="text-align:center;">
+        <p style="font-size:1.5rem;margin-bottom:0.3rem;">🚫</p>
+        <p style="font-size:clamp(0.8rem,1.1vw,0.95rem);margin-bottom:0;"><strong>无法外包</strong></p>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0;">不能请咨询公司来"设计"文化</p>
+      </div>
+      <div class="card card-warn" style="text-align:center;">
+        <p style="font-size:1.5rem;margin-bottom:0.3rem;">⏳</p>
+        <p style="font-size:clamp(0.8rem,1.1vw,0.95rem);margin-bottom:0;"><strong>无法速成</strong></p>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0;">需要在真实选择中反复确认</p>
+      </div>
+      <div class="card card-green" style="text-align:center;">
+        <p style="font-size:1.5rem;margin-bottom:0.3rem;">👁️</p>
+        <p style="font-size:clamp(0.8rem,1.1vw,0.95rem);margin-bottom:0;"><strong>无法造假</strong></p>
+        <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0;">员工看你怎么做，不听你怎么说</p>
+      </div>
+    </div>
+    <div class="quote-block" style="margin-top:1.5rem;">
+      <p>先做好人，再做好事。做人好，做事对。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: System Loop -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <h2>领导力-文化-绩效闭环</h2>
+    <div class="section-divider"></div>
+    <div class="cycle-container">
+      <svg viewBox="0 0 400 400" style="width:min(55vw,420px);height:min(55vw,420px);">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#7c6af0"/>
+          </marker>
+        </defs>
+        <!-- Circle path -->
+        <path d="M 200 50 A 150 150 0 1 1 199.9 50" fill="none" stroke="#2a2a40" stroke-width="2" stroke-dasharray="6,4"/>
+        <!-- Arrows between nodes -->
+        <!-- Legitimacy → Choice -->
+        <line x1="280" y1="85" x2="340" y2="145" stroke="#7c6af0" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <!-- Choice → Institution -->
+        <line x1="360" y1="200" x2="340" y2="260" stroke="#f0c86a" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <!-- Institution → Culture -->
+        <line x1="280" y1="320" x2="200" y2="345" stroke="#6af0a8" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <!-- Culture → Performance -->
+        <line x1="120" y1="320" x2="60" y2="260" stroke="#f06a8a" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <!-- Performance → Legitimacy -->
+        <line x1="40" y1="145" x2="100" y2="85" stroke="#7c6af0" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <!-- Center feedback -->
+        <text x="200" y="200" text-anchor="middle" fill="#8888a0" font-size="13" font-family="Noto Sans SC">反馈</text>
+        <!-- Nodes -->
+        <circle cx="200" cy="40" r="36" fill="#1a1a28" stroke="#7c6af0" stroke-width="2"/>
+        <text x="200" y="36" text-anchor="middle" fill="#7c6af0" font-size="13" font-weight="600" font-family="Noto Sans SC">合法性</text>
+        <text x="200" y="52" text-anchor="middle" fill="#8888a0" font-size="10" font-family="Noto Sans SC">高→选择被信任</text>
+
+        <circle cx="350" cy="140" r="36" fill="#1a1a28" stroke="#f0c86a" stroke-width="2"/>
+        <text x="350" y="136" text-anchor="middle" fill="#f0c86a" font-size="13" font-weight="600" font-family="Noto Sans SC">选择</text>
+        <text x="350" y="152" text-anchor="middle" fill="#8888a0" font-size="10" font-family="Noto Sans SC">资源·人事·激励</text>
+
+        <circle cx="350" cy="280" r="36" fill="#1a1a28" stroke="#6af0a8" stroke-width="2"/>
+        <text x="350" y="276" text-anchor="middle" fill="#6af0a8" font-size="13" font-weight="600" font-family="Noto Sans SC">制度</text>
+        <text x="350" y="292" text-anchor="middle" fill="#8888a0" font-size="10" font-family="Noto Sans SC">正式+非正式</text>
+
+        <circle cx="200" cy="360" r="36" fill="#1a1a28" stroke="#f06a8a" stroke-width="2"/>
+        <text x="200" y="356" text-anchor="middle" fill="#f06a8a" font-size="13" font-weight="600" font-family="Noto Sans SC">文化</text>
+        <text x="200" y="372" text-anchor="middle" fill="#8888a0" font-size="10" font-family="Noto Sans SC">集体人格</text>
+
+        <circle cx="50" cy="280" r="36" fill="#1a1a28" stroke="#7c6af0" stroke-width="2"/>
+        <text x="50" y="276" text-anchor="middle" fill="#7c6af0" font-size="13" font-weight="600" font-family="Noto Sans SC">绩效</text>
+        <text x="50" y="292" text-anchor="middle" fill="#8888a0" font-size="10" font-family="Noto Sans SC">业务结果</text>
+      </svg>
+    </div>
+    <p style="text-align:center;font-size:clamp(0.85rem,1.2vw,1rem);color:var(--text-dim);margin-top:0.5rem;">
+      文化不是锦上添花，而是组织的免疫系统
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 8: Practical Insights -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <h2>对实践的启示</h2>
+    <div class="section-divider"></div>
+    <div class="grid-3">
+      <div class="card card-accent">
+        <h3 style="color:var(--accent);font-size:clamp(0.9rem,1.3vw,1.1rem);">👤 创始人</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">
+          <li>关注合法性存量</li>
+          <li>言行一致是战略需要</li>
+          <li>选择比口号重要</li>
+        </ul>
+      </div>
+      <div class="card card-warn">
+        <h3 style="color:var(--accent2);font-size:clamp(0.9rem,1.3vw,1.1rem);">👥 继承人</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">
+          <li>重新挣得合法性</li>
+          <li>尊重但不被非正式制度束缚</li>
+          <li>用选择建立文化印记</li>
+        </ul>
+      </div>
+      <div class="card card-green">
+        <h3 style="color:var(--accent3);font-size:clamp(0.9rem,1.3vw,1.1rem);">🏢 管理者</h3>
+        <ul class="bullet-list" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">
+          <li>制度设计是文化工作</li>
+          <li>关注正式与非正式的差距</li>
+          <li>文化审计比财务审计更重要</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-insight" style="margin-top:1.5rem;padding:1.5rem;">
+      <p style="font-size:clamp(1rem,1.6vw,1.3rem);margin-bottom:0;">
+        领导力不是一种技能，而是一种存在方式。<br>
+        文化不是一种管理工具，而是一个组织在每一个选择中积累的集体人格。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Critical Intro -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <h2>批判性审视</h2>
+    <div class="section-divider"></div>
+    <div class="card card-danger" style="padding:1.5rem;">
+      <p style="font-size:clamp(0.9rem,1.4vw,1.15rem);line-height:1.8;margin-bottom:0;">
+        以下审视并非否定框架本身，而是试图从框架的外部——那些被框架的聚光灯照亮之外的地方——寻找盲区、边界和未被言说的前提。<strong style="color:var(--accent2);">任何框架都有其"灯下黑"。</strong>
+      </p>
+    </div>
+    <div class="grid-3" style="margin-top:1.5rem;">
+      <div class="dim-card"><h4 style="color:var(--accent);">📜 历史视角</h4><p>创始人中心叙事复制了"英雄史观"</p></div>
+      <div class="dim-card"><h4 style="color:var(--accent2);">👥 社会视角</h4><p>结构先于行动者，选择空间被限定</p></div>
+      <div class="dim-card"><h4 style="color:var(--accent3);">🔄 系统视角</h4><p>文化是涌现的，不是被设计的</p></div>
+      <div class="dim-card"><h4 style="color:var(--accent4);">💰 经济视角</h4><p>信息不对称和激励扭曲限制选择质量</p></div>
+      <div class="dim-card"><h4 style="color:var(--accent);">🎭 人类学视角</h4><p>文化大量存在于无意识层面</p></div>
+      <div class="dim-card"><h4 style="color:var(--accent2);">⚔️ 政治学视角</h4><p>合法性是权力博弈的结果</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Critical Table -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <h2>六维度审视对照</h2>
+    <div class="section-divider"></div>
+    <table class="data-table">
+      <thead>
+        <tr><th>维度</th><th>核心挑战</th><th>补充变量</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="tag tag-blue">历史</span></td><td>创始人中心叙事复制"英雄史观"</td><td>制度惯性·时代精神·集体行动</td></tr>
+        <tr><td><span class="tag tag-yellow">社会</span></td><td>结构先于行动者，选择空间被限定</td><td>场域·同构压力·阶层惯习</td></tr>
+        <tr><td><span class="tag tag-green">系统</span></td><td>文化是涌现的，不是被设计的</td><td>自组织·路径依赖·反馈循环</td></tr>
+        <tr><td><span class="tag tag-red">经济</span></td><td>信息不对称和激励扭曲限制选择质量</td><td>有限理性·委托代理·激励相容</td></tr>
+        <tr><td><span class="tag tag-blue">人类学</span></td><td>文化大量存在于无意识层面</td><td>深层结构·仪式符号·文化滞后</td></tr>
+        <tr><td><span class="tag tag-yellow">政治学</span></td><td>合法性是权力博弈的结果</td><td>利益冲突·文化霸权·合法性悖论</td></tr>
+      </tbody>
+    </table>
+    <div class="card card-warn" style="margin-top:1rem;">
+      <p style="font-size:clamp(0.85rem,1.2vw,1rem);margin-bottom:0;">
+        <strong>最终结论</strong>：框架是透镜，不是地图。它照亮了一些东西，也遮蔽了一些东西。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Think Tank Intro -->
+<div class="slide" data-index="10">
+  <div class="slide-inner">
+    <h2>智囊团讨论</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">多学科视角下的框架碰撞</p>
+    <div class="grid-2" style="margin-top:1rem;">
+      <div class="expert-card" style="border-left:4px solid var(--accent);">
+        <div class="expert-name" style="color:var(--accent);">🔵 陈维昭</div>
+        <div class="expert-title">北京大学 · 组织行为学教授</div>
+        <div class="expert-quote">"文化与领导力不是两个独立变量，而是同一枚硬币的两面。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent4);">
+        <div class="expert-name" style="color:var(--accent4);">🔴 林秉衡</div>
+        <div class="expert-title">斯坦福大学 · 制度经济学博士</div>
+        <div class="expert-quote">"框架把'选择'放在核心，却忽略了选择的信息基础。"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent2);">
+        <div class="expert-name" style="color:var(--accent2);">🟡 苏明远</div>
+        <div class="expert-title">复旦大学 · 哲学系教授</div>
+        <div class="expert-quote">"'选择'本身是否可能是一个幻象？"</div>
+      </div>
+      <div class="expert-card" style="border-left:4px solid var(--accent3);">
+        <div class="expert-name" style="color:var(--accent3);">🟢 何若云</div>
+        <div class="expert-title">圣塔菲研究所 · 复杂系统研究员</div>
+        <div class="expert-quote">"你们都在讨论'人'，而我认为文化首先是'模式'。"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Think Tank Collision -->
+<div class="slide" data-index="11">
+  <div class="slide-inner">
+    <h2>碰撞与交锋</h2>
+    <div class="section-divider"></div>
+    <div class="expert-card" style="border-left:4px solid var(--accent);margin-bottom:0.8rem;">
+      <div class="expert-name" style="color:var(--accent);font-size:clamp(0.9rem,1.3vw,1.05rem);">🔵 陈维昭 → 何若云</div>
+      <div class="expert-quote" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">"人类组织不同于蚁群——人类有意图和反思能力。领导力的本质不是控制，而是有意识的干预。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent4);margin-bottom:0.8rem;">
+      <div class="expert-name" style="color:var(--accent4);font-size:clamp(0.9rem,1.3vw,1.05rem);">🔴 林秉衡 → 陈维昭</div>
+      <div class="expert-quote" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">"古德哈特定律：当一个指标变成目标，它就不再是一个好指标。干预的效果常常适得其反。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent2);margin-bottom:0.8rem;">
+      <div class="expert-name" style="color:var(--accent2);font-size:clamp(0.9rem,1.3vw,1.05rem);">🟡 苏明远</div>
+      <div class="expert-quote" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">"意义不在于结果，而在于选择本身。你无法逃避选择的责任。"</div>
+    </div>
+    <div class="expert-card" style="border-left:4px solid var(--accent3);">
+      <div class="expert-name" style="color:var(--accent3);font-size:clamp(0.9rem,1.3vw,1.05rem);">🟢 何若云</div>
+      <div class="expert-quote" style="font-size:clamp(0.8rem,1.1vw,0.95rem);">"文化就像一条河流——你不能'创造'它，但你可以筑坝、改道、疏浚。"</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: Emergence-Intervention Model -->
+<div class="slide" data-index="12">
+  <div class="slide-inner">
+    <h2>涌现-干预双循环</h2>
+    <div class="section-divider"></div>
+    <p class="subtitle">何若云提出的升级模型</p>
+    <div class="cycle-container">
+      <svg viewBox="0 0 400 340" style="width:min(55vw,420px);height:auto;">
+        <defs>
+          <marker id="arrow2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#7c6af0"/>
+          </marker>
+        </defs>
+        <!-- Bottom-up emergence -->
+        <path d="M 60 280 Q 120 300 200 280" fill="none" stroke="#6af0a8" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow2)"/>
+        <text x="130" y="298" fill="#6af0a8" font-size="11" font-family="Noto Sans SC">自下而上涌现</text>
+
+        <!-- Top-down intervention -->
+        <path d="M 200 60 Q 280 80 340 140" fill="none" stroke="#f0c86a" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow2)"/>
+        <text x="250" y="80" fill="#f0c86a" font-size="11" font-family="Noto Sans SC">有意识干预</text>
+
+        <!-- Perception -->
+        <path d="M 340 200 Q 300 260 260 280" fill="none" stroke="#7c6af0" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow2)"/>
+        <text x="310" y="255" fill="#7c6af0" font-size="11" font-family="Noto Sans SC">感知与反思</text>
+
+        <!-- Nodes -->
+        <rect x="155" y="55" width="90" height="40" rx="20" fill="#1a1a28" stroke="#f0c86a" stroke-width="2"/>
+        <text x="200" y="80" text-anchor="middle" fill="#f0c86a" font-size="14" font-weight="600" font-family="Noto Sans SC">有意识的干预</text>
+
+        <rect x="155" y="260" width="90" height="40" rx="20" fill="#1a1a28" stroke="#6af0a8" stroke-width="2"/>
+        <text x="200" y="285" text-anchor="middle" fill="#6af0a8" font-size="14" font-weight="600" font-family="Noto Sans SC">自下而上的涌现</text>
+
+        <rect x="290" y="155" width="90" height="40" rx="20" fill="#1a1a28" stroke="#7c6af0" stroke-width="2"/>
+        <text x="335" y="180" text-anchor="middle" fill="#7c6af0" font-size="14" font-weight="600" font-family="Noto Sans SC">文化模式</text>
+
+        <rect x="20" y="155" width="90" height="40" rx="20" fill="#1a1a28" stroke="#f06a8a" stroke-width="2"/>
+        <text x="65" y="180" text-anchor="middle" fill="#f06a8a" font-size="13" font-weight="600" font-family="Noto Sans SC">感知与反思</text>
+      </svg>
+    </div>
+    <p style="text-align:center;font-size:clamp(0.85rem,1.2vw,1rem);color:var(--text-dim);">
+      领导者的角色：感知者 + 干预者
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 14: Consensus -->
+<div class="slide" data-index="13">
+  <div class="slide-inner">
+    <h2>智囊团共识</h2>
+    <div class="section-divider"></div>
+    <ol class="num-list">
+      <li style="font-size:clamp(0.9rem,1.3vw,1.1rem);margin-bottom:1rem;">
+        原框架的因果链需要升级为<strong style="color:var(--accent);">"涌现-干预"双循环模型</strong>
+      </li>
+      <li style="font-size:clamp(0.9rem,1.3vw,1.1rem);margin-bottom:1rem;">
+        领导者的角色应从<strong style="color:var(--accent2);">"设计者"</strong>重新定位为<strong style="color:var(--accent2);">"感知者+干预者"</strong>
+      </li>
+      <li style="font-size:clamp(0.9rem,1.3vw,1.1rem);margin-bottom:1rem;">
+        框架低估了<strong style="color:var(--accent4);">信息不对称和激励扭曲</strong>的结构性力量
+      </li>
+      <li style="font-size:clamp(0.9rem,1.3vw,1.1rem);margin-bottom:1rem;">
+        "存在先于本质"的哲学根基经受住了拷问，但<strong style="color:var(--accent3);">"选择"的自由意志问题</strong>悬而未决
+      </li>
+      <li style="font-size:clamp(0.9rem,1.3vw,1.1rem);">
+        最健康的组织文化是<strong style="color:var(--accent2);">"不需要被谈论"的文化</strong>——领导力成为存在方式，文化成为呼吸
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- SLIDE 15: Final -->
+<div class="slide" data-index="14">
+  <div class="slide-inner title-slide">
+    <h2 style="margin-bottom:1rem;">做企业到深处</h2>
+    <div class="key-insight" style="padding:2.5rem;border-color:var(--accent2);">
+      <p style="font-size:clamp(1.3rem,2.5vw,2.2rem);margin-bottom:0.8rem;color:var(--accent2);">
+        做的不是产品，不是模式，不是流程
+      </p>
+      <p style="font-size:clamp(1.5rem,3vw,2.6rem);font-weight:900;margin-bottom:0.8rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        做的是人如何在一起做选择
+      </p>
+      <p style="font-size:clamp(1rem,1.6vw,1.3rem);color:var(--text-dim);margin-bottom:0;">
+        选择的质量，最终取决于选择者的合法性、智慧和勇气
+      </p>
+    </div>
+    <div style="margin-top:2rem;font-size:0.85rem;color:var(--text-dim);">
+      赵锦勇 · 2026年7月 · 研究思考知识库
+    </div>
+  </div>
+</div>
+
+</div><!-- end slides-wrapper -->
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">‹</button>
+  <span class="page-indicator" id="pageIndicator">1 / 15</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">›</button>
+</div>
+
+<div class="kbd-hint">← → 方向键翻页</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+
+function updateSlide() {
+  slides.forEach((slide, i) => {
+    slide.classList.remove('active', 'exit');
+    if (i === currentSlide) {
+      slide.classList.add('active');
+    } else if (i < currentSlide) {
+      slide.classList.add('exit');
+    }
+  });
+  document.getElementById('pageIndicator').textContent = `${currentSlide + 1} / ${totalSlides}`;
+  document.getElementById('progressBar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+}
+
+function changeSlide(direction) {
+  const newSlide = currentSlide + direction;
+  if (newSlide < 0 || newSlide >= totalSlides) return;
+  currentSlide = newSlide;
+  updateSlide();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    changeSlide(-1);
+  }
+});
+
+// Touch support
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+});
+
+updateSlide();
+</script>
+
+</body>
+</html>
