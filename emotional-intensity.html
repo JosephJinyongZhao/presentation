@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>女性情绪强度的深层根源与系统性应对</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a28;
+  --text: #e8e4dd;
+  --text-dim: #8a8698;
+  --text-bright: #fff8ee;
+  --accent: #d4a853;
+  --accent2: #c97b5e;
+  --accent3: #6b8fa3;
+  --accent4: #a87b9e;
+  --border: #2a2a3e;
+  --shadow: rgba(0,0,0,0.6);
+}
+
+html { font-size: clamp(14px, 1.2vw, 20px); scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Slide container */
+.slides {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5vh 8vw;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  overflow-y: auto;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 10;
+}
+
+.slide-inner {
+  max-width: 1100px;
+  width: 100%;
+  margin: auto;
+}
+
+/* Typography */
+h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 1.2rem;
+  line-height: 1.35;
+}
+h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+h4 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--accent2);
+  margin-bottom: 0.5rem;
+}
+p, li {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+.subtitle {
+  font-size: 1.3rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  margin-top: 0.5rem;
+}
+.meta {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-top: 2rem;
+}
+
+/* Accent highlight */
+.highlight { color: var(--accent); font-weight: 600; }
+.highlight2 { color: var(--accent2); font-weight: 600; }
+.highlight3 { color: var(--accent3); font-weight: 600; }
+.highlight4 { color: var(--accent4); font-weight: 600; }
+
+/* Cards */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin: 1rem 0;
+  position: relative;
+}
+.card-accent {
+  border-left: 4px solid var(--accent);
+}
+.card-accent2 {
+  border-left: 4px solid var(--accent2);
+}
+.card-accent3 {
+  border-left: 4px solid var(--accent3);
+}
+.card-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Grid layouts */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.2rem;
+  margin: 1rem 0;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+/* Cycle chart */
+.cycle-chart {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+.cycle-phase {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cycle-phase::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.cycle-phase:nth-child(1)::before { background: #c97b5e; }
+.cycle-phase:nth-child(2)::before { background: #6b8fa3; }
+.cycle-phase:nth-child(3)::before { background: #d4a853; }
+.cycle-phase:nth-child(4)::before { background: #a87b9e; }
+.cycle-phase .phase-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 0.3rem;
+}
+.cycle-phase .phase-days {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+.cycle-phase .phase-mood {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* Bar chart */
+.bar-chart {
+  margin: 1.5rem 0;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.bar-label {
+  width: 120px;
+  font-size: 0.9rem;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: var(--bg3);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 14px;
+  transition: width 1s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+}
+.bar-fill.women { background: linear-gradient(90deg, #c97b5e, #d4a853); }
+.bar-fill.men { background: linear-gradient(90deg, #6b8fa3, #7bafc3); }
+
+/* Comparison table */
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 1rem;
+}
+.comp-table th {
+  background: var(--bg3);
+  color: var(--accent);
+  padding: 0.8rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent);
+}
+.comp-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.comp-table tr:hover td {
+  background: rgba(212,168,83,0.05);
+}
+
+/* Expert card */
+.expert-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  position: relative;
+}
+.expert-card .expert-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.expert-card .expert-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.expert-card .expert-name {
+  font-weight: 600;
+  color: var(--text-bright);
+}
+.expert-card .expert-title {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* Collision */
+.collision {
+  background: var(--bg3);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin: 0.8rem 0;
+  position: relative;
+}
+.collision::before {
+  content: '⚡';
+  margin-right: 0.5rem;
+}
+
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  padding: 0.6rem 1.5rem;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  transition: color 0.3s;
+  font-family: inherit;
+}
+.nav-btn:hover { color: var(--accent); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.nav-progress {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+.nav-dot.active {
+  background: var(--accent);
+  width: 24px;
+  border-radius: 4px;
+}
+.nav-dot.section-start {
+  background: var(--text-dim);
+  width: 12px;
+  height: 12px;
+}
+.nav-dot.section-start.active {
+  background: var(--accent);
+  width: 28px;
+}
+.nav-counter {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-family: inherit;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Keyboard hint */
+.key-hint {
+  position: fixed;
+  bottom: 9vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(138,134,152,0.4);
+  z-index: 99;
+  letter-spacing: 0.1em;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 8vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 40px;
+  border: 2px solid var(--text-dim);
+  border-radius: 12px;
+  opacity: 0.3;
+}
+.scroll-indicator::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  background: var(--text-dim);
+  border-radius: 2px;
+  animation: scrollPulse 2s infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.3; transform: translateX(-50%) translateY(8px); }
+}
+
+/* List styling */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin-bottom: 0.4rem; }
+
+/* Blockquote */
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.8rem 1.2rem;
+  margin: 1rem 0;
+  background: rgba(212,168,83,0.05);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: var(--text-dim);
+}
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-right: 0.3rem;
+}
+.tag-gold { background: rgba(212,168,83,0.15); color: var(--accent); }
+.tag-red { background: rgba(201,123,94,0.15); color: var(--accent2); }
+.tag-blue { background: rgba(107,143,163,0.15); color: var(--accent3); }
+.tag-purple { background: rgba(168,123,158,0.15); color: var(--accent4); }
+
+/* Divider */
+.divider {
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  margin: 1.5rem 0;
+}
+
+/* Section number */
+.section-num {
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Dimension grid for chapter 9 */
+.dim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.dim-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.2rem;
+}
+.dim-card .dim-num {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--accent);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.dim-card .dim-title {
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 0.4rem;
+}
+.dim-card .dim-desc {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slide { padding: 3vh 5vw; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; }
+  p, li { font-size: 0.95rem; }
+  .grid-2, .grid-3, .grid-4, .cycle-chart, .dim-grid { grid-template-columns: 1fr; }
+  .bar-label { width: 80px; font-size: 0.8rem; }
+  .nav { gap: 0.5rem; padding: 0.4rem 1rem; }
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.slide.active .slide-inner > * {
+  animation: fadeUp 0.5s ease forwards;
+  opacity: 0;
+}
+.slide.active .slide-inner > *:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .slide-inner > *:nth-child(2) { animation-delay: 0.1s; }
+.slide.active .slide-inner > *:nth-child(3) { animation-delay: 0.15s; }
+.slide.active .slide-inner > *:nth-child(4) { animation-delay: 0.2s; }
+.slide.active .slide-inner > *:nth-child(5) { animation-delay: 0.25s; }
+.slide.active .slide-inner > *:nth-child(6) { animation-delay: 0.3s; }
+.slide.active .slide-inner > *:nth-child(7) { animation-delay: 0.35s; }
+.slide.active .slide-inner > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Background decorative elements */
+.bg-deco {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-deco-1 {
+  top: -20vh; right: -10vw;
+  width: 60vw; height: 60vw;
+  background: radial-gradient(circle, rgba(212,168,83,0.03) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.bg-deco-2 {
+  bottom: -30vh; left: -15vw;
+  width: 80vw; height: 80vw;
+  background: radial-gradient(circle, rgba(107,143,163,0.02) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.slide { z-index: 1; position: relative; }
+
+/* Chapter intro page */
+.chapter-intro {
+  text-align: center;
+}
+.chapter-intro .chapter-number {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--accent);
+  opacity: 0.15;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.chapter-intro h2 {
+  font-size: 2.8rem;
+}
+
+/* Summary box */
+.summary-box {
+  background: linear-gradient(135deg, rgba(212,168,83,0.08), rgba(201,123,94,0.05));
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin: 1rem 0;
+}
+.summary-box h4 {
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-deco bg-deco-1"></div>
+<div class="bg-deco bg-deco-2"></div>
+
+<div class="slides" id="slides">
+
+<!-- Slide 0: Cover -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner" style="text-align:center;">
+    <div style="margin-bottom:1rem;">
+      <span class="tag tag-gold">关系认知</span>
+      <span class="tag tag-red">跨学科分析</span>
+      <span class="tag tag-blue">系统思维</span>
+    </div>
+    <h1 style="font-size:3.6rem;margin-bottom:0.5rem;">女性情绪强度的<br>深层根源与系统性应对</h1>
+    <p class="subtitle" style="font-size:1.4rem;margin-bottom:2rem;">从理解到共处</p>
+    <div class="divider" style="margin:1.5rem auto;"></div>
+    <p style="font-size:1.1rem;color:var(--text-dim);max-width:700px;margin:0 auto 2rem;">
+      这不是关于"谁对谁错"的争论，而是关于如何从对抗走向共处——<br>
+      理解生理、神经、心理、社会文化多重因素的交织，<br>
+      以及如何建立系统性的支持结构。
+    </p>
+    <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;">
+      <div><span class="highlight" style="font-size:1.8rem;font-weight:700;">10</span><br><span style="font-size:0.85rem;color:var(--text-dim);">章节</span></div>
+      <div><span class="highlight2" style="font-size:1.8rem;font-weight:700;">9</span><br><span style="font-size:0.85rem;color:var(--text-dim);">批判维度</span></div>
+      <div><span class="highlight3" style="font-size:1.8rem;font-weight:700;">4</span><br><span style="font-size:0.85rem;color:var(--text-dim);">专家视角</span></div>
+      <div><span class="highlight4" style="font-size:1.8rem;font-weight:700;">16,500</span><br><span style="font-size:0.85rem;color:var(--text-dim);">字</span></div>
+    </div>
+    <p class="meta" style="margin-top:3rem;">← → 翻页 · 点击导航点跳转</p>
+  </div>
+</div>
+
+<!-- Slide 1: Chapter 1 - Core Position -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <div class="section-num">第一章</div>
+    <h2>核心立场：从"评价"到"理解"</h2>
+    <div class="divider"></div>
+    <p style="font-size:1.15rem;margin-bottom:1.5rem;">
+      这不是"劣根性"，而是女性在生理、心理、认知、神经和社会文化多重因素交织下的<strong class="highlight">自然表现</strong>。
+      它既是关系中"令人觉得麻烦"的部分，也是"吸引人可爱"的部分——<strong class="highlight2">一体两面</strong>。
+    </p>
+    <table class="comp-table">
+      <tr><th>维度</th><th>应避免的立场</th><th>本文立场</th></tr>
+      <tr><td><strong>归因方式</strong></td><td>"她就是这样的人"——人格归因</td><td>多因素系统归因（生理+心理+社会）</td></tr>
+      <tr><td><strong>价值判断</strong></td><td>"这是缺点/劣根性"</td><td>这是特征，不是缺陷——一体两面</td></tr>
+      <tr><td><strong>应对目标</strong></td><td>"让她改变"或"忍受"</td><td>理解 → 共处 → 系统性支持</td></tr>
+    </table>
+    <div class="card card-accent" style="margin-top:1rem;">
+      <p style="font-size:0.95rem;margin:0;">⚠️ 以下分析讨论的是<strong>群体层面的统计趋势和机制</strong>，不代表每个女性个体都完全符合。个体差异（性格、经历、教育、文化背景）远大于性别差异。分析是为了理解，不是为了刻板印象。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Chapter 2 - Physiological Basis -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <div class="section-num">第二章</div>
+    <h2>生理基础：激素的周期性波动</h2>
+    <div class="divider"></div>
+    <p>女性月经周期约28天，四个阶段各有不同的激素水平和情绪特征——这是最底层、最不可忽视的因素。</p>
+    <div class="cycle-chart">
+      <div class="cycle-phase">
+        <div class="phase-name">月经期</div>
+        <div class="phase-days">第1-5天</div>
+        <div class="phase-mood">雌激素和孕激素均处于最低点<br>疲劳、易怒、敏感、低落</div>
+      </div>
+      <div class="cycle-phase">
+        <div class="phase-name">卵泡期</div>
+        <div class="phase-days">第6-14天</div>
+        <div class="phase-mood">雌激素稳步上升至峰值<br>精力充沛、情绪积极</div>
+      </div>
+      <div class="cycle-phase">
+        <div class="phase-name">排卵期</div>
+        <div class="phase-days">约第14天</div>
+        <div class="phase-mood">雌激素峰值+黄体生成素激增<br>自信、情绪高峰</div>
+      </div>
+      <div class="cycle-phase">
+        <div class="phase-name">黄体期</div>
+        <div class="phase-days">第15-28天</div>
+        <div class="phase-mood">孕激素上升→下降<br>焦虑、易怒、敏感</div>
+      </div>
+    </div>
+    <div class="card card-accent">
+      <p style="margin:0;font-size:0.95rem;"><strong>核心结论</strong>：女性在月经期和黄体期经历的"情绪化"，本质上是<strong>生理系统对激素波动的正常反应</strong>，而非"性格缺陷"。男性没有类似的周期性激素波动，所以很难从体验上理解这种感受。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Chapter 2 continued - PMS/PMDD -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <div class="section-num">第二章 · 续</div>
+    <h3>PMS vs PMDD</h3>
+    <div class="grid-2">
+      <div class="card card-accent2">
+        <div class="card-label">PMS 经前综合征</div>
+        <p style="font-size:0.95rem;">约<strong class="highlight2">75%</strong>的育龄女性有不同程度的经前症状，包括情绪波动、疲劳、腹胀等</p>
+      </div>
+      <div class="card card-accent3">
+        <div class="card-label">PMDD 经前焦虑障碍</div>
+        <p style="font-size:0.95rem;">约<strong class="highlight3">3-8%</strong>的女性症状严重到影响日常生活，表现为极度易怒、抑郁、焦虑</p>
+      </div>
+    </div>
+    <div class="card card-accent" style="margin-top:0.5rem;">
+      <p style="margin:0;font-size:0.95rem;">PMS/PMDD不是"心理问题"，而是<strong>生理上对正常激素波动的异常敏感反应</strong>。大脑中的血清素（调节情绪的关键神经递质）受雌激素和孕激素影响——激素波动时，血清素水平也会波动，导致情绪调节能力下降。</p>
+    </div>
+    <h4 style="margin-top:1.2rem;">其他生理因素</h4>
+    <div class="grid-3">
+      <div class="card" style="padding:0.8rem 1rem;">
+        <p style="font-size:0.9rem;margin:0;"><strong>甲状腺</strong><br>女性甲状腺疾病发病率是男性的<strong>5-8倍</strong></p>
+      </div>
+      <div class="card" style="padding:0.8rem 1rem;">
+        <p style="font-size:0.9rem;margin:0;"><strong>铁缺乏</strong><br>月经失血可能导致轻度贫血，表现为疲劳、易怒</p>
+      </div>
+      <div class="card" style="padding:0.8rem 1rem;">
+        <p style="font-size:0.9rem;margin:0;"><strong>睡眠</strong><br>激素波动影响睡眠结构，形成恶性循环</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Chapter 3 - Neural Basis -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <div class="section-num">第三章</div>
+    <h2>神经基础：大脑结构与功能的差异</h2>
+    <div class="divider"></div>
+    <div class="grid-2">
+      <div class="card card-accent2">
+        <div class="card-label">情绪处理回路</div>
+        <p style="font-size:0.95rem;margin:0;">女性情绪刺激激活更大的边缘系统（杏仁核和前扣带回），情绪记忆更强烈、更持久。<br><br><strong>不是"更容易情绪化"，而是"情绪体验的强度更高"</strong>——同样的刺激，女性感受到的情绪强度可能是男性的1.5-2倍。</p>
+      </div>
+      <div class="card card-accent3">
+        <div class="card-label">镜像神经元系统</div>
+        <p style="font-size:0.95rem;margin:0;">女性的镜像神经元系统平均比男性更活跃。<br><br>✅ 优势：更高的共情能力<br>⚠️ 代价：更容易被他人的情绪感染，情绪边界更模糊</p>
+      </div>
+    </div>
+    <div class="card card-accent" style="margin-top:0.5rem;">
+      <div class="card-label">压力反应的性别差异</div>
+      <div class="grid-2" style="margin:0;">
+        <div>
+          <p style="font-size:0.95rem;margin:0;"><strong class="highlight3">男性</strong>：面对压力时更多"战斗或逃跑"反应（交感神经激活）→ 倾向于<strong>独处和解决问题</strong></p>
+        </div>
+        <div>
+          <p style="font-size:0.95rem;margin:0;"><strong class="highlight2">女性</strong>：面对压力时更多"照料与结盟"反应（催产素系统激活）→ 倾向于<strong>寻求连接和倾诉</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Chapter 4 - Psychological -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <div class="section-num">第四章</div>
+    <h2>心理与认知层面</h2>
+    <div class="divider"></div>
+    <div class="grid-3">
+      <div class="card card-accent">
+        <div class="card-label">情绪觉察</div>
+        <p style="font-size:0.9rem;margin:0;">女性平均有更高的情绪觉察能力——能更精细地识别和命名自己的情绪。<br><br>男性可能只感受到"生气"或"没事"，而女性可能同时感受到"委屈+失望+疲惫+焦虑"。</p>
+      </div>
+      <div class="card card-accent2">
+        <div class="card-label">反刍思维</div>
+        <p style="font-size:0.9rem;margin:0;">女性比男性更容易陷入反刍思维——反复思考负面事件及其原因和后果。<br><br>✅ 更深入的自我理解<br>⚠️ 更容易陷入情绪低谷</p>
+      </div>
+      <div class="card card-accent3">
+        <div class="card-label">情绪记忆</div>
+        <p style="font-size:0.9rem;margin:0;">女性的情绪记忆（尤其是负面情绪记忆）比男性更强烈、更持久。<br><br>一次冲突的记忆可能持续数天甚至数周。这不是"记仇"，而是<strong>记忆系统的差异</strong>。</p>
+      </div>
+    </div>
+    <div class="summary-box" style="margin-top:0.5rem;">
+      <h4>🎯 核心洞察</h4>
+      <p style="margin:0;font-size:1rem;">女性的情绪体验不是"更差"或"更弱"，而是<strong>强度更高、维度更丰富、持续时间更长</strong>。如果把情绪比作音响，女性的音量旋钮范围更大——可以更轻柔，也可以更响亮。问题不在于音量本身，而在于<strong>双方的音量范围不匹配</strong>。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Chapter 5 - Social/Cultural -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <div class="section-num">第五章</div>
+    <h2>社会文化层面</h2>
+    <div class="divider"></div>
+    <div class="grid-2">
+      <div class="card card-accent2">
+        <div class="card-label">情绪劳动的不平等</div>
+        <p style="font-size:0.9rem;margin:0;">管理自己的情绪以让他人感到舒适的工作——在社会中不成比例地落在女性身上。<br><br><strong>代价</strong>：情绪劳动是隐形的消耗。长期承担情绪劳动的女性，在安全的环境（家庭）中更容易"释放"——<strong>不是双重标准，而是情绪账户透支后的自然反应</strong>。</p>
+      </div>
+      <div class="card card-accent3">
+        <div class="card-label">"双重束缚"困境</div>
+        <p style="font-size:0.9rem;margin:0;">社会对女性的情绪表达存在双重标准：<br><br>表达情绪 → "情绪化""不理性"<br>不表达情绪 → "冷漠""没有女人味"<br><br>无论怎么做，都可能被批评。</p>
+      </div>
+    </div>
+    <div class="card card-accent" style="margin-top:0.5rem;">
+      <div class="card-label">男性主导的话语体系</div>
+      <table class="comp-table" style="font-size:0.85rem;margin:0;">
+        <tr><th>行为</th><th>女性被评价</th><th>男性被评价</th></tr>
+        <tr><td>表达不满</td><td>"情绪化"</td><td>"有原则"</td></tr>
+        <tr><td>坚持己见</td><td>"固执"</td><td>"有主见"</td></tr>
+        <tr><td>大声说话</td><td>"泼妇"</td><td>"有气场"</td></tr>
+        <tr><td>哭泣</td><td>"脆弱"</td><td>"真情流露"</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Chapter 6 - Two Sides -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <div class="section-num">第六章</div>
+    <h2>一体两面：情绪强度的价值</h2>
+    <div class="divider"></div>
+    <p>在讨论"如何应对"之前，必须承认情绪强度的正面价值——那些让你觉得"麻烦"的特质，也正是让你被吸引的特质。</p>
+    <table class="comp-table">
+      <tr><th>常被负面评价的特征</th><th>同一特征的另一面</th><th>关系中的价值</th></tr>
+      <tr><td>情绪化</td><td>情感丰富、共情力强</td><td>能感知到伴侣未说出口的需求</td></tr>
+      <tr><td>敏感</td><td>洞察力强、注重细节</td><td>能发现关系中微小的变化和问题</td></tr>
+      <tr><td>爱抱怨</td><td>善于表达、不压抑</td><td>问题不会积压到爆发</td></tr>
+      <tr><td>固执</td><td>有原则、不轻易妥协</td><td>在关键时刻能坚持正确的事</td></tr>
+    </table>
+    <div class="summary-box" style="margin-top:1rem;">
+      <h4>💡 关键认知</h4>
+      <p style="margin:0;font-size:1rem;">一体两面——那些让你觉得"麻烦"的特质，也正是让你被吸引的特质。理解了这个，才能从"对抗"走向"共处"。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Chapter 7 - Systemic Response -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <div class="section-num">第七章</div>
+    <h2>系统性应对策略</h2>
+    <div class="divider"></div>
+    <div class="grid-2">
+      <div class="card card-accent">
+        <div class="card-label">认知层面</div>
+        <p style="font-size:0.9rem;margin:0;">
+          ① 从"她的问题"到"我们的系统问题"<br>
+          ② 建立周期意识——知道哪些时期需要更多耐心<br>
+          ③ 区分"内容"和"状态"——情绪激动时说的话反映的是状态而非立场
+        </p>
+      </div>
+      <div class="card card-accent2">
+        <div class="card-label">沟通层面</div>
+        <p style="font-size:0.9rem;margin:0;">
+          ① 先连接，再解决<br>
+          ② 不要否定她的感受<br>
+          ③ 不要用"解决问题"代替"倾听"<br>
+          ④ 你的冷静不是"冷漠"，而是"锚点"
+        </p>
+      </div>
+      <div class="card card-accent3">
+        <div class="card-label">系统支持</div>
+        <p style="font-size:0.9rem;margin:0;">
+          ① 生理支持：营养、睡眠、运动<br>
+          ② 情绪支持：定期"关系检查"时间<br>
+          ③ 结构支持：分担情绪劳动、家庭会议
+        </p>
+      </div>
+      <div class="card card-accent4">
+        <div class="card-label">自我边界</div>
+        <p style="font-size:0.9rem;margin:0;">
+          ① 知道什么时候该暂停<br>
+          ② 建立自己的支持系统<br>
+          ③ 区分"理解"和"同意"<br>
+          ④ 保持自己的情绪稳定
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Chapter 8 - Extended Thinking -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <div class="section-num">第八章</div>
+    <h2>延伸思考：与之前框架的连接</h2>
+    <div class="divider"></div>
+    <div class="grid-3">
+      <div class="card card-accent">
+        <div class="card-label">领导力即文化</div>
+        <p style="font-size:0.9rem;margin:0;">家庭是最小的组织。夫妻之间的互动模式——如何应对情绪冲突、如何分配情绪劳动——就是家庭文化。你在情绪冲突中的每一个选择，都在塑造家庭文化。</p>
+      </div>
+      <div class="card card-accent2">
+        <div class="card-label">选择的结构性力量</div>
+        <p style="font-size:0.9rem;margin:0;">在情绪冲突中，你有一个选择——是"对抗"还是"理解"？这个选择看似微小，但长期积累会决定关系的走向。</p>
+      </div>
+      <div class="card card-accent3">
+        <div class="card-label">实践即认知</div>
+        <p style="font-size:0.9rem;margin:0;">理解女性的情绪机制只是第一步。真正的认知发生在实践中——在每一次情绪冲突中练习新的回应方式，在实践中验证和调整。</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0.5rem;border-color:var(--accent4);">
+      <p style="margin:0;font-size:0.95rem;color:var(--accent4);"><strong>留给自己的问题</strong><br>
+      · 如何在不失去自我的前提下，成为伴侣情绪的"安全锚点"？<br>
+      · 如何区分"需要理解的正常情绪波动"和"需要专业帮助的异常状态"？<br>
+      · 如何让孩子在父母处理情绪冲突的过程中，学到健康的情绪管理方式？</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: Chapter 9 Intro -->
+<div class="slide chapter-intro" data-index="10">
+  <div class="slide-inner">
+    <div class="chapter-number">09</div>
+    <h2>批判性审视</h2>
+    <p style="font-size:1.3rem;color:var(--text-dim);">九个被忽略的维度</p>
+    <div class="divider" style="margin:1.5rem auto;"></div>
+    <p style="max-width:700px;margin:0 auto;">以下从多学科视角对前文框架进行批判性审视。不是否定，而是补全——任何单一框架都有盲区，看到盲区才能更好地使用框架。</p>
+  </div>
+</div>
+
+<!-- Slide 11: Chapter 9 - Dimensions 1-3 -->
+<div class="slide" data-index="11">
+  <div class="slide-inner">
+    <div class="section-num">第九章 · 1-3</div>
+    <div class="dim-grid">
+      <div class="dim-card">
+        <div class="dim-num">01</div>
+        <div class="dim-title">进化生物学</div>
+        <div class="dim-desc">情绪敏感性在进化环境中是一种<strong>适应性优势</strong>——对婴儿需求的敏感察觉直接关系后代生存。问题在于<strong>环境不匹配</strong>：进化适应的机制在完全不同的现代环境中运行。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">02</div>
+        <div class="dim-title">跨文化人类学</div>
+        <div class="dim-desc">情绪表达不是普世的。在瑞典，性别差异几乎消失；在萨摩亚，情绪被视为集体事件。很大一部分"女性情绪强度"可能是<strong>特定社会结构的产物</strong>。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">03</div>
+        <div class="dim-title">科学方法论</div>
+        <div class="dim-desc">许多性别差异的fMRI研究样本量在20-40人之间。Hyde(2005)元分析显示：在78%的心理变量上，性别差异的效应量为小到无。<strong>差异可能被系统性高估了</strong>。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">04</div>
+        <div class="dim-title">经济学视角</div>
+        <div class="dim-desc">情绪表达可能是<strong>理性策略</strong>而非"自然反应"——信号理论、博弈论中的承诺机制、家庭内部的比较优势分工。改变激励比改变理解更有效。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: Chapter 9 - Dimensions 5-9 -->
+<div class="slide" data-index="12">
+  <div class="slide-inner">
+    <div class="section-num">第九章 · 5-9</div>
+    <div class="dim-grid">
+      <div class="dim-card">
+        <div class="dim-num">05</div>
+        <div class="dim-title">男性视角对称性</div>
+        <div class="dim-desc">男性情绪压抑的代价同样巨大——更高的自杀率（3-4倍）、更高的酗酒率、更短的平均寿命。真正的系统性应对应该<strong>双向调整</strong>。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">06</div>
+        <div class="dim-title">缺陷模型陷阱</div>
+        <div class="dim-desc">尽管声明"这不是缺陷"，但框架的叙事结构仍隐含"需要被管理"的假设。替代框架：<strong>多样性框架、优势框架、生态框架</strong>。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">07</div>
+        <div class="dim-title">动态交互整合</div>
+        <div class="dim-desc">生理-心理-社会因素形成恶性或正向循环。干预任何一个环节都可能打破循环——生理、心理、社会层面的干预<strong>同样重要</strong>。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">08</div>
+        <div class="dim-title">历史变迁</div>
+        <div class="dim-desc">从1960年代的"歇斯底里"到2020年代的"情绪健康"运动——很多"问题"可能是<strong>过渡期的阵痛</strong>，是文明层面的调适过程。</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">09</div>
+        <div class="dim-title">权力政治学</div>
+        <div class="dim-desc">情绪表达与权力密切相关。当正式权力通道被关闭时，情绪表达成为唯一的谈判工具。真正的系统性应对是<strong>改变权力结构</strong>。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: Chapter 10 Intro -->
+<div class="slide chapter-intro" data-index="13">
+  <div class="slide-inner">
+    <div class="chapter-number">10</div>
+    <h2>智囊团讨论</h2>
+    <p style="font-size:1.3rem;color:var(--text-dim);">多学科视角的观点碰撞</p>
+    <div class="divider" style="margin:1.5rem auto;"></div>
+    <p style="max-width:700px;margin:0 auto;">一场跨学科圆桌讨论。四位专家从各自的学科背景出发，对前文框架进行补充、质疑和碰撞。</p>
+  </div>
+</div>
+
+<!-- Slide 14: Expert 1 - Zhang -->
+<div class="slide" data-index="14">
+  <div class="slide-inner">
+    <div class="section-num">第十章 · 支持方</div>
+    <div class="expert-card" style="border-left:4px solid var(--accent3);">
+      <div class="expert-header">
+        <div class="expert-dot" style="background:var(--accent3);"></div>
+        <div>
+          <div class="expert-name">张明远教授</div>
+          <div class="expert-title">进化人类学家，剑桥大学</div>
+        </div>
+        <span class="tag tag-blue" style="margin-left:auto;">支持方</span>
+      </div>
+      <p style="font-size:1rem;">"我要为前文的框架辩护，但从一个更深的层次——<strong>终极原因</strong>的视角。</p>
+      <p style="font-size:0.95rem;">答案是：<strong>它救了无数孩子的命</strong>。在人类进化的绝大多数时间里，婴儿的生存完全依赖于母亲对细微信号的敏感察觉。自然选择不会淘汰那些'过度敏感'的母亲，因为她们的婴儿存活率更高。</p>
+      <p style="font-size:0.95rem;">所谓'情绪化'，从进化角度看，是<strong>人类作为一个物种赖以生存的核心能力</strong>，不是缺陷。</p>
+      <p style="font-size:0.95rem;">但这里有一个关键问题：<strong>环境不匹配</strong>。进化塑造的机制在完全不同的现代环境中运行。在原始环境中，情绪敏感性带来生存优势；在现代办公室和客厅里，同样的敏感性变成了'问题'。</p>
+      <p style="font-size:0.95rem;margin:0;">我的建议是：不要试图'解决'这个特质，而是<strong>设计环境让它发挥优势</strong>。"</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 15: Expert 2 - Li -->
+<div class="slide" data-index="15">
+  <div class="slide-inner">
+    <div class="section-num">第十章 · 反对方</div>
+    <div class="expert-card" style="border-left:4px solid var(--accent2);">
+      <div class="expert-header">
+        <div class="expert-dot" style="background:var(--accent2);"></div>
+        <div>
+          <div class="expert-name">李思远博士</div>
+          <div class="expert-title">科学方法论与元科学研究，中科院心理所</div>
+        </div>
+        <span class="tag tag-red" style="margin-left:auto;">反对方</span>
+      </div>
+      <p style="font-size:1rem;">"我持严重的保留态度。不是反对结论，而是质疑<strong>证据基础</strong>。</p>
+      <p style="font-size:0.95rem;"><strong>第一，样本量问题。</strong> 很多性别差异的fMRI研究样本量在20-40人之间。当样本量足够大时，许多之前报告的性别差异消失了或变得极小。</p>
+      <p style="font-size:0.95rem;"><strong>第二，效应量问题。</strong> Hyde(2005)的经典元分析显示，情绪性的性别差异效应量约为0.3-0.5——中等，但远小于<strong>个体差异</strong>。两个随机女性之间的情绪差异，可能大于一个女性和一个男性之间的平均差异。</p>
+      <p style="font-size:0.95rem;"><strong>第三，因果关系被倒置。</strong> 压力和情绪波动也会导致激素波动，这是一个双向关系。社会压力可能是更主要的驱动因素。</p>
+      <p style="font-size:0.95rem;margin:0;">我的结论：<strong>差异被系统性高估了，而且被过度归因于生物学。</strong>"</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 16: Expert 3 - Wang -->
+<div class="slide" data-index="16">
+  <div class="slide-inner">
+    <div class="section-num">第十章 · 质疑方</div>
+    <div class="expert-card" style="border-left:4px solid var(--accent4);">
+      <div class="expert-header">
+        <div class="expert-dot" style="background:var(--accent4);"></div>
+        <div>
+          <div class="expert-name">王兰教授</div>
+          <div class="expert-title">文化人类学与性别研究，北京大学</div>
+        </div>
+        <span class="tag tag-purple" style="margin-left:auto;">质疑方</span>
+      </div>
+      <p style="font-size:1rem;">"我要质疑的是这个框架的<strong>文化盲区</strong>和<strong>隐含假设</strong>。</p>
+      <p style="font-size:0.95rem;"><strong>第一个问题：西方中心主义。</strong> 在瑞典，性别在情绪表达上的差异几乎消失——因为社会支持系统完善，情绪劳动被公平分担。很大一部分'女性情绪强度'可能是特定社会结构的产物。</p>
+      <p style="font-size:0.95rem;"><strong>第二个问题：框架把'女性情绪'客体化了。</strong> 整个框架的叙事视角是：'我们'（默认是男性）如何理解'她们'（女性）的情绪。这本身就复制了男性作为观察者、女性作为被观察者的权力关系。</p>
+      <p style="font-size:0.95rem;"><strong>第三个问题：'理解'本身可能是一种新的控制形式。</strong> 真正的尊重不是理解对方，而是<strong>承认对方的不可理解性</strong>。"</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 17: Expert 4 - Chen -->
+<div class="slide" data-index="17">
+  <div class="slide-inner">
+    <div class="section-num">第十章 · 搅局者</div>
+    <div class="expert-card" style="border-left:4px solid var(--accent);">
+      <div class="expert-header">
+        <div class="expert-dot" style="background:var(--accent);"></div>
+        <div>
+          <div class="expert-name">陈知行教授</div>
+          <div class="expert-title">行为经济学与复杂系统，上海交通大学</div>
+        </div>
+        <span class="tag tag-gold" style="margin-left:auto;">搅局者</span>
+      </div>
+      <p style="font-size:1rem;">"我要从一个完全不同的角度切入：<strong>这个问题可能被错误地框架化了。</strong></p>
+      <p style="font-size:0.95rem;"><strong>信号-噪声模型：</strong> 你认为的'噪声'（情绪波动），在接收者看来可能是重要的信号。问题不在于'信号太强'，而在于<strong>接收器的灵敏度不够</strong>。</p>
+      <p style="font-size:0.95rem;"><strong>风险分担模型：</strong> 不是'她太情绪化'，而是<strong>你们对风险的感知不同</strong>。解决方式不是让她'冷静'，而是坐下来校准风险感知。</p>
+      <p style="font-size:0.95rem;"><strong>复杂适应系统：</strong> 不要试图控制系统的波动，而是学习在波动中保持系统的弹性。波动不是系统的缺陷，而是<strong>系统活力的表现</strong>——一个完全没有波动的系统是死系统。</p>
+      <p style="font-size:0.95rem;margin:0;">与其问'如何应对女性的情绪强度'，不如问'如何让关系系统对情绪信号更敏感、对波动更有弹性'。"</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 18: Collisions -->
+<div class="slide" data-index="18">
+  <div class="slide-inner">
+    <div class="section-num">第十章 · 观点碰撞</div>
+    <h3>💥 四轮交锋</h3>
+    <div class="divider"></div>
+    <div class="collision">
+      <strong>张明远</strong> <span style="color:var(--text-dim);">↔</span> <strong>李思远</strong>：
+      <br>张："情绪敏感性有明确的适应功能，不能简单用'效应量小'来否定。"
+      <br>李："如果效应量只有0.3，那说明大部分女性并不比大部分男性更情绪化。用'女性情绪强度'作为框架起点，本身就过度简化了。"
+    </div>
+    <div class="collision">
+      <strong>王兰</strong> <span style="color:var(--text-dim);">↔</span> <strong>陈知行</strong>：
+      <br>王："你的'系统'框架听起来很中立，但系统本身是由权力结构塑造的。谁设计系统？谁定义'弹性'的标准？"
+      <br>陈："系统不是中性的。但改变系统比改变个体更高效。与其让女性'不那么情绪化'或让男性'更理解'，不如重新设计关系中的沟通规则和决策机制。"
+    </div>
+    <div class="collision">
+      <strong>李思远</strong> <span style="color:var(--text-dim);">↔</span> <strong>王兰</strong>：
+      <br>李："如果很大一部分差异是社会建构的，那干预社会结构比干预个体更有效。"
+      <br>王："具体来说，我们需要改变什么？情绪劳动分配、育儿支持系统、工作场所的灵活性——这些才是可操作的点。"
+    </div>
+    <div class="collision" style="border-color:var(--accent);">
+      <strong>陈知行 → 所有人</strong>：
+      <br>"所有人都不认为'让女性改变'是答案。分歧在于——是改变理解、改变证据基础、改变话语、还是改变系统设计。这四种路径不是互斥的，而是互补的。真正的系统性应对，应该是<strong>四条路径同时推进</strong>。"
+    </div>
+  </div>
+</div>
+
+<!-- Slide 19: Summary -->
+<div class="slide" data-index="19">
+  <div class="slide-inner">
+    <div class="section-num">智囊团总结</div>
+    <h2>核心共识与分歧</h2>
+    <div class="divider"></div>
+    <div class="card card-accent" style="margin-bottom:1rem;">
+      <div class="card-label">核心共识</div>
+      <p style="font-size:0.95rem;margin:0;">
+        ① 女性的情绪强度不是"缺陷"，而是多重因素（生物、心理、社会、文化）的自然结果<br>
+        ② "让女性改变"不是答案——干预方向应该是环境、系统、理解和支持<br>
+        ③ 个体差异大于性别差异——避免过度概括和刻板印象
+      </p>
+    </div>
+    <div class="card card-accent2" style="margin-bottom:1rem;">
+      <div class="card-label">核心分歧</div>
+      <p style="font-size:0.95rem;margin:0;">
+        <strong>差异有多大？</strong> 进化人类学家认为差异有深刻的生物学基础；方法论学者认为差异被系统性高估了<br>
+        <strong>改变什么？</strong> 文化人类学家主张改变话语和权力结构；行为经济学家主张重新设计系统规则<br>
+        <strong>谁的主体性？</strong> 框架本身是否复制了"男性观察女性"的权力关系？
+      </p>
+    </div>
+    <div class="card" style="border-color:var(--accent4);">
+      <div class="card-label" style="color:var(--accent4);">留给你的问题</div>
+      <p style="font-size:0.95rem;margin:0;">
+        · 如果很大一部分"问题"是社会结构造成的，你愿意在多大程度上改变自己的行为来参与结构变革？<br>
+        · 在"理解"和"改变"之间，你的个人边界在哪里？<br>
+        · 如何让孩子——无论男孩女孩——从你们处理情绪冲突的方式中学到更健康的情绪模式？
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 20: Closing -->
+<div class="slide" data-index="20">
+  <div class="slide-inner" style="text-align:center;">
+    <div style="margin-bottom:2rem;">
+      <span class="tag tag-gold">理解</span>
+      <span class="tag tag-red">共处</span>
+      <span class="tag tag-blue">支持</span>
+      <span class="tag tag-purple">边界</span>
+    </div>
+    <h2 style="font-size:2.8rem;margin-bottom:1rem;">从对抗走向共处</h2>
+    <div class="divider" style="margin:1.5rem auto;"></div>
+    <p style="font-size:1.2rem;max-width:700px;margin:0 auto 1.5rem;color:var(--text-dim);">
+      应对的关键不是"让她改变"，也不是"你忍受"，而是：
+    </p>
+    <div class="grid-4" style="max-width:800px;margin:0 auto;">
+      <div>
+        <div style="font-size:2rem;font-weight:900;color:var(--accent);">01</div>
+        <p style="font-size:0.95rem;">理解<br><span style="color:var(--text-dim);font-size:0.85rem;">知道背后有生理、神经、社会等多层原因</span></p>
+      </div>
+      <div>
+        <div style="font-size:2rem;font-weight:900;color:var(--accent2);">02</div>
+        <p style="font-size:0.95rem;">适配<br><span style="color:var(--text-dim);font-size:0.85rem;">调整沟通方式以适配她的情绪节奏</span></p>
+      </div>
+      <div>
+        <div style="font-size:2rem;font-weight:900;color:var(--accent3);">03</div>
+        <p style="font-size:0.95rem;">支持<br><span style="color:var(--text-dim);font-size:0.85rem;">建立系统性的支持结构，分担压力</span></p>
+      </div>
+      <div>
+        <div style="font-size:2rem;font-weight:900;color:var(--accent4);">04</div>
+        <p style="font-size:0.95rem;">边界<br><span style="color:var(--text-dim);font-size:0.85rem;">在理解的同时保护自己的情绪健康</span></p>
+      </div>
+    </div>
+    <p class="meta" style="margin-top:2.5rem;">基于飞书文档 · 共10章 · 16,500字 · 2026年7月</p>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav" id="nav">
+  <button class="nav-btn" id="prevBtn">◀</button>
+  <div class="nav-progress" id="navProgress"></div>
+  <span class="nav-counter" id="navCounter">1 / 21</span>
+  <button class="nav-btn" id="nextBtn">▶</button>
+</div>
+<div class="key-hint">← 上一页 · 点击导航点 · → 下一页</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let current = 0;
+
+function updateSlide() {
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === current);
+  });
+  updateNav();
+}
+
+function updateNav() {
+  const dots = document.querySelectorAll('.nav-dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+  document.getElementById('navCounter').textContent = (current + 1) + ' / ' + totalSlides;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === totalSlides - 1;
+}
+
+function goTo(n) {
+  if (n < 0) n = 0;
+  if (n >= totalSlides) n = totalSlides - 1;
+  current = n;
+  updateSlide();
+}
+
+// Build nav dots
+const progress = document.getElementById('navProgress');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'nav-dot';
+  dot.addEventListener('click', () => goTo(i));
+  progress.appendChild(dot);
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    goTo(current + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goTo(current - 1);
+  }
+});
+
+// Touch support
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) goTo(current + 1);
+    else goTo(current - 1);
+  }
+});
+
+updateNav();
+</script>
+</body>
+</html>
