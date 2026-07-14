@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从个人能力到组织能力</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #080c12;
+    --bg2: #0f1620;
+    --text: #e0e8f0;
+    --text-dim: #7a8aa0;
+    --accent: #2d8cf0;
+    --accent2: #60a5fa;
+    --accent3: #f59e0b;
+    --gold: #fbbf24;
+    --green: #34d399;
+    --cyan: #22d3ee;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --card: rgba(45, 140, 240, 0.08);
+    --card-hover: rgba(45, 140, 240, 0.15);
+    --border: rgba(45, 140, 240, 0.2);
+  }
+  html, body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif; background: var(--bg); color: var(--text); height: 100%; width: 100%; overflow: hidden; }
+  .slides-wrapper { width: 100%; height: 100%; position: relative; }
+  .slide {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; justify-content: flex-start; align-items: flex-start;
+    padding: 5vh 6vw; opacity: 0; transition: opacity 0.4s ease;
+    pointer-events: none; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
+  .slide-inner { max-width: 1100px; width: 100%; margin: 0 auto; min-height: 80vh; display: flex; flex-direction: column; justify-content: center; }
+  .title-slide .slide-inner, .end-slide .slide-inner { justify-content: center; align-items: center; text-align: center; }
+  h1 { font-size: clamp(2.2rem, 4.5vw, 4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.4em; }
+  .title-slide h1 { background: linear-gradient(135deg, #fff 30%, var(--accent2) 60%, var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  h2 { font-size: clamp(1.5rem, 2.8vw, 2.4rem); font-weight: 700; color: var(--accent2); margin-bottom: 0.5em; }
+  h3 { font-size: clamp(1.05rem, 1.6vw, 1.4rem); font-weight: 500; color: var(--accent3); margin-bottom: 0.3em; }
+  p, li { font-size: clamp(0.95rem, 1.4vw, 1.25rem); line-height: 1.7; color: var(--text); font-weight: 300; }
+  .subtitle { font-size: clamp(1rem, 1.5vw, 1.35rem); color: var(--text-dim); font-weight: 300; }
+  .highlight { color: var(--accent2); font-weight: 500; }
+  .highlight-gold { color: var(--gold); font-weight: 500; }
+  .highlight-green { color: var(--green); font-weight: 500; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 0.8rem 0; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem;
+    transition: all 0.3s ease;
+  }
+  .card:hover { background: var(--card-hover); transform: translateY(-2px); border-color: var(--accent); }
+  .card .icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+  .card h4 { font-size: 1.05rem; font-weight: 600; color: var(--accent2); margin-bottom: 0.3rem; }
+  .card p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+  .quote {
+    background: linear-gradient(135deg, rgba(45,140,240,0.1), rgba(0,0,0,0.3));
+    border-left: 4px solid var(--accent); padding: 1rem 1.5rem; border-radius: 0 12px 12px 0;
+    margin: 0.8rem 0; font-size: clamp(0.95rem, 1.3vw, 1.2rem); line-height: 1.7;
+  }
+  .quote::before { content: '"'; font-size: 2.2rem; color: var(--accent); opacity: 0.4; line-height: 0; vertical-align: -0.3em; margin-right: 0.15em; }
+  .formula {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.9rem 1.3rem; margin: 0.7rem 0; font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    color: var(--cyan); text-align: center; font-family: inherit;
+  }
+  .slide ul { list-style: none; padding: 0; margin: 0.6rem 0; }
+  .slide li { padding: 0.35rem 0 0.35rem 1.6rem; position: relative; font-weight: 300; }
+  .slide li::before { content: '▸'; position: absolute; left: 0; color: var(--accent2); font-size: 0.8em; top: 0.35em; }
+  .table-wrap { overflow-x: auto; margin: 0.8rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(0.78rem, 1.05vw, 0.95rem); }
+  thead th { background: rgba(45,140,240,0.15); border-bottom: 2px solid var(--accent); padding: 0.6rem 0.7rem; text-align: left; font-weight: 600; color: var(--accent2); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.7rem; border-bottom: 1px solid rgba(45,140,240,0.08); color: var(--text); font-weight: 300; }
+  tbody tr:hover td { background: rgba(45,140,240,0.05); }
+  .tag { display: inline-block; padding: 0.15em 0.6em; border-radius: 20px; font-size: 0.75rem; font-weight: 500; margin: 0.15em; }
+  .tag.blue { background: rgba(45,140,240,0.2); color: var(--accent2); }
+  .tag.green { background: rgba(52,211,153,0.2); color: var(--green); }
+  .tag.gold { background: rgba(251,191,36,0.2); color: var(--gold); }
+  .tag.pink { background: rgba(244,114,182,0.2); color: var(--pink); }
+  .tag.orange { background: rgba(251,146,60,0.2); color: var(--orange); }
+  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(0deg, rgba(0,0,0,0.95) 60%, transparent); display: flex; align-items: center; justify-content: center; gap: 1rem; z-index: 100; padding: 0 1.5rem; }
+  .nav-btn { background: rgba(45,140,240,0.15); border: 1px solid rgba(45,140,240,0.25); color: var(--text); padding: 0.45rem 1.4rem; border-radius: 30px; cursor: pointer; font-size: 0.9rem; font-family: inherit; transition: all 0.3s ease; font-weight: 400; }
+  .nav-btn:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
+  .nav-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+  .page-indicator { color: var(--text-dim); font-size: 0.8rem; font-weight: 300; letter-spacing: 0.1em; min-width: 65px; text-align: center; }
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)); z-index: 200; transition: width 0.3s ease; }
+  .title-slide .divider { width: 50px; height: 2px; background: var(--accent); margin: 1rem auto; }
+  .meta { color: var(--text-dim); font-size: clamp(0.75rem, 0.9vw, 0.85rem); margin-top: 1.2rem; letter-spacing: 0.12em; }
+  .end-slide .slide-inner { justify-content: center; align-items: center; text-align: center; }
+  .end-slide h1 { font-size: clamp(1.6rem, 3vw, 2.6rem); margin-bottom: 0.5em; }
+  .slide::-webkit-scrollbar { width: 3px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+  .fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .slide.active .fade-in { opacity: 1; transform: translateY(0); }
+  .slide.active .fade-in:nth-child(1) { transition-delay: 0.05s; }
+  .slide.active .fade-in:nth-child(2) { transition-delay: 0.1s; }
+  .slide.active .fade-in:nth-child(3) { transition-delay: 0.15s; }
+  .slide.active .fade-in:nth-child(4) { transition-delay: 0.2s; }
+  .slide.active .fade-in:nth-child(5) { transition-delay: 0.25s; }
+  .slide.active .fade-in:nth-child(6) { transition-delay: 0.3s; }
+  .slide.active .fade-in:nth-child(7) { transition-delay: 0.35s; }
+  .slide.active .fade-in:nth-child(8) { transition-delay: 0.4s; }
+  .slide.active .fade-in:nth-child(9) { transition-delay: 0.45s; }
+  .slide.active .fade-in:nth-child(10) { transition-delay: 0.5s; }
+  #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle { position: absolute; width: 2px; height: 2px; border-radius: 50%; opacity: 0; animation: float linear infinite; }
+  @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 5% { opacity: 0.2; } 90% { opacity: 0.2; } 100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; } }
+  .slide, .nav-bar { position: relative; z-index: 10; }
+  .flex-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .flex-col { flex: 1; min-width: 180px; }
+  @media (max-width: 768px) { .slide { padding: 3vh 4vw; } .card-grid { grid-template-columns: 1fr; } .nav-btn { padding: 0.4rem 1rem; font-size: 0.85rem; } }
+  .big-num { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; color: var(--accent2); }
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin: 0 0.5em; vertical-align: middle; }
+  .dot.blue { background: var(--accent2); }
+  .dot.green { background: var(--green); }
+  .dot.gold { background: var(--gold); }
+  .dot.pink { background: var(--pink); }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div id="particles"></div>
+<div class="slides-wrapper" id="slidesWrapper">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide title-slide active" data-index="0">
+    <div class="slide-inner">
+      <div class="fade-in"><div class="divider"></div></div>
+      <div class="fade-in"><h1>从个人能力到组织能力</h1></div>
+      <div class="fade-in"><p class="subtitle" style="font-size:clamp(1rem,1.6vw,1.4rem);">摩擦、沉淀与系统化 —— 字节硬轮岗的深度解析与批判性审视</p></div>
+      <div class="fade-in"><div class="divider"></div></div>
+      <div class="fade-in"><p class="meta">小勇 · 2026年7月14日晨间感悟系统展开（续篇）</p></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: PARADOX -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>核心悖论</h2></div>
+      <div class="fade-in"><p style="font-size:clamp(1rem,1.5vw,1.3rem);margin-bottom:0.5rem;"><strong>个人能力是组织最大的资产，也是最大的负债。</strong></p></div>
+      <div class="fade-in">
+        <div class="quote">三个人组成小组，其中一个人完全不懂业务。他带来的"不懂"产生了巨大的摩擦——沟通成本上升、决策变慢。但组织层面不仅容忍了这种摩擦，甚至主动倡导它。为什么？</div>
+      </div>
+      <div class="fade-in"><p style="color:var(--accent2);font-weight:500;text-align:center;font-size:clamp(1rem,1.4vw,1.2rem);">答案：<strong>摩擦是组织能力沉淀的催化剂</strong></p></div>
+      <div class="fade-in">
+        <div class="card-grid" style="margin-top:0.5rem;">
+          <div class="card"><h4>📈 作为资产</h4><p>• 个人专家解决问题快<br>• 个人经验判断准确<br>• 个人直觉带来突破<br>• 个人魅力带动团队</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">📉 作为负债</h4><p>• 只有他做得快，成为瓶颈<br>• 经验无法复制，团队无法成长<br>• 他休假/离职，系统瘫痪<br>• 英雄主义文化不可持续</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: MATURITY MODEL -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>组织能力成熟度五阶段</h2></div>
+      <div class="fade-in">
+        <div class="card-grid">
+          <div class="card" style="border-color:rgba(251,146,60,0.3);"><span class="tag orange">①</span><h4 style="margin-top:0.3rem;">个人英雄期</h4><p>依赖几位关键人物，效率高但脆弱</p></div>
+          <div class="card" style="border-color:rgba(251,191,36,0.3);"><span class="tag gold">②</span><h4 style="margin-top:0.3rem;">经验共享期</h4><p>开始有文档、分享会，但依赖个人意愿</p></div>
+          <div class="card" style="border-color:rgba(52,211,153,0.3);"><span class="tag green">③</span><h4 style="margin-top:0.3rem;">流程固化期</h4><p>SOP、标准化、培训体系，可复制但僵化</p></div>
+          <div class="card" style="border-color:rgba(45,140,240,0.3);"><span class="tag blue">④</span><h4 style="margin-top:0.3rem;">组织学习期</h4><p>系统化复盘、反馈循环、持续改进</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><span class="tag pink">⑤</span><h4 style="margin-top:0.3rem;">自适应期</h4><p>组织能根据环境自动调整，个人强依赖被消除</p></div>
+        </div>
+      </div>
+      <div class="fade-in">
+        <div class="quote" style="margin-top:0.5rem;">
+          <strong>字节的策略：</strong>硬轮岗是一种"强行跳过中间阶段"的激进策略——通过制造摩擦，迫使组织快速进入"组织学习期"
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: SIX PATHS -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>知识显性化的六条路径</h2></div>
+      <div class="fade-in"><p style="margin-bottom:0.5rem;">核心理论：Polanyi的隐性知识 → Nonaka的SECI模型</p></div>
+      <div class="fade-in">
+        <div class="card-grid">
+          <div class="card"><span class="tag blue">路径一</span><h4 style="margin-top:0.3rem;">📄 文档化</h4><p>强制"写下来"——不是存档，而是思考。字节100万+活跃飞书文档</p></div>
+          <div class="card"><span class="tag green">路径二</span><h4 style="margin-top:0.3rem;">🔄 复盘机制</h4><p>AAR四问：计划→实际→差异→改进。不问谁对谁错，只问学到了什么</p></div>
+          <div class="card"><span class="tag gold">路径三</span><h4 style="margin-top:0.3rem;">📋 标准化</h4><p>SOP as 组织记忆。字节不标准业务，而是标准化协作方式</p></div>
+          <div class="card"><span class="tag pink">路径四</span><h4 style="margin-top:0.3rem;">🔄 轮岗制度</h4><p>自愿→计划→硬轮岗。字节硬轮岗：人随业务走，不随意愿</p></div>
+          <div class="card"><span class="tag orange">路径五</span><h4 style="margin-top:0.3rem;">👥 师徒制</h4><p>教是最好的学。当一个人必须教会另一个人，他才会真正理解自己知道什么</p></div>
+          <div class="card"><span class="tag blue">路径六</span><h4 style="margin-top:0.3rem;">🏛️ 知识库</h4><p>组织记忆不依赖任何个人。搜索一个关键词，能找到所有历史决策</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: PREREQUISITES -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>前提条件：缺一不可</h2></div>
+      <div class="fade-in">
+        <div class="card-grid">
+          <div class="card" style="border-color:rgba(45,140,240,0.3);">
+            <h4>🏛️ 组织文化</h4>
+            <p>• 心理安全：敢于提问、犯错<br>• 数据驱动：不以权威为准<br>• 低权力距离：新人可挑战专家<br>• 长期主义：容忍短期效率损失</p>
+          </div>
+          <div class="card" style="border-color:rgba(52,211,153,0.3);">
+            <h4>🛠️ 技术基础设施</h4>
+            <p>• 协作工具（文档/日历/IM）<br>• 数据平台（AB测试、分析）<br>• 知识管理系统（搜索/标签）</p>
+          </div>
+          <div class="card" style="border-color:rgba(251,191,36,0.3);">
+            <h4>📊 规模与行业</h4>
+            <p>• 10人团队：摩擦≈50%，收益≈20%<br>• 1万人团队：摩擦≈15%，收益≈95%<br>• 高创新行业更适合</p>
+          </div>
+        </div>
+      </div>
+      <div class="fade-in">
+        <div class="formula" style="color:var(--accent3);">硬轮岗的净收益 = 组织能力沉淀收益 − 个人效率损失 − 人才流失风险</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: FOUR MODELS -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>四种模式对比</h2></div>
+      <div class="fade-in">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>维度</th><th>字节</th><th>亚马逊</th><th>丰田</th><th>桥水</th></tr></thead>
+            <tbody>
+              <tr><td>首要机制</td><td>硬轮岗</td><td>深度写作</td><td>标准化</td><td>彻底透明</td></tr>
+              <tr><td>知识载体</td><td>飞书文档</td><td>6页纸</td><td>工作标准</td><td>原则库</td></tr>
+              <tr><td>摩擦来源</td><td>不懂的人</td><td>写作过程</td><td>持续改进</td><td>真实反馈</td></tr>
+              <tr><td>个人价值</td><td style="color:var(--orange)">中</td><td style="color:var(--green)">高</td><td style="color:var(--green)">高</td><td style="color:var(--gold)">极高</td></tr>
+              <tr><td>组织韧性</td><td style="color:var(--gold)">极高</td><td style="color:var(--green)">高</td><td style="color:var(--green)">高</td><td style="color:var(--orange)">中</td></tr>
+              <tr><td>适用规模</td><td>大规模</td><td>中大规模</td><td>各种规模</td><td>小规模</td></tr>
+              <tr><td>适用行业</td><td>互联网</td><td>电商/科技</td><td>制造</td><td>金融</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: SIX TRAPS -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>六大批判性陷阱</h2></div>
+      <div class="fade-in">
+        <div class="card-grid">
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 文档≠知识</h4><p>70%的文档从未被第二次阅读。存储不等于使用。</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 摩擦不是自动有益的</h4><p>没有心理安全，摩擦只是成本，没有收益。</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 组织记忆≠个人记忆之和</h4><p>真正需要的是结构化的知识网络，不是知识仓库。</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 标准化可能抑制创新</h4><p>字节的妥协：不标准业务操作，而是标准化协作方式。</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 去个人化可能赶走人才</h4><p>优秀人才恰恰想要"被依赖"——需要更大的舞台来平衡。</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 组织能力可能变成僵化</h4><p>"我们一直都是这么做的"——这恰恰是反脆弱的反面。</p></div>
+        </div>
+      </div>
+      <div class="fade-in"><div class="quote" style="margin-top:0.2rem;"><strong>核心警示：</strong>先问"我们能不能"，再问"我们该不该"——条件比方法更重要。</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: AI ERA -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>AI时代的范式转变</h2></div>
+      <div class="fade-in"><p style="margin-bottom:0.5rem;">从 <strong>"人+文档"</strong> 到 <strong>"人+AI+文档"</strong></p></div>
+      <div class="fade-in">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>角色</th><th>传统组织</th><th>AI增强组织</th></tr></thead>
+            <tbody>
+              <tr><td>个人</td><td>知识的所有者</td><td style="color:var(--green)">知识的使用者和校准者</td></tr>
+              <tr><td>文档</td><td>知识的载体</td><td style="color:var(--green)">知识的"原材料"</td></tr>
+              <tr><td>AI</td><td>无</td><td style="color:var(--green)">知识的组织者、检索者、生成者</td></tr>
+              <tr><td>组织</td><td>知识的管理者</td><td style="color:var(--green)">知识生态的构建者</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fade-in">
+        <div class="card-grid" style="margin-top:0.3rem;">
+          <div class="card" style="border-color:rgba(52,211,153,0.3);"><h4 style="color:var(--green);">✅ AI能替代</h4><p>自动记录会议、识别认知盲区、生成结构化知识、辅助新手快速上手</p></div>
+          <div class="card" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">❌ AI不能替代</h4><p>真正新颖的问题、人际信任建立、决策背后的价值观和判断力</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: DECISION FRAMEWORK -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>情境化决策框架</h2></div>
+      <div class="fade-in"><p style="margin-bottom:0.5rem;">不是所有组织都应该学字节，也不是所有组织都应该学丰田。</p></div>
+      <div class="fade-in">
+        <div class="card-grid">
+          <div class="card" style="border-color:rgba(251,146,60,0.3);">
+            <span class="tag orange">创业期 &lt;30人</span>
+            <h4 style="margin-top:0.3rem;">🚀 个人依赖优先</h4>
+            <p>效率优先，核心人物带教，关键知识简单记录。不要过早引入硬轮岗。</p>
+          </div>
+          <div class="card" style="border-color:rgba(251,191,36,0.3);">
+            <span class="tag gold">成长期 30-200人</span>
+            <h4 style="margin-top:0.3rem;">🌱 建立文档文化</h4>
+            <p>鼓励写文档、复盘、分享会，但保持灵活性。先建文化，再建制度。</p>
+          </div>
+          <div class="card" style="border-color:rgba(52,211,153,0.3);">
+            <span class="tag green">规模化期 200-2000人</span>
+            <h4 style="margin-top:0.3rem;">🏗️ 系统化沉淀</h4>
+            <p>建立知识库、复盘制度、轮岗试点。逐步推进，不要一步到位。</p>
+          </div>
+          <div class="card" style="border-color:rgba(45,140,240,0.3);">
+            <span class="tag blue">成熟期 &gt;2000人</span>
+            <h4 style="margin-top:0.3rem;">🏛️ 全面去个人化</h4>
+            <p>参考字节/亚马逊/丰田的混合模式。持续警惕制度僵化。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: YOUR CASE -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <div class="fade-in"><h2>对你的具体建议</h2></div>
+      <div class="fade-in">
+        <div class="card-grid">
+          <div class="card" style="border-color:rgba(45,140,240,0.3);">
+            <span class="tag blue">分院运营</span>
+            <h4 style="margin-top:0.3rem;">🎯 中等沉淀</h4>
+            <p>建立文档化、复盘机制，但不要过度标准化。让知识可被团队共享，而不是依赖你一个人。</p>
+          </div>
+          <div class="card" style="border-color:rgba(52,211,153,0.3);">
+            <span class="tag green">AI创业探索</span>
+            <h4 style="margin-top:0.3rem;">💡 低沉淀·高探索</h4>
+            <p>当前阶段个人认知是核心资产。但提前建立良好的记录习惯，为未来规模化做准备。</p>
+          </div>
+          <div class="card" style="border-color:rgba(251,191,36,0.3);">
+            <span class="tag gold">AI应用</span>
+            <h4 style="margin-top:0.3rem;">🤖 AI作为组织记忆</h4>
+            <p>你正在做的AI智能体，天然就是"去个人依赖"的工具。让AI辅助你的个人知识管理。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: CONCLUSION -->
+  <div class="slide end-slide" data-index="10">
+    <div class="slide-inner">
+      <div class="fade-in"><h1>三个核心洞见</h1></div>
+      <div class="fade-in">
+        <div class="card-grid" style="max-width:800px;margin:0 auto;">
+          <div class="card" style="border-color:rgba(45,140,240,0.3);text-align:center;">
+            <span class="big-num">01</span>
+            <h4 style="margin-top:0.5rem;">知识转化</h4>
+            <p>从隐性到显性，从个人到系统——手段不同，但核心都是"强制知识显性化"</p>
+          </div>
+          <div class="card" style="border-color:rgba(251,191,36,0.3);text-align:center;">
+            <span class="big-num" style="color:var(--gold);">02</span>
+            <h4 style="margin-top:0.5rem;">条件比方法更重要</h4>
+            <p>没有心理安全、数据驱动、长期主义的文化基础，硬轮岗只会带来人才流失</p>
+          </div>
+          <div class="card" style="border-color:rgba(52,211,153,0.3);text-align:center;">
+            <span class="big-num" style="color:var(--green);">03</span>
+            <h4 style="margin-top:0.5rem;">AI正在改变游戏</h4>
+            <p>AI作为"知识中介"，自动完成曾经需要摩擦才能完成的知识转化</p>
+          </div>
+        </div>
+      </div>
+      <div class="fade-in">
+        <div class="quote" style="text-align:center;border-left:none;border:1px solid var(--border);border-radius:14px;margin-top:0.5rem;font-size:clamp(0.9rem,1.3vw,1.1rem);">
+          <strong>从个人能力到组织能力</strong> 的转化，不是"把经验存起来"，而是"在摩擦中强制显性化"——<br>
+          但前提条件比方法本身更重要。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="goSlide(-1)">‹ 上一页</button>
+  <span class="page-indicator" id="pageIndicator">1 / 11</span>
+  <button class="nav-btn" id="nextBtn" onclick="goSlide(1)">下一页 ›</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  function goSlide(dir) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, current + dir));
+    slides[current].classList.add('active');
+    updateUI();
+  }
+  function updateUI() {
+    document.getElementById('pageIndicator').textContent = `${current + 1} / ${total}`;
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === total - 1;
+    document.getElementById('progressBar').style.width = `${((current + 1) / total) * 100}%`;
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); if (current < total - 1) goSlide(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); if (current > 0) goSlide(-1); }
+  });
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) { if (diff > 0 && current < total - 1) goSlide(1); if (diff < 0 && current > 0) goSlide(-1); }
+  });
+  (function() {
+    const c = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div'); p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%'; p.style.animationDuration = (15 + Math.random() * 25) + 's';
+      p.style.animationDelay = Math.random() * 20 + 's'; p.style.width = p.style.height = (1 + Math.random() * 2) + 'px';
+      p.style.background = ['#2d8cf0','#60a5fa','#34d399','#fbbf24','#f472b6'][Math.floor(Math.random()*5)];
+      c.appendChild(p);
+    }
+  })();
+  updateUI();
+</script>
+</body>
+</html>
