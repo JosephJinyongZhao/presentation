@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>优质提问</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #0c0a08; --text: #e8e0d8; --text-dim: #9a8a7a; --accent: #d97706; --accent2: #f59e0b; --accent3: #fbbf24; --gold: #fcd34d; --green: #34d399; --cyan: #22d3ee; --card: rgba(217,119,6,0.08); --border: rgba(217,119,6,0.2); --pink: #f472b6; }
+html, body { font-family: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background: var(--bg); color: var(--text); height: 100%; width: 100%; overflow: hidden; }
+.slide { display: none; width: 100vw; height: 100vh; padding: 5vh 6vw; overflow-y: auto; }
+.slide.active { display: flex; flex-direction: column; }
+.inner { max-width: 1100px; width: 100%; margin: auto; }
+.center { text-align: center; }
+h1 { font-size: clamp(2.2rem,4.5vw,4rem); font-weight: 800; line-height: 1.2; margin-bottom: 0.4em; }
+.t1 h1 { background: linear-gradient(135deg,#fff 30%,var(--accent2) 60%,var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: clamp(1.5rem,2.8vw,2.4rem); font-weight: 700; color: var(--accent2); margin-bottom: 0.5em; }
+p, li { font-size: clamp(0.95rem,1.4vw,1.25rem); line-height: 1.7; font-weight: 300; }
+.sub { font-size: clamp(1rem,1.5vw,1.35rem); color: var(--text-dim); }
+.g { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 1rem; margin: 0.8rem 0; }
+.c { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem; }
+.c .i { font-size: 1.6rem; margin-bottom: 0.4rem; }
+.c h4 { font-size: 1.05rem; font-weight: 600; color: var(--accent2); margin-bottom: 0.3rem; }
+.c p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+.q { background: linear-gradient(135deg,rgba(217,119,6,0.1),rgba(0,0,0,0.3)); border-left: 4px solid var(--accent); padding: 1rem 1.5rem; border-radius: 0 12px 12px 0; margin: 0.8rem 0; font-size: clamp(0.95rem,1.3vw,1.2rem); line-height: 1.7; }
+.f { background: #120e0a; border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1.3rem; margin: 0.7rem 0; font-size: clamp(0.9rem,1.2vw,1.1rem); color: var(--cyan); text-align: center; }
+.t { overflow-x: auto; margin: 0.8rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: clamp(0.78rem,1.05vw,0.95rem); }
+th { background: rgba(217,119,6,0.15); border-bottom: 2px solid var(--accent); padding: 0.6rem 0.7rem; text-align: left; font-weight: 600; color: var(--accent2); }
+td { padding: 0.5rem 0.7rem; border-bottom: 1px solid rgba(217,119,6,0.08); font-weight: 300; }
+.tg { display: inline-block; padding: 0.15em 0.6em; border-radius: 20px; font-size: 0.75rem; font-weight: 500; margin: 0.15em; }
+.ta { background: rgba(217,119,6,0.2); color: var(--accent2); }
+.tg2 { background: rgba(52,211,153,0.2); color: var(--green); }
+.tgo { background: rgba(251,191,36,0.2); color: var(--gold); }
+.tp2 { background: rgba(244,114,182,0.2); color: var(--pink); }
+.dv { width: 50px; height: 2px; background: var(--accent); margin: 1rem auto; }
+.mt { color: var(--text-dim); font-size: clamp(0.75rem,0.9vw,0.85rem); margin-top: 1.2rem; }
+.bn { font-size: clamp(2rem,4vw,3.5rem); font-weight: 800; color: var(--accent2); }
+.nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(0deg,rgba(0,0,0,0.95) 60%,transparent); display: flex; align-items: center; justify-content: center; gap: 1rem; z-index: 999; }
+.nav button { background: rgba(217,119,6,0.15); border: 1px solid rgba(217,119,6,0.25); color: var(--text); padding: 0.45rem 1.4rem; border-radius: 30px; cursor: pointer; font-size: 0.9rem; font-family: inherit; }
+.nav button:hover { background: var(--accent); }
+.nav button:disabled { opacity: 0.25; cursor: not-allowed; }
+.nav .pg { color: var(--text-dim); font-size: 0.8rem; min-width: 65px; text-align: center; }
+.pb { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3)); z-index: 999; transition: width 0.3s; }
+@media (max-width:768px) { .slide { padding: 3vh 4vw; } .g { grid-template-columns: 1fr; } .nav button { padding: 0.4rem 1rem; font-size: 0.85rem; } }
+</style>
+</head>
+<body>
+<div class="pb" id="pb" style="width:7.14%"></div>
+
+<div class="slide active" id="s0">
+  <div class="inner center">
+    <div class="dv"></div>
+    <div class="t1"><h1>优质提问</h1></div>
+    <p class="sub" style="font-size:clamp(1rem,1.6vw,1.4rem);">认知杠杆、关系密码与高阶领导力</p>
+    <p class="sub" style="font-size:clamp(0.85rem,1.2vw,1rem);margin-top:0.5rem;">从学术研究到实践指南的系统展开</p>
+    <div class="dv"></div>
+    <p class="mt">小勇 · 2026年7月14日 · 基于《经济学人》"提出优质问题的秘诀"</p>
+  </div>
+</div>
+
+<div class="slide" id="s1">
+  <div class="inner">
+    <h2>为什么提问比你想象的更重要</h2>
+    <div class="t" style="margin-bottom:0.5rem;">
+      <table><thead><tr><th>层次</th><th>典型问题</th><th>能力级别</th></tr></thead>
+      <tbody>
+        <tr><td>📋 信息获取</td><td>"这个数据是多少？"</td><td>基础</td></tr>
+        <tr><td>🔍 理解深化</td><td>"为什么是这样？"</td><td>中级</td></tr>
+        <tr><td>🏗️ 框架挑战</td><td>"我们为什么用这个指标？"</td><td>高级</td></tr>
+        <tr><td>🔄 范式重构</td><td>"这个问题的前提假设是什么？"</td><td style="color:var(--gold)">顶级</td></tr>
+      </tbody></table>
+    </div>
+    <div class="q" style="margin-bottom:0.5rem;"><strong>《经济学人》研究：</strong>职位越高，用于实际工作的时间越少，用于提问的时间越多。董事会层面，主要工作就是提出问题。</div>
+    <div class="g" style="grid-template-columns:1fr 1fr;margin-top:0.3rem;">
+      <div class="c"><h4>🧠 神经科学</h4><p>提问触发多巴胺释放，激活前额叶皮层和默认模式网络——<strong>生理性地改变大脑状态</strong></p></div>
+      <div class="c"><h4>📱 乔布斯案例</h4><p>不问"怎么做更好的手机"，而问"为什么手机必须有键盘？"——重新定义了整个行业</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s2">
+  <div class="inner">
+    <h2>优质问题的三要素</h2>
+    <div class="f" style="font-size:clamp(1rem,1.5vw,1.3rem);color:var(--gold);">总影响力 = 深思熟虑 × 一致性 × 意外变数</div>
+    <div class="g">
+      <div class="c" style="border-color:rgba(217,119,6,0.3);"><span class="tg ta">要素一</span><h4 style="margin-top:0.3rem;">🤔 深思熟虑</h4><p>告诉对方"我认真思考过，我尊重你的时间"<br><strong>检验</strong>：对方说"这是个好问题"</p></div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);"><span class="tg tg2">要素二</span><h4 style="margin-top:0.3rem;">🔗 一致性</h4><p>建立在共同理解的基础上，无需解释背景<br><strong>检验</strong>：对方能直接理解你的问题</p></div>
+      <div class="c" style="border-color:rgba(244,114,182,0.3);"><span class="tg tp2">要素三</span><h4 style="margin-top:0.3rem;">💡 意外变数</h4><p>打破思维定势，带来新视角<br><strong>检验</strong>：对方停顿后说"有意思"</p></div>
+    </div>
+    <div class="t">
+      <table><thead><tr><th>维度</th><th>优质问题</th><th>劣质问题</th></tr></thead>
+      <tbody>
+        <tr><td>准备度</td><td style="color:var(--gold)">有备而来</td><td>临时起意</td></tr>
+        <tr><td>开放性</td><td style="color:var(--gold)">开放式</td><td>封闭/诱导式</td></tr>
+        <tr><td>效果</td><td style="color:var(--gold)">打开思路</td><td>关闭对话</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s3">
+  <div class="inner">
+    <h2>五种问题框架</h2>
+    <div class="g">
+      <div class="c"><span class="tg ta">探索型</span><h4 style="margin-top:0.3rem;">🔍 打开对话</h4><p>"你最近在思考什么问题？"<br>保持开放，不预设答案</p></div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);"><span class="tg tg2">挑战型</span><h4 style="margin-top:0.3rem;">⚡ 深化讨论</h4><p>"这个判断的前提条件是什么？"<br>挑战假设，不是挑战人</p></div>
+      <div class="c" style="border-color:rgba(251,191,36,0.3);"><span class="tg tgo">连接型</span><h4 style="margin-top:0.3rem;">🤝 建立关系</h4><p>"你之前遇到过类似情况吗？"<br>先建立连接，再深入</p></div>
+      <div class="c" style="border-color:rgba(244,114,182,0.3);"><span class="tg tp2">反问型</span><h4 style="margin-top:0.3rem;">🔄 转移焦点</h4><p>"你自己是怎么想的？"<br>促进自主思考</p></div>
+      <div class="c" style="border-color:rgba(217,119,6,0.3);"><span class="tg ta">框架型</span><h4 style="margin-top:0.3rem;">🏗️ 重构认知</h4><p>"我们是不是在问错误的问题？"<br>最高层次，改变对话方向</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s4">
+  <div class="inner">
+    <h2>提问式领导力的五个实践</h2>
+    <div class="g" style="grid-template-columns:1fr 1fr;">
+      <div class="c" style="border-color:rgba(52,211,153,0.3);">
+        <h4 style="color:var(--green);">❶ 用问题代替指令</h4>
+        <p style="color:var(--text-dim);font-size:0.8rem;">不要说：</p><p style="color:var(--pink);font-size:0.85rem;">"去做X"</p>
+        <p style="color:var(--text-dim);font-size:0.8rem;margin-top:0.2rem;">而是问：</p><p style="color:var(--gold);font-size:0.85rem;">"你觉得最好的方案是什么？"</p>
+      </div>
+      <div class="c" style="border-color:rgba(251,191,36,0.3);">
+        <h4 style="color:var(--gold);">❷ 用问题代替表扬</h4>
+        <p style="color:var(--text-dim);font-size:0.8rem;">不要说：</p><p style="color:var(--pink);font-size:0.85rem;">"做得很好"</p>
+        <p style="color:var(--text-dim);font-size:0.8rem;margin-top:0.2rem;">而是问：</p><p style="color:var(--gold);font-size:0.85rem;">"你是怎么做到的？"</p>
+      </div>
+      <div class="c" style="border-color:rgba(244,114,182,0.3);">
+        <h4 style="color:var(--pink);">❸ 用问题代替批评</h4>
+        <p style="color:var(--text-dim);font-size:0.8rem;">不要说：</p><p style="color:var(--pink);font-size:0.85rem;">"你错了"</p>
+        <p style="color:var(--text-dim);font-size:0.8rem;margin-top:0.2rem;">而是问：</p><p style="color:var(--gold);font-size:0.85rem;">"如果重来，会有什么不同？"</p>
+      </div>
+      <div class="c" style="border-color:rgba(217,119,6,0.3);">
+        <h4 style="color:var(--accent2);">❹ 用问题代替决策</h4>
+        <p style="color:var(--text-dim);font-size:0.8rem;">不要说：</p><p style="color:var(--pink);font-size:0.85rem;">"我们选A"</p>
+        <p style="color:var(--text-dim);font-size:0.8rem;margin-top:0.2rem;">而是问：</p><p style="color:var(--gold);font-size:0.85rem;">"选A和选B的后果分别是什么？"</p>
+      </div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);">
+        <h4 style="color:var(--green);">❺ 用问题代替总结</h4>
+        <p style="color:var(--text-dim);font-size:0.8rem;">不要说：</p><p style="color:var(--pink);font-size:0.85rem;">"我们学到了X"</p>
+        <p style="color:var(--text-dim);font-size:0.8rem;margin-top:0.2rem;">而是问：</p><p style="color:var(--gold);font-size:0.85rem;">"我们从中学到了什么？"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s5">
+  <div class="inner">
+    <h2>提问的时机与风险</h2>
+    <div class="t">
+      <table><thead><tr><th>问题类型</th><th>风险</th><th>回报</th><th>使用频率</th></tr></thead>
+      <tbody>
+        <tr><td>封闭式</td><td>低</td><td>低</td><td>日常</td></tr>
+        <tr><td>探索型</td><td>低</td><td>中</td><td style="color:var(--gold)">高频</td></tr>
+        <tr><td>挑战型</td><td>中</td><td>高</td><td>中频</td></tr>
+        <tr><td>框架型</td><td style="color:var(--pink)">高</td><td style="color:var(--gold)">极高</td><td>低频但关键</td></tr>
+      </tbody></table>
+    </div>
+    <div class="g" style="margin-top:0.3rem;">
+      <div class="c"><h4>⏰ 提问节奏</h4><p>开场→探索→挑战→框架→收尾<br>每个问题之间留出空白，不要急于填补沉默</p></div>
+      <div class="c" style="border-color:rgba(244,114,182,0.3);"><h4 style="color:var(--pink);">⚠️ 不宜提问的时刻</h4><p>• 对方情绪激动时<br>• 信息严重不对称时<br>• 时间紧迫时<br>• 公开场合挑战权威时</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s6">
+  <div class="inner">
+    <h2>实践工具箱</h2>
+    <div class="g">
+      <div class="c" style="border-color:rgba(217,119,6,0.3);"><span class="tg ta">每天3问</span><h4 style="margin-top:0.3rem;">🌅 早晨自我提问</h4><p>• 今天最关键的一件事是什么？<br>• 如果只能做一件事，应该是什么？<br>• 今天有什么是我不知道但应该知道的？</p></div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);"><span class="tg tg2">3-2-1法则</span><h4 style="margin-top:0.3rem;">📋 会议提问</h4><p>• 3个探索型问题（开场了解情况）<br>• 2个挑战型问题（中段推动思考）<br>• 1个框架型问题（后期重新定义）</p></div>
+      <div class="c" style="border-color:rgba(251,191,36,0.3);"><span class="tg tgo">5Why进阶</span><h4 style="margin-top:0.3rem;">🔍 深度追问</h4><p>1. 为什么？→事实层面<br>2. 为什么？→逻辑层面<br>3. 为什么？→假设层面<br>4. 为什么？→价值观层面<br>5. 为什么？→存在层面</p></div>
+      <div class="c" style="border-color:rgba(244,114,182,0.3);"><span class="tg tp2">提问日记</span><h4 style="margin-top:0.3rem;">📝 每日记录</h4><p>• 今天问了什么好问题？<br>• 对方的反应是什么？<br>• 如果重来，会换个什么方式问？<br><strong>坚持21天，提问能力飞跃</strong></p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s7">
+  <div class="inner">
+    <h2>从"给答案"到"给问题"</h2>
+    <div class="t">
+      <table><thead><tr><th>阶段</th><th>角色</th><th>提问频率</th></tr></thead>
+      <tbody>
+        <tr><td>初级</td><td>执行者</td><td>低</td></tr>
+        <tr><td>中级</td><td>问题解决者</td><td>中</td></tr>
+        <tr><td>高级</td><td style="color:var(--gold)">问题定义者</td><td style="color:var(--gold)">高</td></tr>
+        <tr><td>领导</td><td style="color:var(--gold)">提问者</td><td style="color:var(--gold)">极高</td></tr>
+      </tbody></table>
+    </div>
+    <div class="q" style="margin-top:0.5rem;"><strong>你的角色转变：</strong>你今天的角色已经从"给答案的人"变成了"提问的人"——给滕飞的汇报中，你是在提问（建议什么、质疑什么），而不是在汇报。</div>
+    <div class="g" style="margin-top:0.3rem;">
+      <div class="c"><h4>📊 提问作为关系温度计</h4><p>• 不敢提问 → 关系疏远<br>• 只问安全型 → 关系表面<br>• 能问挑战型 → 关系深厚<br>• 能问框架型 → 共同成长</p></div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);"><h4 style="color:var(--green);">✅ 社交网络已升级</h4><p>新增"推荐问题"字段，11位关键联系人已配好定制问题，每周一推送时附带</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s8">
+  <div class="inner">
+    <h2>AI时代：提问是人类最后的护城河</h2>
+    <div class="g" style="margin-top:0.3rem;">
+      <div class="c"><h4>🤖 AI擅长回答</h4><p>能回答几乎所有问题，但<strong>不能主动提出好问题</strong>——它的"提问"本质上是模仿</p></div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);"><h4 style="color:var(--green);">🧠 人类擅长提问</h4><p>基于好奇、直觉、经验，提出从未被问过的问题——<strong>这是不可替代的</strong></p></div>
+    </div>
+    <div class="t">
+      <table><thead><tr><th>时代</th><th>价值所在</th></tr></thead>
+      <tbody>
+        <tr><td>过去</td><td>知道答案——谁知识多谁厉害</td></tr>
+        <tr><td>现在</td><td style="color:var(--gold)">提出正确问题——谁能问出AI答不出来的</td></tr>
+        <tr><td>未来</td><td style="color:var(--gold)">定义问题——谁能重新定义问题本身</td></tr>
+      </tbody></table>
+    </div>
+    <div class="q" style="margin-top:0.5rem;"><strong>用AI做陪练（Sparring Partner）：</strong>先自己列出3个问题 → 让AI提3个更好的 → 比较差异 → 吸收但不依赖</div>
+  </div>
+</div>
+
+<div class="slide" id="s9">
+  <div class="inner center">
+    <h1 style="font-size:clamp(1.6rem,3vw,2.6rem);">三个核心洞见</h1>
+    <div class="g" style="max-width:800px;margin:0 auto;">
+      <div class="c" style="border-color:rgba(217,119,6,0.3);text-align:center;">
+        <span class="bn">01</span><h4 style="margin-top:0.5rem;">认知杠杆</h4><p>一个优质问题可以节省数小时的讨论，一个框架型问题可以改变整个组织的方向</p>
+      </div>
+      <div class="c" style="border-color:rgba(251,191,36,0.3);text-align:center;">
+        <span class="bn" style="color:var(--gold);">02</span><h4 style="margin-top:0.5rem;">三要素公式</h4><p>深思熟虑 × 一致性 × 意外变数 —— 三者缺一不可</p>
+      </div>
+      <div class="c" style="border-color:rgba(52,211,153,0.3);text-align:center;">
+        <span class="bn" style="color:var(--green);">03</span><h4 style="margin-top:0.5rem;">人类护城河</h4><p>当AI能回答一切时，提出好问题的能力是人类不可替代的核心竞争力</p>
+      </div>
+    </div>
+    <div class="q" style="text-align:center;border-left:none;border:1px solid var(--border);border-radius:14px;margin-top:0.5rem;font-size:clamp(0.9rem,1.3vw,1.1rem);">
+      <strong>提问能力 × 认知深度 = 领导力的倍增器</strong>
+    </div>
+    <p class="mt" style="margin-top:1rem;">小勇 · 2026年7月14日 · 基于《经济学人》"提出优质问题的秘诀"</p>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prevBtn">‹ 上一页</button>
+  <span class="pg" id="pg">1 / 10</span>
+  <button id="nextBtn">下一页 ›</button>
+</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var total = 10;
+  var cur = 0;
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    document.getElementById('pg').textContent = (cur+1) + ' / ' + total;
+    document.getElementById('prevBtn').disabled = (cur === 0);
+    document.getElementById('nextBtn').disabled = (cur === total-1);
+    document.getElementById('pb').style.width = ((cur+1)/total*100) + '%';
+  }
+  document.getElementById('prevBtn').onclick = function() { if (cur > 0) show(cur-1); };
+  document.getElementById('nextBtn').onclick = function() { if (cur < total-1) show(cur+1); };
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); if (cur < total-1) show(cur+1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); if (cur > 0) show(cur-1); }
+  });
+  var tx = 0;
+  document.addEventListener('touchstart', function(e) { tx = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', function(e) {
+    var d = tx - e.changedTouches[0].screenX;
+    if (Math.abs(d) > 50) { if (d > 0 && cur < total-1) show(cur+1); if (d < 0 && cur > 0) show(cur-1); }
+  });
+})();
+</script>
+</body>
+</html>
