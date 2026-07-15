@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个体理性与集体理性的鸿沟：博弈论、机制设计与组织设计</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg-card: #1a1a28;
+    --accent: #00d4aa;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --accent4: #f472b6;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --text-bright: #ffffff;
+    --border: #2a2a3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .bg-grid {
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+  .bg-glow {
+    position: fixed; top: -30%; left: -20%;
+    width: 80%; height: 80%;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.04), transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .bg-glow2 {
+    position: fixed; bottom: -30%; right: -20%;
+    width: 80%; height: 80%;
+    background: radial-gradient(ellipse, rgba(0,212,170,0.04), transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    z-index: 100; transition: width 0.5s ease;
+  }
+
+  .nav-arrow {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+  }
+  .nav-arrow:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: var(--accent); }
+  .nav-arrow.prev { left: 20px; }
+  .nav-arrow.next { right: 20px; }
+  .nav-arrow:disabled { opacity: 0; pointer-events: none; }
+
+  .slide-counter {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    font-size: 13px; color: var(--text-dim);
+    letter-spacing: 2px; z-index: 50;
+    font-weight: 300;
+  }
+  .slide-counter span { color: var(--accent); font-weight: 500; }
+
+  .dots {
+    position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; z-index: 50;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    transition: all 0.4s ease;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--accent2); width: 24px; border-radius: 4px; }
+  .dot:hover { background: var(--text-dim); }
+
+  .slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    z-index: 1;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .slide-title {
+    font-size: clamp(28px, 3.6vw, 52px);
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.3;
+    margin-bottom: 14px;
+  }
+  .slide-title .accent { color: var(--accent); }
+  .slide-title .accent2 { color: var(--accent2); }
+  .slide-title .accent3 { color: var(--accent3); }
+  .slide-title .accent4 { color: var(--accent4); }
+  .slide-subtitle {
+    font-size: clamp(16px, 1.8vw, 26px);
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .slide-body {
+    font-size: clamp(15px, 1.4vw, 22px);
+    line-height: 1.8;
+    color: var(--text);
+    max-width: 900px;
+  }
+  .slide-body p { margin-bottom: 14px; }
+  .slide-body strong { color: var(--text-bright); font-weight: 500; }
+  .slide-body .hl { color: var(--accent); font-weight: 500; }
+  .slide-body .hl2 { color: var(--accent2); font-weight: 500; }
+  .slide-body .hl3 { color: var(--accent3); font-weight: 500; }
+
+  .tag {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .tag.green { background: rgba(0,212,170,0.12); color: var(--accent); border: 1px solid rgba(0,212,170,0.2); }
+  .tag.purple { background: rgba(124,58,237,0.12); color: var(--accent2); border: 1px solid rgba(124,58,237,0.2); }
+  .tag.amber { background: rgba(245,158,11,0.12); color: var(--accent3); border: 1px solid rgba(245,158,11,0.2); }
+  .tag.pink { background: rgba(244,114,182,0.12); color: var(--accent4); border: 1px solid rgba(244,114,182,0.2); }
+
+  .card-grid {
+    display: grid;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    border-color: rgba(124,58,237,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .card .card-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .card .card-title {
+    font-size: clamp(15px, 1.3vw, 20px);
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+  .card .card-body {
+    font-size: clamp(12px, 1vw, 16px);
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .comp-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 12px;
+    font-size: clamp(12px, 1vw, 16px);
+  }
+  .comp-table th {
+    background: rgba(0,0,0,0.3);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .comp-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .comp-table tr:last-child td { border-bottom: none; }
+
+  .quote-box {
+    border-left: 3px solid var(--accent2);
+    padding: 14px 20px;
+    margin: 14px 0;
+    background: rgba(124,58,237,0.04);
+    border-radius: 0 12px 12px 0;
+  }
+  .quote-box p {
+    font-size: clamp(14px, 1.3vw, 19px);
+    font-style: italic;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+  .quote-box .qa {
+    font-size: 12px;
+    color: var(--accent2);
+    margin-top: 6px;
+    font-style: normal;
+  }
+
+  .num-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: item;
+  }
+  .num-list li {
+    counter-increment: item;
+    padding: 10px 0 10px 44px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .num-list li::before {
+    content: counter(item);
+    position: absolute; left: 0; top: 10px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    color: var(--accent2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+  }
+
+  .title-slide {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .title-slide .slide-title {
+    font-size: clamp(36px, 4.5vw, 68px);
+    margin-bottom: 20px;
+  }
+  .title-slide .slide-subtitle {
+    font-size: clamp(15px, 1.6vw, 24px);
+    max-width: 650px;
+    margin: 0 auto 32px;
+  }
+  .title-accent-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    margin: 0 auto 20px;
+    border-radius: 2px;
+  }
+  .title-meta {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .end-slide {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .diagram-flow {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin: 16px 0; flex-wrap: wrap;
+  }
+  .diagram-flow .node {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 100px;
+    flex: 1;
+  }
+  .diagram-flow .node .nt {
+    font-size: 12px; color: var(--text-dim); margin-bottom: 2px;
+  }
+  .diagram-flow .node .nv {
+    font-size: clamp(13px, 1.1vw, 17px);
+    font-weight: 500;
+  }
+  .diagram-flow .arrow {
+    color: var(--text-dim); font-size: 20px;
+  }
+
+  .hint {
+    position: fixed; bottom: 24px; right: 24px;
+    font-size: 12px; color: var(--text-dim);
+    opacity: 0.4; z-index: 50;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 36px 28px; }
+    .card-grid.cols-2, .card-grid.cols-3, .card-grid.cols-4 { grid-template-columns: 1fr; }
+    .nav-arrow { width: 36px; height: 36px; font-size: 14px; }
+    .nav-arrow.prev { left: 6px; }
+    .nav-arrow.next { right: 6px; }
+    .diagram-flow { flex-direction: column; }
+    .diagram-flow .arrow { transform: rotate(90deg); }
+  }
+  @media (max-width: 480px) {
+    .slide { padding: 20px 14px; }
+    .slide-title { font-size: 20px; }
+    .slide-body { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="nav-arrow prev" id="prevBtn" onclick="prevSlide()">‹</button>
+<button class="nav-arrow next" id="nextBtn" onclick="nextSlide()">›</button>
+
+<div class="dots" id="dots"></div>
+<div class="slide-counter" id="slideCounter"><span id="currentNum">1</span> / <span id="totalNum">16</span></div>
+<div class="hint">← → 键盘翻页</div>
+
+<div class="slides" id="slides">
+
+  <!-- 1: Title -->
+  <div class="slide title-slide active">
+    <div class="title-accent-line"></div>
+    <div class="slide-title">
+      个体理性与<span class="accent2">集体理性</span>的鸿沟
+    </div>
+    <div class="slide-subtitle">
+      博弈论、机制设计与组织设计的深层思考
+    </div>
+    <div class="title-meta" style="margin-bottom:40px;">小勇 · 2026年7月15日</div>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">囚徒困境</span>
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">Tit for Tat</span>
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">机制设计</span>
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">奥斯特罗姆</span>
+    </div>
+  </div>
+
+  <!-- 2: The Core Problem -->
+  <div class="slide">
+    <span class="tag amber">问题的本质</span>
+    <div class="slide-title">个体最优 ≠ <span class="accent3">整体最优</span></div>
+    <div class="slide-body">
+      <p><strong>囚徒困境</strong>：两个囚徒，各自选择合作（沉默）或背叛（揭发）。从个体理性出发，背叛是占优策略——但两个人同时理性选择的结果，比两个人都不理性的结果差得多。</p>
+      <div class="diagram-flow" style="margin:8px 0;">
+        <div class="node" style="border-color:rgba(245,158,11,0.3);"><div class="nt">每个人</div><div class="nv" style="color:var(--accent3);">选最优策略</div></div>
+        <div class="arrow">→</div>
+        <div class="node" style="border-color:var(--accent);"><div class="nt">集体结果</div><div class="nv" style="color:var(--accent);">比最差更差</div></div>
+      </div>
+      <p style="font-size:clamp(14px,1.3vw,19px);color:var(--text-dim);">你问：<strong style="color:var(--text-bright);">"每个人都在做最优选择，为什么结果不是最优？"</strong></p>
+      <p style="font-size:clamp(14px,1.3vw,19px);">答案：个体最优是"给定他人选择"条件下的最优，集体最优要求"同时优化所有人的选择"。<span class="hl">这是结构性矛盾，不是偶然失误。</span></p>
+    </div>
+  </div>
+
+  <!-- 3: Ubiquitous Contradiction -->
+  <div class="slide">
+    <span class="tag amber">无处不在</span>
+    <div class="slide-title">同一个矛盾，<span class="accent3">不同场景</span></div>
+    <div class="slide-body">
+      <table class="comp-table">
+        <tr><th>场景</th><th>个体理性行为</th><th style="color:var(--accent3);">集体结果</th></tr>
+        <tr><td>公地悲剧</td><td>每个牧民多放牧一只羊</td><td style="color:var(--accent3);">草场退化，所有人受损</td></tr>
+        <tr><td>价格战</td><td>每家降价抢份额</td><td style="color:var(--accent3);">全行业利润归零</td></tr>
+        <tr><td>部门资源争夺</td><td>每个部门争取更多预算</td><td style="color:var(--accent3);">公司整体战略资源分散</td></tr>
+        <tr><td>开会发言</td><td>每个人都想展示自己</td><td style="color:var(--accent3);">会议冗长，决策效率低</td></tr>
+        <tr><td>碳排放</td><td>每个国家优先发展经济</td><td style="color:var(--accent3);">全球气候变暖</td></tr>
+      </table>
+      <div class="quote-box" style="margin-top:12px;">
+        <p>这个矛盾不是"好人vs坏人"的问题，而是结构的必然——除非制度设计让它们一致。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Tit for Tat - Discovery -->
+  <div class="slide">
+    <span class="tag green">Tit for Tat</span>
+    <div class="slide-title">阿克塞尔罗德的<span class="accent">意外发现</span></div>
+    <div class="slide-body">
+      <p>1980年，政治学家罗伯特·阿克塞尔罗德组织了一场计算机锦标赛——邀请博弈论专家提交策略程序，参加"重复囚徒困境"博弈。</p>
+      <p>参赛策略五花八门：有的极其复杂，用数学模型预测对手行为；有的极其简单，只是"永远合作"或"永远背叛"。</p>
+      <div class="quote-box" style="border-color:var(--accent);background:rgba(0,212,170,0.04);">
+        <p>获胜的竟然是最简单的策略——<strong style="color:var(--accent);">Tit for Tat（以牙还牙）</strong></p>
+        <div class="qa" style="color:var(--accent);">数学家阿纳托尔·拉波波特提交 · 第二次锦标赛再次夺冠</div>
+      </div>
+      <p><strong>三条规则</strong>：① 第一轮永远合作 ② 之后复制对手上一轮的行为 ③ 规则简单透明</p>
+    </div>
+  </div>
+
+  <!-- 5: Tit for Tat - Four Characteristics -->
+  <div class="slide">
+    <span class="tag green">为什么赢</span>
+    <div class="slide-title">Tit for Tat的<span class="accent">四个特征</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-2">
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">善良</div>
+          <div class="card-title">永远不先背叛</div>
+          <div class="card-body">避免无谓的冲突，让合作有机会开始</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">报复性</div>
+          <div class="card-title">对背叛立即反击</div>
+          <div class="card-body">让对方知道背叛有代价，不能占便宜</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">宽容</div>
+          <div class="card-title">对方回头即原谅</div>
+          <div class="card-body">不陷入冤冤相报的死循环，给合作留空间</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">清晰</div>
+          <div class="card-title">规则简单透明</div>
+          <div class="card-body">对方能理解你的逻辑，从而调整自己的策略</div>
+        </div>
+      </div>
+      <p style="margin-top:10px;font-size:clamp(13px,1.1vw,17px);color:var(--text-dim);">这四个特征形成了一个<span class="hl">可进化的合作系统</span></p>
+    </div>
+  </div>
+
+  <!-- 6: Tit for Tat - Limitations -->
+  <div class="slide">
+    <span class="tag amber">深层局限</span>
+    <div class="slide-title">Tit for Tat的<span class="accent3">四个边界</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-2">
+        <div class="card">
+          <div class="card-label" style="color:var(--accent3);">01</div>
+          <div class="card-title">描述性，非规范性</div>
+          <div class="card-body">告诉你什么策略表现好，没告诉你如何设计规则让合作更容易发生</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent3);">02</div>
+          <div class="card-title">噪音环境下崩溃</div>
+          <div class="card-body">真实世界有误解和延迟，合作被误判为背叛会进入报复死循环。Generous TFT用"随机原谅"解决</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent3);">03</div>
+          <div class="card-title">无法处理多方博弈</div>
+          <div class="card-body">Tit for Tat是双边策略，但组织问题是多边的——几十个部门、几百个人</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent3);">04</div>
+          <div class="card-title">假设重复博弈</div>
+          <div class="card-body">一次性博弈中，TFT的第一轮合作就是"送死"。但现实中很多选择是一次性的</div>
+        </div>
+      </div>
+      <div class="quote-box" style="margin-top:6px;border-color:var(--accent3);">
+        <p>你的直觉是对的：<span style="color:var(--accent3);">Tit for Tat描述了现实，但未必是最优的</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7: Randomness -->
+  <div class="slide">
+    <span class="tag purple">随机性</span>
+    <div class="slide-title">需要"<span class="accent2">跳一下</span>"吗？</div>
+    <div class="slide-body">
+      <p>你的核心问题：<strong>"我已经在做最优选择了，需要跳动一下吗？还是需要掺入一些随机性？"</strong></p>
+      <p>本质是：<span class="hl2">在局部最优和全局最优之间，随机性能否架起一座桥？</span></p>
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">混合策略</div>
+          <div class="card-title">博弈论中的"故意随机"</div>
+          <div class="card-body">如剪刀石头布——随机出三种手势，对手无法预测。随机性不是不理性，而是更高层次的理性</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">模拟退火</div>
+          <div class="card-title">复杂系统视角</div>
+          <div class="card-body">高温阶段探索（接受差选项），低温阶段利用（收敛到最优）。纯理性选择容易陷入局部最优</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">受控的随机性</div>
+          <div class="card-title">不是万能药</div>
+          <div class="card-body">探索太多浪费资源，需要组织容错能力。关键是"有方向、有边界的探索"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8: Mechanism Design - Core Framework -->
+  <div class="slide">
+    <span class="tag purple">机制设计</span>
+    <div class="slide-title">让个体理性与集体理性<span class="accent2">对齐</span></div>
+    <div class="slide-body">
+      <div class="quote-box" style="border-color:var(--accent2);">
+        <p>给定一群追求自身利益最大化的个体，设计一套规则，使得个体在追求自身利益的同时，<strong style="color:var(--accent2);">自然地实现设计者期望的集体目标</strong></p>
+        <div class="qa">赫维茨 · 马斯金 · 迈尔森 · 三位诺贝尔奖得主</div>
+      </div>
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card">
+          <div class="card-label" style="color:var(--accent);">激励相容</div>
+          <div class="card-title">Incentive Compatibility</div>
+          <div class="card-body">说真话、做对事，对个体来说是最优选择。维克里拍卖：出价最高者得，但只付第二高价</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent);">个体理性</div>
+          <div class="card-title">Individual Rationality</div>
+          <div class="card-body">参与获得的收益不低于不参与。如果不如不参与，理性的人就不会来</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent);">可行性</div>
+          <div class="card-title">Feasibility</div>
+          <div class="card-body">机制必须在信息、计算、实施等约束下可行——理论完美不等于现实可用</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9: Ostrom's 8 Principles -->
+  <div class="slide">
+    <span class="tag green">公共资源</span>
+    <div class="slide-title">奥斯特罗姆的<span class="accent">八项原则</span></div>
+    <div class="slide-body">
+      <p style="font-size:clamp(13px,1.1vw,17px);margin-bottom:8px;">诺贝尔奖得主埃莉诺·奥斯特罗姆研究了瑞士阿尔卑斯草场、日本森林、菲律宾灌溉系统等成功案例，发现共同规律：</p>
+      <table class="comp-table" style="font-size:clamp(11px,0.9vw,14px);">
+        <tr><th style="width:25%;">原则</th><th>内容</th><th style="width:25%;">解决的问题</th></tr>
+        <tr><td>1. 清晰界定边界</td><td>谁有权使用资源，边界在哪</td><td>防止搭便车</td></tr>
+        <tr><td>2. 与当地条件一致</td><td>规则适应当地具体情况</td><td>提高规则有效性</td></tr>
+        <tr><td>3. 集体选择安排</td><td>受规则影响的人参与修改规则</td><td>增加规则合法性</td></tr>
+        <tr><td>4. 监督</td><td>有监督者或相互监督</td><td>防止违规</td></tr>
+        <tr><td>5. 分级制裁</td><td>对违规行为渐进式处罚</td><td>防止过度惩罚</td></tr>
+        <tr><td>6. 冲突解决机制</td><td>低成本、快速的冲突解决渠道</td><td>防止矛盾积累</td></tr>
+        <tr><td>7. 组织权认可</td><td>外部权威认可自治组织</td><td>防止外部干预</td></tr>
+        <tr><td>8. 嵌套式组织</td><td>多层次治理结构</td><td>适应不同规模</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 10: TFT vs Mechanism Design -->
+  <div class="slide">
+    <span class="tag purple">思维升级</span>
+    <div class="slide-title">"术" vs "<span class="accent2">道</span>"</div>
+    <div class="slide-body">
+      <table class="comp-table">
+        <tr><th>对比维度</th><th style="color:var(--accent);">Tit for Tat思维</th><th style="color:var(--accent2);">机制设计思维</th></tr>
+        <tr><td>关注焦点</td><td style="color:var(--accent);">给定规则下，个体应该用什么策略</td><td style="color:var(--accent2);">给定个体行为倾向，应该设计什么规则</td></tr>
+        <tr><td>核心问题</td><td style="color:var(--accent);">"我如何应对你的行为？"</td><td style="color:var(--accent2);">"如何设计规则让合作自然发生？"</td></tr>
+        <tr><td>适用场景</td><td style="color:var(--accent);">双边博弈、重复互动</td><td style="color:var(--accent2);">多边博弈、制度设计</td></tr>
+        <tr><td>时间维度</td><td style="color:var(--accent);">短期策略优化</td><td style="color:var(--accent2);">长期制度演化</td></tr>
+        <tr><td>对随机性的态度</td><td style="color:var(--accent);">确定性策略</td><td style="color:var(--accent2);">可以利用随机性</td></tr>
+      </table>
+      <div class="quote-box" style="margin-top:10px;border-color:var(--accent2);">
+        <p>两个问题不是替代关系，而是互补关系——Tit for Tat是"术"，机制设计是"道"</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11: Historical Practice -->
+  <div class="slide">
+    <span class="tag amber">历史实践</span>
+    <div class="slide-title">从<span class="accent3">马格里布商人</span>到现代企业</div>
+    <div class="slide-body">
+      <div class="card-grid cols-2">
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">11世纪 · 北非</div>
+          <div class="card-title">马格里布商人</div>
+          <div class="card-body">跨地中海贸易无法监督代理人。解决方案：商人共享代理人信息，背叛者被联合抵制→让背叛的成本远高于合作收益，忠诚成为理性选择</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">数百年 · 瑞士</div>
+          <div class="card-title">阿尔卑斯草场</div>
+          <div class="card-body">每个家庭放牧数量有限制，违规罚款，规则村民共同制定，相互监督→没有中央权威，自组织机制让个体理性与集体理性对齐</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">现代企业</div>
+          <div class="card-title">薪酬机制设计</div>
+          <div class="card-body">固定工资+绩效奖金（短期激励），期权/股权（长期绑定），利润分享（集体激励）。OKR目标对齐，360度评估防单方操控</div>
+        </div>
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">组织机制</div>
+          <div class="card-title">轮岗 · 跨部门 · 扁平化</div>
+          <div class="card-body">轮岗制度防部门本位主义，跨部门项目组创造横向连接，扁平化结构减少信息衰减——都是机制设计在组织层面的实践</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12: ByteDance Case -->
+  <div class="slide">
+    <span class="tag pink">案例</span>
+    <div class="slide-title">字节跳动：<span class="accent4">机制设计视角</span></div>
+    <div class="slide-body">
+      <p style="font-size:clamp(13px,1.1vw,17px);margin-bottom:8px;">字节的10条领导力原则，本质上是一套让管理者行为与组织目标对齐的机制：</p>
+      <table class="comp-table">
+        <tr><th style="width:28%;">原则</th><th style="color:var(--accent4);">机制设计逻辑</th></tr>
+        <tr><td>做有高度的事</td><td style="color:var(--accent4);">改变考核标准，让"做长期高价值事"成为理性选择</td></tr>
+        <tr><td>敢于设定高目标</td><td style="color:var(--accent4);">改变目标设定方式，从"被动接任务"到"主动拉标杆"</td></tr>
+        <tr><td>Context over Control</td><td style="color:var(--accent4);">改变决策权分配，让听得见炮火的人做决策</td></tr>
+        <tr><td>深入一线</td><td style="color:var(--accent4);">改变信息获取方式，防止信息失真导致的决策偏差</td></tr>
+        <tr><td>基于原则坚定管理</td><td style="color:var(--accent4);">给管理者一把标尺，让"管"和"放"有明确边界</td></tr>
+        <tr><td>以身作则，对团队文化负责</td><td style="color:var(--accent4);">把文化责任从"全员软要求"变成"管理者硬责任"</td></tr>
+      </table>
+      <div class="quote-box" style="margin-top:8px;border-color:var(--accent4);">
+        <p>字节不是简单地"喊口号"，而是<span style="color:var(--accent4);">改变管理者的收益结构</span>——原则直接纳入晋升与考核，让"做对的事"成为最优选择</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13: Summary - Three Answers -->
+  <div class="slide">
+    <span class="tag green">总结</span>
+    <div class="slide-title">回答你的<span class="accent">三个问题</span></div>
+    <div class="slide-body">
+      <div class="card-grid" style="grid-template-columns:1fr;gap:10px;">
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">问题一</div>
+          <div class="card-title">需要"跳动"吗？</div>
+          <div class="card-body"><strong style="color:var(--accent);">需要，但有条件。</strong> 纯理性选择容易陷入局部最优。个体层面：定期接触不同领域信息（认知噪声）；组织层面：设计探索时间、轮岗制度；策略层面：引入随机善意（Generous TFT），主动打破恶性循环</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">问题二</div>
+          <div class="card-title">如何设计机制让个体与整体对齐？</div>
+          <div class="card-body"><strong style="color:var(--accent2);">激励相容——让说真话、做对事对个体是最优选择。</strong> 三步：①诊断矛盾（信息不对称？激励扭曲？）②设计对齐机制（信息透明化、收益结构改造、惩罚机制、参与式治理）③建立反馈和修正机制</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">问题三</div>
+          <div class="card-title">Tit for Tat是最优策略吗？</div>
+          <div class="card-body"><strong style="color:var(--accent3);">在特定条件下是最优，但现实远比这复杂。</strong> 真正的"最优"不是某个具体策略，而是具备<span class="hl3">元策略能力</span>——根据环境变化灵活调整。在复杂世界中，适应能力比策略本身更重要</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14: Further Thinking -->
+  <div class="slide">
+    <span class="tag purple">延展</span>
+    <div class="slide-title">AI时代与<span class="accent2">元机制设计</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-3">
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">AI新挑战</div>
+          <div class="card-title">算法共谋 · 信息极端化 · 毫秒博弈</div>
+          <div class="card-body">不仅要设计人类之间的规则，还要设计人机之间的规则、算法之间的规则。博弈速度从"天"到"毫秒"</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">元机制设计</div>
+          <div class="card-title">设计能够自我演化的机制</div>
+          <div class="card-body">不是设计具体规则，而是设计规则制定和修改的元规则——像宪法而非法律。机制的自我进化能力比完美设计更重要</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">个人实践</div>
+          <div class="card-title">分院运营 · 校友关系 · 课程设计</div>
+          <div class="card-body">都是"如何让个体理性与集体理性对齐"的实践——不是靠喊口号，而是靠改变收益结构</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15: Personal Layer -->
+  <div class="slide">
+    <span class="tag pink">个人层面</span>
+    <div class="slide-title">三个<span class="accent4">日常实践</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">团队管理</div>
+          <div class="card-title">如何让每个员工的目标与团队对齐？</div>
+          <div class="card-body">不是靠"喊口号"，而是靠改变收益结构——让团队目标成为个人最优选择</div>
+        </div>
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">校友关系</div>
+          <div class="card-title">如何让校友愿意为学院贡献资源？</div>
+          <div class="card-body">不是靠"人情"，而是靠设计"合作收益大于不合作"的机制——声誉、互惠、长期绑定</div>
+        </div>
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">课程设计</div>
+          <div class="card-title">如何让学员真正投入学习？</div>
+          <div class="card-body">不是靠"考试压力"，而是靠设计"学习本身就有回报"的体验——即时反馈、社交激励、可见成长</div>
+        </div>
+      </div>
+      <div class="quote-box" style="margin-top:12px;border-color:var(--accent4);">
+        <p>你每天面对的组织管理问题，本质上都是同一个问题——只是场景不同、尺度不同</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16: End -->
+  <div class="slide end-slide">
+    <div class="title-accent-line"></div>
+    <div class="slide-title" style="font-size:clamp(32px,3.8vw,56px);">
+      个体理性与集体理性的鸿沟<br>
+      <span style="font-size:0.55em;color:var(--text-dim);">——不是"好人vs坏人"，而是——</span>
+    </div>
+    <div class="slide-subtitle" style="max-width:600px;margin:20px auto;">
+      结构的必然，需要<span class="accent">机制设计</span>来克服<br>
+      <span style="font-size:0.75em;color:var(--text-dim);">Tit for Tat是"术" · 机制设计是"道"</span>
+    </div>
+    <div class="title-meta" style="margin-top:32px;">
+      小勇 · 2026年7月15日
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  const total = slides.length;
+  let current = 0;
+
+  document.getElementById('totalNum').textContent = total;
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dots.appendChild(dot);
+  }
+
+  function updateProgress() {
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+  function updateUI() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    document.getElementById('currentNum').textContent = current + 1;
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === total - 1;
+    updateProgress();
+  }
+  function goToSlide(n) {
+    if (n < 0) n = 0; if (n >= total) n = total - 1;
+    if (n === current) return;
+    current = n; updateUI();
+  }
+  function nextSlide() { goToSlide(current + 1); }
+  function prevSlide() { goToSlide(current - 1); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+    else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+    else if (e.key === 'End') { e.preventDefault(); goToSlide(total - 1); }
+  });
+
+  let tx = 0;
+  document.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const d = e.changedTouches[0].clientX - tx;
+    if (Math.abs(d) > 50) d > 0 ? prevSlide() : nextSlide();
+  });
+
+  let wt = false;
+  document.addEventListener('wheel', (e) => {
+    if (wt) return; wt = true; setTimeout(() => wt = false, 600);
+    if (e.deltaY > 0) nextSlide(); else prevSlide();
+  }, { passive: true });
+
+  updateUI();
+</script>
+</body>
+</html>
