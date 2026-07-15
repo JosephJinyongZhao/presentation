@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字节跳动2026版领导力原则深度分析</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: #1a1a28;
+    --accent: #00d4aa;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --accent4: #f472b6;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --text-bright: #ffffff;
+    --border: #2a2a3a;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; background:var(--bg); font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--text); overflow:hidden; user-select:none; }
+
+  .bg-grid { position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; z-index:0; }
+  .bg-glow { position:fixed; top:-30%; left:-20%; width:80%; height:80%; background:radial-gradient(ellipse,rgba(0,212,170,0.04),transparent 70%); pointer-events:none; z-index:0; }
+  .bg-glow2 { position:fixed; bottom:-30%; right:-20%; width:80%; height:80%; background:radial-gradient(ellipse,rgba(124,58,237,0.04),transparent 70%); pointer-events:none; z-index:0; }
+
+  .progress-bar { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:100; transition:width 0.5s ease; }
+
+  .nav-arrow { position:fixed; top:50%; transform:translateY(-50%); width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid var(--border); color:var(--text-dim); font-size:22px; cursor:pointer; z-index:50; display:flex; align-items:center; justify-content:center; transition:all 0.3s ease; backdrop-filter:blur(4px); }
+  .nav-arrow:hover { background:rgba(255,255,255,0.1); color:var(--text); border-color:var(--accent); }
+  .nav-arrow.prev { left:20px; }
+  .nav-arrow.next { right:20px; }
+  .nav-arrow:disabled { opacity:0; pointer-events:none; }
+
+  .slide-counter { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); font-size:13px; color:var(--text-dim); letter-spacing:2px; z-index:50; font-weight:300; }
+  .slide-counter span { color:var(--accent); font-weight:500; }
+
+  .dots { position:fixed; bottom:60px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:50; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.4s ease; cursor:pointer; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+  .dot:hover { background:var(--text-dim); }
+
+  .slides { position:relative; width:100%; height:100%; max-width:1200px; margin:0 auto; z-index:1; }
+  .slide { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:60px 80px; opacity:0; transform:translateY(20px); transition:all 0.6s cubic-bezier(0.22,1,0.36,1); pointer-events:none; overflow-y:auto; }
+  .slide.active { opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  .slide-title { font-size:clamp(28px,3.6vw,52px); font-weight:700; color:var(--text-bright); line-height:1.3; margin-bottom:14px; }
+  .slide-title .accent { color:var(--accent); }
+  .slide-title .accent2 { color:var(--accent2); }
+  .slide-title .accent3 { color:var(--accent3); }
+  .slide-title .accent4 { color:var(--accent4); }
+  .slide-subtitle { font-size:clamp(16px,1.8vw,26px); color:var(--text-dim); font-weight:300; line-height:1.6; margin-bottom:28px; }
+  .slide-body { font-size:clamp(15px,1.4vw,22px); line-height:1.8; color:var(--text); max-width:900px; }
+  .slide-body p { margin-bottom:14px; }
+  .slide-body strong { color:var(--text-bright); font-weight:500; }
+  .slide-body .hl { color:var(--accent); font-weight:500; }
+  .slide-body .hl2 { color:var(--accent2); font-weight:500; }
+  .slide-body .hl3 { color:var(--accent3); font-weight:500; }
+
+  .tag { display:inline-block; padding:4px 14px; border-radius:20px; font-size:12px; font-weight:500; letter-spacing:1px; margin-bottom:16px; }
+  .tag.green { background:rgba(0,212,170,0.12); color:var(--accent); border:1px solid rgba(0,212,170,0.2); }
+  .tag.purple { background:rgba(124,58,237,0.12); color:var(--accent2); border:1px solid rgba(124,58,237,0.2); }
+  .tag.amber { background:rgba(245,158,11,0.12); color:var(--accent3); border:1px solid rgba(245,158,11,0.2); }
+  .tag.pink { background:rgba(244,114,182,0.12); color:var(--accent4); border:1px solid rgba(244,114,182,0.2); }
+
+  .card-grid { display:grid; gap:16px; margin-top:16px; }
+  .card-grid.cols-2 { grid-template-columns:1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+  .card-grid.cols-4 { grid-template-columns:1fr 1fr 1fr 1fr; }
+
+  .card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:20px 24px; transition:all 0.3s ease; }
+  .card:hover { border-color:rgba(0,212,170,0.2); transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+  .card .card-label { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--text-dim); margin-bottom:6px; }
+  .card .card-title { font-size:clamp(15px,1.3vw,20px); font-weight:600; color:var(--text-bright); margin-bottom:8px; }
+  .card .card-body { font-size:clamp(12px,1vw,16px); line-height:1.7; color:var(--text-dim); }
+
+  .comp-table { width:100%; border-collapse:separate; border-spacing:0; margin-top:12px; font-size:clamp(12px,1vw,16px); }
+  .comp-table th { background:rgba(0,0,0,0.3); padding:10px 14px; text-align:left; font-weight:500; color:var(--text-dim); border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+  .comp-table td { padding:8px 14px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .comp-table tr:last-child td { border-bottom:none; }
+
+  .quote-box { border-left:3px solid var(--accent); padding:14px 20px; margin:14px 0; background:rgba(0,212,170,0.04); border-radius:0 12px 12px 0; }
+  .quote-box p { font-size:clamp(14px,1.3vw,19px); font-style:italic; color:var(--text-dim); line-height:1.8; }
+  .quote-box .qa { font-size:12px; color:var(--accent); margin-top:6px; font-style:normal; }
+
+  .num-list { list-style:none; padding:0; counter-reset:item; }
+  .num-list li { counter-increment:item; padding:10px 0 10px 44px; position:relative; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .num-list li::before { content:counter(item); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:rgba(0,212,170,0.1); border:1px solid rgba(0,212,170,0.2); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+
+  .title-slide { text-align:center; justify-content:center; align-items:center; }
+  .title-slide .slide-title { font-size:clamp(36px,4.5vw,68px); margin-bottom:20px; }
+  .title-slide .slide-subtitle { font-size:clamp(15px,1.6vw,24px); max-width:650px; margin:0 auto 32px; }
+  .title-accent-line { width:60px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); margin:0 auto 20px; border-radius:2px; }
+  .title-meta { font-size:13px; color:var(--text-dim); letter-spacing:2px; }
+  .end-slide { text-align:center; justify-content:center; align-items:center; }
+
+  .diagram-flow { display:flex; align-items:center; justify-content:center; gap:12px; margin:16px 0; flex-wrap:wrap; }
+  .diagram-flow .node { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:12px 18px; text-align:center; flex:1; min-width:100px; }
+  .diagram-flow .node .nt { font-size:12px; color:var(--text-dim); margin-bottom:2px; }
+  .diagram-flow .node .nv { font-size:clamp(13px,1.1vw,17px); font-weight:500; }
+  .diagram-flow .arrow { color:var(--text-dim); font-size:20px; }
+
+  .hint { position:fixed; bottom:24px; right:24px; font-size:12px; color:var(--text-dim); opacity:0.4; z-index:50; letter-spacing:1px; }
+
+  @media (max-width:768px) {
+    .slide { padding:36px 28px; }
+    .card-grid.cols-2,.card-grid.cols-3,.card-grid.cols-4 { grid-template-columns:1fr; }
+    .nav-arrow { width:36px; height:36px; font-size:14px; }
+    .nav-arrow.prev { left:6px; }
+    .nav-arrow.next { right:6px; }
+    .diagram-flow { flex-direction:column; }
+    .diagram-flow .arrow { transform:rotate(90deg); }
+  }
+  @media (max-width:480px) {
+    .slide { padding:20px 14px; }
+    .slide-title { font-size:20px; }
+    .slide-body { font-size:13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="nav-arrow prev" id="prevBtn" onclick="prevSlide()">‹</button>
+<button class="nav-arrow next" id="nextBtn" onclick="nextSlide()">›</button>
+
+<div class="dots" id="dots"></div>
+<div class="slide-counter" id="slideCounter"><span id="currentNum">1</span> / <span id="totalNum">15</span></div>
+<div class="hint">← → 键盘翻页</div>
+
+<div class="slides" id="slides">
+
+  <!-- 1: Title -->
+  <div class="slide title-slide active">
+    <div class="title-accent-line"></div>
+    <div class="slide-title">
+      字节跳动2026版<span class="accent">领导力原则</span>深度分析
+    </div>
+    <div class="slide-subtitle">
+      从对抗熵增到AI时代组织重塑
+    </div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;">
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">13条 → 10条</span>
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">2026年6月29日</span>
+      <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">梁汝波全员信</span>
+    </div>
+    <div class="title-meta">小勇 · 2026年7月15日</div>
+  </div>
+
+  <!-- 2: Background - Timeline & Three Drivers -->
+  <div class="slide">
+    <span class="tag amber">背景与源流</span>
+    <div class="slide-title">为什么是<span class="accent3">现在</span>？</div>
+    <div class="slide-body">
+      <table class="comp-table" style="margin-bottom:12px;">
+        <tr><th>时间</th><th>事件</th></tr>
+        <tr><td>2022年</td><td>发布13条领导力原则，应对高速扩张期</td></tr>
+        <tr><td>2026.6.29</td><td style="color:var(--accent3);">梁汝波全员信，13条精简为10条</td></tr>
+        <tr><td>2026.7</td><td>纳入晋升与考核，半年绩效正式启用</td></tr>
+      </table>
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">驱动力一</div>
+          <div class="card-title">AI生产力革命</div>
+          <div class="card-body">"通过计算换智能，通过智能提升创造力和体验"——仅靠信息中转、流程管控的管理者价值将萎缩</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">驱动力二</div>
+          <div class="card-title">营收与利润撕裂</div>
+          <div class="card-body">2025年营收1860亿美元，但净利润缩水超70%。AI资本开支超1500亿元。需要"把管理做轻"</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">驱动力三</div>
+          <div class="card-title">"勇攀高峰"制度化</div>
+          <div class="card-body">2026年度关键词从战略主张变成制度落地——用领导力原则约束管理者行为方向</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: 13 to 10 Logic -->
+  <div class="slide">
+    <span class="tag amber">精简逻辑</span>
+    <div class="slide-title">从13条到10条：<span class="accent3">精准提纯</span></div>
+    <div class="slide-body">
+      <p>不是简单的"瘦身"，而是精准的"提纯"：</p>
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">去掉</div>
+          <div class="card-title">已形成共识的</div>
+          <div class="card-body">如"开放包容多元观点"——经过多年建设，已是组织基础共识，无需再重点考核</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">补上</div>
+          <div class="card-title">当前阶段缺失的</div>
+          <div class="card-body">如"做有高度的事""敢于设定高目标"——扩张期结束，需要从心态安抚转向行动标尺</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">前置</div>
+          <div class="card-title">未来风险的</div>
+          <div class="card-body">如"有危机感，保持外部视角""深入一线"——提前给成熟组织打"防衰老疫苗"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Five Dimensions Framework -->
+  <div class="slide">
+    <span class="tag green">框架总览</span>
+    <div class="slide-title">五大维度<span class="accent">闭环模型</span></div>
+    <div class="slide-body">
+      <div class="diagram-flow" style="gap:8px;">
+        <div class="node" style="border-color:var(--accent);min-width:140px;"><div class="nt">战略</div><div class="nv" style="color:var(--accent);">选方向 → 定标准</div></div>
+        <div class="arrow">→</div>
+        <div class="node" style="border-color:var(--accent2);min-width:140px;"><div class="nt">站位</div><div class="nv" style="color:var(--accent2);">防自满 → 防失真</div></div>
+        <div class="arrow">→</div>
+        <div class="node" style="border-color:var(--accent3);min-width:140px;"><div class="nt">管理</div><div class="nv" style="color:var(--accent3);">放活 ↔ 守底</div></div>
+      </div>
+      <div class="diagram-flow" style="gap:8px;margin-top:4px;">
+        <div class="node" style="border-color:var(--accent4);min-width:140px;"><div class="nt">团队</div><div class="nv" style="color:var(--accent4);">决策力 → 人才观</div></div>
+        <div class="arrow">→</div>
+        <div class="node" style="border-color:var(--text);min-width:140px;"><div class="nt">文化</div><div class="nv" style="color:var(--text);">价值观 → 责任制</div></div>
+      </div>
+      <p style="margin-top:10px;font-size:clamp(13px,1.1vw,17px);color:var(--text-dim);">战略决定方向 → 站位校准视野 → 管理保障效率 → 团队形成能力 → 文化固化基因</p>
+      <div class="quote-box" style="margin-top:6px;border-color:var(--accent);">
+        <p>从"做什么"到"怎么做"到"成为什么"，形成完整的组织能力闭环</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: Principles 1-2 (Strategy) -->
+  <div class="slide">
+    <span class="tag green">战略维度</span>
+    <div class="slide-title">原则1-2：<span class="accent">选方向 · 定标准</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-2">
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">原则一</div>
+          <div class="card-title">使命愿景驱动，做有高度的事</div>
+          <div class="card-body">
+            <p><strong>2022版</strong>：长期主义，接受短期波动<br>
+            <strong>2026版</strong>：使命愿景驱动，做有高度的事</p>
+            <p><span class="hl">本质变化</span>：从"被动熬长期"到"主动选高地"</p>
+            <p>心态要求 → 行动标尺。不是所有赚钱的事都值得做，只有符合使命、能形成长期壁垒的事才值得投入。</p>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">原则二</div>
+          <div class="card-title">敢于设定高目标，有韧性能拿结果</div>
+          <div class="card-body">
+            <p><strong>2022版</strong>：设定挑战性目标<br>
+            <strong>2026版</strong>：敢于设定高目标，有韧性能拿结果</p>
+            <p><span class="hl">本质变化</span>：从"被动接任务"到"主动拉标杆"</p>
+            <p>成熟组织最容易"目标软化"——业务稳定后习惯性降低目标。敢于设定高目标否定了"躺平式管理"。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6: Principles 3-4 (Positioning) -->
+  <div class="slide">
+    <span class="tag amber">站位维度</span>
+    <div class="slide-title">原则3-4：<span class="accent3">防自满 · 防失真</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-2">
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">原则三</div>
+          <div class="card-title">有危机感，保持外部视角</div>
+          <div class="card-body">
+            <p><strong>2022版</strong>：持续学习，保持开放<br>
+            <strong>2026版</strong>：有危机感，保持外部视角</p>
+            <p><span class="hl3">本质变化</span>：从"学习心态"到"生存焦虑"——<strong>信号意义最强的调整</strong></p>
+            <p>降级"持续学习"、升级"危机感"，精准命中成熟组织通病：内部闭环、守成自满。用外部视角对抗内部惯性，避免"温水煮青蛙"。</p>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">原则四</div>
+          <div class="card-title">深入一线</div>
+          <div class="card-body">
+            <p><strong>2022版</strong>：深入业务一线（作为倡导）<br>
+            <strong>2026版</strong>：深入一线（独立条目，硬性要求）</p>
+            <p><span class="hl3">本质变化</span>：从"倡导"到"制度"</p>
+            <p>中高层每月至少5个工作日深入业务现场。跨部门会议时长缩减40%，管理层直接参与用户调研的频次提升3倍。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7: Principle 5 - Context over Control -->
+  <div class="slide">
+    <span class="tag green">管理维度</span>
+    <div class="slide-title">原则五：<span class="accent">Context over Control</span></div>
+    <div class="slide-body">
+      <div class="quote-box" style="border-color:var(--accent);margin-bottom:10px;">
+        <p>充分向团队同步业务背景、目标、约束条件，让听得见炮火的人做决策</p>
+      </div>
+      <div class="card-grid cols-2" style="margin-top:8px;">
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">2022→2026</div>
+          <div class="card-title">从理念倡导到流程改革</div>
+          <div class="card-body">取消200余项重复性报表，简化30%审批流程。不再是理念，而是实实在在的流程改革</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">本质</div>
+          <div class="card-title">信任前置</div>
+          <div class="card-body">相信一线比高层更接近事实。前提：组织有足够的信息透明度、人员有足够的判断力</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">与原则九互补</div>
+          <div class="card-title">放活 ↔ 守底</div>
+          <div class="card-body">Context over Control负责"放活"，基于原则坚定管理负责"守底"——精准破解"一管就死、一放就乱"</div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">你的关注</div>
+          <div class="card-title">防止组织异化</div>
+          <div class="card-body">控制型组织最大的成本不是效率损失，而是信息扭曲和内生风险</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8: Principles 6-7 -->
+  <div class="slide">
+    <span class="tag purple">团队+文化维度</span>
+    <div class="slide-title">原则6-7：<span class="accent2">决策力 · 去自我</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-2">
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">原则六</div>
+          <div class="card-title">对复杂事情有清晰判断</div>
+          <div class="card-body">
+            <p><strong>2022版</strong>：独立思考，抓本质<br>
+            <strong>2026版</strong>：对复杂事情有清晰判断</p>
+            <p><span class="hl2">本质变化</span>：从"方法论"到"结果导向"</p>
+            <p>删掉方法论表述，直接要结果。AI时代组织不需要管理者展示思考过程，只需要在模糊多变的局面下，拿出准确及时的决策。</p>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">原则七</div>
+          <div class="card-title">Ego小、格局大，全局优先</div>
+          <div class="card-body">
+            <p><strong>2022版</strong>：开放包容，多元观点<br>
+            <strong>2026版</strong>：Ego小、格局大，全局优先</p>
+            <p><span class="hl2">本质变化</span>：从"包容"到"去自我"</p>
+            <p>"Ego小"是字节独特的管理语言：职权代表责任而非利益，有阵地意识、无领地意识，追求公司全局最优而非局部利益。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9: Principles 8-10 -->
+  <div class="slide">
+    <span class="tag pink">团队+文化维度</span>
+    <div class="slide-title">原则8-10：<span class="accent4">激活人 · 划底线 · 担责任</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-3">
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">原则八</div>
+          <div class="card-title">用人看本质，激发成长</div>
+          <div class="card-body"><strong>搭架子 → 激活人</strong><br>不再追求标准化人才画像，聚焦员工底层潜力，用业务实战激活动力</div>
+        </div>
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">原则九</div>
+          <div class="card-title">基于原则坚定管理</div>
+          <div class="card-body"><strong>事后纠偏 → 事前划底线</strong><br>给管理者一把标尺：所有动作锚定核心原则，对偏差行为坚决纠偏</div>
+        </div>
+        <div class="card" style="border-color:rgba(244,114,182,0.2);">
+          <div class="card-label" style="color:var(--accent4);">原则十</div>
+          <div class="card-title">以身作则，对团队文化负责</div>
+          <div class="card-body"><strong>全员软要求 → 管理者硬责任</strong><br>文化好不好，首先看管理者自己做不做得到。抓住"关键少数"，就抓住了文化落地的牛鼻子</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10: Core Logic - What Problem -->
+  <div class="slide">
+    <span class="tag green">核心逻辑</span>
+    <div class="slide-title">10条原则应对什么<span class="accent">核心问题</span>？</div>
+    <div class="slide-body">
+      <div class="quote-box" style="border-color:var(--accent);">
+        <p style="font-size:clamp(16px,1.5vw,22px);">AI巨大投入与组织效率衰减之间的<span style="color:var(--accent)">剪刀差</span></p>
+      </div>
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card">
+          <div class="card-label" style="color:var(--accent);">做什么？</div>
+          <div class="card-title">管理者应该做什么</div>
+          <div class="card-body">做有高度的事（1）<br>设定高目标（2）<br>对复杂事情有清晰判断（6）</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent2);">以什么姿态？</div>
+          <div class="card-title">管理者应该以什么姿态做事</div>
+          <div class="card-body">有危机感（3）<br>深入一线（4）<br>Ego小格局大（7）<br>以身作则（10）</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:var(--accent3);">用什么方法？</div>
+          <div class="card-title">管理者应该用什么方法管理</div>
+          <div class="card-body">Context over Control（5）<br>基于原则坚定管理（9）<br>用人看本质（8）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11: Five Knives Against Entropy -->
+  <div class="slide">
+    <span class="tag amber">对抗熵增</span>
+    <div class="slide-title">组织熵增的<span class="accent3">五把刀</span></div>
+    <div class="slide-body">
+      <table class="comp-table">
+        <tr><th>组织熵增类型</th><th>对应原则</th><th style="color:var(--accent3);">应对策略</th></tr>
+        <tr><td>资源分散、方向模糊</td><td>原则1-2</td><td style="color:var(--accent3);">用战略高度和明确目标聚焦资源</td></tr>
+        <tr><td>内部闭环、守成自满</td><td>原则3-4</td><td style="color:var(--accent3);">用外部危机感和一线视角打破惯性</td></tr>
+        <tr><td>流程臃肿、决策效率低</td><td>原则5</td><td style="color:var(--accent3);">用Context over Control砍掉冗余</td></tr>
+        <tr><td>本位主义、部门墙</td><td>原则7</td><td style="color:var(--accent3);">用Ego小格局大破解局部利益</td></tr>
+        <tr><td>文化空转、知行不一</td><td>原则10</td><td style="color:var(--accent3);">用管理者负责制压实文化落地</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 12: Critical Examination -->
+  <div class="slide">
+    <span class="tag amber">批判性审视</span>
+    <div class="slide-title">前提条件与<span class="accent3">潜在风险</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-2" style="margin-top:4px;">
+        <div class="card" style="border-color:rgba(0,212,170,0.2);">
+          <div class="card-label" style="color:var(--accent);">前提条件</div>
+          <div class="card-title">这套原则适用于谁？</div>
+          <div class="card-body">
+            • 高人才密度——Context over Control的前提<br>
+            • 高速增长——"高目标"落地的土壤<br>
+            • 强技术驱动——对形式主义容忍度低
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.2);">
+          <div class="card-label" style="color:var(--accent3);">潜在风险</div>
+          <div class="card-title">四重风险</div>
+          <div class="card-body">
+            1. "深入一线"变成新的形式主义<br>
+            2. "高目标"压力导致短期行为<br>
+            3. Context over Control边界不清晰<br>
+            4. "Ego小"与个人业绩考核存在张力
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13: Education Implications -->
+  <div class="slide">
+    <span class="tag purple">教育启示</span>
+    <div class="slide-title">对教育行业的<span class="accent2">三个追问</span></div>
+    <div class="slide-body">
+      <div class="card-grid cols-3" style="margin-top:8px;">
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">深入一线</div>
+          <div class="card-title">你真的了解学员吗？</div>
+          <div class="card-body">教育管理者是否真正了解学员的需求和痛点？还是只通过招生数据、课程评估做决策？</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">Context over Control</div>
+          <div class="card-title">给教师多少自主空间？</div>
+          <div class="card-body">是给教师充分的自主空间，还是用标准化流程管控？教育的本质是个性化，过度Control会扼杀创造力</div>
+        </div>
+        <div class="card" style="border-color:rgba(124,58,237,0.2);">
+          <div class="card-label" style="color:var(--accent2);">做有高度的事</div>
+          <div class="card-title">什么是有高度的事？</div>
+          <div class="card-body">扩大学位课程规模，还是打造精品化的AI商科课程？资源有限时，选择决定未来</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14: Three Lessons -->
+  <div class="slide">
+    <span class="tag green">三条启示</span>
+    <div class="slide-title">给所有企业的<span class="accent">建设逻辑</span></div>
+    <div class="slide-body">
+      <ol class="num-list">
+        <li>
+          <strong>领导力标准必须适配组织阶段</strong><br>
+          <span style="color:var(--text-dim);">扩张期要包容、要速度；深耕期要质量、要底线。没有一劳永逸的答案。</span>
+        </li>
+        <li>
+          <strong>领导力要牢牢抓住"关键少数"</strong><br>
+          <span style="color:var(--text-dim);">把责任压实到管理者群体，领导力才不会沦为口号。管理者群体是组织效能的核心杠杆。</span>
+        </li>
+        <li>
+          <strong>管理的终极智慧是平衡</strong><br>
+          <span style="color:var(--text-dim);">既要放活（Context over Control），也要守底（基于原则坚定管理）。跳出"一收就死、一放就乱"的怪圈。</span>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 15: End -->
+  <div class="slide end-slide">
+    <div class="title-accent-line"></div>
+    <div class="slide-title" style="font-size:clamp(32px,3.8vw,56px);">
+      管理的终极目标<br>
+      <span style="font-size:0.6em;color:var(--text-dim);">从来不是管控人，而是</span><br>
+      <span class="accent">让组织始终保持活力</span>
+    </div>
+    <div class="slide-subtitle" style="max-width:500px;margin:20px auto;">
+      穿越周期
+    </div>
+    <div class="title-meta" style="margin-top:32px;">
+      去掉已形成共识的 · 补上当前阶段缺失的 · 前置未来风险的
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  const total = slides.length;
+  let current = 0;
+
+  document.getElementById('totalNum').textContent = total;
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dots.appendChild(dot);
+  }
+
+  function updateProgress() {
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+  function updateUI() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    document.getElementById('currentNum').textContent = current + 1;
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === total - 1;
+    updateProgress();
+  }
+  function goToSlide(n) {
+    if (n < 0) n = 0; if (n >= total) n = total - 1;
+    if (n === current) return;
+    current = n; updateUI();
+  }
+  function nextSlide() { goToSlide(current + 1); }
+  function prevSlide() { goToSlide(current - 1); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+    else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+    else if (e.key === 'End') { e.preventDefault(); goToSlide(total - 1); }
+  });
+
+  let tx = 0;
+  document.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const d = e.changedTouches[0].clientX - tx;
+    if (Math.abs(d) > 50) d > 0 ? prevSlide() : nextSlide();
+  });
+
+  let wt = false;
+  document.addEventListener('wheel', (e) => {
+    if (wt) return; wt = true; setTimeout(() => wt = false, 600);
+    if (e.deltaY > 0) nextSlide(); else prevSlide();
+  }, { passive: true });
+
+  updateUI();
+</script>
+</body>
+</html>
