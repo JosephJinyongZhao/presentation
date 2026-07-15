@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名实之辩：从概念追问到真实感知</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  :root { --bg:#0a0a0f; --bg-card:#1a1a28; --accent:#00d4aa; --accent2:#7c3aed; --accent3:#f59e0b; --accent4:#f472b6; --text:#e8e8f0; --text-dim:#8888a0; --text-bright:#fff; --border:#2a2a3a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; background:var(--bg); font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--text); overflow:hidden; user-select:none; }
+  .bg-grid { position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; z-index:0; }
+  .bg-g1 { position:fixed; top:-30%; left:-20%; width:80%; height:80%; background:radial-gradient(ellipse,rgba(0,212,170,0.04),transparent 70%); pointer-events:none; z-index:0; }
+  .bg-g2 { position:fixed; bottom:-30%; right:-20%; width:80%; height:80%; background:radial-gradient(ellipse,rgba(124,58,237,0.04),transparent 70%); pointer-events:none; z-index:0; }
+  .progress-bar { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:100; transition:width 0.5s ease; }
+  .nav-arrow { position:fixed; top:50%; transform:translateY(-50%); width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid var(--border); color:var(--text-dim); font-size:22px; cursor:pointer; z-index:50; display:flex; align-items:center; justify-content:center; transition:all 0.3s ease; backdrop-filter:blur(4px); }
+  .nav-arrow:hover { background:rgba(255,255,255,0.1); color:var(--text); border-color:var(--accent); }
+  .nav-arrow.prev { left:20px; } .nav-arrow.next { right:20px; }
+  .nav-arrow:disabled { opacity:0; pointer-events:none; }
+  .slide-counter { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); font-size:13px; color:var(--text-dim); letter-spacing:2px; z-index:50; font-weight:300; }
+  .slide-counter span { color:var(--accent); font-weight:500; }
+  .dots { position:fixed; bottom:60px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:50; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.4s ease; cursor:pointer; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+  .dot:hover { background:var(--text-dim); }
+  .slides { position:relative; width:100%; height:100%; max-width:1200px; margin:0 auto; z-index:1; }
+  .slide { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:60px 80px; opacity:0; transform:translateY(20px); transition:all 0.6s cubic-bezier(0.22,1,0.36,1); pointer-events:none; overflow-y:auto; }
+  .slide.active { opacity:1; transform:translateY(0); pointer-events:auto; }
+  .slide-title { font-size:clamp(28px,3.6vw,52px); font-weight:700; color:var(--text-bright); line-height:1.3; margin-bottom:14px; }
+  .slide-title .accent { color:var(--accent); } .slide-title .accent2 { color:var(--accent2); } .slide-title .accent3 { color:var(--accent3); }
+  .slide-subtitle { font-size:clamp(16px,1.8vw,26px); color:var(--text-dim); font-weight:300; line-height:1.6; margin-bottom:28px; }
+  .slide-body { font-size:clamp(15px,1.4vw,22px); line-height:1.8; color:var(--text); max-width:900px; }
+  .slide-body p { margin-bottom:14px; }
+  .slide-body strong { color:var(--text-bright); font-weight:500; }
+  .slide-body .hl { color:var(--accent); font-weight:500; } .slide-body .hl2 { color:var(--accent2); font-weight:500; } .slide-body .hl3 { color:var(--accent3); font-weight:500; }
+  .tag { display:inline-block; padding:4px 14px; border-radius:20px; font-size:12px; font-weight:500; letter-spacing:1px; margin-bottom:16px; }
+  .tag.green { background:rgba(0,212,170,0.12); color:var(--accent); border:1px solid rgba(0,212,170,0.2); }
+  .tag.purple { background:rgba(124,58,237,0.12); color:var(--accent2); border:1px solid rgba(124,58,237,0.2); }
+  .tag.amber { background:rgba(245,158,11,0.12); color:var(--accent3); border:1px solid rgba(245,158,11,0.2); }
+  .tag.pink { background:rgba(244,114,182,0.12); color:var(--accent4); border:1px solid rgba(244,114,182,0.2); }
+  .card-grid { display:grid; gap:14px; margin-top:14px; }
+  .card-grid.cols-2 { grid-template-columns:1fr 1fr; } .card-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+  .card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px 22px; transition:all 0.3s ease; }
+  .card:hover { border-color:rgba(0,212,170,0.2); transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+  .card .card-label { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--text-dim); margin-bottom:6px; }
+  .card .card-title { font-size:clamp(15px,1.3vw,20px); font-weight:600; color:var(--text-bright); margin-bottom:8px; }
+  .card .card-body { font-size:clamp(12px,1vw,16px); line-height:1.7; color:var(--text-dim); }
+  .comp-table { width:100%; border-collapse:separate; border-spacing:0; margin-top:12px; font-size:clamp(12px,1vw,16px); }
+  .comp-table th { background:rgba(0,0,0,0.3); padding:10px 14px; text-align:left; font-weight:500; color:var(--text-dim); border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+  .comp-table td { padding:8px 14px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .comp-table tr:last-child td { border-bottom:none; }
+  .quote-box { border-left:3px solid var(--accent2); padding:14px 20px; margin:14px 0; background:rgba(124,58,237,0.04); border-radius:0 12px 12px 0; }
+  .quote-box p { font-size:clamp(14px,1.3vw,19px); font-style:italic; color:var(--text-dim); line-height:1.8; }
+  .quote-box .qa { font-size:12px; color:var(--accent2); margin-top:6px; font-style:normal; }
+  .num-list { list-style:none; padding:0; counter-reset:item; }
+  .num-list li { counter-increment:item; padding:10px 0 10px 44px; position:relative; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .num-list li::before { content:counter(item); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:rgba(0,212,170,0.1); border:1px solid rgba(0,212,170,0.2); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+  .title-slide { text-align:center; justify-content:center; align-items:center; }
+  .title-slide .slide-title { font-size:clamp(36px,4.5vw,68px); margin-bottom:20px; }
+  .title-slide .slide-subtitle { font-size:clamp(15px,1.6vw,24px); max-width:650px; margin:0 auto 32px; }
+  .title-accent-line { width:60px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); margin:0 auto 20px; border-radius:2px; }
+  .title-meta { font-size:13px; color:var(--text-dim); letter-spacing:2px; }
+  .end-slide { text-align:center; justify-content:center; align-items:center; }
+  .hint { position:fixed; bottom:24px; right:24px; font-size:12px; color:var(--text-dim); opacity:0.4; z-index:50; letter-spacing:1px; }
+  @media (max-width:768px) { .slide { padding:36px 28px; } .card-grid.cols-2,.card-grid.cols-3 { grid-template-columns:1fr; } .nav-arrow { width:36px; height:36px; font-size:14px; } .nav-arrow.prev { left:6px; } .nav-arrow.next { right:6px; } }
+  @media (max-width:480px) { .slide { padding:20px 14px; } .slide-title { font-size:20px; } .slide-body { font-size:13px; } }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-g1"></div><div class="bg-g2"></div>
+<div class="progress-bar" id="progressBar"></div>
+<button class="nav-arrow prev" id="prevBtn" onclick="prevSlide()">‹</button>
+<button class="nav-arrow next" id="nextBtn" onclick="nextSlide()">›</button>
+<div class="dots" id="dots"></div>
+<div class="slide-counter" id="slideCounter"><span id="currentNum">1</span> / <span id="totalNum">16</span></div>
+<div class="hint">← → 键盘翻页</div>
+<div class="slides" id="slides">
+
+<!-- 1: Title -->
+<div class="slide title-slide active">
+  <div class="title-accent-line"></div>
+  <div class="slide-title"><span class="accent">名实之辩</span></div>
+  <div class="slide-subtitle">从概念追问到真实感知<br><span style="font-size:0.7em;color:var(--text-dim);">阶段性思考的记录、深化与批判性审视</span></div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;">
+    <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">刻舟求剑</span>
+    <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">真实感知</span>
+    <span style="font-size:13px;color:var(--text-dim);padding:6px 16px;border:1px solid var(--border);border-radius:20px;">认真对待但不执着</span>
+  </div>
+  <div class="title-meta">小勇 · 2026年7月15日</div>
+</div>
+
+<!-- 2: Core Expression -->
+<div class="slide">
+  <span class="tag green">核心表达</span>
+  <div class="slide-title"><span class="accent">名</span> vs <span class="accent2">实</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">名</div>
+        <div class="card-title">刻舟求剑</div>
+        <div class="card-body">
+          <p>是人塑造的一些模式，是个体或群体过往历史和意识的产物。</p>
+          <p>在于对历史和意识的执着，或者对外部认同的执着。</p>
+          <p>因为是意识或过去的产物，在现实中是<strong>刻舟求剑</strong>。</p>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">实</div>
+        <div class="card-title">真实感知</div>
+        <div class="card-body">
+          <p>摆脱这种短期的、过往的约束。</p>
+          <p>去真正的感知，去探索，去命名，甚至重新去理解。</p>
+          <p>是一种<strong>真实的经历和持续的完成</strong>。</p>
+        </div>
+      </div>
+    </div>
+    <div class="quote-box" style="margin-top:8px;border-color:var(--accent);">
+      <p>这只是我当下阶段性的理解。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 3: Today's Mapping -->
+<div class="slide">
+  <span class="tag amber">你今天走过的路</span>
+  <div class="slide-title">名实之辩的<span class="accent3">具身化</span></div>
+  <div class="slide-body">
+    <table class="comp-table">
+      <tr><th>今天的经历</th><th style="color:var(--accent);">对应"名"</th><th style="color:var(--accent2);">对应"实"</th></tr>
+      <tr><td>追问"公平"的概念</td><td style="color:var(--accent);">公平作为历史形成的概念</td><td style="color:var(--accent2);">在具体情境中感知什么才是公平</td></tr>
+      <tr><td>追问"好"的概念</td><td style="color:var(--accent);">好作为社会共识的标签</td><td style="color:var(--accent2);">在体验中感受什么是真的好</td></tr>
+      <tr><td>追问"概念"本身</td><td style="color:var(--accent);">概念作为思维的模式</td><td style="color:var(--accent2);">追问概念底层的真实</td></tr>
+      <tr><td>王赓武谈中国共产党</td><td style="color:var(--accent);">共产党作为"名"</td><td style="color:var(--accent2);">务实主义作为"实"</td></tr>
+    </table>
+    <div class="quote-box" style="margin-top:8px;border-color:var(--accent3);">
+      <p>你没有被自己构建的框架困住。你一边建框架，一边在追问框架的边界。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 4: Framework Ladder -->
+<div class="slide">
+  <span class="tag green">思考的独特之处</span>
+  <div class="slide-title">框架是梯子，<span class="accent">放下才是终点</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">"名"是梯子</div>
+        <div class="card-title">过往历史的产物</div>
+        <div class="card-body">帮助我们理解世界。就像你之前写的"框架是梯子"——梯子有用，但梯子不是终点。</div>
+      </div>
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">"实"是爬墙的力气</div>
+        <div class="card-title">和放下梯子的那个瞬间</div>
+        <div class="card-body">真实的感知和持续的完成。你知道梯子有用，但提醒自己：不要刻舟求剑，不要把梯子当终点。</div>
+      </div>
+    </div>
+    <div class="quote-box" style="margin-top:8px;border-color:var(--accent);">
+      <p>你没有否定"名"的价值——你只是在提醒自己：不要刻舟求剑，不要把梯子当终点。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5: Four Layers - Cognitive -->
+<div class="slide">
+  <span class="tag purple">四个层次 · 认知</span>
+  <div class="slide-title">名是<span class="accent2">地图</span>，实是<span class="accent2">地形</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">刻舟求剑的本质</div>
+        <div class="card-title">拿着旧地图，找新地形</div>
+        <div class="card-body">地图是上个月画的，但地形已经变了。你还在用过去的模式来理解现在。</div>
+      </div>
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">"名"的陷阱</div>
+        <div class="card-title">爱上地图，忘记地图只是地图</div>
+        <div class="card-body">人们争论"这张地图画得对不对"，而不是"这张地图还能不能帮我们找到路"。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6: Four Layers - Social -->
+<div class="slide">
+  <span class="tag purple">四个层次 · 社会</span>
+  <div class="slide-title">名是<span class="accent2">社会契约</span>，实是<span class="accent2">动态实践</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">"名"的必要性</div>
+        <div class="card-title">没有名，就没有社会</div>
+        <div class="card-body">我们共同约定一个词代表什么，才能沟通、协作、建立制度。名是社会存在的基础。</div>
+      </div>
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">"名"的僵化</div>
+        <div class="card-title">大企业病</div>
+        <div class="card-body">流程（名）还在，但业务（实）已经变了。字节的Context over Control就是用"实"对抗"名"——取消200余项报表，砍掉已失去意义的"名"。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7: Four Layers - Existential -->
+<div class="slide">
+  <span class="tag purple">四个层次 · 存在</span>
+  <div class="slide-title">名是<span class="accent2">身份认同</span>，实是<span class="accent2">持续生成</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">"名"的束缚</div>
+        <div class="card-title">"我是一个管理者"</div>
+        <div class="card-body">过度认同一个"名"时，就会被它束缚。"我是管理者"意味着"我应该做管理者该做的事"——但真实的情况可能要求你做一个倾听者、学习者、求助者。</div>
+      </div>
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">"实"的解放</div>
+        <div class="card-title">不把身份当作牢笼</div>
+        <div class="card-body">摆脱"名"的束缚，不是抛弃身份，而是在不同情境中持续生成新的自己——这才是"实"。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8: Four Layers - Practical -->
+<div class="slide">
+  <span class="tag purple">四个层次 · 实践</span>
+  <div class="slide-title"><span class="accent2">命名的权力</span></div>
+  <div class="slide-body">
+    <div class="quote-box" style="border-color:var(--accent2);">
+      <p>谁有权力命名？</p>
+    </div>
+    <p>命名是一种权力——谁定义了"公平"、"好"、"管理"，谁就掌握了话语权。你追问概念的底层，其实也是在追问：<strong>"这个命名是谁做的？它服务于谁的利益？"</strong></p>
+    <div class="card-grid cols-2" style="margin-top:8px;">
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">通过重新命名，重新定义现实</div>
+        <div class="card-title">"公平的经济根源"</div>
+        <div class="card-body">重新命名"公平"——不是道德概念，而是经济模式的函数</div>
+      </div>
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">通过重新命名，重新定义现实</div>
+        <div class="card-title">"提问即关系"</div>
+        <div class="card-body">重新命名"提问"——不是沟通工具，而是关系的载体</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9: Critical - Three Traps -->
+<div class="slide">
+  <span class="tag amber">批判性审视</span>
+  <div class="slide-title">三个<span class="accent3">局限</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-3" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">二元对立</div>
+        <div class="card-title">名=坏，实=好</div>
+        <div class="card-body">把名过度负面化，实过度理想化。没有名，你无法表达实。你这段话本身就是名。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">精英主义</div>
+        <div class="card-title">名=执着，但对大多数人</div>
+        <div class="card-body">名是安全，不是枷锁。不是每个人都需要或能够"摆脱概念束缚"追求"实"。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">浪漫化真实</div>
+        <div class="card-title">真实的感知本身</div>
+        <div class="card-body">也被名塑造。你感知到的"真实"已经经过概念系统过滤。庄子：吾丧我——不是不要我，而是忘掉我。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10: True Progress -->
+<div class="slide">
+  <span class="tag green">真正的进步</span>
+  <div class="slide-title">"阶段性"的自觉</div>
+  <div class="slide-body">
+    <div class="quote-box" style="border-color:var(--accent);padding:16px 24px;background:rgba(0,212,170,0.06);">
+      <p style="font-size:clamp(18px,1.8vw,26px);font-weight:500;color:var(--text-bright);font-style:normal;">
+        你意识到了"名"的<span class="hl">暂时性和工具性</span>
+      </p>
+    </div>
+    <p style="margin-top:10px;">大多数人终其一生都被"名"所困——他们相信"公平就是公平""好就是好""管理就是管理"，从没想过追问。</p>
+    <p>你追问了。你不仅追问了，还用自己的话表达了。你不仅表达了，还知道这只是"阶段性理解"。</p>
+    <div class="quote-box" style="margin-top:8px;border-color:var(--accent);">
+      <p>这个"阶段性"的自觉，本身就是"实"——因为你没有把"名实之辩"这个框架当作终极真理，你知道它也会过时，也需要被追问。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 11: Multi-disciplinary Chinese Philosophy -->
+<div class="slide">
+  <span class="tag amber">多学科视角</span>
+  <div class="slide-title">中国哲学<span class="accent3">三大家</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-3" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">老子</div>
+        <div class="card-title">名可名，非常名</div>
+        <div class="card-body">可以被命名的名，就不是永恒的名。"道"（实）超越"名"（概念），但"道"也需要通过"名"来接近。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">庄子</div>
+        <div class="card-title">得鱼忘筌</div>
+        <div class="card-body">捕到了鱼就忘了鱼篓。名是鱼篓，实是鱼。用名来接近实，但不要执着于名本身。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">孔子</div>
+        <div class="card-title">正名</div>
+        <div class="card-body">名不正则言不顺。不是不要名，而是要让名与实相匹配。正确命名是良好治理的基础。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 12: Multi-disciplinary Western Philosophy -->
+<div class="slide">
+  <span class="tag amber">多学科视角</span>
+  <div class="slide-title">西方哲学<span class="accent3">三大家</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-3" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">柏拉图</div>
+        <div class="card-title">理念论</div>
+        <div class="card-body">名对应的是"理念"——永恒不变的、真实的存在。在你的框架中：名比实更真实。完全不同的回答。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">尼采</div>
+        <div class="card-title">真理是权力的产物</div>
+        <div class="card-body">概念不是"发现"的，是"创造"的。创造概念的人，掌握了定义现实的权利。呼应你的"命名即权力"。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">海德格尔</div>
+        <div class="card-title">语言是存在的家</div>
+        <div class="card-body">你无法"摆脱"名，因为语言（名）就是"存在"的家。你不是在名和实之间选择，而是通过名来接近实。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 13: Multi-disciplinary Sociology + K -->
+<div class="slide">
+  <span class="tag amber">多学科视角</span>
+  <div class="slide-title">社会学 + <span class="accent3">克里希那穆提</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="margin-top:4px;">
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">布尔迪厄</div>
+        <div class="card-title">场域与惯习</div>
+        <div class="card-body">名是场域中的位置（身份、地位），实是场域中的实践（你真正在做什么）。两者在互动中不断相互塑造。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">戈夫曼</div>
+        <div class="card-title">拟剧论</div>
+        <div class="card-body">社会是舞台，名是社会角色，实是后台的真实自我。不要被前台的"名"所吞噬，保留后台的"实"。</div>
+      </div>
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">克里希那穆提</div>
+        <div class="card-title">观者即被观之物</div>
+        <div class="card-body">名是观者（框架），实是被观之物（世界）。但观者即被观之物——名和实不是分离的。你不需要摆脱名，只需要觉察到名的存在。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 14: Bottom Value -->
+<div class="slide">
+  <span class="tag green">底层价值</span>
+  <div class="slide-title">不是理论，是<span class="accent">实践</span></div>
+  <div class="slide-body">
+    <div class="quote-box" style="border-color:var(--accent);padding:16px 24px;">
+      <p style="font-size:clamp(18px,1.8vw,26px);font-weight:500;color:var(--text-bright);font-style:normal;">
+        "我应该如何生活？"
+      </p>
+    </div>
+    <div class="card-grid cols-2" style="margin-top:8px;">
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">认真对待</div>
+        <div class="card-title">名有用</div>
+        <div class="card-body">它让你能沟通、能思考、能表达。你认真对待了公平——写了完整的分析框架。你认真对待了提问——写了完整的文档。</div>
+      </div>
+      <div class="card" style="border-color:rgba(0,212,170,0.2);">
+        <div class="card-label" style="color:var(--accent);">不执着</div>
+        <div class="card-title">名不是终点</div>
+        <div class="card-body">它是工具，不是目标。你不执着于公平——知道它只是框架，不是真实。你不执着于提问——知道它只是工具，不是关系本身。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 15: Write to Yourself -->
+<div class="slide">
+  <span class="tag purple">写给你自己</span>
+  <div class="slide-title">三个<span class="accent2">深化</span>，三个<span class="accent2">提醒</span></div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="grid-template-columns:1fr 1fr;margin-top:4px;">
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">深化</div>
+        <div class="card-title">名和实是相互生成的</div>
+        <div class="card-body">名塑造实，实重塑名。不是对立，是互动。</div>
+      </div>
+      <div class="card" style="border-color:rgba(124,58,237,0.2);">
+        <div class="card-label" style="color:var(--accent2);">深化</div>
+        <div class="card-title">命名是一种责任</div>
+        <div class="card-body">你有权力重新定义概念，但也要为命名承担后果。</div>
+      </div>
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-label" style="color:var(--accent);">深化</div>
+        <div class="card-title">在名之中，但不被名所困</div>
+        <div class="card-body">实不是"无名的状态"，而是"在名之中，但不被名所困"的能力。</div>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.2);">
+        <div class="card-label" style="color:var(--accent3);">提醒</div>
+        <div class="card-title">你写下的这段话本身就是"名"</div>
+        <div class="card-body">但你知道它只是"阶段性理解"。这个"知道"本身，就是"实"。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 16: End -->
+<div class="slide end-slide">
+  <div class="title-accent-line"></div>
+  <div class="slide-title" style="font-size:clamp(30px,3.6vw,52px);">
+    名是工具，不是终点<br>
+    <span style="font-size:0.55em;color:var(--text-dim);">实不是"无名的状态"</span>
+  </div>
+  <div class="slide-subtitle" style="max-width:500px;margin:20px auto;">
+    <span class="accent">在名之中，但不被名所困</span>
+  </div>
+  <div class="title-meta" style="margin-top:32px;">
+    小勇 · 2026年7月15日 · 阶段性理解
+  </div>
+</div>
+
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide'); const dots = document.getElementById('dots'); const total = slides.length; let current = 0;
+  document.getElementById('totalNum').textContent = total;
+  for (let i = 0; i < total; i++) { const d = document.createElement('div'); d.className = 'dot' + (i === 0 ? ' active' : ''); d.onclick = () => goToSlide(i); dots.appendChild(d); }
+  function updateProgress() { document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%'; }
+  function updateUI() { slides.forEach((s, i) => s.classList.toggle('active', i === current)); document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current)); document.getElementById('currentNum').textContent = current + 1; document.getElementById('prevBtn').disabled = current === 0; document.getElementById('nextBtn').disabled = current === total - 1; updateProgress(); }
+  function goToSlide(n) { if (n < 0) n = 0; if (n >= total) n = total - 1; if (n === current) return; current = n; updateUI(); }
+  function nextSlide() { goToSlide(current + 1); } function prevSlide() { goToSlide(current - 1); }
+  document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); } else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); } else if (e.key === 'End') { e.preventDefault(); goToSlide(total - 1); } });
+  let tx = 0; document.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }); document.addEventListener('touchend', (e) => { const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 50) d > 0 ? prevSlide() : nextSlide(); });
+  let wt = false; document.addEventListener('wheel', (e) => { if (wt) return; wt = true; setTimeout(() => wt = false, 600); if (e.deltaY > 0) nextSlide(); else prevSlide(); }, { passive: true });
+  updateUI();
+</script>
+</body>
+</html>
