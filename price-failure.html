@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>价格失灵：非市场定价机制如何重塑现代社会的供需匹配</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0e17;
+  --bg2: #0f1729;
+  --bg3: #1a2340;
+  --text: #e8edf5;
+  --text-dim: #7a8ba8;
+  --accent: #4fc3f7;
+  --accent2: #26c6da;
+  --accent3: #7c4dff;
+  --gold: #ffd54f;
+  --red: #ef5350;
+  --green: #66bb6a;
+  --orange: #ffa726;
+  --glow: rgba(79, 195, 247, 0.15);
+  --glow2: rgba(124, 77, 255, 0.12);
+  --card-bg: rgba(15, 23, 41, 0.8);
+  --border: rgba(79, 195, 247, 0.12);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 80px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  overflow-y: auto;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 10;
+}
+.slide.exit {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Background grid effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(79, 195, 247, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 195, 247, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glow orbs */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 { width: 500px; height: 500px; top: -150px; right: -100px; background: var(--glow); }
+.orb-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; background: var(--glow2); }
+
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 100;
+  background: rgba(10, 14, 23, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 10px 24px;
+  border-radius: 40px;
+  border: 1px solid var(--border);
+}
+.nav-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.nav-btn:disabled { opacity: 0.2; cursor: default; }
+.nav-btn:disabled:hover { background: transparent; color: var(--text); border-color: var(--border); }
+.page-indicator {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--text-dim);
+  min-width: 60px;
+  text-align: center;
+}
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  z-index: 100;
+  transition: width 0.5s ease;
+}
+
+/* Slide content styles */
+.slide-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+}
+h1 {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+h2 {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 28px;
+  letter-spacing: -0.01em;
+}
+h2 .sub {
+  display: block;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+p, li {
+  font-size: 22px;
+  line-height: 1.7;
+  color: var(--text);
+  font-weight: 300;
+}
+p + p { margin-top: 16px; }
+.lead {
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.accent-text { color: var(--accent); }
+.gold-text { color: var(--gold); }
+.green-text { color: var(--green); }
+.red-text { color: var(--red); }
+.orange-text { color: var(--orange); }
+.dim-text { color: var(--text-dim); }
+.small { font-size: 18px; }
+.xs { font-size: 16px; }
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+.card-grid-2 { grid-template-columns: 1fr 1fr; }
+.card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s;
+}
+.card:hover { border-color: rgba(79, 195, 247, 0.3); transform: translateY(-2px); }
+.card-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+.card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.card p {
+  font-size: 16px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Data points */
+.data-row {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.data-point {
+  flex: 1;
+  min-width: 160px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.data-point .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.data-point .num.gold { color: var(--gold); }
+.data-point .num.green { color: var(--green); }
+.data-point .num.orange { color: var(--orange); }
+.data-point .num.red { color: var(--red); }
+.data-point .label {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 17px;
+}
+.data-table th {
+  background: var(--bg3);
+  color: var(--accent);
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid var(--accent);
+}
+.data-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 300;
+}
+.data-table tr:hover td {
+  background: rgba(79, 195, 247, 0.04);
+}
+
+/* List */
+.styled-list {
+  list-style: none;
+  margin: 16px 0;
+}
+.styled-list li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  font-size: 20px;
+}
+.styled-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Comparison columns */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 20px 0;
+}
+.compare-col {
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.compare-col.left { background: rgba(102, 187, 106, 0.06); border-color: rgba(102, 187, 106, 0.2); }
+.compare-col.right { background: rgba(239, 83, 80, 0.06); border-color: rgba(239, 83, 80, 0.2); }
+.compare-col h4 { font-size: 20px; margin-bottom: 12px; }
+.compare-col.left h4 { color: var(--green); }
+.compare-col.right h4 { color: var(--red); }
+.compare-col li {
+  font-size: 17px;
+  padding: 4px 0;
+  color: var(--text-dim);
+}
+
+/* Flow diagram */
+.flow-chain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+.flow-node {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 16px;
+  text-align: center;
+  min-width: 100px;
+}
+.flow-node.accent { border-color: var(--accent); background: rgba(79, 195, 247, 0.08); }
+.flow-node.gold { border-color: var(--gold); background: rgba(255, 213, 79, 0.08); }
+.flow-node.green { border-color: var(--green); background: rgba(102, 187, 106, 0.08); }
+.flow-node.purple { border-color: var(--accent3); background: rgba(124, 77, 255, 0.08); }
+.flow-arrow {
+  font-size: 20px;
+  color: var(--text-dim);
+}
+
+/* Bar chart */
+.bar-chart { margin: 20px 0; }
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.bar-label {
+  min-width: 100px;
+  font-size: 16px;
+  text-align: right;
+  color: var(--text-dim);
+}
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: var(--bg3);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 14px;
+  transition: width 1.2s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 40px;
+}
+.bar-fill.value { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.bar-fill.gold-bg { background: linear-gradient(90deg, var(--gold), #ff8f00); }
+.bar-fill.green-bg { background: linear-gradient(90deg, var(--green), #43a047); }
+.bar-fill.purple-bg { background: linear-gradient(90deg, var(--accent3), #651fff); }
+
+/* Quote */
+.quote-block {
+  border-left: 3px solid var(--accent);
+  padding: 20px 28px;
+  margin: 20px 0;
+  background: rgba(79, 195, 247, 0.04);
+  border-radius: 0 12px 12px 0;
+}
+.quote-block p {
+  font-size: 22px;
+  font-style: italic;
+  color: var(--text);
+  font-weight: 400;
+}
+.quote-block .author {
+  margin-top: 12px;
+  font-size: 16px;
+  color: var(--text-dim);
+  font-style: normal;
+}
+
+/* Title slide */
+#slide-0 {
+  text-align: center;
+}
+#slide-0 .subtitle {
+  font-size: 22px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  font-weight: 300;
+}
+#slide-0 .meta {
+  margin-top: 40px;
+  font-size: 16px;
+  color: var(--text-dim);
+}
+#slide-0 .divider {
+  width: 80px;
+  height: 2px;
+  background: var(--accent);
+  margin: 24px auto;
+  box-shadow: 0 0 20px var(--glow);
+}
+
+/* Status bar */
+.status-bar {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  z-index: 100;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: rgba(10, 14, 23, 0.6);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  background: rgba(79, 195, 247, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  margin: 2px;
+}
+.tag.gold { background: rgba(255, 213, 79, 0.1); color: var(--gold); border-color: rgba(255, 213, 79, 0.2); }
+.tag.green { background: rgba(102, 187, 106, 0.1); color: var(--green); border-color: rgba(102, 187, 106, 0.2); }
+.tag.purple { background: rgba(124, 77, 255, 0.1); color: var(--accent3); border-color: rgba(124, 77, 255, 0.2); }
+.tag.orange { background: rgba(255, 167, 38, 0.1); color: var(--orange); border-color: rgba(255, 167, 38, 0.2); }
+
+/* Anomaly cards */
+.anomaly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+.anomaly-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.anomaly-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+}
+.anomaly-card:nth-child(1)::before { background: linear-gradient(90deg, var(--gold), var(--orange)); }
+.anomaly-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.anomaly-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent3), var(--accent)); }
+.anomaly-card .icon { font-size: 36px; margin-bottom: 12px; }
+.anomaly-card h4 { font-size: 18px; margin-bottom: 8px; }
+.anomaly-card p { font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+
+/* Theory diagram */
+.theory-dots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+.theory-dot {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.theory-dot .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.theory-dot h4 { font-size: 17px; margin-bottom: 6px; }
+.theory-dot p { font-size: 15px; color: var(--text-dim); line-height: 1.5; }
+
+/* Mechanism cards */
+.mech-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.mech-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: default;
+}
+.mech-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.mech-card .mech-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.mech-card .mech-icon { font-size: 32px; margin-bottom: 10px; }
+.mech-card h4 { font-size: 17px; margin-bottom: 8px; }
+.mech-card p { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+
+/* Insight box */
+.insight-box {
+  background: linear-gradient(135deg, rgba(79, 195, 247, 0.08), rgba(124, 77, 255, 0.08));
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  border-radius: 16px;
+  padding: 28px;
+  margin: 20px 0;
+}
+.insight-box h4 { color: var(--accent); font-size: 20px; margin-bottom: 12px; }
+.insight-box p { font-size: 19px; color: var(--text); line-height: 1.7; }
+
+/* Principle list */
+.principle-list {
+  counter-reset: principle;
+  list-style: none;
+  margin: 16px 0;
+}
+.principle-list li {
+  counter-increment: principle;
+  padding: 12px 0 12px 48px;
+  position: relative;
+  font-size: 19px;
+  border-bottom: 1px solid var(--border);
+}
+.principle-list li::before {
+  content: counter(principle);
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Section cards */
+.section-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin: 12px 0;
+}
+.section-card h4 { font-size: 20px; margin-bottom: 10px; }
+.section-card p { font-size: 17px; color: var(--text-dim); line-height: 1.6; }
+
+/* Duration info */
+.duration-info {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.duration-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Keyboard hint */
+.key-hint {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  font-size: 12px;
+  color: rgba(122, 139, 168, 0.4);
+  letter-spacing: 2px;
+}
+
+@media (max-width: 768px) {
+  .slide { padding: 30px 24px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 20px; }
+  p, li { font-size: 17px; }
+  .lead { font-size: 20px; }
+  .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+  .compare-row { grid-template-columns: 1fr; }
+  .anomaly-grid { grid-template-columns: 1fr; }
+  .mech-grid { grid-template-columns: 1fr; }
+  .theory-dots { grid-template-columns: 1fr; }
+  .data-row { flex-direction: column; }
+  .nav { padding: 8px 16px; gap: 10px; }
+  .nav-btn { width: 34px; height: 34px; font-size: 15px; }
+  .status-bar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="status-bar" id="statusBar">1 / 20</div>
+
+<!-- SLIDE 0: Title -->
+<div class="slide active" id="slide-0">
+  <div class="slide-content" style="text-align:center">
+    <div style="font-size:14px;color:var(--accent);letter-spacing:4px;margin-bottom:20px;font-weight:500;">ZHAO JINYONG · 2026</div>
+    <div class="divider"></div>
+    <h1 style="font-size:60px;">价格失灵</h1>
+    <p style="font-size:32px;font-weight:400;color:var(--text);margin-top:8px;">非市场定价机制如何重塑<br>现代社会的供需匹配</p>
+    <div style="margin-top:40px;">
+      <span class="tag">注意力经济</span>
+      <span class="tag gold">声誉机制</span>
+      <span class="tag green">信任网络</span>
+      <span class="tag purple">行政分配</span>
+      <span class="tag orange">互惠经济</span>
+      <span class="tag">自组织治理</span>
+    </div>
+    <p class="meta" style="margin-top:50px;">小勇 · 2026年7月14日晨间感悟系统展开</p>
+  </div>
+</div>
+
+<!-- SLIDE 1: 价格的神话与现实 -->
+<div class="slide" id="slide-1">
+  <div class="slide-content">
+    <h2>一、价格的神话与现实</h2>
+    <p class="lead">经济学教科书告诉我们：价格是资源配置的信号。但这个框架在解释现代社会时越来越力不从心。</p>
+    <div class="anomaly-grid">
+      <div class="anomaly-card">
+        <div class="icon">📰</div>
+        <h4>深度报道 vs 爆款</h4>
+        <p>《纽约时报》深度调查成本数百万美元，读者免费阅读——而自媒体拼凑的"爆款"却能获得千万流量</p>
+      </div>
+      <div class="anomaly-card">
+        <div class="icon">🏥</div>
+        <h4>专家号定价悖论</h4>
+        <p>顶级三甲医院专家号官方定价仅20元，黄牛可炒到数千元——但医生个人无法自由定价</p>
+      </div>
+      <div class="anomaly-card">
+        <div class="icon">📚</div>
+        <h4>维基百科奇迹</h4>
+        <p>全球第五大网站，全部免费，零广告，靠捐赠维持——年运营成本仅相当于Netflix一周营销费用</p>
+      </div>
+    </div>
+    <div class="quote-block">
+      <p>核心问题：如果价格是最优的供需匹配机制，为什么现代社会有大量"价格不工作"的领域？这些领域用了什么替代机制？</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 价格失灵的四个维度 -->
+<div class="slide" id="slide-2">
+  <div class="slide-content">
+    <h2>二、价格失灵的四个维度</h2>
+    <p class="lead">价格作为一种匹配机制，需要特定条件才能有效运作。当这些条件不成立时，价格就失灵了。</p>
+    <div class="theory-dots">
+      <div class="theory-dot">
+        <div class="num">维度一</div>
+        <h4>信息不对称</h4>
+        <p>Akerlof (1970) — 柠檬市场理论。卖方掌握的信息远多于买方，劣质品驱逐优质品。</p>
+        <p style="font-size:13px;color:var(--text-dim);margin-top:6px;">典型案例：二手车、医疗服务、高等教育</p>
+      </div>
+      <div class="theory-dot">
+        <div class="num">维度二</div>
+        <h4>公共品与非竞争性</h4>
+        <p>Samuelson (1954) — 一个人的消费不影响他人消费（数字内容），无法阻止不付费者使用。</p>
+        <p style="font-size:13px;color:var(--text-dim);margin-top:6px;">后果：价格机制导致供应不足（市场失灵）</p>
+      </div>
+      <div class="theory-dot">
+        <div class="num">维度三</div>
+        <h4>外部性</h4>
+        <p>Pigou (1920) / Coase (1960) — 交易影响第三方，但价格不反映这种影响。</p>
+        <p style="font-size:13px;color:var(--text-dim);margin-top:6px;">正外部性：教育、疫苗、基础研究</p>
+      </div>
+      <div class="theory-dot">
+        <div class="num">维度四</div>
+        <h4>体验品与信任品</h4>
+        <p>Nelson (1970) / Darby & Karni (1973) — 使用前（甚至使用后）无法判断质量。</p>
+        <p style="font-size:13px;color:var(--text-dim);margin-top:6px;">典型案例：电影、餐厅、医疗服务、汽车修理</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 六种非价格匹配机制 -->
+<div class="slide" id="slide-3">
+  <div class="slide-content">
+    <h2>三、六种非价格匹配机制</h2>
+    <p class="lead">当价格失灵时，社会演化出了六种替代机制来匹配供需。</p>
+    <div class="mech-grid">
+      <div class="mech-card">
+        <div class="mech-num">01</div>
+        <div class="mech-icon">👁️</div>
+        <h4>注意力机制</h4>
+        <p>当信息过载，稀缺资源从"内容"变为"注意力"。注意力成为新的匹配货币</p>
+      </div>
+      <div class="mech-card">
+        <div class="mech-num">02</div>
+        <div class="mech-icon">⭐</div>
+        <h4>声誉机制</h4>
+        <p>当消费者无法判断质量时，依赖卖方声誉做决策。声誉替代价格成为质量信号</p>
+      </div>
+      <div class="mech-card">
+        <div class="mech-num">03</div>
+        <div class="mech-icon">🤝</div>
+        <h4>信任机制</h4>
+        <p>当正式制度成本太高时，人际关系中的信任成为匹配机制</p>
+      </div>
+      <div class="mech-card">
+        <div class="mech-num">04</div>
+        <div class="mech-icon">📋</div>
+        <h4>行政分配</h4>
+        <p>当公平优先于效率，价格机制被行政分配替代</p>
+      </div>
+      <div class="mech-card">
+        <div class="mech-num">05</div>
+        <div class="mech-icon">🔄</div>
+        <h4>互惠经济</h4>
+        <p>数字产品边际成本趋零，免费+增值成为可能</p>
+      </div>
+      <div class="mech-card">
+        <div class="mech-num">06</div>
+        <div class="mech-icon">🌐</div>
+        <h4>自组织治理</h4>
+        <p>当市场和国家都失效时，社区通过自组织建立规则完成匹配</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 注意力机制 -->
+<div class="slide" id="slide-4">
+  <div class="slide-content">
+    <h2>机制一：注意力机制</h2>
+    <p class="lead">当稀缺的不是产品，而是人的注意力——Simon (1971) 注意力经济学</p>
+    <div class="data-row">
+      <div class="data-point">
+        <div class="num gold">$6,025亿</div>
+        <div class="label">2023年全球数字广告市场规模</div>
+      </div>
+      <div class="data-point">
+        <div class="num">120+</div>
+        <div class="label">TikTok用户日均使用时长（分钟）</div>
+      </div>
+      <div class="data-point">
+        <div class="num green">10.9亿</div>
+        <div class="label">《纽约时报》2023年数字订阅收入（美元）</div>
+      </div>
+    </div>
+    <div class="section-card">
+      <h4>核心逻辑</h4>
+      <p>内容免费提供，注意力被"拍卖"给广告商。平台通过算法竞争用户的注意力配额。大量内容的"价格"是零，但背后的注意力交易市场比任何实物商品市场都大。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(255,167,38,0.2);">
+      <h4 style="color:var(--orange);">⚠️ 局限性</h4>
+      <p>注意力机制容易导致"劣币驱逐良币"——极端化、情绪化内容比理性深度内容更容易获取注意力。Tufekci (2018) 研究表明，算法推荐内容每增加10%的极端化，用户停留时间增加6%。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: 声誉机制 -->
+<div class="slide" id="slide-5">
+  <div class="slide-content">
+    <h2>机制二：声誉机制</h2>
+    <p class="lead">当信息不对称时，信任成为货币——Kreps (1990) 声誉理论</p>
+    <div class="data-row">
+      <div class="data-point">
+        <div class="num">88%</div>
+        <div class="label">消费者信任在线评论（与熟人推荐同级）</div>
+      </div>
+      <div class="data-point">
+        <div class="num gold">+5~9%</div>
+        <div class="label">产品每增加1星评级的转化率提升</div>
+      </div>
+      <div class="data-point">
+        <div class="num red">-10%</div>
+        <div class="label">一星差评对图书销量的负面影响</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <h4>核心洞察</h4>
+      <p>声誉机制的本质是把"未来"转化为"现在"的价值——一个在乎未来声誉的人，才会在今天做出更优的行为。在无限重复博弈中，声誉可以支撑合作，即使在没有价格信号的情况下。</p>
+    </div>
+    <p style="font-size:16px;color:var(--text-dim);">💡 Airbnb评分4.8以上的房东比4.5以下的房东价格高出15-20%，预订率高出40%</p>
+  </div>
+</div>
+
+<!-- SLIDE 6: 信任机制 -->
+<div class="slide" id="slide-6">
+  <div class="slide-content">
+    <h2>机制三：信任机制</h2>
+    <p class="lead">当市场失败时，关系替代交易——Granovetter (1985) 嵌入性理论</p>
+    <div class="data-row">
+      <div class="data-point">
+        <div class="num">85%</div>
+        <div class="label">天使投资来自熟人推荐</div>
+      </div>
+      <div class="data-point">
+        <div class="num red">0.5%</div>
+        <div class="label">Cold Pitch（公开路演）成功率</div>
+      </div>
+      <div class="data-point">
+        <div class="num">76%</div>
+        <div class="label">中国患者选择医院依赖熟人推荐</div>
+      </div>
+    </div>
+    <div class="quote-block">
+      <p>信任机制解释了为什么在"按理说价格应该起作用"的领域，人们仍然依赖人际关系——不是因为他们不懂经济，而是因为信任的交易成本低于价格发现。</p>
+    </div>
+    <p style="font-size:16px;color:var(--text-dim);margin-top:12px;">📊 Fukuyama (1995)：高信任社会（日本、德国、美国）能形成大规模组织；低信任社会企业规模偏小，依赖家族信任</p>
+  </div>
+</div>
+
+<!-- SLIDE 7: 行政分配 -->
+<div class="slide" id="slide-7">
+  <div class="slide-content">
+    <h2>机制四：行政分配</h2>
+    <p class="lead">当公平优先于效率——Titmuss (1970) 礼物关系</p>
+    <table class="data-table">
+      <thead>
+        <tr><th>领域</th><th>分配机制</th><th>替代价格的原因</th><th>关键数据</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>NHS（英国医疗）</td><td>按需排队</td><td colspan="2">健康是基本权利。2023年等待非紧急手术患者约750万，平均等待15周</td></tr>
+        <tr><td>教育（K-12）</td><td>学区划片</td><td colspan="2">教育机会平等。美国学区房溢价高达30-50%</td></tr>
+        <tr><td>器官移植</td><td>医学排序+伦理审查</td><td colspan="2">禁止买卖器官。全球每年约15万例，99%以上通过行政分配</td></tr>
+        <tr><td>北京车牌摇号</td><td>随机抽签</td><td colspan="2">2023年中签率约0.04%，等待时间平均超过10年</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <h4>⚠️ 价格挤出效应</h4>
+      <p>Gneezy & Rustichini (2000) 经典实验：以色列日托中心引入迟到罚款后，迟到率反而增加。罚款（价格）替代了道德义务（非价格机制），导致道德义务消失。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 互惠经济 -->
+<div class="slide" id="slide-8">
+  <div class="slide-content">
+    <h2>机制五：互惠经济</h2>
+    <p class="lead">当数字技术使免费+增值成为可能——Anderson (2009) 免费经济学</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+      <div class="section-card">
+        <h4>维基百科</h4>
+        <p>年运营成本约1.8亿美元，由500万捐赠者支持。全球第五大网站，零广告。</p>
+      </div>
+      <div class="section-card">
+        <h4>拼多多</h4>
+        <p>社交裂变替代价格，获客成本仅为京东的1/5，2023年GMV达4.8万亿元。</p>
+      </div>
+      <div class="section-card">
+        <h4>微信</h4>
+        <p>核心通讯全部免费，微信生态2023年收入超1,500亿元。</p>
+      </div>
+      <div class="section-card">
+        <h4>知乎</h4>
+        <p>免费问答+付费咨询，付费咨询年增长300%，核心价值来自免费社区积累。</p>
+      </div>
+    </div>
+    <div class="quote-block">
+      <p>McAfee & Brynjolfsson (2017)：数字产品免费提供所创造的"消费者剩余"远大于传统价格测量的GDP增长。一个免费的产品创造了巨大的社会价值，但GDP统计中完全看不到。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 自组织治理 -->
+<div class="slide" id="slide-9">
+  <div class="slide-content">
+    <h2>机制六：自组织治理</h2>
+    <p class="lead">当社区替代市场和国家——Ostrom (1990) 公共池塘资源治理</p>
+    <div class="data-row">
+      <div class="data-point">
+        <div class="num green">2009</div>
+        <div class="label">Elinor Ostrom获诺贝尔经济学奖</div>
+      </div>
+      <div class="data-point">
+        <div class="num">8</div>
+        <div class="label">Ostrom提出的自组织治理原则数量</div>
+      </div>
+    </div>
+    <div class="section-card">
+      <h4>Ostrom的八大设计原则</h4>
+      <p style="font-size:16px;line-height:1.8;">
+        ① 清晰界定的边界 ② 规则与当地条件匹配 ③ 集体选择安排 ④ 监督机制<br>
+        ⑤ 分级制裁 ⑥ 冲突解决机制 ⑦ 对组织权的最低限度认可 ⑧ 嵌套式企业
+      </p>
+    </div>
+    <div class="section-card" style="margin-top:12px;">
+      <h4>Linux开源生态</h4>
+      <p>全球最重要的开源项目，由数千名贡献者自组织协作。Linux内核的代码评审和社区治理机制是自组织治理的典范——没有科层制，没有价格信号，但效率极高。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: 凯斯（案例深度） -->
+<div class="slide" id="slide-10">
+  <div class="slide-content">
+    <h2>四、深度案例解剖</h2>
+    <p class="lead">混合匹配的典型模式——最成功的系统不是"全市场"或"全计划"，而是多种机制的混合。</p>
+    <div class="compare-row">
+      <div class="compare-col left">
+        <h4>✅ 英国NHS</h4>
+        <p style="font-size:16px;color:var(--text-dim);">混合：行政分配+声誉+信任</p>
+        <ul style="list-style:none;margin-top:12px;">
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 基础医疗：行政分配（按需排队）</li>
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 专科医生：声誉机制（医生排名）</li>
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 私立医疗：价格机制（直接支付）</li>
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 年度预算约1,900亿英镑</li>
+        </ul>
+      </div>
+      <div class="compare-col right">
+        <h4>✅ 知识付费</h4>
+        <p style="font-size:16px;color:var(--text-dim);">混合：信任+声誉+互惠+价格</p>
+        <ul style="list-style:none;margin-top:12px;">
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 免费内容：注意力机制（吸引用户）</li>
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 付费课程：信任+声誉（作者IP）</li>
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 社群：互惠经济（免费+增值）</li>
+          <li style="font-size:15px;padding:4px 0;color:var(--text-dim);">• 得到App：活跃用户年均消费超500元</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flow-chain">
+      <div class="flow-node accent">价格机制</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-node gold">注意力</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-node green">声誉</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-node purple">信任</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-node">行政</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-node">互惠</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-node">自组织</div>
+    </div>
+    <p style="text-align:center;font-size:16px;color:var(--text-dim);margin-top:10px;">最有效的系统 = 多种机制的混合匹配</p>
+  </div>
+</div>
+
+<!-- SLIDE 11: 商业启示 -->
+<div class="slide" id="slide-11">
+  <div class="slide-content">
+    <h2>五、商业启示</h2>
+    <p class="lead">六种非价格匹配机制的商业化路径</p>
+    <table class="data-table">
+      <thead>
+        <tr><th>匹配机制</th><th>变现逻辑</th><th>代表企业</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>注意力机制</td><td>注意力 → 广告</td><td>Google、抖音、Facebook</td></tr>
+        <tr><td>声誉机制</td><td>声誉 → 溢价</td><td>知识IP、KOL、头部品牌</td></tr>
+        <tr><td>信任机制</td><td>信任 → 付费</td><td>知乎付费咨询、得到</td></tr>
+        <tr><td>行政分配</td><td>配额 → 稀缺溢价</td><td>公立医院、教育系统</td></tr>
+        <tr><td>互惠经济</td><td>免费 → 增值升级</td><td>百度网盘、Notion</td></tr>
+        <tr><td>自组织治理</td><td>社区 → 捐赠/生态</td><td>维基百科、Linux</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <h4>核心启示</h4>
+      <p>不要只靠价格竞争。在信息不对称的领域，声誉和信任比价格更有竞争力。引入价格前，想清楚是否破坏了现有的非价格机制。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: 结论 -->
+<div class="slide" id="slide-12">
+  <div class="slide-content">
+    <h2>六、结论与启示</h2>
+    <div class="section-card" style="border-color:rgba(79,195,247,0.3);">
+      <h4 style="color:var(--accent);">洞见一</h4>
+      <p>价格不是唯一的匹配机制，甚至不是最优的匹配机制。当信息不对称、公共品属性、外部性、体验品特性显著时，非价格机制可能比价格更有效。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(255,213,79,0.3);">
+      <h4 style="color:var(--gold);">洞见二</h4>
+      <p>混合匹配比单一匹配更优。医疗、教育、新闻最成功的模式都是混合模式——不是"全市场"或"全计划"，而是多种机制协同。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(124,77,255,0.3);">
+      <h4 style="color:var(--accent3);">洞见三</h4>
+      <p>AI正在重塑匹配机制的基础设施。推荐算法正在替代价格作为"连接供需"的核心信号。但"免费"不一定比"收费"更公平——隐性价格（注意力+数据+隐私）可能更不透明。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: 实践建议 -->
+<div class="slide" id="slide-13">
+  <div class="slide-content">
+    <h2>实践建议</h2>
+    <p class="lead">对个人与企业的5条实践建议</p>
+    <ol class="principle-list">
+      <li><strong>识别你的领域属于哪种匹配类型</strong> — 信息对称/不对称？竞争性/非竞争性？公共品/私人品？</li>
+      <li><strong>不要只靠价格竞争</strong> — 在信息不对称的领域，声誉和信任比价格更有竞争力</li>
+      <li><strong>警惕价格挤出效应</strong> — 引入价格前，想清楚是否破坏了现有的非价格机制</li>
+      <li><strong>利用AI做匹配而非定价</strong> — 推荐算法是一种比价格更精细的匹配工具</li>
+      <li><strong>混合模式是常态，不是例外</strong> — 最成功的商业模式同时在多个维度做匹配</li>
+    </ol>
+  </div>
+</div>
+
+<!-- SLIDE 14: 待研究的问题 -->
+<div class="slide" id="slide-14">
+  <div class="slide-content">
+    <h2>待研究的问题</h2>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h4>隐性价格的公平性</h4>
+        <p>隐形价格（注意力+数据）的公平性问题——算法匹配是否比价格匹配更不公平？</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚠️</div>
+        <h4>声誉机制的脆弱性</h4>
+        <p>AI时代当声誉可以被算法操纵时，信任还可靠吗？</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <h4>非价格匹配的规模天花板</h4>
+        <p>信任机制在小规模有效，但能规模化吗？</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌏</div>
+        <h4>中国语境下的特殊性</h4>
+        <p>行政分配在中国扮演了比西方更大的角色，这个差异如何影响匹配效果？</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: 参考文献 -->
+<div class="slide" id="slide-15">
+  <div class="slide-content">
+    <h2>参考文献</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="section-card"><p style="font-size:15px;">Akerlof, G. (1970). <em>The Market for "Lemons"</em>. QJE.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Anderson, C. (2009). <em>Free: The Future of a Radical Price</em>.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Arrow, K. (1963). <em>Uncertainty and the Welfare Economics of Medical Care</em>. AER.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Fukuyama, F. (1995). <em>Trust: The Social Virtues and the Creation of Prosperity</em>.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Granovetter, M. (1985). <em>Economic Action and Social Structure</em>. AJS.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Ostrom, E. (1990). <em>Governing the Commons</em>.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Sandel, M. (2012). <em>What Money Can't Buy</em>.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Titmuss, R. (1970). <em>The Gift Relationship</em>.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Tufekci, Z. (2018). YouTube, the Great Radicalizer. NYT.</p></div>
+      <div class="section-card"><p style="font-size:15px;">Wu, T. (2016). <em>The Attention Merchants</em>.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: End -->
+<div class="slide" id="slide-16">
+  <div class="slide-content" style="text-align:center;">
+    <div style="font-size:60px;margin-bottom:20px;">🏁</div>
+    <h2 style="font-size:36px;text-align:center;">价格失灵</h2>
+    <p style="font-size:24px;color:var(--text-dim);text-align:center;">非市场定价机制如何重塑现代社会的供需匹配</p>
+    <div class="divider" style="margin:24px auto;"></div>
+    <p style="font-size:18px;color:var(--text-dim);">小勇 · 2026年7月</p>
+    <p style="font-size:15px;color:var(--text-dim);margin-top:30px;">
+      <span style="opacity:0.4;">← 键盘方向键或点击导航翻页 →</span>
+    </p>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="key-hint">←  ↑  →  翻页</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">‹</button>
+  <span class="page-indicator" id="pageInd">1 / 17</span>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">›</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function updateSlide() {
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'exit');
+    if (i === current) s.classList.add('active');
+  });
+  document.getElementById('pageInd').textContent = (current + 1) + ' / ' + total;
+  document.getElementById('statusBar').textContent = (current + 1) + ' / ' + total;
+  document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+}
+
+function nextSlide() {
+  if (current < total - 1) { current++; updateSlide(); }
+}
+function prevSlide() {
+  if (current > 0) { current--; updateSlide(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+});
+
+// Touch support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+
+updateSlide();
+</script>
+</body>
+</html>
