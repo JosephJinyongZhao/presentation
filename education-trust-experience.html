@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教育作为体验品与信任品</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0b0a0e;
+  --bg2: #121016;
+  --bg3: #1a1822;
+  --card-bg: rgba(18, 16, 22, 0.8);
+  --text: #e8e6f0;
+  --text-dim: #8a86a0;
+  --text-muted: #5e5a72;
+  --accent: #b8a0e8;
+  --accent2: #8b6fd0;
+  --gold: #e8c84a;
+  --gold-dim: #a08830;
+  --red: #e85a6a;
+  --green: #6aba7a;
+  --cyan: #5ac8e8;
+  --orange: #e8a040;
+  --border: rgba(184, 160, 232, 0.1);
+  --glow: rgba(184, 160, 232, 0.06);
+  --glow2: rgba(232, 200, 74, 0.04);
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Background texture */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(184, 160, 232, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(232, 200, 74, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle grid */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(184, 160, 232, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184, 160, 232, 0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 80px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  overflow-y: auto;
+  z-index: 1;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 10;
+}
+.slide-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* Title slide */
+#slide-0 { text-align: center; }
+#slide-0 h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #e8e6f0 0%, var(--accent) 50%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#slide-0 .ornament {
+  width: 80px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  margin: 24px auto;
+}
+#slide-0 .sub {
+  font-size: 22px;
+  color: var(--text-dim);
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+#slide-0 .meta {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-top: 40px;
+  font-weight: 300;
+}
+
+/* Headings */
+h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 40px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+h3 {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+h4 {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+p {
+  font-size: 24px;
+  line-height: 1.7;
+  color: var(--text);
+  font-weight: 300;
+}
+p + p { margin-top: 14px; }
+.lead {
+  font-size: 26px;
+  color: var(--text-dim);
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+.dim { color: var(--text-dim); }
+.muted { color: var(--text-muted); }
+.accent { color: var(--accent); }
+.gold { color: var(--gold); }
+.green { color: var(--green); }
+.red { color: var(--red); }
+.cyan { color: var(--cyan); }
+.orange { color: var(--orange); }
+.small { font-size: 20px; }
+.xs { font-size: 17px; }
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+}
+.card-grid-2 { grid-template-columns: 1fr 1fr; }
+.card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(184, 160, 232, 0.2); }
+.card .num {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+.card h4 { font-size: 22px; margin-bottom: 8px; }
+.card p { font-size: 19px; color: var(--text-dim); line-height: 1.6; }
+
+/* List */
+.styled-list { list-style: none; margin: 16px 0; }
+.styled-list li {
+  padding: 8px 0 8px 32px;
+  position: relative;
+  font-size: 22px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+.styled-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 10px;
+  top: 16px;
+}
+
+/* Numbered list */
+.num-list { list-style: none; margin: 16px 0; counter-reset: nl; }
+.num-list li {
+  counter-increment: nl;
+  padding: 10px 0 10px 56px;
+  position: relative;
+  font-size: 22px;
+  line-height: 1.6;
+  font-weight: 300;
+  border-bottom: 1px solid var(--border);
+}
+.num-list li:last-child { border-bottom: none; }
+.num-list li::before {
+  content: counter(nl);
+  position: absolute;
+  left: 0; top: 10px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+
+/* Data highlight */
+.data-row {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.data-point {
+  flex: 1;
+  min-width: 160px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+}
+.data-point .num {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.data-point .num.gold { color: var(--gold); }
+.data-point .num.red { color: var(--red); }
+.data-point .num.green { color: var(--green); }
+.data-point .label {
+  font-size: 17px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  font-weight: 300;
+}
+
+/* Quote */
+.quote-block {
+  border-left: 3px solid var(--accent);
+  padding: 20px 28px;
+  margin: 20px 0;
+  background: rgba(184, 160, 232, 0.03);
+  border-radius: 0 12px 12px 0;
+}
+.quote-block p {
+  font-size: 22px;
+  color: var(--text);
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* Section card */
+.section-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  margin: 12px 0;
+}
+.section-card p { font-size: 21px; color: var(--text-dim); line-height: 1.7; }
+
+/* Check/X marks */
+.check { color: var(--green); font-weight: 400; }
+.cross { color: var(--red); font-weight: 400; }
+
+/* Insight box */
+.insight-box {
+  background: linear-gradient(135deg, rgba(184, 160, 232, 0.06), rgba(232, 200, 74, 0.04));
+  border: 1px solid rgba(184, 160, 232, 0.15);
+  border-radius: 16px;
+  padding: 28px;
+  margin: 16px 0;
+}
+.insight-box h4 { color: var(--accent); font-size: 22px; margin-bottom: 10px; }
+.insight-box p { font-size: 21px; color: var(--text); line-height: 1.7; }
+
+/* Comparison */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+.compare-col {
+  padding: 24px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.compare-col.left { border-color: rgba(106, 186, 122, 0.2); background: rgba(106, 186, 122, 0.04); }
+.compare-col.right { border-color: rgba(232, 90, 106, 0.2); background: rgba(232, 90, 106, 0.04); }
+.compare-col h4 { margin-bottom: 10px; }
+.compare-col.left h4 { color: var(--green); }
+.compare-col.right h4 { color: var(--red); }
+.compare-col li {
+  font-size: 19px;
+  padding: 4px 0;
+  color: var(--text-dim);
+  list-style: none;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+}
+.timeline-item {
+  flex: 1;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+}
+.timeline-item:nth-child(1)::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.timeline-item:nth-child(2)::before { background: linear-gradient(90deg, var(--accent2), var(--gold)); }
+.timeline-item:nth-child(3)::before { background: linear-gradient(90deg, var(--gold), var(--orange)); }
+.timeline-item .period {
+  font-size: 14px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.timeline-item h4 { font-size: 20px; margin-bottom: 6px; }
+.timeline-item p { font-size: 17px; color: var(--text-dim); line-height: 1.5; }
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  margin: 2px;
+  color: var(--text-dim);
+}
+.tag.accent-tag { border-color: rgba(184, 160, 232, 0.2); color: var(--accent); }
+.tag.gold-tag { border-color: rgba(232, 200, 74, 0.2); color: var(--gold); }
+.tag.green-tag { border-color: rgba(106, 186, 122, 0.2); color: var(--green); }
+
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 100;
+  background: rgba(11, 10, 14, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 10px 22px;
+  border-radius: 40px;
+  border: 1px solid var(--border);
+}
+.nav-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.nav-btn:disabled { opacity: 0.15; cursor: default; }
+.nav-btn:disabled:hover { background: transparent; color: var(--text-dim); border-color: var(--border); }
+.page-indicator {
+  font-size: 14px;
+  color: var(--text-muted);
+  min-width: 56px;
+  text-align: center;
+  font-weight: 300;
+}
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  z-index: 100;
+  transition: width 0.4s ease;
+}
+
+/* Key concept at bottom */
+.key-line {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  font-size: 12px;
+  color: rgba(94, 90, 114, 0.4);
+  letter-spacing: 2px;
+}
+
+/* End slide */
+#slide-end { text-align: center; }
+#slide-end h2 { text-align: center; font-size: 36px; }
+
+@media (max-width: 768px) {
+  .slide { padding: 30px 24px; }
+  #slide-0 h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 22px; }
+  p { font-size: 18px; }
+  .lead { font-size: 20px; }
+  .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
+  .compare-row { grid-template-columns: 1fr; }
+  .timeline { flex-direction: column; }
+  .data-row { flex-direction: column; }
+  .styled-list li { font-size: 18px; }
+  .num-list li { font-size: 18px; }
+}
+
+.slide::-webkit-scrollbar { width: 4px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SLIDE 0: Title -->
+<div class="slide active" id="slide-0">
+  <div class="slide-content" style="text-align:center">
+    <div style="font-size:14px;color:var(--text-muted);letter-spacing:3px;margin-bottom:16px;font-weight:300;">ZHAO JINYONG · 2026</div>
+    <div class="ornament"></div>
+    <h1>教育作为<br>体验品与信任品</h1>
+    <p class="sub">逻辑检验 · 批判审视 · 创业启示</p>
+    <div class="ornament"></div>
+    <p class="meta">基于2026年7月16日AI小组讨论感悟系统展开</p>
+  </div>
+</div>
+
+<!-- SLIDE 1: 问题的起点 -->
+<div class="slide" id="slide-1">
+  <div class="slide-content">
+    <h2>问题的起点</h2>
+    <p class="lead">一条随手发的感悟，背后是三个关键问题。</p>
+    <div class="quote-block">
+      <p>讲课实际上是一门好生意，轻资产、高毛利。而且教育不是一个普通商品，而是一个体验品、信任品。有品牌、社群、信誉以后，还是很好做的，就是需要找准客群，持续高品质运营。</p>
+    </div>
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div class="num">问题一</div>
+        <h4>教育产品的本质是什么？</h4>
+        <p>本体论问题——教育到底是什么类型的商品？</p>
+      </div>
+      <div class="card">
+        <div class="num">问题二</div>
+        <h4>教育生意的商业模式是什么？</h4>
+        <p>商业逻辑问题——轻资产高毛利怎么实现？</p>
+      </div>
+      <div class="card">
+        <div class="num">问题三</div>
+        <h4>"我们"能做吗？</h4>
+        <p>可行性问题——AI小组的方向选择与创业机会</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 核心命题 -->
+<div class="slide" id="slide-2">
+  <div class="slide-content">
+    <h2>核心命题</h2>
+    <p class="lead">教育同时具备体验品和信任品的属性。</p>
+
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <h4 style="color:var(--cyan);">🎭 体验品</h4>
+        <p style="font-size:18px;color:var(--text-muted);margin-bottom:8px;">Nelson (1970)</p>
+        <p>使用后才能判断质量。听一堂课才知道老师讲得好不好，无法在付费前判断。</p>
+        <p style="font-size:18px;color:var(--text-dim);margin-top:8px;">例如：电影、餐厅、课程</p>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--gold);">🔮 信任品</h4>
+        <p style="font-size:18px;color:var(--text-muted);margin-bottom:8px;">Darby & Karni (1973)</p>
+        <p>使用后也无法判断质量。上完课也很难判断"学到了什么真正有价值的东西"。</p>
+        <p style="font-size:18px;color:var(--text-dim);margin-top:8px;">例如：医疗服务、汽车修理、教育</p>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h4>商业含义</h4>
+      <p>价格信号失效 → 广告效果有限 → 品牌即信任 → 复购取决于信任</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 逻辑链条 -->
+<div class="slide" id="slide-3">
+  <div class="slide-content">
+    <h2>逻辑链条展开</h2>
+    <p class="lead">你的感悟拆成三步，逐一检验。</p>
+
+    <div class="section-card" style="border-color:rgba(106,186,122,0.2);">
+      <h4 style="color:var(--green);">第一步 <span class="xs" style="color:var(--text-dim);font-weight:300;">✅ 基本成立</span></h4>
+      <p><strong>教育是体验品/信任品 → 轻资产高毛利可行</strong></p>
+      <p class="dim" style="font-size:19px;">教育的固定成本确实低，头部知识付费毛利率可达80-90%。但高毛利≠高利润——信任品类的获客成本极高。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(232,200,74,0.2);">
+      <h4 style="color:var(--gold);">第二步 <span class="xs" style="color:var(--text-dim);font-weight:300;">⚠️ 过于简化</span></h4>
+      <p><strong>有品牌、社群、信誉后很好做</strong></p>
+      <p class="dim" style="font-size:19px;">品牌有衰减期，社群有生命周期，信誉有脆弱性。三者都不是自然形成的，需要持续投入。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(106,186,122,0.2);">
+      <h4 style="color:var(--green);">第三步 <span class="xs" style="color:var(--text-dim);font-weight:300;">✅ 核心变量</span></h4>
+      <p><strong>找准客群 + 持续高品质运营</strong></p>
+      <p class="dim" style="font-size:19px;">这是教育行业最核心的两个变量。但"找准"和"持续"都是说起来容易做起来难。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 五个被忽略的维度 -->
+<div class="slide" id="slide-4">
+  <div class="slide-content">
+    <h2>五个被忽略的维度</h2>
+    <p class="lead">批判性审视——你的逻辑中缺少了什么？</p>
+
+    <div class="num-list">
+      <li><strong>信任的积累速度</strong> —— 你假设了"有了信任后很好做"，但忽略了从0到1积累信任需要的时间。信任曲线是指数型的，不是线性的。</li>
+      <li><strong>体验品的主观性</strong> —— 同一门课A觉得好B觉得差，不一定是课程的问题，而是匹配度的问题。不是"找准客群"就够了，要理解你的教学风格适合谁。</li>
+      <li><strong>教育的正外部性</strong> —— 社会收益>私人收益，市场自然供应不足。教育行业的价格低于其实际价值，这是"好做但难做大"的深层原因。</li>
+      <li><strong>规模化的信任悖论</strong> —— 信任是规模化的敌人。个人品牌信任高但时间有限，机构品牌规模大但信任建立需要巨大资本投入。</li>
+      <li><strong>生财有术的壁垒不是产品结构</strong> —— 你拆解了它的产品，但产品是结果不是原因。真正的壁垒是亦仁的个人IP、社群氛围的不可复制性、网络效应。</li>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: 对了什么 + 忽略了什么 -->
+<div class="slide" id="slide-5">
+  <div class="slide-content">
+    <h2>对了什么 · 忽略了什么</h2>
+    <p class="lead">修正后的命题。</p>
+
+    <div class="compare-row">
+      <div class="compare-col left">
+        <h4 style="color:var(--green);">✅ 你对了什么</h4>
+        <ul>
+          <li>教育是体验品/信任品——商业分析层面正确</li>
+          <li>轻资产高毛利——在知识付费领域成立</li>
+          <li>品牌、社群、信誉是关键——核心资产</li>
+          <li>找准客群+持续高品质——两个核心变量</li>
+        </ul>
+      </div>
+      <div class="compare-col right">
+        <h4 style="color:var(--red);">❌ 你忽略了什么</h4>
+        <ul>
+          <li>信任的时间成本——从0到1的积累曲线</li>
+          <li>体验品的主观性——教学质量取决于师生匹配度</li>
+          <li>教育的正外部性——市场供应不足的深层原因</li>
+          <li>规模化的信任悖论——信任和规模存在结构性矛盾</li>
+          <li>生财有术的壁垒——产品是结果，不是原因</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h4>修正后的命题</h4>
+      <p>教育是信任驱动型的行业，不是资本驱动型或技术驱动型。轻资产高毛利是可能的，但前提是你已经积累了足够的信任资产，并且产品设计符合你的信任资产规模。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 多学科视角 -->
+<div class="slide" id="slide-6">
+  <div class="slide-content">
+    <h2>多学科视角</h2>
+    <p class="lead">四个学科的透镜，帮你看得更清楚。</p>
+
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <h4 style="color:var(--gold);">经济学 · 信号理论</h4>
+        <p>Spence (1973) — 教育很多时候不是"学知识"，而是"发信号"。如果AI培训能提供可验证的信号（认证/展示），价值远超知识本身。</p>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--cyan);">心理学 · 自我决定理论</h4>
+        <p>好的教育产品不是在"灌输知识"，而是在满足自主性、胜任感、归属感三个需求。AI培训的卖点不是"教你用AI"，而是"让你觉得自己能掌控AI"。</p>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--orange);">社会学 · 社会资本理论</h4>
+        <p>教育消费不仅是知识获取，也是社会身份建构。如果产品能附带"圈子"属性（如"光华AI小组"标签），价值远超纯知识传授。</p>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--green);">网络科学 · 学习者的网络效应</h4>
+        <p>一群人一起学，互动、讨论、激励构成了产品价值的重要组成部分。AI小组的"群体学习密度"是无法被标准化的。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: AI小组行动建议 -->
+<div class="slide" id="slide-7">
+  <div class="slide-content">
+    <h2>AI小组行动建议</h2>
+    <p class="lead">你们不是从零开始，是从"有信任的群体"开始的。</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="period">0 – 6 个月</div>
+        <h4>内部共学 + 外部轻量输出</h4>
+        <p>以小组为单位轮值分享。把学习成果包装成公众号文章、短视频，测试外部反应。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="period">6 – 12 个月</div>
+        <h4>小规模对外培训</h4>
+        <p>基于光华校友圈的存量信任，做1-2期小班培训。目标不是赚钱，是积累教学经验+验证产品市场匹配。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="period">12 – 24 个月</div>
+        <h4>验证方向</h4>
+        <p>成功→做"AI时代终身学习者社群"<br>失败→经验本身就是最值钱的教育产品</p>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      <p>不要过早追求规模。信任的积累速度决定了你的增长上限。在信任不足时规模扩张，等于用沙子盖楼。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 四点提醒 -->
+<div class="slide" id="slide-8">
+  <div class="slide-content">
+    <h2>四点提醒</h2>
+
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="num" style="color:var(--red);">⚠️ 一</div>
+        <h4>不要过早追求规模</h4>
+        <p>信任的积累速度决定了你的增长上限。在信任不足时规模扩张，等于用沙子盖楼。</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color:var(--orange);">⚠️ 二</div>
+        <h4>不要低估持续运营的难度</h4>
+        <p>教育是"最后一公里"生意——最辛苦的不是课程设计，而是每一次的答疑、反馈、调整。</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color:var(--gold);">⚠️ 三</div>
+        <h4>不要忽视教育的时间成本</h4>
+        <p>从"今天有人听课"到"明天有人愿意付费听课"，中间可能隔着1-2年的免费输出期。</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color:var(--cyan);">⚠️ 四</div>
+        <h4>不要忘记匹配度问题</h4>
+        <p>同一门课A觉得好B觉得差，不一定是课程的问题——但你要清楚你的课程适合谁。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 结论 -->
+<div class="slide" id="slide-9">
+  <div class="slide-content">
+    <h2>结论</h2>
+
+    <div class="section-card" style="border-color:rgba(184,160,232,0.2);">
+      <h4 style="color:var(--accent);">洞见一</h4>
+      <p>价格不是唯一的匹配机制，甚至不是最优的匹配机制。当信息不对称、公共品属性、外部性显著时，非价格机制可能比价格更有效。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(232,200,74,0.2);">
+      <h4 style="color:var(--gold);">洞见二</h4>
+      <p>混合匹配比单一匹配更优。医疗、教育、新闻最成功的模式都是混合模式——不是"全市场"或"全计划"，而是多种机制协同。</p>
+    </div>
+    <div class="section-card" style="border-color:rgba(90,200,232,0.2);">
+      <h4 style="color:var(--cyan);">洞见三</h4>
+      <p>AI正在重塑匹配机制的基础设施。推荐算法正在替代价格作为"连接供需"的核心信号。但"免费"不一定比"收费"更公平——隐性价格可能更不透明。</p>
+    </div>
+
+    <div class="insight-box">
+      <h4>最终的回答</h4>
+      <p>教育作为体验品和信任品，这个判断没有问题。但"教育是好生意"不等于"你能做好教育生意"——后者取决于你的信任资产规模和你对教育品类的理解深度。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: End -->
+<div class="slide" id="slide-10">
+  <div class="slide-content" style="text-align:center">
+    <div style="font-size:48px;margin-bottom:12px;">✦</div>
+    <h2 style="text-align:center;font-size:32px;">你不是从零开始</h2>
+    <p style="font-size:24px;color:var(--text-dim);text-align:center;margin-top:8px;line-height:1.8;">
+      AI小组现在做的事情（共学AI）<br>
+      本身就是一种教育产品
+    </p>
+    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:24px auto;"></div>
+    <p style="font-size:18px;color:var(--text-muted);">
+      你们最大的优势：<span style="color:var(--accent);">不是从零开始</span>，而是从"有信任的群体"开始的
+    </p>
+    <p style="font-size:14px;color:var(--text-muted);margin-top:36px;">小勇 · 2026年7月16日</p>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="key-line">← 键盘方向键翻页 →</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">‹</button>
+  <span class="page-indicator" id="pageInd">1 / 11</span>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">›</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function updateSlide() {
+  slides.forEach((s, i) => {
+    s.classList.remove('active');
+    if (i === current) s.classList.add('active');
+  });
+  document.getElementById('pageInd').textContent = (current + 1) + ' / ' + total;
+  document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+}
+
+function nextSlide() { if (current < total - 1) { current++; updateSlide(); } }
+function prevSlide() { if (current > 0) { current--; updateSlide(); } }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+
+updateSlide();
+</script>
+</body>
+</html>
