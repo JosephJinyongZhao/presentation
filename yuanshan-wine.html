@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>远山·如黛 · 欣恒酒庄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f0;
+    --warm-beige: #f0e8da;
+    --deep-wine: #6b2c3a;
+    --soft-wine: #a0525e;
+    --charcoal: #2c2c2c;
+    --warm-gray: #6b6559;
+    --light-gray: #c4bdb0;
+    --gold: #b8944a;
+    --soft-gold: #d4b872;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .serif { font-family: 'Cormorant Garamond', serif; }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    background: linear-gradient(180deg, var(--cream) 0%, var(--warm-beige) 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    left: -20%;
+    width: 70%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(107,44,58,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -15%;
+    width: 60%;
+    height: 70%;
+    background: radial-gradient(ellipse, rgba(185,148,74,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--soft-wine);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--deep-wine);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.4s forwards;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--warm-gray);
+    letter-spacing: 0.08em;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .hero-tagline {
+    font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+    font-weight: 300;
+    color: var(--warm-gray);
+    max-width: 480px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
+
+  .hero-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--soft-wine);
+    margin: 1.5rem auto;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--light-gray);
+    animation: pulse 2.5s infinite;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(20px); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* ── Section ── */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--soft-wine);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 600;
+    color: var(--deep-wine);
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Wine Details ── */
+  .wine-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .wine-visual {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .wine-bottle {
+    width: 100%;
+    aspect-ratio: 1 / 1.4;
+    background: linear-gradient(160deg, var(--deep-wine) 0%, #4a1e2a 50%, #3a1520 100%);
+    border-radius: 40% 40% 20% 20% / 60% 60% 20% 20%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(107,44,58,0.15);
+  }
+
+  .wine-bottle::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+
+  .wine-bottle::after {
+    content: '2020';
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.3em;
+    font-weight: 600;
+  }
+
+  .wine-label-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    color: rgba(255,255,255,0.85);
+    width: 70%;
+  }
+
+  .wine-label-text .name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.3rem;
+  }
+
+  .wine-label-text .type {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+
+  .wine-label-text .line {
+    width: 30px;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+    margin: 0.6rem auto;
+  }
+
+  .wine-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .spec-item {
+    text-align: center;
+    padding: 1.2rem 0.5rem;
+    border: 1px solid rgba(107,44,58,0.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.5);
+  }
+
+  .spec-item .value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--deep-wine);
+  }
+
+  .spec-item .label {
+    font-size: 0.7rem;
+    color: var(--warm-gray);
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  /* ── Tasting Notes ── */
+  .tasting-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .tasting-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .tasting-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(107,44,58,0.08);
+  }
+
+  .tasting-card .emoji {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .tasting-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--deep-wine);
+    margin-bottom: 0.5rem;
+  }
+
+  .tasting-card p {
+    font-size: 0.85rem;
+    color: var(--warm-gray);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── Occasions ── */
+  .occasions {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 3rem;
+    margin-top: 3rem;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .occasions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .occasion-item {
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+
+  .occasion-item .icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .occasion-item h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+  }
+
+  .occasion-item p {
+    font-size: 0.8rem;
+    color: var(--warm-gray);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ── Winery ── */
+  .winery {
+    text-align: center;
+    padding: 5rem 2rem;
+    position: relative;
+  }
+
+  .winery::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--light-gray), transparent);
+  }
+
+  .winery h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    font-weight: 600;
+    color: var(--deep-wine);
+    margin-bottom: 0.5rem;
+  }
+
+  .winery .sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--warm-gray);
+    margin-bottom: 1.5rem;
+  }
+
+  .winery p {
+    font-size: 0.9rem;
+    color: var(--warm-gray);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  /* ── For Her ── */
+  .for-her {
+    text-align: center;
+    padding: 3rem 2rem 5rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .for-her .quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-style: italic;
+    color: var(--deep-wine);
+    line-height: 1.7;
+  }
+
+  .for-her .attribution {
+    font-size: 0.8rem;
+    color: var(--light-gray);
+    margin-top: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--light-gray);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+
+  footer a {
+    color: var(--soft-wine);
+    text-decoration: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .wine-details { grid-template-columns: 1fr; gap: 2rem; }
+    .wine-visual { position: static; }
+    .wine-bottle { max-width: 280px; margin: 0 auto; }
+    .wine-specs { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .tasting-grid { grid-template-columns: 1fr; }
+    .occasions-grid { grid-template-columns: 1fr; }
+    .occasions { padding: 2rem 1.5rem; }
+    section { padding: 4rem 1.5rem; }
+  }
+
+  /* ── Fade In on Scroll ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-label">欣恒酒庄 · 甄选</div>
+  <h1 class="hero-title">远山·如黛</h1>
+  <div class="hero-subtitle">Ruyi Collection</div>
+  <div class="hero-divider"></div>
+  <p class="hero-tagline">
+    清晨的第一缕阳光，远山如黛。<br>
+    不张扬，却有深度。不浓烈，却余韵悠长。
+  </p>
+  <div class="scroll-hint">向下探索</div>
+</section>
+
+<!-- Wine Details -->
+<section>
+  <div class="reveal">
+    <div class="section-label">酒款信息</div>
+    <h2 class="section-title">橡木桶珍藏干红葡萄酒</h2>
+  </div>
+
+  <div class="wine-details">
+    <div class="wine-visual reveal">
+      <div class="wine-bottle">
+        <div class="wine-label-text">
+          <div class="name">远山·如黛</div>
+          <div class="line"></div>
+          <div class="type">橡木桶珍藏干红</div>
+        </div>
+      </div>
+      <div class="wine-specs">
+        <div class="spec-item">
+          <div class="value">60%</div>
+          <div class="label">梅鹿辄</div>
+        </div>
+        <div class="spec-item">
+          <div class="value">40%</div>
+          <div class="label">赤霞珠</div>
+        </div>
+        <div class="spec-item">
+          <div class="value">12个月</div>
+          <div class="label">法国橡木桶陈酿</div>
+        </div>
+        <div class="spec-item">
+          <div class="value">14%</div>
+          <div class="label">酒精度</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="padding-top: 1rem;">
+      <div class="tasting-card" style="background: transparent; text-align: left; padding: 0; box-shadow: none; border: none;">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">品鉴笔记</h3>
+        <p style="font-size: 0.9rem; color: var(--warm-gray); line-height: 2; font-weight: 300;">
+          明亮的宝石红色泽，散发着成熟红色浆果的芬芳——<br>
+          樱桃与覆盆子的清甜交织着雪松与香料的淡淡草本气息。<br><br>
+          入口柔和，单宁细腻如丝，余韵悠长而温暖。<br>
+          这是一款懂得克制的酒——不急于表达，却让人难忘。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tasting Visual -->
+<section>
+  <div class="reveal">
+    <div class="section-label">风味层次</div>
+    <h2 class="section-title">嗅觉与味觉的旅程</h2>
+  </div>
+
+  <div class="tasting-grid">
+    <div class="tasting-card reveal">
+      <span class="emoji">🍒</span>
+      <h3>红色浆果</h3>
+      <p>樱桃与覆盆子的清甜香气，明亮而自然</p>
+    </div>
+    <div class="tasting-card reveal">
+      <span class="emoji">🌲</span>
+      <h3>草本香料</h3>
+      <p>雪松与香料的淡淡气息，增添层次与深度</p>
+    </div>
+    <div class="tasting-card reveal">
+      <span class="emoji">🍷</span>
+      <h3>柔和单宁</h3>
+      <p>单宁细腻如丝，余韵悠长，温暖而克制</p>
+    </div>
+  </div>
+</section>
+
+<!-- Occasions -->
+<section>
+  <div class="reveal">
+    <div class="section-label">适饮时刻</div>
+    <h2 class="section-title">属于你的日常仪式</h2>
+  </div>
+
+  <div class="occasions reveal">
+    <div class="occasions-grid">
+      <div class="occasion-item">
+        <span class="icon">🌙</span>
+        <h4>一个人的夜晚</h4>
+        <p>下班后，一杯酒，一段属于自己的静谧时光</p>
+      </div>
+      <div class="occasion-item">
+        <span class="icon">📖</span>
+        <h4>阅读与音乐</h4>
+        <p>翻开一本好书，放一首喜欢的歌，酒在杯中静静陪伴</p>
+      </div>
+      <div class="occasion-item">
+        <span class="icon">👭</span>
+        <h4>闺蜜小聚</h4>
+        <p>周末三五好友，开一瓶好酒，聊聊最近的心事与欢喜</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- For Her -->
+<div class="for-her reveal">
+  <p class="quote">
+    "不一定要很懂酒，<br>
+    但值得拥有一瓶懂你的酒。"
+  </p>
+  <p class="attribution">— 致每一个懂得生活的你</p>
+</div>
+
+<!-- Winery -->
+<div class="winery reveal">
+  <h2>欣恒酒庄</h2>
+  <p class="sub">Xinheng Vineyard</p>
+  <p>
+    源自北纬38°黄金酿酒带，宁夏贺兰山东麓。<br>
+    坚持传统工艺与风土表达，每一瓶，都是对自然的敬意。
+  </p>
+</div>
+
+<!-- Footer -->
+<footer>
+  欣恒酒庄 · 宁夏贺兰山东麓 · 北纬38°黄金酿酒带
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
