@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商人经济学与君主经济学 · SUM(微观) ≠ 宏观</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg-card: #12121e;
+    --border: #1e1e32;
+    --text: #e0e0ee;
+    --text-dim: #6a6a88;
+    --accent: #6c8cff;
+    --accent-glow: rgba(108,140,255,0.15);
+    --gold: #d4a84b;
+    --wine: #a0525e;
+    --green: #4bc0a0;
+    --orange: #e8a040;
+    --red: #e06060;
+    --purple: #8b6cf0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Slide Container ── */
+  .slides {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100vh;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5vh 6vw;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── Slide Background Textures ── */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(108,140,255,0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(212,168,75,0.02) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    z-index: 100;
+    background: rgba(10,10,18,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    border: 1px solid var(--border);
+  }
+
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    transition: color 0.2s;
+  }
+
+  .nav button:hover { color: var(--text); }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+
+  .nav .dots {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0 0.5rem;
+  }
+
+  .nav .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .nav .dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  .nav .page-num {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin: 0 0.3rem;
+  }
+
+  /* ── Typography ── */
+  .slide-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+  }
+
+  .slide-title {
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .slide-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .slide-body {
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text);
+    max-width: 900px;
+  }
+
+  .slide-body .highlight {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .slide-body .gold {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .slide-body .wine {
+    color: var(--wine);
+    font-weight: 500;
+  }
+
+  .slide-body .green {
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .slide-body em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  /* ── Quote ── */
+  .quote-block {
+    border-left: 3px solid var(--gold);
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    background: rgba(212,168,75,0.04);
+    border-radius: 0 12px 12px 0;
+    max-width: 850px;
+  }
+
+  .quote-block p {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .quote-block .attr {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Cards Grid ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+    max-width: 1000px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .card:hover {
+    border-color: rgba(108,140,255,0.3);
+    transform: translateY(-2px);
+  }
+
+  .card .num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  .card p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding: 1rem 0;
+    max-width: 1000px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--gold), var(--wine));
+    opacity: 0.3;
+  }
+
+  .tl-item {
+    padding-left: 2rem;
+    padding-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0.4rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+
+  .tl-item .period {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+
+  .tl-item .title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+
+  .tl-item .desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ── Two Column ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1000px;
+    margin-top: 1.5rem;
+  }
+
+  .col-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem;
+  }
+
+  .col-box h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .col-box ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .col-box li {
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-weight: 300;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .col-box li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .col-box.accent-left { border-left: 3px solid var(--accent); }
+  .col-box.gold-left { border-left: 3px solid var(--gold); }
+  .col-box.wine-left { border-left: 3px solid var(--wine); }
+  .col-box.green-left { border-left: 3px solid var(--green); }
+  .col-box.purple-left { border-left: 3px solid var(--purple); }
+  .col-box.orange-left { border-left: 3px solid var(--orange); }
+
+  /* ── Formula ── */
+  .formula {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 600;
+    color: var(--accent);
+    text-align: center;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    max-width: 700px;
+  }
+
+  .formula .neq {
+    color: var(--wine);
+    padding: 0 0.5rem;
+  }
+
+  /* ── List with icons ── */
+  .icon-list {
+    list-style: none;
+    padding: 0;
+    max-width: 800px;
+  }
+
+  .icon-list li {
+    padding: 0.6rem 0;
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    font-weight: 300;
+    line-height: 1.6;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .icon-list .marker {
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── Three Column (for propositions) ── */
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    max-width: 1100px;
+    margin-top: 1.5rem;
+  }
+
+  .prop-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .prop-card .prop-num {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .prop-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+  }
+
+  .prop-card p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── Open Questions ── */
+  .q-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    max-width: 900px;
+  }
+
+  .q-card .q-num {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+  }
+
+  .q-card p {
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── Title Slide ── */
+  .title-slide {
+    text-align: center;
+    align-items: center;
+  }
+
+  .title-slide .big-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .title-slide .sub {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-weight: 300;
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+  }
+
+  .title-slide .formula-block {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    color: var(--wine);
+    margin-bottom: 1.5rem;
+  }
+
+  .title-slide .meta {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+  }
+
+  .title-slide .scroll-hint {
+    position: absolute;
+    bottom: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    animation: pulse 2.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: 1fr; }
+    .nav { gap: 0.4rem; padding: 0.4rem 0.8rem; }
+    .nav .dot { width: 5px; height: 5px; }
+    .nav .dot.active { width: 14px; }
+  }
+
+  /* ── Keyboard hint ── */
+  .key-hint {
+    position: fixed;
+    bottom: 9vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: rgba(106,106,136,0.4);
+    letter-spacing: 0.15em;
+    z-index: 99;
+    pointer-events: none;
+  }
+
+  /* ── Comparison Table ── */
+  .compare-table {
+    width: 100%;
+    max-width: 1000px;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+  }
+
+  .compare-table th {
+    text-align: left;
+    padding: 0.8rem 1rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(30,30,50,0.5);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .compare-table .label-col {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .compare-table .left-col {
+    border-right: 1px solid rgba(30,30,50,0.5);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin: 1.2rem 0;
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ── Slide 1: Title ── -->
+  <div class="slide title-slide">
+    <div class="big-title">商人经济学<br>与君主经济学</div>
+    <div class="formula-block">SUM(微观) ≠ 宏观</div>
+    <div class="sub">从《国富论》到中国特色经济学的理论张力</div>
+    <div class="divider" style="margin: 1rem auto;"></div>
+    <div class="meta">基于亚当·斯密、胡凯家聚会讨论与多学科视角</div>
+    <div class="scroll-hint">→ 翻页探索</div>
+  </div>
+
+  <!-- ── Slide 2: The Quote ── -->
+  <div class="slide">
+    <div class="slide-label">核心引文</div>
+    <div class="slide-title">斯密的洞见</div>
+    <div class="quote-block">
+      <p>人们常说，<span class="gold">商人性格</span>可以说和<span class="wine">君主性格</span>是极为不相容的。</p>
+      <p>例如，当东印度公司的<span class="wine">商人精神</span>使它成为了<span class="wine">最坏的君主</span>时，<br>它的<span class="gold">君主精神</span>又会使它成为<span class="gold">最坏的商人</span>。</p>
+      <div class="attr">—— 亚当·斯密《国富论》第四卷第七章（1776）</div>
+    </div>
+    <div class="slide-body" style="margin-top: 1.5rem;">
+      <p>斯密在两百多年前就意识到：<span class="highlight">同一套逻辑不能同时适用于私人领域和公共领域。</span></p>
+      <p style="margin-top: 0.5rem; color: var(--text-dim);">东印度公司既是商人又是君主——双重身份导致了双重失败。</p>
+    </div>
+  </div>
+
+  <!-- ── Slide 3: Core Proposition ── -->
+  <div class="slide">
+    <div class="slide-label">核心命题</div>
+    <div class="slide-title">个体最优 ≠ 整体最优</div>
+    <div class="formula">
+      Σ fᵢ(xᵢ*) <span class="neq">≠</span> F(X*)
+    </div>
+    <div class="slide-body" style="max-width: 800px;">
+      <p>微观个体最优决策的总和，<span class="wine">并不等于</span>宏观经济整体最优。</p>
+      <p style="color: var(--text-dim); margin-top: 0.5rem;">这是"商人经济学"与"君主经济学"之间不可通约性的数学表达。</p>
+    </div>
+    <div class="card-grid" style="margin-top: 1.5rem;">
+      <div class="card">
+        <div class="num">01</div>
+        <h4>外部性不可内部化</h4>
+        <p>个体决策的成本收益无法完全反映对社会整体的影响——污染、金融风险、公共品供给</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h4>时间跨度不匹配</h4>
+        <p>个体贴现率远高于国家贴现率——个体的"现在" vs 国家的"代际"</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h4>协调失灵</h4>
+        <p>个体理性选择的总和可能导致集体非理性——合成谬误、囚徒困境</p>
+      </div>
+      <div class="card">
+        <div class="num">04</div>
+        <h4>分配正义缺失</h4>
+        <p>市场效率不保证分配公平，而分配公平是国家合法性的基础</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Slide 4: Western Timeline ── -->
+  <div class="slide">
+    <div class="slide-label">历史溯源 · 西方</div>
+    <div class="slide-title">商人经济学的胜利</div>
+    <div class="two-col" style="max-width: 1100px;">
+      <div class="timeline" style="max-width: none;">
+        <div class="tl-item">
+          <div class="period">16-18世纪 · 重商主义</div>
+          <div class="title">君主经济学</div>
+          <div class="desc">国家干预、贸易顺差、金银积累 · 柯尔贝尔</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">18-19世纪 · 古典自由主义</div>
+          <div class="title">商人经济学崛起</div>
+          <div class="desc">自由市场、有限政府、个体理性 · 斯密、李嘉图</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">20世纪中叶 · 凯恩斯主义</div>
+          <div class="title">混合范式</div>
+          <div class="desc">国家宏观调控、需求管理 · 凯恩斯</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">1980s-2008 · 新自由主义</div>
+          <div class="title">商人经济学扩张</div>
+          <div class="desc">市场化、私有化、放松管制 · 弗里德曼、哈耶克</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">2008- · 后金融危机</div>
+          <div class="title" style="color: var(--wine);">范式危机</div>
+          <div class="desc">量化宽松、产业政策回归 · 没有共识</div>
+        </div>
+      </div>
+      <div class="col-box purple-left" style="align-self: center;">
+        <h4 style="color: var(--purple);">关键转折点</h4>
+        <p style="font-size: 0.9rem; line-height: 1.7; color: var(--text-dim); font-weight: 300;">
+          2008年金融危机暴露了新自由主义的根本缺陷——<br><br>
+          <span class="highlight">利润私有化，风险社会化</span><br><br>
+          当金融市场完全由"商人逻辑"主导时，系统风险被忽略，最终需要国家（"君主"）出手救市。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Slide 5: China Timeline ── -->
+  <div class="slide">
+    <div class="slide-label">历史溯源 · 中国</div>
+    <div class="slide-title">君主经济学的延续与变形</div>
+    <div class="two-col" style="max-width: 1100px;">
+      <div class="timeline" style="max-width: none;">
+        <div class="tl-item">
+          <div class="period">先秦 · 管仲-商鞅</div>
+          <div class="title">君主经济学奠基</div>
+          <div class="desc">轻重论、农战政策 · 管仲《轻重》、商鞅《商君书》</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">汉唐 · 盐铁论</div>
+          <div class="title">国家垄断制度</div>
+          <div class="desc">盐铁官营 · 桑弘羊 vs 贤良文学</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">宋元明清</div>
+          <div class="title">混合实践</div>
+          <div class="desc">官营+民营、漕运、盐引 · 王安石变法</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">1949-1978</div>
+          <div class="title">极端君主经济学</div>
+          <div class="desc">全面计划、消灭市场 · 苏联模式</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">1978-2012</div>
+          <div class="title">混合探索</div>
+          <div class="desc">市场经济+国家主导 · 邓小平、陈云</div>
+        </div>
+        <div class="tl-item">
+          <div class="period">2012-</div>
+          <div class="title" style="color: var(--gold);">新混合范式</div>
+          <div class="desc">国家资本+市场+战略产业 · "中国特色"</div>
+        </div>
+      </div>
+      <div class="col-box gold-left" style="align-self: center;">
+        <h4 style="color: var(--gold);">公元前81年 · 盐铁会议</h4>
+        <p style="font-size: 0.9rem; line-height: 1.7; color: var(--text-dim); font-weight: 300;">
+          中国历史上第一次"政府 vs 市场"大辩论。<br><br>
+          桑弘羊（国家垄断派）vs 贤良文学（自由经营派）。<br><br>
+          <span class="gold">结果：国家垄断胜出，延续两千年。</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Slide 6: Divergence ── -->
+  <div class="slide">
+    <div class="slide-label">东西方分岔</div>
+    <div class="slide-title">为什么走向了不同的道路？</div>
+    <div class="two-col" style="max-width: 1000px;">
+      <div class="col-box accent-left">
+        <h4 style="color: var(--accent);">🏛 地理-制度解释</h4>
+        <ul>
+          <li><span class="highlight">中国</span>：大一统帝国需要漕运、水利、边防等大型公共品供给，<span class="gold">国家必须主导经济</span></li>
+          <li style="margin-top: 0.8rem;"><span class="highlight">欧洲</span>：封建割据+城邦竞争，商人阶层获得独立政治空间，通过资产阶级革命确立<span class="gold">商人逻辑</span></li>
+        </ul>
+      </div>
+      <div class="col-box gold-left">
+        <h4 style="color: var(--gold);">📖 文化-认知解释</h4>
+        <ul>
+          <li><span class="highlight">中国</span>：儒家"义利之辨"——"君子喻于义，小人喻于利"，<span class="wine">经济被置于道德规范之下</span></li>
+          <li style="margin-top: 0.8rem;"><span class="highlight">西方</span>：新教伦理——"财富是上帝的恩赐"，<span class="green">逐利被赋予宗教合法性</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-body" style="margin-top: 1.5rem; max-width: 800px;">
+      <p style="color: var(--text-dim); font-size: 0.9rem;">制度竞争的本质不是"商人经济学 vs 君主经济学"的胜负，而是<span class="highlight">能否在特定条件下实现两者的有效结合</span>。</p>
+    </div>
+  </div>
+
+  <!-- ── Slide 7: Market Failure vs Government Failure ── -->
+  <div class="slide">
+    <div class="slide-label">经济学视角</div>
+    <div class="slide-title">双重困境</div>
+    <div class="two-col" style="max-width: 1000px;">
+      <div class="col-box wine-left">
+        <h4 style="color: var(--wine);">⚠ 市场失灵</h4>
+        <h5 style="color: var(--text-dim); font-weight: 400; font-size: 0.8rem; margin-bottom: 0.8rem;">商人经济学的边界</h5>
+        <ul>
+          <li>公共品（国防、基础研究、制度基础设施）</li>
+          <li>外部性（污染、金融系统风险）</li>
+          <li>自然垄断（电网、铁路、通信）</li>
+          <li>信息不对称（医疗、教育、保险）</li>
+          <li>分配不公</li>
+        </ul>
+      </div>
+      <div class="col-box orange-left">
+        <h4 style="color: var(--orange);">⚠ 政府失灵</h4>
+        <h5 style="color: var(--text-dim); font-weight: 400; font-size: 0.8rem; margin-bottom: 0.8rem;">君主经济学的边界</h5>
+        <ul>
+          <li>信息问题（哈耶克"知识分散"）</li>
+          <li>激励问题（官僚目标≠社会最优）</li>
+          <li>寻租问题（权力寻租、利益集团俘获）</li>
+          <li>动态问题（政府决策滞后于市场变化）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-body" style="margin-top: 1.2rem; max-width: 700px;">
+      <p style="color: var(--text-dim); font-size: 0.9rem;">问题不在于"市场还是政府"，而在于<span class="highlight">在什么领域、什么条件下、什么程度上使用哪种机制</span>。</p>
+    </div>
+  </div>
+
+  <!-- ── Slide 8: Political Science ── -->
+  <div class="slide">
+    <div class="slide-label">政治学视角</div>
+    <div class="slide-title">国家能力与市场活力的平衡</div>
+    <div class="three-col" style="max-width: 1000px;">
+      <div class="prop-card">
+        <div class="prop-num" style="background: var(--accent);">汲取能力</div>
+        <h4>税收 · 资源动员</h4>
+        <p>国家动员社会资源的能力，是一切治理的基础</p>
+      </div>
+      <div class="prop-card">
+        <div class="prop-num" style="background: var(--gold);">规制能力</div>
+        <h4>法律 · 监管 · 标准</h4>
+        <p>制定和执行规则、维护市场秩序的能力</p>
+      </div>
+      <div class="prop-card">
+        <div class="prop-num" style="background: var(--green);">分配能力</div>
+        <h4>社会保障 · 转移支付</h4>
+        <p>调节收入分配、提供公共福利的能力</p>
+      </div>
+    </div>
+    <div class="slide-body" style="margin-top: 1.5rem; max-width: 800px;">
+      <p><span class="highlight">中国模式的特征</span>：国家能力强大（尤其是汲取和规制），但市场活力被激发的领域（如数字经济、制造业）表现出惊人的竞争力。</p>
+      <p style="color: var(--text-dim); margin-top: 0.5rem;"><span class="wine">矛盾</span>：国家能力与市场活力之间存在张力。过度强化国家能力会抑制市场活力，完全放开市场又会削弱国家能力。</p>
+    </div>
+  </div>
+
+  <!-- ── Slide 9: Three Propositions ── -->
+  <div class="slide">
+    <div class="slide-label">中国特色经济学</div>
+    <div class="slide-title">三个尝试性命题</div>
+    <div class="three-col" style="max-width: 1100px;">
+      <div class="prop-card" style="text-align: left;">
+        <div class="prop-num">命题一</div>
+        <h4>双层最优<br>分层耦合</h4>
+        <p>上层：国家设定战略方向和安全底线<br>下层：市场机制配置资源、激发创新<br><span style="color: var(--accent);">耦合点</span>：产业政策、国企、金融工具引导市场</p>
+      </div>
+      <div class="prop-card" style="text-align: left;">
+        <div class="prop-num" style="background: var(--gold);">命题二</div>
+        <h4>不对称混合<br>关键领域非市场化</h4>
+        <p><span style="color: var(--wine);">战略领域</span>：能源、金融、通信、国防——国家资本主导<br><span style="color: var(--green);">竞争领域</span>：制造业、服务业——市场机制主导</p>
+      </div>
+      <div class="prop-card" style="text-align: left;">
+        <div class="prop-num" style="background: var(--green);">命题三</div>
+        <h4>时间贴现率差异<br>国家耐心 vs 市场急迫</h4>
+        <p><span style="color: var(--accent);">国家</span>：长期贴现率低——30年、50年规划<br><span style="color: var(--wine);">市场</span>：短期贴现率高——季度、年度回报<br><span style="color: var(--gold);">解法</span>：国家资本作为"耐心资本"</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Slide 10: China's Implicit Theory ── -->
+  <div class="slide">
+    <div class="slide-label">中国实践</div>
+    <div class="slide-title">"隐性理论"的四根支柱</div>
+    <div class="card-grid" style="max-width: 1000px;">
+      <div class="card">
+        <div class="num" style="color: var(--accent);">01</div>
+        <h4>有为政府 + 有效市场</h4>
+        <p>2008年后中国产业政策的系统化——战略产业扶持、新基建、双碳目标</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color: var(--gold);">02</div>
+        <h4>集中力量办大事</h4>
+        <p>举国体制在科技攻关中的应用——芯片、航天、高铁</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color: var(--green);">03</div>
+        <h4>底线思维</h4>
+        <p>风险防控、系统性风险监管——金融去杠杆、房地产调控</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color: var(--wine);">04</div>
+        <h4>双循环</h4>
+        <p>国内大循环为主体，国内国际双循环相互促进</p>
+      </div>
+    </div>
+    <div class="slide-body" style="margin-top: 1rem; max-width: 700px;">
+      <p style="color: var(--text-dim); font-size: 0.85rem;">这些实践已经形成了一套"隐性理论"，但尚未被充分系统化——<span class="highlight">这是"中国特色经济学"的孕育土壤</span>。</p>
+    </div>
+  </div>
+
+  <!-- ── Slide 11: Critical Review ── -->
+  <div class="slide">
+    <div class="slide-label">批判性审视</div>
+    <div class="slide-title">理论边界与潜在风险</div>
+    <div class="two-col" style="max-width: 1000px;">
+      <div class="col-box wine-left">
+        <h4 style="color: var(--wine);">理论层面</h4>
+        <ul>
+          <li><span class="highlight">独立体系？</span> → 目前更接近"实践经验归纳"，尚未形成可对话的抽象理论框架</li>
+          <li style="margin-top: 0.5rem;"><span class="highlight">内在矛盾？</span> → 国家目标和市场机制有时冲突（如"房住不炒"vs 房地产惯性）</li>
+          <li style="margin-top: 0.5rem;"><span class="highlight">边界由谁定？</span> → 缺乏制度化的边界划定机制，容易导致权力滥用</li>
+        </ul>
+      </div>
+      <div class="col-box orange-left">
+        <h4 style="color: var(--orange);">实践层面</h4>
+        <ul>
+          <li><span class="highlight">国企效率</span> → 国家资本主导的领域往往效率低于市场</li>
+          <li style="margin-top: 0.5rem;"><span class="highlight">寻租腐败</span> → 国家干预为权力寻租创造空间</li>
+          <li style="margin-top: 0.5rem;"><span class="highlight">创新激励</span> → 国家主导 vs 市场驱动，基础研究短板</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-body" style="margin-top: 1.2rem; max-width: 800px;">
+      <p style="color: var(--text-dim); font-size: 0.85rem;">历史视角：商人经济学的胜利是偶然还是必然？君主经济学的延续是路径依赖还是理性选择？<br><span class="highlight">是否存在超越"商人vs君主"二元对立的第三条道路？</span></p>
+    </div>
+  </div>
+
+  <!-- ── Slide 12: Open Questions ── -->
+  <div class="slide">
+    <div class="slide-label">开放问题</div>
+    <div class="slide-title">未尽之问</div>
+    <div style="max-width: 1000px; margin-top: 0.5rem;">
+      <div class="q-card">
+        <div class="q-num">Q1 · AI时代</div>
+        <p>如果AI极大地降低了信息不对称和协调成本，"君主经济学"的信息壁垒是否会被打破？国家能否更精准地干预经济？</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num" style="color: var(--gold);">Q2 · 全球化重构</div>
+        <p>当全球供应链被"国家安全"逻辑重塑，"商人经济学"的全球分工体系是否面临根本性挑战？</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num" style="color: var(--green);">Q3 · 中国经验可推广性</div>
+        <p>发展中国家是否可以借鉴"中国模式"？还是"中国模式"过于特殊，不可复制？</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num" style="color: var(--wine);">Q4 · 未来演化</div>
+        <p>在高质量发展、共同富裕、碳中和等新目标下，"中国特色经济学"是否会发展出更系统的理论体系？</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Slide 13: End ── -->
+  <div class="slide title-slide">
+    <div class="big-title" style="font-size: clamp(2rem, 4vw, 3.5rem);">感谢阅读</div>
+    <div class="sub" style="margin-top: 1rem;">基于亚当·斯密《国富论》与胡凯家聚会讨论</div>
+    <div class="divider" style="margin: 1.5rem auto;"></div>
+    <div class="meta" style="margin-bottom: 0.5rem;">浙江大学 赵锦勇 · 2026年7月</div>
+    <div class="meta" style="font-size: 0.7rem;">研究思考 · 阶段性记录</div>
+  </div>
+
+</div>
+
+<!-- ── Navigation ── -->
+<div class="nav" id="nav">
+  <button id="prevBtn" disabled>‹</button>
+  <span class="page-num" id="pageNum">1 / 13</span>
+  <div class="dots" id="dots"></div>
+  <button id="nextBtn">›</button>
+</div>
+
+<div class="key-hint">← 或 → 键翻页</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const pageNum = document.getElementById('pageNum');
+  const dotsContainer = document.getElementById('dots');
+
+  // Create dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= total) index = total - 1;
+    current = index;
+    document.getElementById('slides').style.transform = `translateX(-${current * 100}vw)`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    pageNum.textContent = `${current + 1} / ${total}`;
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  });
+</script>
+
+</body>
+</html>
