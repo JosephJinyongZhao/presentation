@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国企业出海的真实卡点</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg2: #0f1523;
+    --bg3: #141c2d;
+    --text: #e2e8f0;
+    --text-dim: #8892a4;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #06d6a0;
+    --accent4: #ff6b6b;
+    --gold: #f0c040;
+    --orange: #ff8c42;
+    --glow: rgba(0,212,255,0.15);
+    --card-bg: rgba(15,21,35,0.85);
+    --border: rgba(0,212,255,0.12);
+    --earth: #4fc3a0;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(79,195,160,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(124,58,237,0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide-container { position:relative; z-index:1; height:100vh; width:100vw; display:flex; align-items:center; justify-content:center; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 5vh 8vw;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    transform: translateY(30px) scale(0.98);
+    overflow: hidden;
+  }
+  .slide.active { opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+
+  .slide-inner {
+    max-width: 1100px; width: 100%; max-height: 85vh; overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+  }
+  .slide-inner::-webkit-scrollbar { width:4px; }
+  .slide-inner::-webkit-scrollbar-track { background:transparent; }
+  .slide-inner::-webkit-scrollbar-thumb { background:var(--accent); border-radius:2px; }
+
+  .slide-number { position:fixed; bottom:28px; right:40px; font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text-dim); z-index:10; letter-spacing:2px; }
+  .slide-number span { color:var(--accent); }
+
+  .progress-bar { position:fixed; bottom:0; left:0; height:3px; background:linear-gradient(90deg,var(--earth),var(--accent)); z-index:10; transition:width 0.5s ease; }
+
+  .nav-arrow {
+    position:fixed; top:50%; transform:translateY(-50%); z-index:10;
+    background:rgba(0,212,255,0.08); border:1px solid var(--border); color:var(--accent);
+    width:48px; height:48px; border-radius:50%; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:22px;
+    transition:all 0.3s ease; backdrop-filter:blur(8px);
+    opacity:0; pointer-events:none;
+  }
+  .nav-arrow.visible { opacity:1; pointer-events:auto; }
+  .nav-arrow:hover { background:rgba(0,212,255,0.2); border-color:var(--accent); transform:translateY(-50%) scale(1.1); }
+  .nav-arrow.prev { left:20px; }
+  .nav-arrow.next { right:20px; }
+
+  .dot-nav { position:fixed; right:24px; top:50%; transform:translateY(-50%); z-index:10; display:flex; flex-direction:column; gap:10px; }
+  .dot { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; cursor:pointer; transition:all 0.3s ease; }
+  .dot:hover { background:rgba(0,212,255,0.4); }
+  .dot.active { background:var(--accent); box-shadow:0 0 12px var(--glow); width:12px; height:12px; }
+
+  /* Typography */
+  h1 { font-family:'Noto Serif SC',serif; font-size:clamp(2.4rem,5vw,4.2rem); font-weight:900; line-height:1.25; letter-spacing:0.02em; margin-bottom:0.4em; background:linear-gradient(135deg,#fff 30%,var(--accent) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  h2 { font-family:'Noto Serif SC',serif; font-size:clamp(1.8rem,3.5vw,3rem); font-weight:700; line-height:1.3; margin-bottom:0.5em; color:#fff; }
+  h2 .accent { color:var(--accent); -webkit-text-fill-color:var(--accent); }
+  h2 .gold { color:var(--gold); -webkit-text-fill-color:var(--gold); }
+  h2 .earth { color:var(--earth); -webkit-text-fill-color:var(--earth); }
+  h3 { font-family:'Noto Sans SC',sans-serif; font-size:clamp(1.2rem,2vw,1.6rem); font-weight:600; margin-bottom:0.4em; color:#fff; }
+  p, li { font-size:clamp(1rem,1.6vw,1.25rem); line-height:1.75; color:var(--text); margin-bottom:0.6em; }
+  .subtitle { font-size:clamp(1.1rem,1.8vw,1.5rem); color:var(--text-dim); font-weight:300; line-height:1.6; margin-bottom:1.5em; }
+  .meta { font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--text-dim); letter-spacing:1px; }
+
+  /* Callout */
+  .callout { background:var(--card-bg); border-left:3px solid var(--accent); border-radius:8px; padding:1.2em 1.6em; margin:1em 0; position:relative; }
+  .callout .emoji { font-size:1.3em; margin-right:0.4em; }
+  .callout.warn { border-left-color:var(--gold); }
+  .callout.danger { border-left-color:var(--accent4); }
+  .callout.info { border-left-color:var(--accent); }
+  .callout.success { border-left-color:var(--accent3); }
+  .callout.purple { border-left-color:var(--accent2); }
+  .callout.earth { border-left-color:var(--earth); }
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5em; margin:1.2em 0; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.2em; margin:1.2em 0; }
+  .grid-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1em; margin:1.2em 0; }
+
+  .grid-card { background:var(--card-bg); border:1px solid var(--border); border-radius:10px; padding:1.4em; transition:all 0.3s ease; }
+  .grid-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 32px var(--glow); }
+  .grid-card .label { font-size:0.85rem; font-weight:500; color:var(--accent); text-transform:uppercase; letter-spacing:2px; margin-bottom:0.5em; }
+  .grid-card .value { font-size:1.15rem; font-weight:500; color:#fff; line-height:1.5; }
+  .grid-card .value-sm { font-size:0.95rem; color:var(--text); line-height:1.5; }
+
+  .table-wrap { overflow-x:auto; margin:1.2em 0; }
+  table { width:100%; border-collapse:collapse; font-size:clamp(0.8rem,1.2vw,0.95rem); }
+  th { background:rgba(0,212,255,0.1); color:var(--accent); font-weight:600; padding:0.7em 1em; text-align:left; border-bottom:2px solid var(--accent); letter-spacing:0.5px; }
+  td { padding:0.6em 1em; border-bottom:1px solid rgba(255,255,255,0.06); color:var(--text); }
+  tr:hover td { background:rgba(0,212,255,0.03); }
+
+  .tag { display:inline-block; background:rgba(0,212,255,0.12); color:var(--accent); padding:0.2em 0.8em; border-radius:4px; font-size:0.8rem; font-weight:500; margin:0.2em; }
+  .tag.gold { background:rgba(240,192,64,0.15); color:var(--gold); }
+  .tag.red { background:rgba(255,107,107,0.15); color:var(--accent4); }
+  .tag.green { background:rgba(6,214,160,0.15); color:var(--accent3); }
+  .tag.earth { background:rgba(79,195,160,0.15); color:var(--earth); }
+
+  .cover { text-align:center; }
+  .cover h1 { font-size:clamp(2.8rem,5.5vw,4.8rem); margin-bottom:0.3em; }
+  .cover .tagline { font-size:clamp(1rem,1.6vw,1.3rem); color:var(--text-dim); letter-spacing:4px; margin-bottom:2em; }
+  .cover .divider { width:80px; height:2px; background:linear-gradient(90deg,transparent,var(--earth),transparent); margin:0 auto 1.5em; }
+  .cover .start-hint { position:absolute; bottom:80px; left:50%; transform:translateX(-50%); color:var(--text-dim); font-size:0.85rem; animation:pulse 2s ease-in-out infinite; letter-spacing:2px; }
+  @keyframes pulse { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+
+  .glow-line { width:60px; height:2px; background:linear-gradient(90deg,var(--earth),transparent); margin:0.5em 0 1em; }
+  .glow-line.center { margin:0.5em auto 1em; background:linear-gradient(90deg,transparent,var(--earth),transparent); }
+
+  .highlight-box { background:linear-gradient(135deg,rgba(79,195,160,0.08),rgba(0,212,255,0.08)); border:1px solid rgba(79,195,160,0.2); border-radius:12px; padding:1.8em; margin:1.5em 0; text-align:center; }
+  .highlight-box .big { font-size:clamp(1.8rem,3vw,2.8rem); font-weight:700; line-height:1.3; margin-bottom:0.3em; }
+  .highlight-box .big .accent { color:var(--accent); }
+  .highlight-box .big .gold { color:var(--gold); }
+  .highlight-box .big .earth { color:var(--earth); }
+  .highlight-box .big .red { color:var(--accent4); }
+  .highlight-box .sub { font-size:1rem; color:var(--text-dim); }
+
+  .timeline { position:relative; padding:1em 0; margin:1.5em 0; }
+  .timeline::before { content:''; position:absolute; left:20px; top:0; bottom:0; width:2px; background:linear-gradient(180deg,var(--earth),var(--accent),var(--accent3)); }
+  .tl-item { position:relative; padding-left:50px; margin-bottom:1.5em; }
+  .tl-item::before { content:''; position:absolute; left:14px; top:6px; width:14px; height:14px; border-radius:50%; background:var(--earth); border:2px solid var(--bg); box-shadow:0 0 12px rgba(79,195,160,0.2); }
+  .tl-item .tl-year { font-family:'JetBrains Mono',monospace; font-size:0.9rem; color:var(--earth); font-weight:600; }
+  .tl-item .tl-title { font-size:1.1rem; color:#fff; font-weight:600; margin:0.2em 0; }
+  .tl-item .tl-desc { font-size:0.95rem; color:var(--text-dim); }
+
+  .evo-step { display:flex; align-items:flex-start; gap:1em; margin:0.8em 0; padding:1em; background:var(--card-bg); border-radius:8px; border:1px solid var(--border); }
+  .evo-step .num { flex-shrink:0; width:36px; height:36px; border-radius:50%; background:rgba(79,195,160,0.15); color:var(--earth); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.9rem; }
+  .evo-step .content { flex:1; }
+  .evo-step .content .head { font-weight:600; color:#fff; margin-bottom:0.2em; }
+  .evo-step .content .desc { font-size:0.95rem; color:var(--text-dim); }
+
+  ul, ol { padding-left:1.2em; margin-bottom:0.8em; }
+  li { margin-bottom:0.3em; }
+
+  .big-list { counter-reset:item; list-style:none; padding:0; }
+  .big-list li { counter-increment:item; padding:0.6em 0 0.6em 2.8em; position:relative; font-size:clamp(1rem,1.5vw,1.2rem); }
+  .big-list li::before { content:counter(item); position:absolute; left:0; top:0.5em; width:32px; height:32px; border-radius:50%; background:rgba(79,195,160,0.12); color:var(--earth); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:700; }
+
+  .slide.active .slide-inner > * { animation:fadeUp 0.6s ease forwards; opacity:0; }
+  .slide.active .slide-inner > *:nth-child(1) { animation-delay:0.05s; }
+  .slide.active .slide-inner > *:nth-child(2) { animation-delay:0.1s; }
+  .slide.active .slide-inner > *:nth-child(3) { animation-delay:0.15s; }
+  .slide.active .slide-inner > *:nth-child(4) { animation-delay:0.2s; }
+  .slide.active .slide-inner > *:nth-child(5) { animation-delay:0.25s; }
+  .slide.active .slide-inner > *:nth-child(6) { animation-delay:0.3s; }
+  .slide.active .slide-inner > *:nth-child(7) { animation-delay:0.35s; }
+  .slide.active .slide-inner > *:nth-child(8) { animation-delay:0.4s; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  @media (max-width:768px) {
+    .slide { padding:4vh 5vw; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+    .dot-nav { display:none; }
+    .nav-arrow { width:36px; height:36px; font-size:16px; }
+    .nav-arrow.prev { left:8px; }
+    .nav-arrow.next { right:8px; }
+    .slide-number { right:16px; bottom:16px; font-size:12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-number" id="slideNum"><span id="currentSlide">1</span> / <span id="totalSlides">0</span></div>
+<button class="nav-arrow prev" id="prevBtn">‹</button>
+<button class="nav-arrow next" id="nextBtn">›</button>
+<div class="dot-nav" id="dotNav"></div>
+
+<div class="slide-container" id="slideContainer">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner cover">
+    <div class="divider"></div>
+    <h1>中国企业出海的真实卡点</h1>
+    <p class="tagline">从敬业集团×英钢案例到系统性困境分析</p>
+    <div class="divider"></div>
+    <p class="subtitle" style="max-width:700px;margin:0 auto;">
+      一次看似漂亮的"抄底"收购，为何以巨额亏损收场？<br>
+      政治风险、制度差异、文化冲突、合规困境——中国企业出海到底卡在哪里？
+    </p>
+    <div class="meta" style="margin-top:2em;">基于飞书文档 · 2026年7月</div>
+    <div class="start-hint">← 点击导航或按键盘方向键 →</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 引言 -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <h2>一个案例引发的追问</h2>
+    <div class="glow-line"></div>
+    <p><strong>敬业集团</strong>，一家土生土长的中国民营钢铁企业，2020年以约5000万英镑"抄底"收购了因脱欧和经营不善而破产的<strong>英国钢铁公司</strong>，承诺投资12亿英镑。</p>
+    <p>但故事的发展远不如想象中美好——能源成本飙升、工会关系紧张、政商环境差异……最终，这笔收购以巨额亏损收场。</p>
+    <div class="callout warn">
+      <span class="emoji">💡</span> 本文的目的不是评价一个具体案例，而是通过这个切片，展开对中国企业出海所面临的<strong>系统性困境</strong>的全面分析。
+    </div>
+    <div class="highlight-box">
+      <div class="big">"我们是在中国做钢铁的，有经验、有技术、有资金，<br>去英国也是做钢铁，能差多少？"</div>
+      <div class="sub">——敬业集团董事长李赶坡</div>
+    </div>
+    <p style="text-align:center;color:var(--text-dim);">这句话背后，透露出一种中国企业家常见的自信——或者说，<strong>对"制度差异"的严重低估</strong>。</p>
+  </div>
+</div>
+
+<!-- SLIDE 3: 时间线 -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <h2>案例还原：敬业集团×英钢</h2>
+    <div class="glow-line"></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="tl-year">2019</span>
+        <div class="tl-title">英钢破产接管</div>
+        <div class="tl-desc">英国钢铁公司因脱欧不确定性和经营不善进入破产接管程序</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">2020.3</span>
+        <div class="tl-title">敬业集团收购</div>
+        <div class="tl-desc">以约5000万英镑完成收购，承诺投资12亿英镑</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">2020-2022</span>
+        <div class="tl-title">困境爆发</div>
+        <div class="tl-desc">能源价格飙升、工会关系紧张、新冠疫情冲击</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">2023</span>
+        <div class="tl-title">巨额亏损</div>
+        <div class="tl-desc">英国政府介入，寻求新投资者，远未达到预期</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">⚡</span> <strong>外部环境冲击</strong><br>
+        · 欧洲能源危机导致成本飙升<br>
+        · 碳边境调节机制（CBAM）增加成本<br>
+        · 钢铁需求疲软，全球经济下行
+      </div>
+      <div class="callout earth" style="margin:0;">
+        <span class="emoji">⚙️</span> <strong>内部管理冲突</strong><br>
+        · 工会关系紧张，工作方式冲突不断<br>
+        · 中方管理团队与当地员工沟通障碍<br>
+        · 中国式管理方法遭遇制度性抵触
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 已识别的卡点 -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <h2>你已识别的卡点 <span class="tag" style="font-size:0.7rem;vertical-align:middle;">深化展开</span></h2>
+    <div class="glow-line"></div>
+    <div class="grid-2">
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">🏛️</span> <strong>政治风险</strong><br>
+        CFIUS审查、欧洲安全审查、关键基础设施敏感性。<br><br>
+        <em>政治风险不是"可以规避的变量"，而是中国企业出海必须面对的<strong>结构性约束</strong>。</em>
+      </div>
+      <div class="callout warn" style="margin:0;">
+        <span class="emoji">💱</span> <strong>跨国投资风险</strong><br>
+        · 汇率波动<br>
+        · 国际贸易规则变化<br>
+        · 地缘政治冲突<br>
+        · 政策不确定性
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout earth" style="margin:0;">
+        <span class="emoji">🤝</span> <strong>政企机制差异</strong><br>
+        · 国内：政企"亲密关系"，快速审批<br>
+        · 国外：政府保持距离，议会政治反复<br>
+        · 核心落差：企业家发现"搞不定"了
+      </div>
+      <div class="callout info" style="margin:0;">
+        <span class="emoji">🧑‍💼</span> <strong>专业人才需求</strong><br>
+        · 懂当地法律、税务、劳工、文化的人才<br>
+        · 跨文化管理复合型人才<br>
+        · 中国培养体系远远满足不了出海需求
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: 制度鸿沟 -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <h2>根本性的制度鸿沟</h2>
+    <div class="glow-line"></div>
+    <div class="grid-2">
+      <div class="grid-card" style="border-color:rgba(0,212,255,0.3);">
+        <div class="label" style="color:var(--accent);">🇨🇳 中国式政企关系</div>
+        <div class="value-sm">
+          · 政府与企业的"亲密关系"<br>
+          · 政策支持、快速审批<br>
+          · 政企协同解决问题<br>
+          · "搞定政府"的路径依赖
+        </div>
+      </div>
+      <div class="grid-card" style="border-color:rgba(79,195,160,0.3);">
+        <div class="label" style="color:var(--earth);">🇬🇧 西方式政企关系</div>
+        <div class="value-sm">
+          · 政府与企业保持距离<br>
+          · 政策不确定性高<br>
+          · 议会政治导致政策反复<br>
+          · 政府本身也无法完全控制议会和舆论
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <div class="big">中国企业家习惯于"搞定政府"的模式——<br>到了国外，发现<span class="red">"搞不定"</span>了</div>
+      <div class="sub">因为政府本身也无法完全控制议会和舆论。这个认知落差，是很多出海项目失败的根本原因。</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 六个被忽略的维度 -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <h2>被忽略的其他卡点</h2>
+    <div class="glow-line"></div>
+    <p style="margin-bottom:0.5em;">除了已识别的卡点，还有<strong>六个维度</strong>容易被忽视，但同样致命：</p>
+    <div class="diagram-container" style="width:100%;margin:1em 0;display:flex;justify-content:center;">
+      <svg viewBox="0 0 780 480" xmlns="http://www.w3.org/2000/svg" style="max-height:52vh;">
+        <defs>
+          <linearGradient id="cg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+          <linearGradient id="cg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6b6b"/><stop offset="100%" stop-color="#ff8c42"/></linearGradient>
+          <linearGradient id="cg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c040"/><stop offset="100%" stop-color="#ff8c42"/></linearGradient>
+        </defs>
+        <!-- Center -->
+        <circle cx="390" cy="180" r="42" fill="rgba(79,195,160,0.12)" stroke="var(--earth)" stroke-width="2"/>
+        <text x="390" y="175" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="Noto Sans SC, sans-serif">出海卡点</text>
+        <text x="390" y="195" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Noto Sans SC, sans-serif">6个维度</text>
+        <!-- 1 -->
+        <line x1="390" y1="222" x2="390" y2="270" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <rect x="330" y="270" width="120" height="36" rx="18" fill="rgba(0,212,255,0.1)" stroke="#00d4ff" stroke-width="1"/>
+        <text x="390" y="293" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="600" font-family="Noto Sans SC, sans-serif">文化管理差异</text>
+        <!-- 2 -->
+        <line x1="390" y1="222" x2="390" y2="310" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <rect x="330" y="310" width="120" height="36" rx="18" fill="rgba(255,107,107,0.1)" stroke="#ff6b6b" stroke-width="1"/>
+        <text x="390" y="333" text-anchor="middle" fill="#ff6b6b" font-size="13" font-weight="600" font-family="Noto Sans SC, sans-serif">劳工与工会</text>
+        <!-- 3 -->
+        <line x1="390" y1="222" x2="390" y2="350" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <rect x="330" y="350" width="120" height="36" rx="18" fill="rgba(240,192,64,0.1)" stroke="#f0c040" stroke-width="1"/>
+        <text x="390" y="373" text-anchor="middle" fill="#f0c040" font-size="13" font-weight="600" font-family="Noto Sans SC, sans-serif">法律合规体系</text>
+        <!-- 4,5,6 -->
+        <line x1="348" y1="386" x2="160" y2="420" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <line x1="390" y1="386" x2="390" y2="420" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <line x1="432" y1="386" x2="620" y2="420" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <rect x="80" y="420" width="160" height="36" rx="18" fill="rgba(124,58,237,0.1)" stroke="#7c3aed" stroke-width="1"/>
+        <text x="160" y="443" text-anchor="middle" fill="#7c3aed" font-size="13" font-weight="600" font-family="Noto Sans SC, sans-serif">品牌与信任建设</text>
+        <rect x="310" y="420" width="160" height="36" rx="18" fill="rgba(79,195,160,0.1)" stroke="var(--earth)" stroke-width="1"/>
+        <text x="390" y="443" text-anchor="middle" fill="var(--earth)" font-size="13" font-weight="600" font-family="Noto Sans SC, sans-serif">供应链整合</text>
+        <rect x="540" y="420" width="160" height="36" rx="18" fill="rgba(0,212,255,0.1)" stroke="#00d4ff" stroke-width="1"/>
+        <text x="620" y="443" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="600" font-family="Noto Sans SC, sans-serif">融资与资本运作</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: 文化+工会 -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <h2>文化差异与劳工工会</h2>
+    <div class="glow-line"></div>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent);">文化与管理差异</div>
+        <div class="value-sm">
+          · 中国"家长式"管理 vs 西方制度化流程<br>
+          · "996"工作文化 vs 西方工会力量<br>
+          · 含蓄沟通 vs 直接沟通<br>
+          · 敬业集团要求英国工人加班，遭工会强烈抵制<br>
+          · 英国工人每周工作超过48小时需签署"自愿加班协议"
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent4);">劳工与工会问题</div>
+        <div class="value-sm">
+          · 西方工会不仅影响工资，还能影响企业战略决策<br>
+          · 裁员在西方是"法律问题+社会问题+政治问题"<br>
+          · 安全标准、休息时间、加班制度——<br>
+          · 每一项都有严格法律规定和工会监督<br>
+          · 敬业集团与英国工会的紧张关系是持续性摩擦点
+        </div>
+      </div>
+    </div>
+    <div class="callout info">
+      <span class="emoji">💡</span> <strong>核心认知</strong>：不是不想遵守规则，是<strong>不理解这些规则有多"硬"</strong>。中国企业在国内习惯了"弹性"，到了国外发现"弹性"不存在。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 法律合规 -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <h2>法律与合规体系</h2>
+    <div class="glow-line"></div>
+    <p>出海的合规要求，远远超出多数中国企业的认知范围：</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>合规领域</th><th>具体要求</th><th>中国企业的常见盲区</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag">反垄断</span></td><td>并购审查、市场支配地位</td><td>低估审查严格程度</td></tr>
+          <tr><td><span class="tag red">反腐败</span></td><td>FCPA、英国反贿赂法</td><td>商业贿赂的灰色地带</td></tr>
+          <tr><td><span class="tag gold">数据保护</span></td><td>GDPR</td><td>数据收集和处理的合规成本</td></tr>
+          <tr><td><span class="tag green">环境法规</span></td><td>ESG合规、碳关税</td><td>环保标准的差异</td></tr>
+          <tr><td><span class="tag earth">知识产权</span></td><td>专利、商标、商业秘密</td><td>既是学习者也是被挑战者</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      <span class="emoji">⚠️</span> <strong>关键盲区</strong>：在中国可以"变通"的灰色地带，在国外可能直接触发法律风险。FCPA（美国反海外腐败法）和英国反贿赂法的域外管辖效力，让很多中国企业在不知不觉中违法。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 品牌+供应链+融资 -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <h2>品牌 · 供应链 · 融资</h2>
+    <div class="glow-line"></div>
+    <div class="grid-3">
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent2);">品牌与信任建设</div>
+        <div class="value-sm">
+          · "中国制造"在西方消费者心中的固有印象<br>
+          · 品牌信任不能速成<br>
+          · 海尔在欧洲用了20年才建立品牌认知<br>
+          · 字节跳动"一夜成名"也付出了政治代价
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--earth);">供应链与运营整合</div>
+        <div class="value-sm">
+          · 跨境并购最难的是"管起来"而非"买下来"<br>
+          · 从原材料到成品的跨国协调<br>
+          · 中西方信息系统差异——ERP、财务系统对接成本极高
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--gold);">融资与资本运作</div>
+        <div class="value-sm">
+          · 海外融资渠道受限<br>
+          · 汇率风险管理需要专业工具<br>
+          · 跨境资金流动合规成本高<br>
+          · 外汇管制严格
+        </div>
+      </div>
+    </div>
+    <div class="callout earth">
+      <span class="emoji">🌍</span> <strong>品牌信任不能靠"砸钱"来加速</strong>。这是一个需要时间、耐心和真正本地化的过程。所有试图"速成"的品牌建设，最终都会付出代价。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: 四种出海模式 -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <h2>中国出海的历史经验</h2>
+    <div class="glow-line"></div>
+    <p>从海尔到华为，中国企业出海史本身就是一部案例集。四种典型模式：</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>模式</th><th>代表</th><th>核心策略</th><th>成功要素</th><th>最大风险</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag">自主品牌</span></td><td>海尔</td><td>本土化运营，美国建厂</td><td>长期投入，不急于求成</td><td>速度慢，培育周期长</td></tr>
+          <tr><td><span class="tag red">技术领先</span></td><td>华为</td><td>技术实力赢得市场尊重</td><td>研发投入，技术领先</td><td>遭遇最严重政治打压</td></tr>
+          <tr><td><span class="tag gold">算法驱动</span></td><td>字节跳动</td><td>产品+数据驱动</td><td>用户体验极致</td><td>数据主权成新瓶颈</td></tr>
+          <tr><td><span class="tag green">制造出海</span></td><td>三一重工</td><td>海外建厂+并购</td><td>稳健的本地化策略</td><td>整合困难，文化冲突</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">❌</span> <strong>华为的教训</strong><br>
+        技术领先不能解决政治风险。当技术领先触及地缘政治敏感区时，<strong>商业逻辑让位于政治逻辑</strong>。
+      </div>
+      <div class="callout success" style="margin:0;">
+        <span class="emoji">✅</span> <strong>海尔的启示</strong><br>
+        出海没有捷径，<strong>本土化没有替代品</strong>。海尔的出海堪称教科书——不是因为它"快"，恰恰是因为它"慢"。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: 四种模式详解 -->
+<div class="slide" data-index="10">
+  <div class="slide-inner">
+    <h2>四种出海模式深度对比</h2>
+    <div class="glow-line"></div>
+    <div class="grid-2">
+      <div class="grid-card" style="border-color:rgba(0,212,255,0.3);">
+        <div class="label" style="color:var(--accent);">海尔 — 自主品牌</div>
+        <div class="value-sm">在美国南卡建厂，雇佣当地员工，产品设计完全本地化。20年持续投入。<br><strong>关键教训</strong>：出海没有捷径</div>
+      </div>
+      <div class="grid-card" style="border-color:rgba(255,107,107,0.3);">
+        <div class="label" style="color:var(--accent4);">华为 — 技术领先</div>
+        <div class="value-sm">以技术实力赢得全球市场尊重，但也遭遇了最严重的政治打压。<br><strong>关键教训</strong>："后来者"的挑战者身份本身就是原罪</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="grid-card" style="border-color:rgba(240,192,64,0.3);">
+        <div class="label" style="color:var(--gold);">字节跳动 — 算法驱动</div>
+        <div class="value-sm">TikTok全球月活超10亿，但面临"不卖就禁"的极端压力。<br><strong>关键教训</strong>：数据主权是新时代的"命门"</div>
+      </div>
+      <div class="grid-card" style="border-color:rgba(6,214,160,0.3);">
+        <div class="label" style="color:var(--accent3);">三一重工 — 制造出海</div>
+        <div class="value-sm">海外建厂+并购，注重本地化运营，不追求"大新闻"，稳步推进。<br><strong>关键教训</strong>：闷声发财才是真本事</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: 用户真正关心的问题 -->
+<div class="slide" data-index="11">
+  <div class="slide-inner">
+    <h2>这个案例对"我"意味着什么？</h2>
+    <div class="glow-line"></div>
+    <div class="callout info">
+      <span class="emoji">💡</span> <strong>核心追问</strong>：在北大光华西安分院的视角下，这个问题不是"如何出海"的技术问题，而是"<strong>在这个时代，什么才是真正有价值的能力积累</strong>"的深层问题。
+    </div>
+    <div class="highlight-box">
+      <div class="big">出海能力 = <span class="accent">制度穿越能力</span></div>
+      <div class="sub">不是语言能力，不是资金实力，而是理解不同制度环境下的游戏规则</div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent);">核心要素</div>
+        <div class="value-sm">
+          · <strong>制度认知</strong>：理解不同国家的政治制度、法律体系、社会结构<br>
+          · <strong>文化敏感度</strong>：感知和适应文化差异，不以外来者自居<br>
+          · <strong>关系转化</strong>：从"搞定政府"到"与制度共存"<br>
+          · <strong>长期主义</strong>：出海不是冲刺，是马拉松
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--earth);">现实延伸</div>
+        <div class="value-sm">
+          · 光华校友中是否有人正在或想要出海？<br>
+          · 校友会能否帮助校友理解全球化新规则？<br>
+          · 光华教育产品能否提供"出海能力"的系统性训练？
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: AI与出海 -->
+<div class="slide" data-index="12">
+  <div class="slide-inner">
+    <h2>AI能否降低出海的制度成本？</h2>
+    <div class="glow-line"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>AI应用领域</th><th>具体能力</th><th>对出海的影响</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag">AI翻译</span></td><td>实时多语言翻译，本地化</td><td>降低语言障碍，但制度理解仍需人工</td></tr>
+          <tr><td><span class="tag earth">AI法律助手</span></td><td>跨境法律合规分析</td><td>降低法律信息获取成本</td></tr>
+          <tr><td><span class="tag gold">AI市场分析</span></td><td>全球市场趋势、风险预判</td><td>辅助决策，但不能替代本地经验</td></tr>
+          <tr><td><span class="tag green">AI文化适配</span></td><td>跨文化沟通建议</td><td>工具层面帮助，深层文化理解有限</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout earth">
+      <span class="emoji">🌍</span> <strong>AI能降低信息不对称，但不能替代"在场"的经验</strong>。制度理解、文化直觉、人际关系——这些出海的核心能力，AI目前只能辅助，无法替代。
+    </div>
+    <div class="callout info">
+      <span class="emoji">🎓</span> <strong>可能的课程方向</strong>：光华可以开发"中国企业出海战略"、"跨境合规管理"、"跨文化领导力"等课程，服务于正在出海或准备出海的校友群体。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: 批判性审视 -->
+<div class="slide" data-index="13">
+  <div class="slide-inner">
+    <h2>批判性审视</h2>
+    <div class="glow-line"></div>
+    <div class="callout warn">
+      <span class="emoji">🎯</span> <strong>最重要的问题</strong>：在讨论"出海"的时候，我们是否已经默认了"<strong>出海是好的</strong>"？这个假设，值得被认真审视。
+    </div>
+    <div class="grid-2">
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">❓</span> <strong>出海是否必然"好"？</strong><br>
+        · 被迫出海：国内竞争太激烈<br>
+        · 盲目出海：跟风，看到别人出就跟着出<br>
+        · 理性选择：出海应该是战略选择，而非情绪驱动
+      </div>
+      <div class="callout warn" style="margin:0;">
+        <span class="emoji">📉</span> <strong>"中国模式"能否复制？</strong><br>
+        · 人口红利、WTO红利、政府主导<br>
+        · 这些条件在国外不存在<br>
+        · 出海企业需要放下"中国经验"，从头学习
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout earth" style="margin:0;">
+        <span class="emoji">🌐</span> <strong>逆全球化趋势</strong><br>
+        · 贸易战、技术封锁、资本管制<br>
+        · 中西方关系的"结构性恶化"<br>
+        · 出海的窗口期在收窄
+      </div>
+      <div class="callout info" style="margin:0;">
+        <span class="emoji">💰</span> <strong>出海的"性价比"</strong><br>
+        · 投入巨大，失败率极高<br>
+        · 幸存者偏差：少数成功案例被过度宣传<br>
+        · 大量失败案例被遗忘
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: 结语 -->
+<div class="slide" data-index="14">
+  <div class="slide-inner">
+    <h2>从"出海"到"共生"</h2>
+    <div class="glow-line"></div>
+    <div class="highlight-box">
+      <div class="big">中国企业出海需要的不是"征服"的心态，<br>而是<span class="earth">"共生"的智慧</span></div>
+      <div class="sub">理解差异、尊重规则、长期投入、专业运营</div>
+    </div>
+    <div class="grid-2">
+      <div class="grid-card" style="border-color:rgba(79,195,160,0.3);">
+        <div class="label" style="color:var(--earth);">敬业集团的教训</div>
+        <div class="value" style="font-size:1.1rem;">不是"别出海"，而是"别用国内的方式出海"</div>
+      </div>
+      <div class="grid-card" style="border-color:rgba(0,212,255,0.3);">
+        <div class="label" style="color:var(--accent);">真正的出海能力</div>
+        <div class="value" style="font-size:1.1rem;">"制度穿越能力"——理解不同制度环境下的游戏规则</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="grid-card" style="border-color:rgba(240,192,64,0.3);">
+        <div class="label" style="color:var(--gold);">出海的历史使命</div>
+        <div class="value" style="font-size:1.1rem;">出海不是可选项，而是中国经济升级的必由之路</div>
+      </div>
+      <div class="grid-card" style="border-color:rgba(255,107,107,0.3);">
+        <div class="label" style="color:var(--accent4);">清醒的理性</div>
+        <div class="value" style="font-size:1.1rem;">走这条路需要更多的清醒、更少的热血</div>
+      </div>
+    </div>
+    <div class="callout earth" style="margin-top:1em;">
+      <span class="emoji">🌍</span> <strong>写在最后</strong>：在一个全球化与逆全球化并存的时代，理解不同制度、适应不同文化、在不确定性中做出理性决策——这些能力，无论你最终是否选择出海，都将是这个时代<strong>最稀缺的竞争力</strong>。
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  const totalEl = document.getElementById('totalSlides');
+  const currentEl = document.getElementById('currentSlide');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const dotNav = document.getElementById('dotNav');
+  let current = 0;
+  let isTransitioning = false;
+
+  totalEl.textContent = totalSlides;
+
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotNav.appendChild(dot);
+  }
+
+  function updateNav() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    currentEl.textContent = current + 1;
+    progressBar.style.width = ((current + 1) / totalSlides * 100) + '%';
+    prevBtn.classList.toggle('visible', current > 0);
+    nextBtn.classList.toggle('visible', current < totalSlides - 1);
+    slides[current].querySelector('.slide-inner').scrollTop = 0;
+  }
+
+  function goTo(idx) {
+    if (isTransitioning || idx < 0 || idx >= totalSlides || idx === current) return;
+    isTransitioning = true;
+    current = idx;
+    updateNav();
+    setTimeout(() => { isTransitioning = false; }, 500);
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    else if (e.key === 'End') { e.preventDefault(); goTo(totalSlides - 1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) { if (diff > 0) goTo(current + 1); else goTo(current - 1); }
+  }, {passive:true});
+
+  document.addEventListener('wheel', (e) => {
+    if (e.deltaY > 0) goTo(current + 1);
+    else if (e.deltaY < 0) goTo(current - 1);
+  }, {passive:true});
+
+  updateNav();
+})();
+</script>
+</body>
+</html>
