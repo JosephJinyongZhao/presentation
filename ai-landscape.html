@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI发展路径全景扫描与三要素演进逻辑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg2: #0f1523;
+    --bg3: #141c2d;
+    --text: #e2e8f0;
+    --text-dim: #8892a4;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #06d6a0;
+    --accent4: #ff6b6b;
+    --gold: #f0c040;
+    --orange: #ff8c42;
+    --glow: rgba(0,212,255,0.15);
+    --card-bg: rgba(15,21,35,0.85);
+    --border: rgba(0,212,255,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  /* Background noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(6,214,160,0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grid overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide-container {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5vh 8vw;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    transform: translateY(30px) scale(0.98);
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+  }
+
+  .slide-inner::-webkit-scrollbar { width: 4px; }
+  .slide-inner::-webkit-scrollbar-track { background: transparent; }
+  .slide-inner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* Slide number indicator */
+  .slide-number {
+    position: fixed;
+    bottom: 28px;
+    right: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    z-index: 10;
+    letter-spacing: 2px;
+  }
+  .slide-number span { color: var(--accent); }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 10;
+    transition: width 0.5s ease;
+  }
+
+  /* Navigation */
+  .nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .nav-arrow.visible { opacity: 1; pointer-events: auto; }
+  .nav-arrow:hover { background: rgba(0,212,255,0.2); border-color: var(--accent); transform: translateY(-50%) scale(1.1); }
+  .nav-arrow.prev { left: 20px; }
+  .nav-arrow.next { right: 20px; }
+
+  /* Dot navigation */
+  .dot-nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .dot:hover { background: rgba(0,212,255,0.4); }
+  .dot.active { background: var(--accent); box-shadow: 0 0 12px var(--glow); width: 12px; height: 12px; }
+
+  /* ========= TYPOGRAPHY ========= */
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.4em;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+    color: #fff;
+  }
+  h2 .accent { color: var(--accent); -webkit-text-fill-color: var(--accent); }
+  h2 .gold { color: var(--gold); -webkit-text-fill-color: var(--gold); }
+
+  h3 {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    font-weight: 600;
+    margin-bottom: 0.4em;
+    color: #fff;
+  }
+
+  p, li {
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 0.6em;
+  }
+
+  .subtitle {
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 1.5em;
+  }
+
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* ========= COMPONENTS ========= */
+
+  /* Callout cards */
+  .callout {
+    background: var(--card-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 1.4em 1.8em;
+    margin: 1.2em 0;
+    position: relative;
+  }
+  .callout .emoji { font-size: 1.4em; margin-right: 0.5em; }
+  .callout.warn { border-left-color: var(--gold); }
+  .callout.danger { border-left-color: var(--accent4); }
+  .callout.info { border-left-color: var(--accent); }
+  .callout.success { border-left-color: var(--accent3); }
+  .callout.purple { border-left-color: var(--accent2); }
+  .callout.orange { border-left-color: var(--orange); }
+
+  /* Grid columns */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5em;
+    margin: 1.2em 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2em;
+    margin: 1.2em 0;
+  }
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1em;
+    margin: 1.2em 0;
+  }
+
+  .grid-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4em;
+    transition: all 0.3s ease;
+  }
+  .grid-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px var(--glow); }
+  .grid-card .label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5em;
+  }
+  .grid-card .value {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.5;
+  }
+  .grid-card .value-sm {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1.2em 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+  }
+  th {
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0.8em 1em;
+    text-align: left;
+    border-bottom: 2px solid var(--accent);
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 0.7em 1em;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+  tr:hover td { background: rgba(0,212,255,0.03); }
+
+  /* Star rating */
+  .stars { color: var(--gold); letter-spacing: 2px; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    background: rgba(0,212,255,0.12);
+    color: var(--accent);
+    padding: 0.2em 0.8em;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 0.2em;
+  }
+  .tag.gold { background: rgba(240,192,64,0.15); color: var(--gold); }
+  .tag.red { background: rgba(255,107,107,0.15); color: var(--accent4); }
+  .tag.green { background: rgba(6,214,160,0.15); color: var(--accent3); }
+  .tag.purple { background: rgba(124,58,237,0.15); color: var(--accent2); }
+
+  /* Cover specific */
+  .cover {
+    text-align: center;
+  }
+  .cover h1 {
+    font-size: clamp(2.8rem, 5.5vw, 4.8rem);
+    margin-bottom: 0.3em;
+  }
+  .cover .tagline {
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    color: var(--text-dim);
+    letter-spacing: 4px;
+    margin-bottom: 2em;
+  }
+  .cover .divider {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 0 auto 1.5em;
+  }
+  .cover .start-hint {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    animation: pulse 2s ease-in-out infinite;
+    letter-spacing: 2px;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* SVG diagram styles */
+  .diagram-container {
+    width: 100%;
+    margin: 1em 0;
+    display: flex;
+    justify-content: center;
+  }
+  .diagram-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding: 1em 0;
+    margin: 1.5em 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2), var(--accent3));
+  }
+  .tl-item {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 1.5em;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 12px var(--glow);
+  }
+  .tl-item .tl-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .tl-item .tl-title {
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 600;
+    margin: 0.2em 0;
+  }
+  .tl-item .tl-desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+
+  /* Data evolution cards */
+  .evo-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
+    margin: 1em 0;
+    padding: 1em;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .evo-step .num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,212,255,0.15);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .evo-step .content { flex: 1; }
+  .evo-step .content .head {
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.2em;
+  }
+  .evo-step .content .desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(124,58,237,0.08));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 12px;
+    padding: 1.8em;
+    margin: 1.5em 0;
+    text-align: center;
+  }
+  .highlight-box .big {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.3em;
+  }
+  .highlight-box .big .accent { color: var(--accent); }
+  .highlight-box .big .gold { color: var(--gold); }
+  .highlight-box .big .red { color: var(--accent4); }
+  .highlight-box .sub {
+    font-size: 1rem;
+    color: var(--text-dim);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .dot-nav { display: none; }
+    .nav-arrow { width: 36px; height: 36px; font-size: 16px; }
+    .nav-arrow.prev { left: 8px; }
+    .nav-arrow.next { right: 8px; }
+    .slide-number { right: 16px; bottom: 16px; font-size: 12px; }
+  }
+
+  /* Animations on appear */
+  .slide.active .slide-inner > * {
+    animation: fadeUp 0.6s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .slide-inner > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active .slide-inner > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .slide-inner > *:nth-child(3) { animation-delay: 0.15s; }
+  .slide.active .slide-inner > *:nth-child(4) { animation-delay: 0.2s; }
+  .slide.active .slide-inner > *:nth-child(5) { animation-delay: 0.25s; }
+  .slide.active .slide-inner > *:nth-child(6) { animation-delay: 0.3s; }
+  .slide.active .slide-inner > *:nth-child(7) { animation-delay: 0.35s; }
+  .slide.active .slide-inner > *:nth-child(8) { animation-delay: 0.4s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Glow line decoration */
+  .glow-line {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    margin: 0.5em 0 1em;
+  }
+
+  .glow-line.center {
+    margin: 0.5em auto 1em;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  /* List styling */
+  ul, ol { padding-left: 1.2em; margin-bottom: 0.8em; }
+  li { margin-bottom: 0.3em; }
+
+  /* Numbered big list */
+  .big-list { counter-reset: item; list-style: none; padding: 0; }
+  .big-list li {
+    counter-increment: item;
+    padding: 0.6em 0 0.6em 2.8em;
+    position: relative;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+  }
+  .big-list li::before {
+    content: counter(item);
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,212,255,0.12);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  /* Pathway bar */
+  .pathway {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.8em 0;
+    flex-wrap: wrap;
+  }
+  .pathway .step {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4em 1em;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .pathway .step.active {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+  }
+  .pathway .arrow { color: var(--text-dim); font-size: 1.2rem; }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Slide Number -->
+<div class="slide-number" id="slideNum"><span id="currentSlide">1</span> / <span id="totalSlides">0</span></div>
+
+<!-- Navigation -->
+<button class="nav-arrow prev" id="prevBtn">‹</button>
+<button class="nav-arrow next" id="nextBtn">›</button>
+
+<!-- Dot Navigation -->
+<div class="dot-nav" id="dotNav"></div>
+
+<!-- ============================================ -->
+<!-- SLIDES -->
+<!-- ============================================ -->
+<div class="slide-container" id="slideContainer">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-index="0">
+  <div class="slide-inner cover">
+    <div class="divider"></div>
+    <h1>AI发展路径的全景扫描<br>与三要素演进逻辑</h1>
+    <p class="tagline">从达特茅斯到科学数据的范式追踪</p>
+    <div class="divider"></div>
+    <p class="subtitle" style="max-width:700px;margin:0 auto;">
+      1956年达特茅斯研讨会开启的AI旅程，70年后我们是否已偏离了最初的愿景？<br>
+      王坚WAIC 2026的追问，引领我们重新审视AI发展的多元路线与数据-算法-算力的深层逻辑。
+    </p>
+    <div class="meta" style="margin-top:2em;">基于飞书文档 · 2026年7月</div>
+    <div class="start-hint">← 点击导航或按键盘方向键 →</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 引言 -->
+<div class="slide" data-index="1">
+  <div class="slide-inner">
+    <h2>两个核心追问</h2>
+    <div class="glow-line"></div>
+    <div class="callout info">
+      <span class="emoji">💡</span> 王坚在WAIC 2026演讲中提出：
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="grid-card">
+        <div class="label">追问一</div>
+        <div class="value" style="font-size:1.3rem;font-weight:700;">AI发展的路线到底是什么？</div>
+        <div class="value-sm" style="margin-top:0.5em;">达特茅斯路线之外，还有哪些被忽视的路径？大语言模型真的是唯一方向吗？</div>
+      </div>
+      <div class="grid-card">
+        <div class="label">追问二</div>
+        <div class="value" style="font-size:1.3rem;font-weight:700;">数据、算法、算力如何演进？</div>
+        <div class="value-sm" style="margin-top:0.5em;">数据从语言数据到科学数据再到世界数据，这个逻辑链条意味着什么？</div>
+      </div>
+    </div>
+    <div class="callout purple" style="margin-top:0.5em;">
+      <strong>本文目标</strong>：沿着这两个追问，展开一次全景式的AI发展路径扫描，并深入分析数据-算法-算力三要素的协同演进逻辑，最终提出一个AI价值创造的"全面扫描"框架。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 达特茅斯1956 -->
+<div class="slide" data-index="2">
+  <div class="slide-inner">
+    <h2>达特茅斯夏季研讨会 · 1956</h2>
+    <p class="subtitle" style="margin-bottom:0.5em;">AI的"出生证明"——七个原始问题</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px;">#</th>
+            <th style="width:160px;">问题领域</th>
+            <th>核心关注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>自动计算机</td><td>能否让计算机自动完成人类需要智能才能完成的任务？</td></tr>
+          <tr><td>2</td><td>如何编程</td><td>如何让计算机通过编程语言理解和执行复杂指令？</td></tr>
+          <tr><td>3</td><td style="color:var(--accent);">自然语言处理</td><td>如何让计算机理解和生成人类语言？</td></tr>
+          <tr><td>4</td><td style="color:var(--accent3);">神经网络</td><td>模拟大脑神经元结构的计算模型能否产生智能？</td></tr>
+          <tr><td>5</td><td>抽象理论</td><td>如何让计算机形成抽象概念和理论？</td></tr>
+          <tr><td>6</td><td style="color:var(--gold);">创造性与随机性</td><td>机器能否表现出创造性？随机性在智能中的作用是什么？</td></tr>
+          <tr><td>7</td><td>学习能力</td><td>如何让机器从经验中学习？</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      <span class="emoji">🔑</span> <strong>关键洞察</strong>：达特茅斯研讨会原本就包含了多条技术路线——符号推理、神经网络、自然语言理解、创造性探索。今天的"大模型独大"格局，实际上是对AI原始愿景的一次<strong>窄化</strong>。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 全景路线图 -->
+<div class="slide" data-index="3">
+  <div class="slide-inner">
+    <h2>AI发展路线全景图</h2>
+    <div class="glow-line"></div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" style="max-height:65vh;">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#06d6a0"/><stop offset="100%" stop-color="#00d4ff"/></linearGradient>
+          <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff8c42"/><stop offset="100%" stop-color="#f0c040"/></linearGradient>
+          <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6b6b"/><stop offset="100%" stop-color="#ff8c42"/></linearGradient>
+          <linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#ff6b6b"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Center node -->
+        <circle cx="450" cy="80" r="38" fill="rgba(0,212,255,0.15)" stroke="url(#g1)" stroke-width="2.5" filter="url(#glow)"/>
+        <text x="450" y="75" text-anchor="middle" fill="#fff" font-size="16" font-weight="700" font-family="Noto Sans SC, sans-serif">AI发展</text>
+        <text x="450" y="95" text-anchor="middle" fill="#8892a4" font-size="12" font-family="Noto Sans SC, sans-serif">多元路线</text>
+
+        <!-- Lines from center to branches -->
+        <line x1="450" y1="118" x2="450" y2="155" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <line x1="450" y1="118" x2="180" y2="155" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <line x1="450" y1="118" x2="720" y2="155" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <line x1="450" y1="118" x2="60" y2="280" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <line x1="450" y1="118" x2="840" y2="280" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+        <!-- Branch 1: 符号主义 -->
+        <rect x="130" y="155" width="100" height="36" rx="18" fill="rgba(0,212,255,0.12)" stroke="#00d4ff" stroke-width="1"/>
+        <text x="180" y="178" text-anchor="middle" fill="#00d4ff" font-size="14" font-weight="600" font-family="Noto Sans SC, sans-serif">符号主义</text>
+        <text x="180" y="215" text-anchor="middle" fill="#8892a4" font-size="11">专家系统 · 知识图谱</text>
+        <text x="180" y="233" text-anchor="middle" fill="#8892a4" font-size="11">神经符号融合</text>
+
+        <!-- Branch 2: 连接主义 -->
+        <rect x="400" y="155" width="100" height="36" rx="18" fill="rgba(6,214,160,0.12)" stroke="#06d6a0" stroke-width="1"/>
+        <text x="450" y="178" text-anchor="middle" fill="#06d6a0" font-size="14" font-weight="600" font-family="Noto Sans SC, sans-serif">连接主义</text>
+        <text x="450" y="215" text-anchor="middle" fill="#8892a4" font-size="11">深度学习 · 大语言模型</text>
+        <text x="450" y="233" text-anchor="middle" fill="#8892a4" font-size="11">多模态 · 扩散模型</text>
+
+        <!-- Branch 3: 具身AI -->
+        <rect x="670" y="155" width="100" height="36" rx="18" fill="rgba(240,192,64,0.12)" stroke="#f0c040" stroke-width="1"/>
+        <text x="720" y="178" text-anchor="middle" fill="#f0c040" font-size="14" font-weight="600" font-family="Noto Sans SC, sans-serif">具身AI</text>
+        <text x="720" y="215" text-anchor="middle" fill="#8892a4" font-size="11">机器人学 · 强化学习</text>
+        <text x="720" y="233" text-anchor="middle" fill="#8892a4" font-size="11">世界模型</text>
+
+        <!-- Branch 4: 贝叶斯 -->
+        <rect x="10" y="280" width="100" height="36" rx="18" fill="rgba(124,58,237,0.12)" stroke="#7c3aed" stroke-width="1"/>
+        <text x="60" y="303" text-anchor="middle" fill="#7c3aed" font-size="14" font-weight="600" font-family="Noto Sans SC, sans-serif">贝叶斯方法</text>
+        <text x="60" y="340" text-anchor="middle" fill="#8892a4" font-size="11">概率图模型</text>
+        <text x="60" y="358" text-anchor="middle" fill="#8892a4" font-size="11">因果推理</text>
+
+        <!-- Branch 5: 进化计算 -->
+        <rect x="790" y="280" width="100" height="36" rx="18" fill="rgba(255,107,107,0.12)" stroke="#ff6b6b" stroke-width="1"/>
+        <text x="840" y="303" text-anchor="middle" fill="#ff6b6b" font-size="14" font-weight="600" font-family="Noto Sans SC, sans-serif">进化计算</text>
+        <text x="840" y="340" text-anchor="middle" fill="#8892a4" font-size="11">遗传算法 · NAS</text>
+        <text x="840" y="358" text-anchor="middle" fill="#8892a4" font-size="11">群体智能</text>
+
+        <!-- Bottom: 新兴方向 -->
+        <rect x="350" y="380" width="200" height="36" rx="18" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="450" y="403" text-anchor="middle" fill="rgba(0,212,255,0.6)" font-size="13" font-weight="500" font-family="Noto Sans SC, sans-serif">新兴方向正在融合</text>
+
+        <line x1="180" y1="240" x2="420" y2="380" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="720" y1="240" x2="480" y2="380" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="3,3"/>
+
+        <!-- Bottom tags -->
+        <text x="180" y="440" text-anchor="middle" fill="#8892a4" font-size="11">神经符号系统</text>
+        <text x="450" y="440" text-anchor="middle" fill="#8892a4" font-size="11">科学基础模型</text>
+        <text x="720" y="440" text-anchor="middle" fill="#8892a4" font-size="11">具身多模态</text>
+
+        <text x="200" y="480" text-anchor="middle" fill="#8892a4" font-size="11">贝叶斯深度学习</text>
+        <text x="650" y="480" text-anchor="middle" fill="#8892a4" font-size="11">进化深度学习</text>
+
+        <!-- Fusion at bottom -->
+        <rect x="300" y="500" width="300" height="40" rx="20" fill="rgba(0,212,255,0.05)" stroke="url(#g1)" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="450" y="525" text-anchor="middle" fill="url(#g1)" font-size="14" font-weight="600" font-family="Noto Sans SC, sans-serif">多路线协同 → AGI</text>
+      </svg>
+    </div>
+    <p style="text-align:center;color:var(--text-dim);font-size:0.9rem;">不同路线解决不同问题，各有其适用边界。真正的通用AI可能需要多种路线的融合。</p>
+  </div>
+</div>
+
+<!-- SLIDE 5: 符号主义 -->
+<div class="slide" data-index="4">
+  <div class="slide-inner">
+    <h2>符号主义路线 <span class="tag" style="font-size:0.7rem;vertical-align:middle;">Symbolic AI / GOFAI</span></h2>
+    <div class="glow-line"></div>
+    <p style="margin-bottom:0.5em;"><strong>核心假设</strong>：智能的本质是对符号的操控。人类思维可以被形式化为符号操作规则。</p>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="label">主要成就</div>
+        <div class="value-sm">
+          <strong>专家系统</strong>：DENDRAL（化学分析）、MYCIN（医学诊断）<br>
+          <strong>定理证明</strong>：Logic Theorist、GPS<br>
+          <strong>下棋程序</strong>：IBM Deep Blue（1997）<br>
+          <strong>当代复兴</strong>：知识图谱、神经符号系统
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label">代表人物</div>
+        <div class="value-sm">
+          纽厄尔 · 西蒙 · 麦卡锡<br><br>
+          <strong>巅峰与寒冬</strong>：1980年代专家系统商业成功，但"知识瓶颈"暴露了根本性局限——知识获取需要人工编码，成本极高且不可扩展。
+        </div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="callout success" style="margin:0;">
+        <span class="emoji">✅</span> <strong>优势</strong><br>
+        · 可解释性强<br>
+        · 逻辑推理严谨<br>
+        · 知识结构化<br>
+        · 无需大量数据
+      </div>
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">⚠️</span> <strong>局限</strong><br>
+        · 知识获取瓶颈<br>
+        · 无法处理不确定性<br>
+        · 缺乏自适应学习能力<br>
+        · 复杂场景组合爆炸
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 连接主义 -->
+<div class="slide" data-index="5">
+  <div class="slide-inner">
+    <h2>连接主义路线 <span class="tag" style="font-size:0.7rem;vertical-align:middle;">Connectionism</span></h2>
+    <div class="glow-line"></div>
+    <p style="margin-bottom:0.5em;"><strong>核心假设</strong>：智能来自大量简单计算单元的连接。通过调整权重从数据中学习。</p>
+    <div class="timeline" style="margin:0.5em 0;">
+      <div class="tl-item">
+        <span class="tl-year">1958</span>
+        <div class="tl-title">感知机诞生</div>
+        <div class="tl-desc">罗森布拉特提出感知机，但明斯基在1969年指出其局限，导致第一次AI寒冬</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">1986</span>
+        <div class="tl-title">反向传播复兴</div>
+        <div class="tl-desc">鲁梅尔哈特、辛顿等人重新发现反向传播算法，神经网络复兴</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">2012-至今</span>
+        <div class="tl-title">深度学习时代</div>
+        <div class="tl-desc">AlexNet在ImageNet竞赛突破，大语言模型、多模态模型爆发</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout success" style="margin:0;">
+        <span class="emoji">✅</span> <strong>优势</strong><br>
+        · 强大的学习能力<br>
+        · 可规模化（Scaling Law）<br>
+        · 端到端学习<br>
+        · 多模态融合
+      </div>
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">⚠️</span> <strong>局限</strong><br>
+        · 不可解释性（"黑箱"）<br>
+        · 数据饥渴<br>
+        · 缺乏因果推理能力<br>
+        · 对抗样本脆弱性
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: 具身AI -->
+<div class="slide" data-index="6">
+  <div class="slide-inner">
+    <h2>具身AI <span class="tag gold" style="font-size:0.7rem;vertical-align:middle;">Embodied AI</span></h2>
+    <div class="glow-line"></div>
+    <p><strong>核心假设</strong>：智能必须在物理世界中通过与环境的交互产生，而非仅在抽象的符号或计算空间中。</p>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="label">布鲁克斯的"没有推理的智能"</div>
+        <div class="value-sm">1990年代，罗德尼·布鲁克斯提出"自底向上"的机器人设计理念，主张智能可以通过简单的感知-行动循环涌现，无需中央推理模块。</div>
+      </div>
+      <div class="grid-card">
+        <div class="label">从强化学习到具身智能</div>
+        <div class="value-sm">从AlphaGo的强化学习到RT-2、PaLM-E等具身多模态模型，将大语言模型与机器人控制结合。</div>
+      </div>
+    </div>
+    <div class="callout orange">
+      <span class="emoji">⚡</span> <strong>关键差异</strong>：大语言模型在<strong>"虚拟世界"</strong>（文本数据）中学习，而具身AI在<strong>"物理世界"</strong>（传感器数据、动作数据）中学习。王坚提出的"科学数据"概念，其实也隐含了具身维度——数据来自物理世界而非虚拟世界。
+    </div>
+    <div class="grid-3" style="margin-top:0.5em;">
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="color:var(--accent);font-size:1.5rem;">四足机器人</div>
+        <div class="value-sm">Spot · 宇树 · 波士顿动力</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="color:var(--accent3);font-size:1.5rem;">灵巧手操作</div>
+        <div class="value-sm">柔性抓取 · 精密装配</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="color:var(--gold);font-size:1.5rem;">自动驾驶</div>
+        <div class="value-sm">感知-决策-控制闭环</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 贝叶斯 + 进化计算 -->
+<div class="slide" data-index="7">
+  <div class="slide-inner">
+    <h2>其他重要路线</h2>
+    <div class="glow-line"></div>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent2);">贝叶斯与概率编程</div>
+        <div class="value-sm">
+          <strong>核心假设</strong>：智能的本质是处理不确定性。<br><br>
+          <strong>方法</strong>：贝叶斯推理、概率图模型、马尔可夫逻辑网络<br>
+          <strong>成功案例</strong>：垃圾邮件过滤、推荐系统、医学诊断<br>
+          <strong>当下意义</strong>：AI可信度与可解释性需求上升时，知道"模型不知道什么"比"模型知道什么"更重要。<br>
+          <span style="color:var(--text-dim);font-size:0.9rem;">局限：计算复杂度高、先验选择困难</span>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent4);">进化计算与群体智能</div>
+        <div class="value-sm">
+          <strong>核心假设</strong>：智能可以通过类似生物进化的过程涌现。<br><br>
+          <strong>方法</strong>：遗传算法、进化策略、粒子群优化、蚁群算法<br>
+          <strong>成功案例</strong>：芯片布局优化（Google）、天线设计、神经架构搜索（NAS）<br>
+          <span style="color:var(--text-dim);font-size:0.9rem;">局限：收敛速度慢、缺乏理论保证</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout info" style="margin:0;">
+        <span class="emoji">🔗</span> <strong>因果推理（Pearl的阶梯）</strong><br>
+        从关联→干预→反事实的三个层次
+      </div>
+      <div class="callout success" style="margin:0;">
+        <span class="emoji">🌐</span> <strong>世界模型（LeCun架构）</strong><br>
+        在抽象表征空间中预测和规划
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 关键判断 -->
+<div class="slide" data-index="8">
+  <div class="slide-inner">
+    <h2>关键判断：为什么不是"谁取代谁"？</h2>
+    <div class="glow-line"></div>
+    <div class="highlight-box">
+      <div class="big">不同的AI路线解决不同的问题，<br>各有其<span class="accent">适用边界</span></div>
+      <div class="sub">当前大语言模型独大，本质上是"工程可行性优先"而非"科学完备性"的结果</div>
+    </div>
+    <div class="grid-4">
+      <div class="grid-card" style="text-align:center;">
+        <div style="font-size:2rem;color:var(--accent);margin-bottom:0.3em;">🧩</div>
+        <div class="value" style="font-size:0.95rem;">符号主义</div>
+        <div class="value-sm" style="font-size:0.85rem;">擅长逻辑推理<br>不足：感知与模式识别</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div style="font-size:2rem;color:var(--accent3);margin-bottom:0.3em;">🧠</div>
+        <div class="value" style="font-size:0.95rem;">连接主义</div>
+        <div class="value-sm" style="font-size:0.85rem;">擅长感知与泛化<br>不足：可解释性</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div style="font-size:2rem;color:var(--gold);margin-bottom:0.3em;">🤖</div>
+        <div class="value" style="font-size:0.95rem;">具身AI</div>
+        <div class="value-sm" style="font-size:0.85rem;">物理世界学习<br>不足：技术成熟度</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div style="font-size:2rem;color:var(--accent2);margin-bottom:0.3em;">🎲</div>
+        <div class="value" style="font-size:0.95rem;">贝叶斯</div>
+        <div class="value-sm" style="font-size:0.85rem;">不确定性处理<br>不足：大规模落地</div>
+      </div>
+    </div>
+    <div class="callout purple">
+      <span class="emoji">🎯</span> 真正的通用人工智能（AGI）可能需要多种路线的<strong>深度融合</strong>——不是"谁取代谁"，而是"谁在什么场景下最合适"。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: 数据进化 -->
+<div class="slide" data-index="9">
+  <div class="slide-inner">
+    <h2>数据的进化：从符号到世界</h2>
+    <div class="glow-line"></div>
+    <div class="evo-step">
+      <div class="num">1</div>
+      <div class="content">
+        <div class="head">手工符号数据 <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">1950-1980</span></div>
+        <div class="desc">人工编码的规则和知识 · 专家系统的知识库 · <span style="color:var(--accent4);">局限：知识获取瓶颈</span></div>
+      </div>
+    </div>
+    <div class="evo-step">
+      <div class="num">2</div>
+      <div class="content">
+        <div class="head">互联网文本数据 <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">1990-2010</span></div>
+        <div class="desc">网页文本、电子书、论文 · 标注数据 · <span style="color:var(--accent4);">局限：标注成本高</span></div>
+      </div>
+    </div>
+    <div class="evo-step">
+      <div class="num">3</div>
+      <div class="content">
+        <div class="head">大规模互联网数据 <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">2010-2020</span></div>
+        <div class="desc">自监督学习改变数据需求 · 多模态（文本+图像+音视频） · <span style="color:var(--accent4);">局限：质量参差、版权问题</span></div>
+      </div>
+    </div>
+    <div class="evo-step" style="border-color:rgba(0,212,255,0.3);">
+      <div class="num" style="background:rgba(0,212,255,0.25);color:#fff;">4</div>
+      <div class="content">
+        <div class="head" style="color:var(--accent);">科学数据崛起 <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">2020-至今</span></div>
+        <div class="desc">光谱数据、地震波数据、基因组数据、天文观测数据——这些数据从未被"语言化"</div>
+      </div>
+    </div>
+    <div class="evo-step" style="border-color:rgba(240,192,64,0.3);border-style:dashed;">
+      <div class="num" style="background:rgba(240,192,64,0.2);color:var(--gold);">5</div>
+      <div class="content">
+        <div class="head" style="color:var(--gold);">世界数据（展望）</div>
+        <div class="desc">物理世界数据（IoT、雷达、LiDAR）· 生物世界数据（脑电、基因表达）· 社会世界数据（经济指标、人口流动）</div>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="emoji">🔄</span> <strong>数据的三次"出圈"</strong><br>
+      第一次：人工符号→互联网文本（<strong>规模质变</strong>）<br>
+      第二次：文本→多模态（<strong>维度扩展</strong>）<br>
+      第三次：人类数据→世界数据（<strong>本体论转向</strong>）
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: 算法进化 -->
+<div class="slide" data-index="10">
+  <div class="slide-inner">
+    <h2>算法的进化：从搜索到生成</h2>
+    <div class="glow-line"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>阶段</th><th>核心范式</th><th>代表性技术</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>搜索与推理<br><span style="color:var(--text-dim);font-size:0.8rem;">1950-1980</span></td><td><span class="tag">手工规则</span></td><td>A*搜索、逻辑推理</td></tr>
+          <tr><td>统计学习<br><span style="color:var(--text-dim);font-size:0.8rem;">1980-2000</span></td><td><span class="tag">数据驱动</span></td><td>SVM、决策树、EM算法</td></tr>
+          <tr><td>表示学习<br><span style="color:var(--text-dim);font-size:0.8rem;">2000-2010</span></td><td><span class="tag">特征自动</span></td><td>词嵌入、自编码器</td></tr>
+          <tr><td>深度学习<br><span style="color:var(--text-dim);font-size:0.8rem;">2012-2020</span></td><td><span class="tag green">端到端</span></td><td>CNN、RNN、Transformer</td></tr>
+          <tr><td style="color:var(--accent);font-weight:600;">生成式AI<br><span style="color:var(--text-dim);font-size:0.8rem;">2020-至今</span></td><td><span class="tag" style="background:rgba(0,212,255,0.2);color:var(--accent);">自动生成</span></td><td style="color:var(--accent);">扩散模型、GPT、In-Context Learning</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout info" style="margin:0;">
+        <span class="emoji">📈</span> <strong>演进趋势</strong><br>
+        · 手工规则 → 自动学习 → 自动生成<br>
+        · 任务专用 → 通用底座<br>
+        · 判别式 → 生成式<br>
+        · 监督学习 → 自监督 → 涌现能力
+      </div>
+      <div class="callout purple" style="margin:0;">
+        <span class="emoji">💡</span> <strong>关键转折</strong><br>
+        从"教计算机规则"到"让计算机自己发现规则"，再到"计算机生成前所未有的内容"——每一次转折都意味着算法自主性的提升。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: 算力进化 -->
+<div class="slide" data-index="11">
+  <div class="slide-inner">
+    <h2>算力的进化：从摩尔定律到AI加速</h2>
+    <div class="glow-line"></div>
+    <div class="grid-3">
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="font-size:1.3rem;color:var(--text-dim);">CPU时代</div>
+        <div style="font-size:2.5rem;margin:0.3em 0;">💻</div>
+        <div class="value-sm" style="font-size:0.85rem;">摩尔定律驱动<br>算力每18个月翻倍<br><span style="color:var(--text-dim);">1950-2000</span></div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="font-size:1.3rem;color:var(--accent3);">GPU时代</div>
+        <div style="font-size:2.5rem;margin:0.3em 0;">🎮</div>
+        <div class="value-sm" style="font-size:0.85rem;">并行计算成为AI突破口<br>GPU从游戏到科学计算<br><span style="color:var(--text-dim);">2000-2010</span></div>
+      </div>
+      <div class="grid-card" style="text-align:center;border-color:rgba(0,212,255,0.3);">
+        <div class="value" style="font-size:1.3rem;color:var(--accent);">AI加速器时代</div>
+        <div style="font-size:2.5rem;margin:0.3em 0;">⚡</div>
+        <div class="value-sm" style="font-size:0.85rem;">TPU · NPU · 万卡集群<br>算力增速远超摩尔定律<br><span style="color:var(--text-dim);">2010-至今</span></div>
+      </div>
+    </div>
+    <div class="callout danger">
+      <span class="emoji">⚡</span> <strong>算力的"隐形成本"</strong><br>
+      · <strong>能源消耗</strong>：训练一个GPT-4级模型 ≈ 数千家庭一年用电<br>
+      · <strong>碳排放</strong>：算力竞赛的"碳足迹"正在成为全球性议题<br>
+      · <strong>硬件瓶颈</strong>：摩尔定律放缓、先进制程受限<br>
+      · 这些约束正在倒逼一种新的算法-数据范式
+    </div>
+    <div class="pathway" style="justify-content:center;margin-top:0.5em;">
+      <span class="step">CPU</span>
+      <span class="arrow">→</span>
+      <span class="step">GPU</span>
+      <span class="arrow">→</span>
+      <span class="step active">TPU/NPU</span>
+      <span class="arrow">→</span>
+      <span class="step" style="border-style:dashed;border-color:rgba(0,212,255,0.3);">光子计算</span>
+      <span class="arrow">→</span>
+      <span class="step" style="border-style:dashed;border-color:rgba(240,192,64,0.3);">量子计算</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: 黄金三角 -->
+<div class="slide" data-index="12">
+  <div class="slide-inner">
+    <h2>三要素的"黄金三角"</h2>
+    <div class="glow-line"></div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="max-height:40vh;">
+        <defs>
+          <linearGradient id="gcircle1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#06d6a0"/></linearGradient>
+          <linearGradient id="gcircle2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff8c42"/><stop offset="100%" stop-color="#f0c040"/></linearGradient>
+          <linearGradient id="gcircle3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#ff6b6b"/></linearGradient>
+        </defs>
+        <!-- Triangle -->
+        <polygon points="350,60 120,290 580,290" fill="none" stroke="rgba(0,212,255,0.15)" stroke-width="2"/>
+        <!-- Data -->
+        <circle cx="350" cy="60" r="50" fill="rgba(0,212,255,0.1)" stroke="url(#gcircle1)" stroke-width="2.5"/>
+        <text x="350" y="55" text-anchor="middle" fill="#00d4ff" font-size="18" font-weight="700" font-family="Noto Sans SC, sans-serif">数据</text>
+        <text x="350" y="75" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Noto Sans SC, sans-serif">Data</text>
+        <!-- Algorithm -->
+        <circle cx="120" cy="290" r="50" fill="rgba(240,192,64,0.1)" stroke="url(#gcircle2)" stroke-width="2.5"/>
+        <text x="120" y="285" text-anchor="middle" fill="#f0c040" font-size="18" font-weight="700" font-family="Noto Sans SC, sans-serif">算法</text>
+        <text x="120" y="305" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Noto Sans SC, sans-serif">Algorithm</text>
+        <!-- Compute -->
+        <circle cx="580" cy="290" r="50" fill="rgba(124,58,237,0.1)" stroke="url(#gcircle3)" stroke-width="2.5"/>
+        <text x="580" y="285" text-anchor="middle" fill="#7c3aed" font-size="18" font-weight="700" font-family="Noto Sans SC, sans-serif">算力</text>
+        <text x="580" y="305" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Noto Sans SC, sans-serif">Compute</text>
+        <!-- Center: Value -->
+        <text x="350" y="195" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="14" font-family="Noto Sans SC, sans-serif">价值创造</text>
+        <!-- Scale labels -->
+        <text x="230" y="155" text-anchor="middle" fill="rgba(0,212,255,0.3)" font-size="11" font-family="Noto Sans SC, sans-serif">更好的算法降低算力需求</text>
+        <text x="470" y="155" text-anchor="middle" fill="rgba(0,212,255,0.3)" font-size="11" font-family="Noto Sans SC, sans-serif">高质量数据降低算法复杂度</text>
+        <text x="350" y="240" text-anchor="middle" fill="rgba(0,212,255,0.3)" font-size="11" font-family="Noto Sans SC, sans-serif">更多算力弥补数据不足</text>
+      </svg>
+    </div>
+    <div class="grid-3">
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="color:var(--accent);">2000s</div>
+        <div class="value-sm">数据是瓶颈<br>标注数据不足</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div class="value" style="color:var(--accent3);">2010s</div>
+        <div class="value-sm">算法是瓶颈<br>深度学习突破解决</div>
+      </div>
+      <div class="grid-card" style="text-align:center;border-color:rgba(0,212,255,0.3);">
+        <div class="value" style="color:var(--accent);">2020s</div>
+        <div class="value-sm">算力是瓶颈<br>GPU供不应求</div>
+      </div>
+    </div>
+    <div class="callout info" style="margin-top:0.5em;">
+      <span class="emoji">🔮</span> <strong>王坚的启示</strong>：当前语言模型在文本数据上已接近"数据天花板"，科学数据打开了新的"数据边疆"——这同时也意味着算法和算力需要适配新的数据形态。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: 第四条腿 -->
+<div class="slide" data-index="13">
+  <div class="slide-inner">
+    <h2>"第四条腿"：能源与环境</h2>
+    <div class="glow-line"></div>
+    <div class="highlight-box">
+      <div class="big">AI算力年增长 <span class="red">4×</span><br>能源效率年增长仅 <span class="gold">1.2×</span></div>
+      <div class="sub">结构性矛盾正在成为AI发展的硬约束</div>
+    </div>
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent4);">不可持续的曲线</div>
+        <div class="value-sm">
+          · 训练一个GPT-4级模型 ≈ 数千家庭全年用电<br>
+          · 全球AI数据中心能耗预计2027年将达日本全国水平<br>
+          · 每代大模型训练成本10×增长，但能效仅1.2×提升
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent3);">技术回应</div>
+        <div class="value-sm">
+          · 流体AI · 存算一体<br>
+          · 光子计算 · 模拟计算<br>
+          · 算法层面的效率优化（MoE、蒸馏、量化）<br>
+          · 一个完整的AI价值评估体系必须包含能源成本
+        </div>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="emoji">⚖️</span> <strong>被忽略的维度</strong>：当我们讨论"AI进化"时，往往只看到数据、算法、算力三个要素，却忽略了<strong>能源</strong>这个"第四要素"。能源约束不仅影响算力供给，更在根本上决定了AI的未来发展方向。
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: 批判性审视 -->
+<div class="slide" data-index="14">
+  <div class="slide-inner">
+    <h2>批判性审视</h2>
+    <div class="glow-line"></div>
+    <div class="grid-2">
+      <div class="callout danger" style="margin:0;">
+        <span class="emoji">⚠️</span> <strong>"路线单一化"的隐忧</strong><br>
+        当前行业过度聚焦大语言模型路径，资金、人才、算力高度集中。<br>
+        <strong>历史教训</strong>：1980年代专家系统泡沫、1970年代连接主义寒冬。<br>
+        <em>真正的风险不是"选错了路线"，而是"只有一条路线"。</em>
+      </div>
+      <div class="callout warn" style="margin:0;">
+        <span class="emoji">📉</span> <strong>边际递减陷阱</strong><br>
+        · 参数规模增长与性能提升不再线性相关<br>
+        · 互联网文本数据接近耗尽<br>
+        · 科学数据是否能带来"第二增长曲线"还是未知
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0.5em;">
+      <div class="callout info" style="margin:0;">
+        <span class="emoji">🎯</span> <strong>评价体系偏倚</strong><br>
+        当前AI评价偏重"语言任务"（考试、写作、对话），天然有利于大语言模型路线。我们需要：物理世界理解能力、科学发现能力、因果推理能力、鲁棒性与可信度等多元评价维度。
+      </div>
+      <div class="callout purple" style="margin:0;">
+        <span class="emoji">⚖️</span> <strong>科学与商业的矛盾</strong><br>
+        科学基础模型需要长期投入 vs 商业短期回报压力。王坚提出"Open Science"，但现实中数据主权、知识产权、商业利益纠缠使得这一理想面临巨大挑战。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: 路线扫描矩阵 -->
+<div class="slide" data-index="15">
+  <div class="slide-inner">
+    <h2>框架1：路线扫描矩阵</h2>
+    <div class="glow-line"></div>
+    <p>当面对一个具体场景时，对照矩阵判断哪条路线最有价值：</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>路线</th><th>效率提升</th><th>新知识发现</th><th>新体验创造</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>符号主义</td><td class="stars">★★★★</td><td class="stars">★★</td><td class="stars">★★</td></tr>
+          <tr><td style="color:var(--accent3);">连接主义</td><td class="stars">★★★★★</td><td class="stars">★★★</td><td class="stars">★★★★★</td></tr>
+          <tr><td style="color:var(--gold);">具身AI</td><td class="stars">★★★</td><td class="stars">★★★★</td><td class="stars">★★★★★</td></tr>
+          <tr><td style="color:var(--accent2);">贝叶斯方法</td><td class="stars">★★★</td><td class="stars">★★★</td><td class="stars">★★</td></tr>
+          <tr><td style="color:var(--accent4);">进化计算</td><td class="stars">★★★★</td><td class="stars">★★★★</td><td class="stars">★★</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout info">
+      <span class="emoji">💡</span> <strong>使用方法</strong>：在具体场景下，对照矩阵判断哪条路线最有价值。不必非此即彼，多种路线的组合往往是最优解。
+    </div>
+    <h3 style="margin-top:1em;">框架2：三要素诊断模型</h3>
+    <div class="grid-3">
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent);">Q1</div>
+        <div class="value" style="font-size:1rem;">数据瓶颈在哪？</div>
+        <div class="value-sm">需要更多数据，还是更高质量的数据，还是全新类型的数据？</div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--gold);">Q2</div>
+        <div class="value" style="font-size:1rem;">算法改进空间？</div>
+        <div class="value-sm">当前架构是否接近极限？新架构范式是否值得探索？</div>
+      </div>
+      <div class="grid-card">
+        <div class="label" style="color:var(--accent2);">Q3</div>
+        <div class="value" style="font-size:1rem;">算力投入是否值得？</div>
+        <div class="value-sm">边际收益是否高于成本？是否有更高效的算法替代方案？</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: 结语 -->
+<div class="slide" data-index="16">
+  <div class="slide-inner">
+    <h2>结语</h2>
+    <div class="glow-line"></div>
+    <div class="highlight-box">
+      <div class="big">AI的发展不是一条单一赛道的竞速，<br>而是一场<span class="accent">多路线的协同进化</span></div>
+      <div class="sub">数据-算法-算力三要素的匹配程度，决定了AI价值创造的天花板</div>
+    </div>
+    <div class="callout purple">
+      <span class="emoji">🔑</span> <strong>最终判断</strong>：科学数据的崛起意味着一个全新的"数据边疆"正在打开，但同时也对算法和算力提出了新的适配要求。在这个意义上，王坚的追问不只是对AI技术演进的回顾，更是对未来AI发展方向的深远启示。
+    </div>
+    <div class="grid-2" style="margin-top:1em;">
+      <div class="grid-card" style="text-align:center;">
+        <div class="label" style="color:var(--accent);">保持多元</div>
+        <div class="value-sm">不要被单一路线绑架<br>多元路线是AI健康发展的生态基础</div>
+      </div>
+      <div class="grid-card" style="text-align:center;">
+        <div class="label" style="color:var(--gold);">保持批判</div>
+        <div class="value-sm">对"主流叙事"保持警惕<br>真正的突破往往来自边缘</div>
+      </div>
+    </div>
+    <div class="meta" style="text-align:center;margin-top:1.5em;">
+      基于飞书文档 · 2026年7月 · 技术变革知识库
+    </div>
+  </div>
+</div>
+
+</div><!-- /slide-container -->
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  const totalEl = document.getElementById('totalSlides');
+  const currentEl = document.getElementById('currentSlide');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const dotNav = document.getElementById('dotNav');
+  let current = 0;
+  let isTransitioning = false;
+
+  totalEl.textContent = totalSlides;
+
+  // Create dots
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotNav.appendChild(dot);
+  }
+
+  function updateNav() {
+    // Update slides
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    // Update dots
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    // Update number
+    currentEl.textContent = current + 1;
+    // Progress bar
+    progressBar.style.width = ((current + 1) / totalSlides * 100) + '%';
+    // Arrows
+    prevBtn.classList.toggle('visible', current > 0);
+    nextBtn.classList.toggle('visible', current < totalSlides - 1);
+    // Scroll to top of slide content
+    slides[current].querySelector('.slide-inner').scrollTop = 0;
+  }
+
+  function goTo(idx) {
+    if (isTransitioning || idx < 0 || idx >= totalSlides || idx === current) return;
+    isTransitioning = true;
+    current = idx;
+    updateNav();
+    setTimeout(() => { isTransitioning = false; }, 500);
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goTo(totalSlides - 1);
+    }
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+  document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  }, {passive:true});
+
+  // Mouse wheel
+  document.addEventListener('wheel', (e) => {
+    if (e.deltaY > 0) goTo(current + 1);
+    else if (e.deltaY < 0) goTo(current - 1);
+  }, {passive:true});
+
+  // Initial state
+  updateNav();
+})();
+</script>
+</body>
+</html>
