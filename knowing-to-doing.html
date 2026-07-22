@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从知道到做到：行动、失败与韧性的底层逻辑</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#0a0a0f;color:#e8e4dd;font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;overflow:hidden}
+
+.slide{display:none;flex-direction:column;justify-content:center;align-items:flex-start;width:100%;height:100%;padding:5vh 6vw;overflow-y:auto}
+.slide.on{display:flex}
+.slide.c{align-items:center;text-align:center}
+
+h1,h2,h3{font-family:"Songti SC","STSong","SimSun",serif}
+h1{font-size:clamp(1.8rem,7vw,4.5rem);font-weight:900;line-height:1.2;text-align:center}
+h1 .a{color:#6ec6b8}
+h1 .b{color:#4a8f84}
+h2{font-size:clamp(1.3rem,5vw,2.8rem);font-weight:700;line-height:1.3}
+h2 .a{color:#6ec6b8}
+h2 .b{color:#4a8f84}
+p{font-size:clamp(0.95rem,3.8vw,1.5rem);line-height:1.7;font-weight:300}
+p.sm{font-size:clamp(0.8rem,3vw,1.1rem);color:#9a9588}
+p.sc{font-size:clamp(0.75rem,2.8vw,1rem);color:#6a6558;font-style:italic}
+.sub{font-size:clamp(1rem,4vw,1.7rem);font-weight:300;color:#9a9588;text-align:center;margin-top:1.5vh;letter-spacing:0.08em}
+.mt1{margin-top:1.5vh}
+.mt2{margin-top:2.5vh}
+.dv{width:3rem;height:2px;background:#2a2822;margin:1.2vh 0}
+.dv.c{margin:1.2vh auto}
+
+.card{background:rgba(255,255,255,0.03);border:1px solid #2a2822;border-radius:4px;padding:2vh 3vw;margin-bottom:1.2vh;width:100%}
+.card .lb{font-size:clamp(0.65rem,2.5vw,0.85rem);color:#6ec6b8;letter-spacing:0.08em;font-weight:500;margin-bottom:0.3vh}
+.card .lb.w{color:#9a9588}
+.card .bd{font-size:clamp(0.9rem,3.5vw,1.4rem);line-height:1.6;font-weight:300}
+
+.cc2{display:grid;grid-template-columns:1fr 1fr;gap:3vw;width:100%}
+.cc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2vw;width:100%}
+
+.hl{border:1px solid #2a2822;border-left:3px solid #6ec6b8;padding:2vh 3vw;margin-top:1.5vh;background:rgba(110,198,184,0.03)}
+.hl .lb{color:#6ec6b8;font-weight:500;font-size:clamp(0.6rem,2.3vw,0.8rem);letter-spacing:0.08em;margin-bottom:0.3vh}
+.hl p{font-size:clamp(0.85rem,3.2vw,1.2rem);line-height:1.6}
+.hl2{border:1px solid #2a2822;border-left:3px solid #4a8f84;padding:2vh 3vw;margin-top:1.5vh;background:rgba(74,143,132,0.03)}
+.hl2 .lb{color:#4a8f84;font-weight:500;font-size:clamp(0.6rem,2.3vw,0.8rem);letter-spacing:0.08em;margin-bottom:0.3vh}
+.hl2 p{font-size:clamp(0.85rem,3.2vw,1.2rem);line-height:1.6}
+.cx{border:1px solid #2a2822;padding:2.5vh 3vw;margin-top:2vh;background:rgba(110,198,184,0.03)}
+.cx p{font-size:clamp(0.9rem,3.5vw,1.4rem);line-height:1.7}
+.q{border-left:3px solid #2a2822;padding:1.2vh 3vw;margin:1.2vh 0;font-size:clamp(0.82rem,3vw,1.2rem);color:#9a9588;font-style:italic;line-height:1.6}
+.q .s{font-size:clamp(0.65rem,2.4vw,0.85rem);font-style:normal;color:#6ec6b8;margin-top:0.5vh}
+
+.tbl{width:100%;border:1px solid #2a2822;font-size:clamp(0.72rem,2.8vw,1rem)}
+.tbl .r{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,0.03)}
+.tbl .r:last-child{border-bottom:none}
+.tbl .h{padding:0.8vh 2vw;font-weight:700;background:rgba(255,255,255,0.04);color:#6ec6b8}
+.tbl .c{padding:0.8vh 2vw;font-weight:300;line-height:1.5;border-right:1px solid rgba(255,255,255,0.03)}
+.tbl .c:last-child{border-right:none}
+.tbl .c:nth-child(2){color:#6ec6b8}
+
+.tl2{position:relative;width:100%;padding-left:0.8rem}
+.tl2::before{content:'';position:absolute;left:0;top:0.3rem;bottom:0.3rem;width:1px;background:#2a2822}
+.tl2 .itm{padding-left:3vw;margin-bottom:1.2vh;position:relative}
+.tl2 .itm::before{content:'';position:absolute;left:-4px;top:0.5rem;width:9px;height:9px;border-radius:50%;background:#2a2822}
+.tl2 .yr{font-size:clamp(0.7rem,2.6vw,0.9rem);color:#6ec6b8;font-weight:600}
+.tl2 .tx{font-size:clamp(0.78rem,2.8vw,1.05rem);font-weight:300;line-height:1.5}
+
+.nav{position:fixed;bottom:2vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3vw;z-index:100;background:rgba(10,10,15,0.85);padding:0.6vh 4vw;border-radius:8px;border:1px solid #2a2822}
+.nav button{background:none;border:none;color:#9a9588;font-size:1.4rem;cursor:pointer;padding:0 1vw;line-height:1;-webkit-tap-highlight-color:transparent}
+.nav button:active{color:#6ec6b8}
+.nav .dots{display:flex;gap:2vw}
+.nav .dot{width:7px;height:7px;border-radius:50%;background:#2a2822;cursor:pointer;transition:background 0.3s;-webkit-tap-highlight-color:transparent}
+.nav .dot.on{background:#6ec6b8}
+.nav .ct{font-size:0.75rem;color:#9a9588;font-weight:300;min-width:4em;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="slide c on" data-i="0">
+  <p style="font-size:1.5rem;color:#2a2822;letter-spacing:0.5em;margin-bottom:1.5vh;">⏤⏤⏤</p>
+  <h1>从知道到做到</h1>
+  <p class="sub">行动、失败与韧性的底层逻辑</p>
+  <div class="dv c"></div>
+  <p class="sm" style="text-align:center;max-width:80%;">讲一百遍道理不如自己做一遍。<br>但做一遍之后呢？</p>
+  <p style="margin-top:4vh;font-size:clamp(0.65rem,2.5vw,0.85rem);color:#9a9588;font-weight:300;letter-spacing:0.05em;">2026.07 · 散步时想到的</p>
+</div>
+
+<div class="slide" data-i="1">
+  <h2>一、<span class="a">核心命题</span></h2>
+  <div class="dv"></div>
+  <p>知识不通过行动，就不会变成你的。</p>
+  <p class="mt1">道理是外部信息，行动是内部转化。中间隔着一道最深的鸿沟：<span style="color:#6ec6b8;">知道和做到的鸿沟。</span></p>
+  <div class="hl mt1">
+    <div class="lb">💡 真相</div>
+    <p>这个鸿沟不是智力的差距，不是信息量的差距，而是<span style="color:#6ec6b8;">勇气和启动机制</span>的问题。你可以在脑子里把一件事想得无比清楚，但如果不去做，它永远是别人的道理，不是你的经验。</p>
+  </div>
+  <div class="q">"经验，是唯一能改变你的东西。"</div>
+</div>
+
+<div class="slide" data-i="2">
+  <h2>二、<span class="a">行动的启动</span></h2>
+  <div class="dv"></div>
+  <p class="sm">勇气从哪里来？</p>
+  <div class="hl2">
+    <div class="lb">⚡ 勇气不是"没有恐惧"</div>
+    <p>勇气是：<span style="color:#6ec6b8;">你害怕，但你仍然做了。</span></p>
+  </div>
+  <div class="cc2 mt1">
+    <div class="card"><div class="lb w">启动需要的三要素</div><div class="bd">① 一个足够强的"为什么"——意义大到恐惧可以承受<br>② 一个足够小的第一步——启动门槛降到接近零<br>③ 一个外部承诺——用社会压力推动自己</div></div>
+    <div class="card"><div class="lb">激励的两种来源</div><div class="bd"><span style="color:#9a9588;">外部激励</span>（奖励、认可、竞争）→ 短期有效<br><span style="color:#6ec6b8;">内部激励</span>（好奇、意义、成长）→ 长期有效</div></div>
+  </div>
+</div>
+
+<div class="slide" data-i="3">
+  <h2>三、<span class="a">失败的必然性</span></h2>
+  <div class="dv"></div>
+  <div class="hl2"><div class="lb">⚠️ 行动 = 暴露在失败中</div><p>只要你行动，就一定会遇到失败。这不是概率问题，而是<span style="color:#6ec6b8;">必然</span>。</p></div>
+  <div class="card mt1"><div class="lb w">💔 失败的三重打击</div><div class="bd">① <span style="color:#9a9588;">自尊打击</span>——"我连这个都做不好，我是不是不行？"<br>② <span style="color:#9a9588;">自信打击</span>——"我下次还能做好吗？"<br>③ <span style="color:#9a9588;">外部损失</span>——时间、金钱、机会、别人的评价</div></div>
+  <div class="hl mt1">
+    <div class="lb">💡 关键认知</div>
+    <p>失败不是行动的副作用，而是<span style="color:#6ec6b8;">行动的一部分</span>。很多人经历一次失败后不再尝试——不是因为软弱，而是因为承受了三重打击，却没有恢复的机制。</p>
+  </div>
+</div>
+
+<div class="slide" data-i="4">
+  <h2>四、<span class="a">韧性：Pull yourself together</span></h2>
+  <div class="dv"></div>
+  <p class="sm">从散落的状态重新整合自己的能力</p>
+  <div class="cc3 mt1">
+    <div class="card"><div class="lb">😌 情绪韧性</div><div class="bd" style="font-size:clamp(0.78rem,3vw,1.1rem);">允许感受情绪，但不被情绪控制。给自己一个"情绪恢复期"——几分钟到几小时，然后开始理性分析。</div></div>
+    <div class="card"><div class="lb">🧠 认知韧性</div><div class="bd" style="font-size:clamp(0.78rem,3vw,1.1rem);">区分"这件事失败了"和"我是一个失败者"。找到具体原因，提取可用教训，而不是泛化归因、沉溺自责。</div></div>
+    <div class="card"><div class="lb">💪 行动韧性</div><div class="bd" style="font-size:clamp(0.78rem,3vw,1.1rem);">在自尊自信受损的情况下，仍然愿意再次尝试。调整策略，而不是放弃目标。把失败当作"数据"，而不是"判决"。</div></div>
+  </div>
+  <div class="hl mt1"><div class="lb">💪 韧性不是天生的，是练出来的</div><p>它像肌肉一样，需要反复承受压力并在压力后恢复。每一次失败后恢复，都是一次韧性训练。</p></div>
+</div>
+
+<div class="slide" data-i="5">
+  <h2>五、<span class="a">个性 · 惯性 · 契机</span></h2>
+  <div class="dv"></div>
+  <div class="card"><div class="lb w">🧬 个性因素</div><div class="bd">高敏感的人对失败感受更强烈，恢复更慢，但分析更深。低敏感的人恢复更快，但可能重复犯错。<span style="color:#6ec6b8;">关键不是改变个性，而是了解个性，设计适合你的恢复机制。</span></div></div>
+  <div class="card"><div class="lb w">🔄 惯性因素</div><div class="bd"><span style="color:#4a8f84;">向下惯性</span>：失败→自我怀疑→不敢行动→更多失败<br><span style="color:#6ec6b8;">向上惯性</span>：失败→调整→小成功→信心恢复→更大行动<br><span style="color:#6ec6b8;">打破向下惯性的关键：失败后尽快创造一个小成功。</span></div></div>
+  <div class="card"><div class="lb w">✨ 契机因素</div><div class="bd">一句关键的话、一个榜样、一件偶然做成的小事。契机不可控，但<span style="color:#6ec6b8;">保持开放、保持联系、保持行动</span>——可以增加遇到契机的概率。</div></div>
+</div>
+
+<div class="slide" data-i="6">
+  <h2>六、<span class="a">客观看待</span></h2>
+  <div class="dv"></div>
+  <p>从"我失败了"到"这只是一个数据点"</p>
+  <div class="cc2 mt1">
+    <div class="card"><div class="lb w">😰 自我视角</div><div class="bd">"我失败了" → 自我否定<br>"别人会怎么看我" → 社会焦虑<br>"我是不是选错了" → 后悔</div></div>
+    <div class="card"><div class="lb">🔍 客观视角</div><div class="bd">"这个方案没有达到预期效果" → 客观描述<br>"这个策略在这个环境下不适用" → 条件分析<br>"下次可以调整X参数" → 迭代思维</div></div>
+  </div>
+  <div class="hl mt1">
+    <div class="lb">💡 一个简单的方法</div>
+    <p><span style="color:#6ec6b8;">把"我"从句子中拿掉。</span><br>❌ "我失败了" → ✅ "这个尝试没有产生预期结果"<br>❌ "我不行" → ✅ "能力在这个阶段还不够匹配这个任务"<br>这不是文字游戏——这是语言重构认知。</p>
+  </div>
+</div>
+
+<div class="slide" data-i="7">
+  <h2>七、<span class="a">完整循环</span></h2>
+  <div class="dv"></div>
+  <div class="card c">
+    <div class="bd" style="line-height:2.2;font-size:clamp(0.85rem,3.2vw,1.2rem);">
+      启动勇气 → <span style="color:#6ec6b8;">行动</span> → 暴露在失败中 → 三重打击<br>
+      <span style="color:#4a8f84;">↓</span><br>
+      韧性机制启动：<span style="color:#6ec6b8;">情绪恢复 → 认知分析 → 行动调整</span><br>
+      <span style="color:#4a8f84;">↓</span><br>
+      小成功 → 信心修复 → 更大的行动 → 更强的韧性<br>
+      <span style="color:#4a8f84;">↓</span><br>
+      <span style="color:#6ec6b8;">下一次失败时，恢复速度更快，恢复质量更高</span>
+    </div>
+  </div>
+  <div class="hl mt1">
+    <div class="lb">🎯 循环的关键</div>
+    <p>① 启动勇气决定你是否进入循环<br>② 韧性机制决定你能否在失败后继续<br>③ 小成功是打破负向惯性的关键节点<br>④ 每一次循环都在训练韧性</p>
+  </div>
+</div>
+
+<div class="slide" data-i="8">
+  <h2>八、<span class="a">对自己诚实的三个问题</span></h2>
+  <div class="dv"></div>
+  <div class="tl2">
+    <div class="itm"><div class="yr">问题一</div><div class="tx">你现在的行动，有多少是"逃避"驱动的？——如果是因为害怕不做会怎样，而不是想做会怎样，这个动力是脆弱的。</div></div>
+    <div class="itm"><div class="yr">问题二</div><div class="tx">你上一次失败后，是怎么恢复的？——陷入了自责循环，还是快速转向了分析？你的恢复模式是什么？</div></div>
+    <div class="itm"><div class="yr">问题三</div><div class="tx">你允许自己失败吗？——如果你不允许自己失败，你就不会采取真正有挑战性的行动。如果你不采取有挑战性的行动，你就不会真正成长。</div></div>
+  </div>
+  <div class="hl mt1">
+    <div class="lb">💡 允许失败，不是放纵自己</div>
+    <p>而是<span style="color:#6ec6b8;">给自己成长的许可</span>。</p>
+  </div>
+</div>
+
+<div class="slide" data-i="9">
+  <h2>九、<span class="a">一个更完整的视角</span></h2>
+  <div class="dv"></div>
+  <p>讲道理一百遍不如自己做一遍。但做一遍之后，你要准备好面对失败，要在失败中学会站起来，要在站起来之后继续做下一遍。</p>
+  <div class="cx mt1">
+    <p style="color:#4a8f84;">第1次：行动 → 失败 → 勉强站起来</p>
+    <p style="color:#6ec6b8;margin-top:0.5vh;">第2次：行动 → 失败 → 更快站起来</p>
+    <p style="color:#6ec6b8;margin-top:0.5vh;font-weight:400;">第3次：行动 → 部分成功 → 信心增加</p>
+    <p style="color:#e8e4dd;margin-top:0.5vh;font-weight:400;">第N次：行动 → 成功 → 但你知道，下一个失败在等着你</p>
+  </div>
+  <div class="hl mt1">
+    <div class="lb">🎯 真正的成长</div>
+    <p>不是"不再失败"，而是<span style="color:#6ec6b8;">"失败后站起来的速度越来越快"</span>。</p>
+  </div>
+  <p class="sc mt2">而这一切的起点，就是那个最简单的动作：去做。</p>
+</div>
+
+<div class="nav">
+  <button id="p">←</button>
+  <div class="dots" id="d"></div>
+  <span class="ct" id="c">1 / 10</span>
+  <button id="n">→</button>
+</div>
+
+<script>
+(function(){
+  var s=document.querySelectorAll('.slide'),dl=document.getElementById('d'),ct=document.getElementById('c'),p=document.getElementById('p'),n=document.getElementById('n'),cur=0,t=s.length;
+  for(var i=0;i<t;i++){var d=document.createElement('div');d.className='dot'+(i===0?' on':'');(function(j){d.addEventListener('click',function(){g(j)})})(i);dl.appendChild(d)}
+  function g(idx){if(idx<0||idx>=t||idx===cur)return;s[cur].className='slide';s[idx].className='slide on';cur=idx;var ds=document.querySelectorAll('.dot');for(var i=0;i<ds.length;i++)ds[i].className='dot'+(i===cur?' on':'');ct.textContent=(cur+1)+' / '+t}
+  p.addEventListener('click',function(){g(cur-1)});n.addEventListener('click',function(){g(cur+1)});
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')g(cur-1);if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();g(cur+1)}});
+  var tx=0;document.addEventListener('touchstart',function(e){tx=e.changedTouches[0].screenX});
+  document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].screenX-tx;if(Math.abs(dx)>50){if(dx<0)g(cur+1);else g(cur-1)}});
+})();
+</script>
+</body>
+</html>
