@@ -8,27 +8,40 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
     width: 100%; height: 100%;
-    overflow: hidden;
     background: #050508;
     color: #e8e4dd;
     font-family: "PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
     font-size: 16px;
   }
 
-  .slider { width: 100%; height: 100%; position: relative; overflow: hidden; }
-
-  .slide {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
+  body {
     display: flex; flex-direction: column;
-    justify-content: center; padding: 5vh 6vw;
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-    transform: translateX(100%);
-    transition: transform 0.45s ease;
-    will-change: transform;
+    position: relative;
+    overflow: hidden;
   }
-  .slide.active { transform: translateX(0); }
-  .slide.prev { transform: translateX(-100%); }
+
+  /* ──────── Slide ──────── */
+  .slide {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5vh 6vw;
+    width: 100%; height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    animation: none;
+    position: absolute;
+    top: 0; left: 0;
+  }
+  .slide.show {
+    display: flex;
+    animation: fadeIn 0.35s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
   h1, h2, h3, .serif {
     font-family: "Songti SC","STSong","Noto Serif SC","SimSun","Georgia",serif;
@@ -39,33 +52,24 @@
     font-weight: 900; line-height: 1.2;
     letter-spacing: 0.02em; text-align: center;
   }
-  h1 .accent { color: #4fc3f7; }
-  h1 .gold { color: #c9a84c; }
+  h1 .a { color: #4fc3f7; }
+  h1 .g { color: #c9a84c; }
 
   h2 {
     font-size: clamp(1.3rem, 5vw, 2.8rem);
     font-weight: 700; line-height: 1.3;
     letter-spacing: 0.02em;
   }
-  h2 .accent { color: #4fc3f7; }
-  h2 .gold { color: #c9a84c; }
-
-  h3 {
-    font-size: clamp(1rem, 4vw, 1.8rem);
-    font-weight: 600; color: #4fc3f7;
-    letter-spacing: 0.03em; margin-bottom: 0.5vh;
-  }
+  h2 .a { color: #4fc3f7; }
+  h2 .g { color: #c9a84c; }
 
   p {
     font-size: clamp(0.95rem, 3.8vw, 1.5rem);
     line-height: 1.7; font-weight: 300;
   }
-  p.sm {
-    font-size: clamp(0.8rem, 3vw, 1.1rem);
-    color: #9a9588;
-  }
+  p.sm { font-size: clamp(0.8rem, 3vw, 1.1rem); color: #9a9588; }
 
-  .subtitle {
+  .sub {
     font-size: clamp(1rem, 4vw, 1.7rem);
     font-weight: 300; color: #9a9588;
     text-align: center; margin-top: 1.5vh;
@@ -74,16 +78,15 @@
 
   .tc { text-align: center; align-items: center; }
   .tl { text-align: left; align-items: flex-start; }
-
   .mt1 { margin-top: 1.5vh; }
   .mt2 { margin-top: 2.5vh; }
   .mt3 { margin-top: 4vh; }
 
-  .divider {
+  .dv {
     width: 3rem; height: 2px;
     background: #2a2822; margin: 1.2vh 0;
   }
-  .divider.c { margin: 1.2vh auto; }
+  .dv.c { margin: 1.2vh auto; }
 
   .card {
     background: rgba(255,255,255,0.03);
@@ -110,17 +113,12 @@
     display: grid; grid-template-columns: 1fr 1fr 1fr;
     gap: 2vw; width: 100%;
   }
-  .cc4 {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 2vw; width: 100%;
-  }
   @media (min-width: 600px) {
     .cc4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
   }
+  .cc4 { display: grid; grid-template-columns: 1fr 1fr; gap: 2vw; width: 100%; }
 
-  .num {
-    text-align: center;
-  }
+  .num { text-align: center; }
   .num .n {
     font-family: "Songti SC","STSong","Noto Serif SC","SimSun",serif;
     font-size: clamp(1.6rem, 8vw, 3.2rem);
@@ -131,16 +129,6 @@
     font-size: clamp(0.7rem, 2.5vw, 0.9rem);
     color: #9a9588; font-weight: 300; line-height: 1.3;
   }
-
-  .tag {
-    display: inline-block; padding: 0.2vh 2vw;
-    font-size: clamp(0.6rem, 2.2vw, 0.8rem);
-    font-weight: 500; border-radius: 3px;
-    margin-right: 0.8vw; margin-bottom: 0.5vh;
-    white-space: nowrap;
-  }
-  .tag.b { background: rgba(79,195,247,0.12); color: #4fc3f7; border: 1px solid rgba(79,195,247,0.25); }
-  .tag.g { background: rgba(201,168,76,0.12); color: #c9a84c; border: 1px solid rgba(201,168,76,0.25); }
 
   .q {
     border-left: 3px solid #2a2822;
@@ -164,54 +152,30 @@
     font-size: clamp(0.6rem, 2.3vw, 0.8rem);
     letter-spacing: 0.08em; margin-bottom: 0.3vh;
   }
-  .hl p {
-    font-size: clamp(0.85rem, 3.2vw, 1.2rem);
-    line-height: 1.6;
-  }
+  .hl p { font-size: clamp(0.85rem, 3.2vw, 1.2rem); line-height: 1.6; }
 
   .cx {
     border: 1px solid #2a2822;
     padding: 2.5vh 3vw; margin-top: 2vh;
     background: rgba(79,195,247,0.03);
   }
-  .cx p {
-    font-size: clamp(0.9rem, 3.5vw, 1.4rem);
-    line-height: 1.7;
-  }
+  .cx p { font-size: clamp(0.9rem, 3.5vw, 1.4rem); line-height: 1.7; }
 
-  .tbl {
-    width: 100%; border: 1px solid #1e1c18;
-    font-size: clamp(0.72rem, 2.8vw, 1rem);
-  }
-  .tbl .r {
-    display: grid; grid-template-columns: 1fr 1fr;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-  }
-  .tbl .r:last-child { border-bottom: none; }
-  .tbl .h {
-    padding: 1vh 2vw; font-weight: 700;
-    background: rgba(255,255,255,0.04); color: #4fc3f7;
-  }
-  .tbl .c {
-    padding: 0.8vh 2vw; font-weight: 300; line-height: 1.5;
-  }
-  .tbl .c:nth-child(2) { color: #c9a84c; }
-
-  .tl { position: relative; width: 100%; padding-left: 0.8rem; }
-  .tl::before {
+  .tl2 { position: relative; width: 100%; padding-left: 0.8rem; }
+  .tl2::before {
     content: ''; position: absolute; left: 0; top: 0.3rem; bottom: 0.3rem;
     width: 1px; background: #1e1c18;
   }
-  .tl .itm { padding-left: 3vw; margin-bottom: 1.2vh; position: relative; }
-  .tl .itm::before {
+  .tl2 .itm { padding-left: 3vw; margin-bottom: 1.2vh; position: relative; }
+  .tl2 .itm::before {
     content: ''; position: absolute; left: -4px; top: 0.5rem;
     width: 9px; height: 9px; border-radius: 50%; background: #2a2822;
   }
-  .tl .yr {
+  .tl2 .yr {
     font-size: clamp(0.7rem, 2.6vw, 0.9rem);
     color: #4fc3f7; font-weight: 600;
   }
-  .tl .tx {
+  .tl2 .tx {
     font-size: clamp(0.78rem, 2.8vw, 1.05rem);
     font-weight: 300; line-height: 1.5;
   }
@@ -256,212 +220,203 @@
 </head>
 <body>
 
-<div class="slider" id="slider">
+<!-- ════ 1: TITLE ════ -->
+<div class="slide tc show" data-i="0">
+  <p style="font-size:1.5rem;color:#2a2822;letter-spacing:0.5em;margin-bottom:1.5vh;">⏤⏤⏤</p>
+  <h1>AI的下一程<br><span class="a">是物理世界</span></h1>
+  <p class="sub">从WAIC 2026看中国选择的必然与优势</p>
+  <div class="dv c"></div>
+  <p class="sm" style="text-align:center;max-width:80%;">四位发言人的不同切入点，指向同一个方向</p>
+  <p style="margin-top:4vh;font-size:clamp(0.65rem,2.5vw,0.85rem);color:#4fc3f7;font-weight:300;letter-spacing:0.05em;">2026.07 · 技术变革</p>
+</div>
 
-  <!-- ════ 1: TITLE ════ -->
-  <div class="slide tc active">
-    <p style="font-size:1.5rem;color:#2a2822;letter-spacing:0.5em;margin-bottom:1.5vh;">⏤⏤⏤</p>
-    <h1>AI的下一程<br><span class="accent">是物理世界</span></h1>
-    <p class="subtitle">从WAIC 2026看中国选择的必然与优势</p>
-    <div class="divider c"></div>
-    <p class="sm" style="text-align:center;max-width:80%;">四位发言人的不同切入点，指向同一个方向</p>
-    <p style="margin-top:4vh;font-size:clamp(0.65rem,2.5vw,0.85rem);color:#4fc3f7;font-weight:300;letter-spacing:0.05em;">2026.07 · 技术变革</p>
+<!-- ════ 2: 同一个信号 ════ -->
+<div class="slide tl" data-i="1">
+  <h2>一、<span class="a">同一个信号</span></h2>
+  <div class="dv"></div>
+  <p class="sm">WAIC 2026 · 四位发言人的共同指向</p>
+  <div class="cc2 mt1">
+    <div class="card"><div class="lb">总书记 · 方向论</div><div class="bd">AI从数字世界走向物理世界</div></div>
+    <div class="card"><div class="lb">王坚 · 数据论</div><div class="bd">从人类文本到物理世界的原始信号</div></div>
+    <div class="card"><div class="lb">Sutton · 未来论</div><div class="bd">从人类数据到机器在现实中生成经验</div></div>
+    <div class="card"><div class="lb">印奇 · 产品论</div><div class="bd">从聊天框到手机·汽车·机器人</div></div>
   </div>
-
-  <!-- ════ 2: 同一个信号 ════ -->
-  <div class="slide tl">
-    <h2>一、<span class="accent">同一个信号</span></h2>
-    <div class="divider"></div>
-    <p class="sm">WAIC 2026 · 四位发言人的共同指向</p>
-    <div class="cc2 mt1">
-      <div class="card"><div class="lb">总书记 · 方向论</div><div class="bd">AI从数字世界走向物理世界</div></div>
-      <div class="card"><div class="lb">王坚 · 数据论</div><div class="bd">从人类文本到物理世界的原始信号</div></div>
-      <div class="card"><div class="lb">Sutton · 未来论</div><div class="bd">从人类数据到机器在现实中生成经验</div></div>
-      <div class="card"><div class="lb">印奇 · 产品论</div><div class="bd">从聊天框到手机·汽车·机器人</div></div>
-    </div>
-    <div class="hl">
-      <div class="lb">🎯 核心共识</div>
-      <p>四个人的切入点不同——政策、数据、学习范式、产品形态——但核心指向完全相同：<span style="color:#4fc3f7;font-weight:400;">AI的下一程，是物理世界</span>。</p>
-    </div>
+  <div class="hl">
+    <div class="lb">🎯 核心共识</div>
+    <p>四个人的切入点不同——政策、数据、学习范式、产品形态——但核心指向完全相同：<span style="color:#4fc3f7;font-weight:400;">AI的下一程，是物理世界</span>。</p>
   </div>
+</div>
 
-  <!-- ════ 3: 方向论 ════ -->
-  <div class="slide tl">
-    <h2>二、<span class="accent">方向论</span></h2>
-    <p style="font-size:clamp(0.85rem,3.2vw,1.1rem);color:#4fc3f7;">总书记：从数字世界到物理世界</p>
-    <div class="divider"></div>
-    <div class="tl">
-      <div class="itm"><div class="yr">第一层 · 技术扩散</div><div class="tx">AI技术扩散的自然延伸——数字化改造接近尾声，下一个价值洼地在物理世界：制造业、农业、物流、能源、建筑</div></div>
-      <div class="itm"><div class="yr">第二层 · 泡沫纠偏</div><div class="tx">防止AI长期停留在"聊天、生成、推荐"层面——只有走向物理世界，AI才能证明自己有"改造物质世界"的真实能力</div></div>
-      <div class="itm"><div class="yr">第三层 · 国家战略</div><div class="tx">谁先让AI大规模进入物理世界，谁就在下一轮产业竞争中占据先机——这不是技术选择，而是国家战略选择</div></div>
-    </div>
+<!-- ════ 3: 方向论 ════ -->
+<div class="slide tl" data-i="2">
+  <h2>二、<span class="a">方向论</span></h2>
+  <p style="font-size:clamp(0.85rem,3.2vw,1.1rem);color:#4fc3f7;">总书记：从数字世界到物理世界</p>
+  <div class="dv"></div>
+  <div class="tl2">
+    <div class="itm"><div class="yr">第一层 · 技术扩散</div><div class="tx">AI技术扩散的自然延伸——数字化改造接近尾声，下一个价值洼地在物理世界：制造业、农业、物流、能源、建筑</div></div>
+    <div class="itm"><div class="yr">第二层 · 泡沫纠偏</div><div class="tx">防止AI长期停留在"聊天、生成、推荐"层面——只有走向物理世界，AI才能证明自己有"改造物质世界"的真实能力</div></div>
+    <div class="itm"><div class="yr">第三层 · 国家战略</div><div class="tx">谁先让AI大规模进入物理世界，谁就在下一轮产业竞争中占据先机——这不是技术选择，而是国家战略选择</div></div>
   </div>
+</div>
 
-  <!-- ════ 4: 数据论 + 未来论 ════ -->
-  <div class="slide tl">
-    <h2>三、<span class="accent">数据论</span> · <span class="gold">未来论</span></h2>
-    <div class="divider"></div>
+<!-- ════ 4: 数据论 + 未来论 ════ -->
+<div class="slide tl" data-i="3">
+  <h2>三、<span class="a">数据论</span> · <span class="g">未来论</span></h2>
+  <div class="dv"></div>
+  <div class="card">
+    <div class="lb">王坚 · 数据论</div>
+    <div class="bd">当前AI的"世界知识"是二手知识——人类文本是对物理世界的描述，但描述不等于体验。物理信号远比人类文本丰富：传感器数据、科学仪器数据、工业设备运行数据。<span style="color:#4fc3f7;">基础模型的下一个数据源应该是物理世界本身。</span></div>
+  </div>
+  <div class="card">
+    <div class="lb g">Sutton · 未来论</div>
+    <div class="bd">当前主流范式（LLM）本质上是"通过人类数据学习人类经验"。但人类经验有上限——感官范围、行动速度、认知偏见。<span style="color:#c9a84c;">真正的突破在于让机器在现实中生成自己的经验</span>——不是学习人类做过的事，而是探索人类从未做过的事。</div>
+  </div>
+  <div class="q">"学习的主体从人变成了机器。机器不再是被动的学习者，而是主动的探索者。"</div>
+</div>
+
+<!-- ════ 5: 产品论 ════ -->
+<div class="slide tl" data-i="4">
+  <h2>四、<span class="a">产品论</span></h2>
+  <p style="font-size:clamp(0.85rem,3.2vw,1.1rem);color:#4fc3f7;">印奇：从聊天框到生产力单元</p>
+  <div class="dv"></div>
+  <div class="cc3">
+    <div class="card tc"><div class="lb">📱 手机</div><div class="bd">AI成为个人助理，调用各种App完成复杂操作</div></div>
+    <div class="card tc"><div class="lb">🚗 汽车</div><div class="bd">AI成为驾驶者，直接操作物理空间中的移动载体</div></div>
+    <div class="card tc"><div class="lb">🤖 机器人</div><div class="bd">AI成为物理操作者，在工业和服务场景中执行具体任务</div></div>
+  </div>
+  <p class="sm mt1" style="text-align:center;">从信息处理 → 空间移动 → 物理操作</p>
+  <p class="sm" style="text-align:center;color:#4fc3f7;font-weight:400;">AI从"大脑"变成了"大脑+手脚"</p>
+</div>
+
+<!-- ════ 6: 范式切换 ════ -->
+<div class="slide tl" data-i="5">
+  <h2>五、<span class="a">范式切换</span>的必然性</h2>
+  <div class="dv"></div>
+  <div class="card">
+    <div class="lb">📊 数据的物理极限</div>
+    <div class="bd">互联网文本数据增长放缓，高质量文本几乎"用尽"。物理世界产生的数据是无限的——每一台传感器、每一条生产线都在持续产生数据。<span style="color:#4fc3f7;">数据瓶颈的解决方案不在数字世界内部，而在物理世界。</span></div>
+  </div>
+  <div class="card">
+    <div class="lb">💰 价值的物理锚点</div>
+    <div class="bd">数字世界AI主要优化信息流（推荐、搜索、广告）。但全球GDP的大部分价值来自物理世界——制造业、物流、能源、农业、建筑。<span style="color:#c9a84c;">AI要证明经济价值，必须进入物理世界创造实际产出。</span></div>
+  </div>
+  <div class="card">
+    <div class="lb">👤 人类需求的物理本质</div>
+    <div class="bd">人类的需求最终是物理的——吃饭、穿衣、居住、出行、看病。AI只有深入物理世界，才能从根本上提升人类满足这些需求的能力。</div>
+  </div>
+</div>
+
+<!-- ════ 7: 中国选择的必然性 ════ -->
+<div class="slide tl" data-i="6">
+  <h2>六、<span class="a">中国选择</span>的必然性</h2>
+  <div class="dv"></div>
+  <div class="cc2">
     <div class="card">
-      <div class="lb">王坚 · 数据论</div>
-      <div class="bd">当前AI的"世界知识"是二手知识——人类文本是对物理世界的描述，但描述不等于体验。物理信号远比人类文本丰富：传感器数据、科学仪器数据、工业设备运行数据。<span style="color:#4fc3f7;">基础模型的下一个数据源应该是物理世界本身。</span></div>
-    </div>
-    <div class="card">
-      <div class="lb g">Sutton · 未来论</div>
-      <div class="bd">当前主流范式（LLM）本质上是"通过人类数据学习人类经验"。但人类经验有上限——感官范围、行动速度、认知偏见。<span style="color:#c9a84c;">真正的突破在于让机器在现实中生成自己的经验</span>——不是学习人类做过的事，而是探索人类从未做过的事。</div>
-    </div>
-    <div class="q">"学习的主体从人变成了机器。机器不再是被动的学习者，而是主动的探索者。"</div>
-  </div>
-
-  <!-- ════ 5: 产品论 ════ -->
-  <div class="slide tl">
-    <h2>四、<span class="accent">产品论</span></h2>
-    <p style="font-size:clamp(0.85rem,3.2vw,1.1rem);color:#4fc3f7;">印奇：从聊天框到生产力单元</p>
-    <div class="divider"></div>
-    <div class="cc3">
-      <div class="card tc"><div class="lb">📱 手机</div><div class="bd">AI成为个人助理，调用各种App完成复杂操作</div></div>
-      <div class="card tc"><div class="lb">🚗 汽车</div><div class="bd">AI成为驾驶者，直接操作物理空间中的移动载体</div></div>
-      <div class="card tc"><div class="lb">🤖 机器人</div><div class="bd">AI成为物理操作者，在工业和服务场景中执行具体任务</div></div>
-    </div>
-    <p class="sm mt1" style="text-align:center;">从信息处理 → 空间移动 → 物理操作</p>
-    <p class="sm" style="text-align:center;color:#4fc3f7;font-weight:400;">AI从"大脑"变成了"大脑+手脚"</p>
-  </div>
-
-  <!-- ════ 6: 范式切换 ════ -->
-  <div class="slide tl">
-    <h2>五、<span class="accent">范式切换</span>的必然性</h2>
-    <div class="divider"></div>
-    <div class="card">
-      <div class="lb">📊 数据的物理极限</div>
-      <div class="bd">互联网文本数据增长放缓，高质量文本几乎"用尽"。物理世界产生的数据是无限的——每一台传感器、每一条生产线都在持续产生数据。<span style="color:#4fc3f7;">数据瓶颈的解决方案不在数字世界内部，而在物理世界。</span></div>
-    </div>
-    <div class="card">
-      <div class="lb">💰 价值的物理锚点</div>
-      <div class="bd">数字世界AI主要优化信息流（推荐、搜索、广告）。但全球GDP的大部分价值来自物理世界——制造业、物流、能源、农业、建筑。<span style="color:#c9a84c;">AI要证明经济价值，必须进入物理世界创造实际产出。</span></div>
-    </div>
-    <div class="card">
-      <div class="lb">👤 人类需求的物理本质</div>
-      <div class="bd">人类的需求最终是物理的——吃饭、穿衣、居住、出行、看病。AI只有深入物理世界，才能从根本上提升人类满足这些需求的能力。</div>
-    </div>
-  </div>
-
-  <!-- ════ 7: 中国选择的必然性 ════ -->
-  <div class="slide tl">
-    <h2>六、<span class="accent">中国选择</span>的必然性</h2>
-    <div class="divider"></div>
-    <div class="cc2">
-      <div class="card">
-        <div class="lb">🏭 制造业基础</div>
-        <div class="bd">中国制造业增加值占全球30%+，拥有最完整的工业体系。<span style="color:#4fc3f7;">当AI需要"物理世界"时，中国正好是物理世界最密集的地方。</span></div>
-      </div>
-      <div class="card">
-        <div class="lb">📈 产业升级需求</div>
-        <div class="bd">人口红利消退，劳动力成本上升。AI向物理世界的渗透，是中国制造业升级的核心引擎——不是"锦上添花"，而是"非做不可"。</div>
-      </div>
-    </div>
-    <div class="cc2 mt1">
-      <div class="card">
-        <div class="lb">🌐 数字经济延伸</div>
-        <div class="bd">消费互联网发展成熟，下一个自然延伸方向就是将AI能力从数字世界迁移到物理世界——从电商到产业互联网。</div>
-      </div>
-      <div class="card">
-        <div class="lb">🏛 政策导向</div>
-        <div class="bd">从"新质生产力"到"人工智能+"，政策信号一贯明确：<span style="color:#c9a84c;">AI要为实体经济服务，要进入工厂、车间、农田、医院。</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════ 8: 比较优势 ════ -->
-  <div class="slide tl">
-    <h2>七、<span class="accent">比较优势</span></h2>
-    <div class="divider"></div>
-    <div class="tbl">
-      <div class="r"><div class="h">维度</div><div class="h">中国</div></div>
-      <div class="r"><div class="c">硬件制造</div><div class="c">全球第一，供应链完善</div></div>
-      <div class="r"><div class="c">机器人市场</div><div class="c">全球最大，快速部署</div></div>
-      <div class="r"><div class="c">场景丰富度</div><div class="c">制造业·物流·交通·能源·医疗，全球最全</div></div>
-      <div class="r"><div class="c">落地速度</div><div class="c">从政策到试点到规模化，节奏远快于欧美</div></div>
-      <div class="r"><div class="c">产业整合</div><div class="c">硬件+供应链+场景+政策，综合优势结构性</div></div>
-    </div>
-    <div class="hl mt1">
-      <div class="lb">🏟 核心判断</div>
-      <p>AI竞争分为两个赛场：<span style="color:#9a9588;">数字世界AI（美国主场）</span> vs <span style="color:#4fc3f7;font-weight:400;">物理世界AI（中国主场）</span>。<br>这不是一场追赶赛，而是一场<span style="color:#4fc3f7;">主场赛</span>。</p>
-    </div>
-  </div>
-
-  <!-- ════ 9: 三重融合 ════ -->
-  <div class="slide tl">
-    <h2>八、<span class="accent">三重融合</span></h2>
-    <div class="divider"></div>
-    <div class="card">
-      <div class="lb">🔗 技术融合</div>
-      <div class="bd">AI（大脑）+ 机器人（手脚）+ IoT（感官）+ 5G（神经）——<span style="color:#4fc3f7;">AI不再是独立的技术，而是嵌入到物理世界基础设施中</span></div>
+      <div class="lb">🏭 制造业基础</div>
+      <div class="bd">中国制造业增加值占全球30%+，拥有最完整的工业体系。<span style="color:#4fc3f7;">当AI需要"物理世界"时，中国正好是物理世界最密集的地方。</span></div>
     </div>
     <div class="card">
-      <div class="lb">🏗 产业融合</div>
-      <div class="bd">数字经济的AI能力注入实体经济，实体经济的场景和数据反哺AI技术演进，形成<span style="color:#c9a84c;">"数字-物理"双循环增长模式</span></div>
+      <div class="lb">📈 产业升级需求</div>
+      <div class="bd">人口红利消退，劳动力成本上升。AI向物理世界的渗透，是中国制造业升级的核心引擎——不是"锦上添花"，而是"非做不可"。</div>
+    </div>
+  </div>
+  <div class="cc2 mt1">
+    <div class="card">
+      <div class="lb">🌐 数字经济延伸</div>
+      <div class="bd">消费互联网发展成熟，下一个自然延伸方向就是将AI能力从数字世界迁移到物理世界——从电商到产业互联网。</div>
     </div>
     <div class="card">
-      <div class="lb">📊 价值链融合</div>
-      <div class="bd">从数据采集→模型训练→决策输出→物理执行→效果反馈，闭环拉长。中国在"物理执行"环节有天然优势——机器人制造、设备集成、产线改造</div>
+      <div class="lb">🏛 政策导向</div>
+      <div class="bd">从"新质生产力"到"人工智能+"，政策信号一贯明确：<span style="color:#c9a84c;">AI要为实体经济服务，要进入工厂、车间、农田、医院。</span></div>
     </div>
   </div>
+</div>
 
-  <!-- ════ 10: 挑战 ════ -->
-  <div class="slide tl">
-    <h2>九、<span class="accent">挑战与风险</span></h2>
-    <div class="divider"></div>
-    <div class="cc2">
-      <div class="card">
-        <div class="lb">⚡ 技术挑战</div>
-        <div class="bd">物理世界比数字世界复杂得多——随机性、安全要求、实时性要求都远超数字世界。<span style="color:#9a9588;">不是简单的"移植"，需要重新设计技术架构。</span></div>
-      </div>
-      <div class="card">
-        <div class="lb">🔬 基础研究短板</div>
-        <div class="bd">强化学习、机器人控制、高端传感器、执行器等核心领域仍由欧美主导。<span style="color:#9a9588;">中国需要在"走向物理世界"的过程中同步补齐基础研究。</span></div>
-      </div>
+<!-- ════ 8: 比较优势 ════ -->
+<div class="slide tl" data-i="7">
+  <h2>七、<span class="a">比较优势</span></h2>
+  <div class="dv"></div>
+  <div class="card">
+    <div class="lb">🏭 硬件制造</div><div class="bd">全球第一，供应链完善</div>
+  </div>
+  <div class="card">
+    <div class="lb">🤖 机器人市场</div><div class="bd">全球最大，快速部署</div>
+  </div>
+  <div class="card">
+    <div class="lb">🌏 场景丰富度</div><div class="bd">制造业·物流·交通·能源·医疗，全球最全</div>
+  </div>
+  <div class="card">
+    <div class="lb">⚡ 落地速度</div><div class="bd">从政策到试点到规模化，节奏远快于欧美</div>
+  </div>
+  <div class="card">
+    <div class="lb">🏟 产业整合</div><div class="bd">硬件+供应链+场景+政策，综合优势结构性</div>
+  </div>
+  <div class="hl mt1">
+    <div class="lb">🏟 核心判断</div>
+    <p>AI竞争分为两个赛场：<span style="color:#9a9588;">数字世界AI（美国主场）</span> vs <span style="color:#4fc3f7;font-weight:400;">物理世界AI（中国主场）</span>。<br>这不是一场追赶赛，而是一场<span style="color:#4fc3f7;">主场赛</span>。</p>
+  </div>
+</div>
+
+<!-- ════ 9: 三重融合 ════ -->
+<div class="slide tl" data-i="8">
+  <h2>八、<span class="a">三重融合</span></h2>
+  <div class="dv"></div>
+  <div class="card">
+    <div class="lb">🔗 技术融合</div>
+    <div class="bd">AI（大脑）+ 机器人（手脚）+ IoT（感官）+ 5G（神经）——<span style="color:#4fc3f7;">AI不再是独立的技术，而是嵌入到物理世界基础设施中</span></div>
+  </div>
+  <div class="card">
+    <div class="lb">🏗 产业融合</div>
+    <div class="bd">数字经济的AI能力注入实体经济，实体经济的场景和数据反哺AI技术演进，形成<span style="color:#c9a84c;">"数字-物理"双循环增长模式</span></div>
+  </div>
+  <div class="card">
+    <div class="lb">📊 价值链融合</div>
+    <div class="bd">从数据采集→模型训练→决策输出→物理执行→效果反馈，闭环拉长。中国在"物理执行"环节有天然优势——机器人制造、设备集成、产线改造</div>
+  </div>
+</div>
+
+<!-- ════ 10: 挑战 ════ -->
+<div class="slide tl" data-i="9">
+  <h2>九、<span class="a">挑战与风险</span></h2>
+  <div class="dv"></div>
+  <div class="cc2">
+    <div class="card">
+      <div class="lb">⚡ 技术挑战</div>
+      <div class="bd">物理世界比数字世界复杂得多——随机性、安全要求、实时性要求都远超数字世界。<span style="color:#9a9588;">不是简单的"移植"，需要重新设计技术架构。</span></div>
     </div>
-    <div class="card mt1">
-      <div class="lb">🌍 国际竞争格局</div>
-      <div class="bd">芯片禁令限制高端AI芯片获取，机器人领域技术封锁加码，标准专利竞争激烈。<span style="color:#c9a84c;">中国需要在自己主场的赛道上建立不可替代的竞争优势。</span></div>
+    <div class="card">
+      <div class="lb">🔬 基础研究短板</div>
+      <div class="bd">强化学习、机器人控制、高端传感器、执行器等核心领域仍由欧美主导。<span style="color:#9a9588;">中国需要在"走向物理世界"的过程中同步补齐基础研究。</span></div>
     </div>
   </div>
-
-  <!-- ════ 11: 结论 ════ -->
-  <div class="slide tl">
-    <h2>十、<span class="accent">结论</span></h2>
-    <div class="divider"></div>
-    <p class="sm">WAIC 2026的同一个信号，对中国而言远超技术本身</p>
-    <div class="cc2 mt1">
-      <div class="card">
-        <div class="lb">🚀 制造业升级加速器</div>
-        <div class="bd">让AI成为"中国制造"的新引擎</div>
-      </div>
-      <div class="card">
-        <div class="lb">🔁 数字经济的自然延伸</div>
-        <div class="bd">从消费互联网到产业互联网</div>
-      </div>
-    </div>
-    <div class="cc2 mt1">
-      <div class="card">
-        <div class="lb">🏟 比较优势的释放</div>
-        <div class="bd">在"物理世界AI"赛道上，中国有结构性优势</div>
-      </div>
-      <div class="card">
-        <div class="lb">📋 国家战略的必然选择</div>
-        <div class="bd">新质生产力的核心是数字与物理的融合</div>
-      </div>
-    </div>
-    <div class="cx">
-      <p style="color:#4fc3f7;font-weight:400;font-size:clamp(1rem,4vw,1.6rem);text-align:center;">
-        美国在"数字世界AI"的领先是暂时的结构优势，<br>
-        中国在"物理世界AI"的潜力是更长远的战略资产。
-      </p>
-      <p style="margin-top:1.5vh;color:#c9a84c;font-weight:600;font-size:clamp(1.1rem,4.5vw,1.8rem);text-align:center;">
-        这不是一场追赶赛，而是一场主场赛。
-      </p>
-    </div>
+  <div class="card mt1">
+    <div class="lb">🌍 国际竞争格局</div>
+    <div class="bd">芯片禁令限制高端AI芯片获取，机器人领域技术封锁加码，标准专利竞争激烈。<span style="color:#c9a84c;">中国需要在自己主场的赛道上建立不可替代的竞争优势。</span></div>
   </div>
+</div>
 
+<!-- ════ 11: 结论 ════ -->
+<div class="slide tl" data-i="10">
+  <h2>十、<span class="a">结论</span></h2>
+  <div class="dv"></div>
+  <p class="sm">WAIC 2026的同一个信号，对中国而言远超技术本身</p>
+  <div class="cc2 mt1">
+    <div class="card"><div class="lb">🚀 制造业升级加速器</div><div class="bd">让AI成为"中国制造"的新引擎</div></div>
+    <div class="card"><div class="lb">🔁 数字经济的自然延伸</div><div class="bd">从消费互联网到产业互联网</div></div>
+  </div>
+  <div class="cc2 mt1">
+    <div class="card"><div class="lb">🏟 比较优势的释放</div><div class="bd">在"物理世界AI"赛道上，中国有结构性优势</div></div>
+    <div class="card"><div class="lb">📋 国家战略的必然选择</div><div class="bd">新质生产力的核心是数字与物理的融合</div></div>
+  </div>
+  <div class="cx">
+    <p style="color:#4fc3f7;font-weight:400;font-size:clamp(1rem,4vw,1.6rem);text-align:center;">
+      美国在"数字世界AI"的领先是暂时的结构优势，<br>
+      中国在"物理世界AI"的潜力是更长远的战略资产。
+    </p>
+    <p style="margin-top:1.5vh;color:#c9a84c;font-weight:600;font-size:clamp(1.1rem,4.5vw,1.8rem);text-align:center;">
+      这不是一场追赶赛，而是一场主场赛。
+    </p>
+  </div>
 </div>
 
 <div class="nav">
@@ -484,7 +439,9 @@
   for (var i = 0; i < total; i++) {
     var d = document.createElement('div');
     d.className = 'dot' + (i === 0 ? ' on' : '');
-    (function(idx){ d.addEventListener('click', function(){ go(idx); }); })(i);
+    (function(idx){
+      d.addEventListener('click', function(){ go(idx); });
+    })(i);
     dots.appendChild(d);
   }
 
@@ -492,12 +449,14 @@
     if (idx < 0 || idx >= total || idx === cur) return;
     slides[cur].className = 'slide tl';
     if (cur === 0) slides[cur].className = 'slide tc';
-    slides[idx].className = 'slide active';
+    slides[idx].className = 'slide show';
     if (idx === 0) slides[idx].className += ' tc';
     else slides[idx].className += ' tl';
     cur = idx;
     var ds = document.querySelectorAll('.dot');
-    for (var i = 0; i < ds.length; i++) ds[i].className = 'dot' + (i === cur ? ' on' : '');
+    for (var i = 0; i < ds.length; i++) {
+      ds[i].className = 'dot' + (i === cur ? ' on' : '');
+    }
     ct.textContent = (cur + 1) + ' / ' + total;
   }
 
@@ -512,10 +471,15 @@
   });
 
   var tx = 0;
-  document.addEventListener('touchstart', function(e){ tx = e.changedTouches[0].screenX; });
+  document.addEventListener('touchstart', function(e){
+    tx = e.changedTouches[0].screenX;
+  });
   document.addEventListener('touchend', function(e){
     var dx = e.changedTouches[0].screenX - tx;
-    if (Math.abs(dx) > 50) { if (dx < 0) go(cur + 1); else go(cur - 1); }
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) go(cur + 1);
+      else go(cur - 1);
+    }
   });
 })();
 </script>
