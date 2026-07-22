@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古越国真的没有青铜器吗？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --fg: #e8e4dd;
+    --fg2: #9a9588;
+    --accent: #c9a84c;
+    --accent2: #8b7a3a;
+    --accent-dim: #3a3220;
+    --bronze: #cd7f32;
+    --bronze-light: #e8a84c;
+    --cyan: #5bb8b0;
+    --red: #c0392b;
+    --green: #7cb342;
+    --border: #2a2822;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── Slide Container ── */
+  .slides {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease, visibility 0.7s;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .slide.exit {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1.2vw;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.8vh 2vw;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--fg2);
+    font-size: 1.6rem;
+    cursor: pointer;
+    padding: 0 0.6vw;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .nav button:hover { color: var(--accent); }
+  .nav .dots { display: flex; gap: 0.6vw; }
+  .nav .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .nav .dot.active { background: var(--accent); transform: scale(1.3); }
+  .nav .counter {
+    font-size: 0.8rem;
+    color: var(--fg2);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    min-width: 4em;
+    text-align: center;
+  }
+
+  /* keyboard hint */
+  .hint {
+    position: fixed;
+    bottom: 8vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.12);
+    letter-spacing: 0.15em;
+    z-index: 99;
+    pointer-events: none;
+  }
+
+  /* ── Typography ── */
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.6rem, 5.5vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: 0.03em;
+    color: var(--fg);
+  }
+  h1 .accent { color: var(--accent); }
+  h1 .bronze { color: var(--bronze-light); }
+
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3.2vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 1.5vh;
+    color: var(--fg);
+  }
+  h2 .accent { color: var(--accent); }
+  h2 .bronze { color: var(--bronze-light); }
+
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1vh;
+    letter-spacing: 0.03em;
+  }
+
+  p, li {
+    font-size: clamp(1rem, 1.6vw, 1.7rem);
+    line-height: 1.8;
+    color: var(--fg);
+    font-weight: 300;
+    max-width: 80vw;
+  }
+  p.small {
+    font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+    color: var(--fg2);
+  }
+
+  .subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.9rem);
+    font-weight: 300;
+    color: var(--fg2);
+    margin-top: 1.5vh;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Layout Helpers ── */
+  .text-center { text-align: center; }
+  .text-left { text-align: left; align-items: flex-start; }
+  .max-w { max-width: 80vw; }
+  .mt-1 { margin-top: 1vh; }
+  .mt-2 { margin-top: 2vh; }
+  .mt-3 { margin-top: 3vh; }
+  .mb-1 { margin-bottom: 1vh; }
+  .mb-2 { margin-bottom: 2vh; }
+  .gap-1 { gap: 1vh; }
+
+  /* ── Two Column ── */
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4vw;
+    width: 100%;
+    max-width: 85vw;
+    margin-top: 2vh;
+  }
+  .cols-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2.5vw;
+    width: 100%;
+    max-width: 85vw;
+    margin-top: 2vh;
+  }
+  .col { text-align: left; }
+
+  /* ── Cards ── */
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2.5vh 2vw;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .card:hover {
+    border-color: var(--accent-dim);
+    background: rgba(255,255,255,0.05);
+  }
+  .card .label {
+    font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 0.6vh;
+  }
+  .card .value {
+    font-size: clamp(1rem, 1.5vw, 1.6rem);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── Tags / Badges ── */
+  .tag {
+    display: inline-block;
+    padding: 0.3vh 1vw;
+    font-size: clamp(0.7rem, 0.85vw, 0.9rem);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    margin-right: 0.5vw;
+    margin-bottom: 0.5vh;
+  }
+  .tag.green { background: rgba(124,179,66,0.15); color: var(--green); border: 1px solid rgba(124,179,66,0.3); }
+  .tag.red { background: rgba(192,57,43,0.15); color: var(--red); border: 1px solid rgba(192,57,43,0.3); }
+  .tag.amber { background: rgba(201,168,76,0.15); color: var(--accent); border: 1px solid rgba(201,168,76,0.3); }
+  .tag.cyan { background: rgba(91,184,176,0.15); color: var(--cyan); border: 1px solid rgba(91,184,176,0.3); }
+
+  /* ── Divider ── */
+  .divider {
+    width: 3vw;
+    height: 2px;
+    background: var(--accent-dim);
+    margin: 2vh 0;
+  }
+  .divider.center { margin: 2vh auto; }
+
+  /* ── Comparison Table ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    width: 100%;
+    max-width: 80vw;
+    margin-top: 2vh;
+    border: 1px solid var(--border);
+  }
+  .compare .header {
+    padding: 1.5vh 2vw;
+    font-weight: 700;
+    font-size: clamp(0.85rem, 1.1vw, 1.2rem);
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border);
+    color: var(--fg);
+  }
+  .compare .cell {
+    padding: 1.2vh 2vw;
+    font-size: clamp(0.85rem, 1.1vw, 1.2rem);
+    font-weight: 300;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    line-height: 1.6;
+  }
+  .compare .cell:nth-child(4n+3),
+  .compare .cell:nth-child(4n+4) {
+    background: rgba(255,255,255,0.015);
+  }
+  .compare .cell.bronze { color: var(--bronze-light); }
+  .compare .cell.cyan { color: var(--cyan); }
+
+  /* ── Stats/Number display ── */
+  .stat {
+    text-align: center;
+  }
+  .stat .num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.2rem, 4vw, 4.5rem);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .stat .num.bronze { color: var(--bronze-light); }
+  .stat .num.cyan { color: var(--cyan); }
+  .stat .desc {
+    font-size: clamp(0.8rem, 1vw, 1.1rem);
+    color: var(--fg2);
+    margin-top: 0.5vh;
+    font-weight: 300;
+  }
+
+  /* ── Quote ── */
+  .quote {
+    border-left: 3px solid var(--accent-dim);
+    padding: 1.5vh 2vw;
+    margin: 1.5vh 0;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.4vw, 1.5rem);
+    color: var(--fg2);
+    max-width: 70vw;
+  }
+  .quote .source {
+    margin-top: 0.8vh;
+    font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    width: 100%;
+    max-width: 75vw;
+    margin-top: 2vh;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item {
+    padding-left: 2vw;
+    margin-bottom: 1.2vh;
+    position: relative;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0.6vh;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+  }
+  .tl-item .tl-year {
+    font-size: clamp(0.8rem, 1vw, 1.1rem);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .tl-item .tl-text {
+    font-size: clamp(0.85rem, 1.1vw, 1.2rem);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ── Checkmark / Cross ── */
+  .check { color: var(--green); }
+  .cross { color: var(--red); }
+
+  /* ── Scrollbar ── */
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── Animations ── */
+  .slide.active .fade-in {
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .fade-in:nth-child(1) { animation-delay: 0.1s; }
+  .slide.active .fade-in:nth-child(2) { animation-delay: 0.2s; }
+  .slide.active .fade-in:nth-child(3) { animation-delay: 0.3s; }
+  .slide.active .fade-in:nth-child(4) { animation-delay: 0.4s; }
+  .slide.active .fade-in:nth-child(5) { animation-delay: 0.5s; }
+  .slide.active .fade-in:nth-child(6) { animation-delay: 0.6s; }
+  .slide.active .fade-in:nth-child(7) { animation-delay: 0.7s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .cols, .cols-3 { grid-template-columns: 1fr; gap: 2vh; }
+    p, li { max-width: 90vw; }
+    .max-w { max-width: 90vw; }
+    .compare { max-width: 95vw; font-size: 0.8rem; }
+    .nav { gap: 2vw; padding: 0.6vh 3vw; }
+    .quote { max-width: 90vw; }
+    .timeline { max-width: 90vw; }
+  }
+
+  /* ── Background decoration ── */
+  .bg-deco {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-deco .circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.08;
+  }
+  .bg-deco .c1 {
+    width: 50vw; height: 50vw;
+    background: var(--accent);
+    top: -20vh;
+    right: -10vw;
+  }
+  .bg-deco .c2 {
+    width: 40vw; height: 40vw;
+    background: var(--bronze);
+    bottom: -15vh;
+    left: -15vw;
+  }
+  .slide { position: relative; z-index: 1; }
+
+  /* Title slide specific */
+  .title-slide {
+    gap: 0;
+  }
+  .title-slide .ornament {
+    font-size: 2rem;
+    color: var(--accent-dim);
+    letter-spacing: 0.5em;
+    margin-bottom: 2vh;
+  }
+  .title-slide .date-line {
+    font-size: clamp(0.8rem, 1vw, 1.1rem);
+    color: var(--fg2);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-top: 3vh;
+  }
+
+  /* Conclusion box */
+  .conclusion-box {
+    border: 1px solid var(--accent-dim);
+    padding: 3vh 3vw;
+    max-width: 75vw;
+    margin-top: 2vh;
+    background: rgba(201,168,76,0.04);
+  }
+  .conclusion-box p {
+    font-size: clamp(1rem, 1.5vw, 1.6rem);
+    line-height: 1.8;
+  }
+
+  .insight {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 2vh 2vw;
+    margin-top: 2vh;
+    max-width: 75vw;
+    background: rgba(201,168,76,0.03);
+  }
+  .insight p {
+    font-size: clamp(0.95rem, 1.3vw, 1.4rem);
+    line-height: 1.7;
+    color: var(--fg);
+  }
+  .insight .label {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: clamp(0.75rem, 0.85vw, 0.9rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5vh;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-deco">
+  <div class="circle c1"></div>
+  <div class="circle c2"></div>
+</div>
+
+<div class="slides" id="slides">
+
+  <!-- ═══ SLIDE 1: Title ═══ -->
+  <div class="slide title-slide active" data-index="0">
+    <div class="fade-in ornament">⏤⏤⏤</div>
+    <h1 class="fade-in text-center">古越国真的<br>没有青铜器吗？</h1>
+    <p class="fade-in subtitle">南方青铜文明的真相与误解</p>
+    <div class="divider center"></div>
+    <p class="fade-in small" style="max-width:50vw; text-align:center; color:var(--fg2);">
+      从龙游博物馆的一件陶器出发，<br>追问一个跨越两千多年的文明之谜
+    </p>
+    <p class="fade-in date-line">2026 · 龙游调研笔记</p>
+  </div>
+
+  <!-- ═══ SLIDE 2: 问题源起 ═══ -->
+  <div class="slide text-left" data-index="1">
+    <h2 class="fade-in">一、<span class="accent">问题源起</span></h2>
+    <div class="divider fade-in"></div>
+    <p class="fade-in" style="max-width:75vw;">
+      龙游博物馆战国展陈中，有陶器，却几乎没有青铜器。
+    </p>
+    <p class="fade-in" style="max-width:75vw; margin-top:1vh;">
+      同行本科生脱口而出：<span style="color:var(--accent);">"古越国太落后了，到战国竟然还没有青铜器。"</span>
+    </p>
+    <div class="divider fade-in" style="margin-top:2vh;"></div>
+    <p class="fade-in" style="max-width:75vw; color:var(--fg2);">
+      这个判断触及了一个更深层的问题：<br>
+      南方（古越国）和北方（中原）在青铜时代<br>
+      <span style="color:var(--fg); font-weight:400;">到底差了一个代际，还是只是发展路径不同？</span>
+    </p>
+    <div class="insight fade-in">
+      <div class="label">💡 核心追问</div>
+      <p>一个地方的"落后"，究竟是能力不足，还是战略选择？</p>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: 结论总览 ═══ -->
+  <div class="slide text-left" data-index="2">
+    <h2 class="fade-in">二、<span class="accent">结论总览</span></h2>
+    <div class="divider fade-in"></div>
+    <p class="fade-in" style="color:var(--fg2); font-size:clamp(1rem,1.4vw,1.5rem);">
+      这个观察<span style="color:var(--accent); font-weight:500;">"部分准确，整体不准确"</span>
+    </p>
+    <div class="cols fade-in" style="margin-top:2vh;">
+      <div class="card">
+        <div class="label"><span class="check">✓</span> 准确的部分</div>
+        <div class="value" style="color:var(--green);">
+          越国确实青铜礼器少<br>
+          <span style="font-size:0.85em; color:var(--fg2);">越国铜器仅76件，礼乐器22件<br>——不到吴国的一半</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label"><span class="cross">✗</span> 不准确的部分</div>
+        <div class="value" style="color:var(--red);">
+          不等于"没有青铜器"<br>
+          <span style="font-size:0.85em; color:var(--fg2);">更不等于"落后一个代际"<br>——吴越兵器技术反超中原</span>
+        </div>
+      </div>
+    </div>
+    <div class="cols fade-in" style="margin-top:1.5vh;">
+      <div class="card">
+        <div class="label">🔑 关键判断</div>
+        <div class="value">
+          不是<span style="color:var(--red);">"做不出"</span><br>
+          而是<span style="color:var(--green);">"选择不这么做"</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">📐 正确框架</div>
+        <div class="value">
+          不是"代际差"<br>
+          而是<span style="color:var(--accent);">"路径差"</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: 姑蔑国 ═══ -->
+  <div class="slide text-left" data-index="3">
+    <h2 class="fade-in">三、<span class="accent">最新考古</span>：姑蔑国的青铜器</h2>
+    <div class="divider fade-in"></div>
+    <p class="fade-in small" style="color:var(--cyan);">2026年6月 · 衢州姑蔑博物馆开馆 · 最新考古成果</p>
+    <div class="cols-3 fade-in" style="margin-top:1.5vh;">
+      <div class="stat">
+        <div class="num bronze">8</div>
+        <div class="desc">套青铜车马器<br>"诸侯驾四"周礼</div>
+      </div>
+      <div class="stat">
+        <div class="num bronze">2</div>
+        <div class="desc">把西周青铜剑<br>比越王勾践剑早数百年</div>
+      </div>
+      <div class="stat">
+        <div class="num bronze">3000</div>
+        <div class="desc">年历史的姑蔑古国<br>商周时期百越方国</div>
+      </div>
+    </div>
+    <div class="quote fade-in">
+      "姑蔑国既受中原礼制影响，又保留鲜明地方特色"
+      <div class="source">——中国社会科学院学部委员 王巍</div>
+    </div>
+    <p class="fade-in" style="max-width:75vw; font-size:clamp(0.9rem,1.2vw,1.3rem); color:var(--fg2);">
+      姑蔑人用原始瓷仿制青铜礼器——大尊小尊排成一列，<br>
+      数量从六到七不等，模仿中原的"列鼎制度"。
+    </p>
+  </div>
+
+  <!-- ═══ SLIDE 5: 越国青铜兵器 ═══ -->
+  <div class="slide text-left" data-index="4">
+    <h2 class="fade-in">四、<span class="accent">越国青铜</span>：兵器天下第一</h2>
+    <div class="divider fade-in"></div>
+    <div class="cols fade-in" style="margin-top:1vh;">
+      <div class="col">
+        <div class="stat" style="text-align:left;">
+          <div class="num bronze">70<span style="font-size:0.4em; color:var(--fg2);">%</span></div>
+          <div class="desc">越国铜器是兵器<br>各诸侯国最高比例</div>
+        </div>
+        <div class="stat" style="text-align:left; margin-top:2vh;">
+          <div class="num bronze">50<span style="font-size:0.4em; color:var(--fg2);">%</span></div>
+          <div class="desc">吴越剑占青铜剑总量一半<br>比中原和楚国加起来都多</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="label">⚔ 吴越青铜兵器"三绝"</div>
+          <div class="value" style="line-height:2;">
+            <span class="tag amber">复合剑</span> 剑脊柔韧 + 剑刃锋利<br>
+            <span class="tag amber">菱形纹</span> 千年不腐的暗格纹饰<br>
+            <span class="tag amber">同心圆</span> 11道细环误差＜0.2mm
+          </div>
+        </div>
+        <div class="card" style="margin-top:1vh;">
+          <div class="label">📜 古籍认证</div>
+          <div class="value" style="color:var(--fg2); font-style:italic;">
+            "吴粤之剑，迁乎其地而弗能为良"
+          </div>
+          <div class="value" style="font-size:0.8em; color:var(--fg2);">——《考工记》</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: 对比 ═══ -->
+  <div class="slide text-left" data-index="5">
+    <h2 class="fade-in">五、<span class="accent">中原 vs 南方</span>：不是代际差，是路径差</h2>
+    <div class="divider fade-in"></div>
+    <div class="compare fade-in">
+      <div class="header" style="color:var(--accent);">维度</div>
+      <div class="header" style="color:var(--bronze-light);">中原（商周）</div>
+      <div class="header" style="color:var(--cyan);">吴越</div>
+
+      <div class="cell">青铜起源</div>
+      <div class="cell bronze">约前1900年（二里头）</div>
+      <div class="cell cyan">约前1200年（西周初期）</div>
+
+      <div class="cell">起始时间</div>
+      <div class="cell bronze">早约700年</div>
+      <div class="cell cyan">较晚</div>
+
+      <div class="cell">青铜用途</div>
+      <div class="cell bronze">大量用于礼器（祭祀、礼仪）</div>
+      <div class="cell cyan">优先用于兵器、农具（耕战）</div>
+
+      <div class="cell">礼器形态</div>
+      <div class="cell bronze">青铜鼎簋钟等</div>
+      <div class="cell cyan">原始瓷仿制青铜礼器</div>
+
+      <div class="cell">兵器水平</div>
+      <div class="cell bronze">一般</div>
+      <div class="cell cyan" style="font-weight:600;">天下第一</div>
+
+      <div class="cell">文化特征</div>
+      <div class="cell bronze">礼乐文明</div>
+      <div class="cell cyan">尚武实用</div>
+    </div>
+    <p class="fade-in small" style="margin-top:1.5vh; color:var(--fg2); max-width:80vw;">
+      越国不是没有能力铸造青铜礼器——能将兵器做到极致，说明完全具备铸造能力。<br>
+      区别在于<span style="color:var(--accent); font-weight:400;">战略优先级</span>：耕战优先，礼器用原始瓷替代。
+    </p>
+  </div>
+
+  <!-- ═══ SLIDE 7: 为什么会有错觉 ═══ -->
+  <div class="slide text-left" data-index="6">
+    <h2 class="fade-in">六、为什么会有<span class="accent">"没有青铜器"</span>的错觉？</h2>
+    <div class="divider fade-in"></div>
+    <div class="cols fade-in" style="margin-top:1vh;">
+      <div class="card">
+        <div class="label">🏛 展陈侧重不同</div>
+        <div class="value">
+          龙游博物馆以地质和自然展厅为特色，<br>
+          历史文物展陈相对有限
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">📍 展品不在同一个馆</div>
+        <div class="value">
+          姑蔑国青铜器收藏在<br>
+          <span style="color:var(--accent);">衢江区姑蔑博物馆</span>（2026年6月开馆）
+        </div>
+      </div>
+    </div>
+    <div class="cols fade-in" style="margin-top:1.5vh;">
+      <div class="card">
+        <div class="label">📉 战国越国文物稀少</div>
+        <div class="value">
+          越国战国衰落，被楚灭后文物更少<br>
+          龙游战国层级的考古发现不如中原丰富
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">🧱 原始瓷替代青铜</div>
+        <div class="value">
+          "陶器多青铜少"不是落后的标志<br>
+          而是<span style="color:var(--accent);">用原始瓷替代青铜</span>的反映
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: 学术界共识 ═══ -->
+  <div class="slide text-left" data-index="7">
+    <h2 class="fade-in">七、<span class="accent">学术界的共识</span></h2>
+    <div class="divider fade-in"></div>
+
+    <div class="timeline fade-in">
+      <div class="tl-item">
+        <div class="tl-year">共识一</div>
+        <div class="tl-text"><span style="color:var(--accent);">吴越青铜兵器技术为中国之最</span>——越王勾践剑的复合铸造、菱形纹饰、剑首同心圆代表先秦工艺巅峰</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">共识二</div>
+        <div class="tl-text"><span style="color:var(--accent);">越国青铜礼器少是战略选择</span>——不是技术能力问题，越国能将青铜兵器做到极致，说明完全具备铸造青铜礼器的能力</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">共识三</div>
+        <div class="tl-text"><span style="color:var(--accent);">"百越"地区内部差异大</span>——姑蔑（浙西）和越国（浙东）的青铜文化发展程度不同，不能一概而论</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">共识四</div>
+        <div class="tl-text"><span style="color:var(--accent);">"多元一体"是中华文明基本格局</span>——长江流域和黄河流域是平行发展的文明中心，不是"一个先进一个落后"的关系</div>
+      </div>
+    </div>
+
+    <div class="quote fade-in" style="margin-top:1.5vh;">
+      "衢江考古发现的西周土墩墓，是百越考古的重大突破，<br>为理解'多元一体'中华文明在长江下游地区的融入路径提供了关键实证。"
+      <div class="source">——王巍 · 中国社会科学院学部委员</div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: 补充：真正没有青铜器的地方 ═══ -->
+  <div class="slide text-left" data-index="8">
+    <h2 class="fade-in">八、<span class="accent">对比</span>：真正没有青铜器的地方</h2>
+    <div class="divider fade-in"></div>
+    <div class="compare fade-in">
+      <div class="header" style="color:var(--accent);">地区</div>
+      <div class="header" style="color:var(--accent);">青铜发展状况</div>
+      <div class="header" style="color:var(--accent);">与中原对比</div>
+
+      <div class="cell" style="font-weight:400;">吴越</div>
+      <div class="cell bronze">兵器技术反超中原，礼器少</div>
+      <div class="cell bronze">兵器领先，礼器路径不同</div>
+
+      <div class="cell" style="font-weight:400;">巴蜀</div>
+      <div class="cell bronze">独特性青铜文化（三星堆）</div>
+      <div class="cell bronze">自成体系</div>
+
+      <div class="cell" style="font-weight:400;">云南（滇）</div>
+      <div class="cell bronze">青铜文化发达，大量农具</div>
+      <div class="cell bronze">时代偏晚</div>
+
+      <div class="cell" style="font-weight:400; color:var(--red);">岭南（广东广西）</div>
+      <div class="cell" style="color:var(--red);">青铜器稀少，普及程度低</div>
+      <div class="cell" style="color:var(--red);">确实落后一个代际</div>
+    </div>
+    <p class="fade-in" style="margin-top:1.5vh; max-width:75vw; color:var(--fg2);">
+      <span style="color:var(--red);">真正"没有青铜器"的是岭南</span>——直到战国晚期才从楚越传入少量青铜器，秦统一后才大规模普及。<br>
+      将龙游的情况与岭南对比，就更清楚：龙游不是"落后"，而是"路径不同"。
+    </p>
+  </div>
+
+  <!-- ═══ SLIDE 10: 总结 ═══ -->
+  <div class="slide text-left" data-index="9">
+    <h2 class="fade-in">九、<span class="accent">总结</span></h2>
+    <div class="divider fade-in"></div>
+
+    <div class="compare fade-in">
+      <div class="header" style="color:var(--accent);">问题</div>
+      <div class="header" style="color:var(--accent);">答案</div>
+
+      <div class="cell">古越国有青铜器吗？</div>
+      <div class="cell bronze">有，但总量少，结构独特</div>
+
+      <div class="cell">越国青铜技术落后吗？</div>
+      <div class="cell bronze">兵器技术全国领先，礼器路径不同</div>
+
+      <div class="cell">和中原差了一个代际？</div>
+      <div class="cell bronze" style="color:var(--accent);">不是代际差，是路径差</div>
+
+      <div class="cell">本科生的判断对吗？</div>
+      <div class="cell bronze">部分对（战国越国青铜礼器少），<br>整体不对（兵器技术反超中原）</div>
+    </div>
+
+    <div class="conclusion-box fade-in" style="margin-top:2.5vh;">
+      <p style="color:var(--fg);">
+        <span style="color:var(--accent); font-weight:600;">最精彩的一点</span>：越国将稀缺的青铜原料优先用于兵器和农具，用原始瓷仿制礼器——这个"耕战优先"的战略选择，和两千多年后龙游选择"特种纸+人形机器人"作为两大主攻产业，逻辑何其相似。
+      </p>
+      <p style="margin-top:1.5vh; color:var(--accent); font-weight:400; font-size:clamp(1.1rem,1.6vw,1.7rem);">
+        一个地方的崛起，往往不是因为面面俱到，<br>
+        而是因为知道把有限的资源放在哪里。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ Navigation ═══ -->
+<div class="nav">
+  <button id="prevBtn">←</button>
+  <div class="dots" id="dots"></div>
+  <span class="counter" id="counter">1 / 10</span>
+  <button id="nextBtn">→</button>
+</div>
+<div class="hint">← 方向键 翻页 →</div>
+
+<script>
+  (function() {
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
+    const total = slides.length;
+
+    // Create dots
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    function goTo(idx) {
+      if (idx < 0) idx = 0;
+      if (idx >= total) idx = total - 1;
+      if (idx === current) return;
+
+      slides[current].classList.remove('active');
+      slides[current].classList.add('exit');
+      current = idx;
+      slides[current].classList.add('active');
+      slides[current].classList.remove('exit');
+
+      // Update dots
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+      counter.textContent = (current + 1) + ' / ' + total;
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        goTo(current + 1);
+      }
+    });
+
+    // Touch support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 60) {
+        if (diff < 0) goTo(current + 1);
+        else goTo(current - 1);
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
