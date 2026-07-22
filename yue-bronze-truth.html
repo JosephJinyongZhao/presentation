@@ -2,260 +2,89 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>古越国真的没有青铜器吗？</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%; height: 100%;
-    background: #0a0a0f;
-    color: #e8e4dd;
-    font-family: "PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
-    font-size: 16px;
-  }
-  body {
-    display: flex; flex-direction: column;
-    position: relative; overflow: hidden;
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#0a0a0f;color:#e8e4dd;font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;overflow:hidden}
 
-  .slide {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    padding: 5vh 6vw;
-    width: 100%; height: 100%;
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-    position: absolute; top: 0; left: 0;
-    animation: none;
-  }
-  .slide.show {
-    display: flex;
-    animation: fi 0.35s ease;
-  }
-  @keyframes fi { from { opacity: 0; } to { opacity: 1; } }
+.slide{display:none;flex-direction:column;justify-content:center;align-items:flex-start;width:100%;height:100%;padding:5vh 6vw;overflow-y:auto}
+.slide.on{display:flex}
+.slide.c{text-align:center;align-items:center}
 
-  h1, h2, h3, .serif {
-    font-family: "Songti SC","STSong","Noto Serif SC","SimSun","Georgia",serif;
-  }
+h1,h2,h3{font-family:"Songti SC","STSong","SimSun",serif}
+h1{font-size:clamp(1.8rem,7vw,4.5rem);font-weight:900;line-height:1.2;text-align:center}
+h1 .a{color:#c9a84c}
+h1 .b{color:#e8a84c}
+h2{font-size:clamp(1.3rem,5vw,2.8rem);font-weight:700;line-height:1.3}
+h2 .a{color:#c9a84c}
+h2 .b{color:#e8a84c}
+p{font-size:clamp(0.95rem,3.8vw,1.5rem);line-height:1.7;font-weight:300}
+p.sm{font-size:clamp(0.8rem,3vw,1.1rem);color:#9a9588}
+.sub{font-size:clamp(1rem,4vw,1.7rem);font-weight:300;color:#9a9588;text-align:center;margin-top:1.5vh;letter-spacing:0.08em}
+.mt1{margin-top:1.5vh}
+.mt2{margin-top:2.5vh}
+.dv{width:3rem;height:2px;background:#2a2822;margin:1.2vh 0}
+.dv.c{margin:1.2vh auto}
 
-  h1 {
-    font-size: clamp(1.8rem, 7vw, 4.5rem);
-    font-weight: 900; line-height: 1.2;
-    letter-spacing: 0.02em; text-align: center;
-  }
-  h1 .a { color: #c9a84c; }
-  h1 .b { color: #e8a84c; }
+.card{background:rgba(255,255,255,0.03);border:1px solid #2a2822;border-radius:4px;padding:2vh 3vw;margin-bottom:1.2vh;width:100%}
+.card .lb{font-size:clamp(0.65rem,2.5vw,0.85rem);color:#c9a84c;letter-spacing:0.08em;font-weight:500;margin-bottom:0.3vh}
+.card .bd{font-size:clamp(0.9rem,3.5vw,1.4rem);line-height:1.6;font-weight:300}
 
-  h2 {
-    font-size: clamp(1.3rem, 5vw, 2.8rem);
-    font-weight: 700; line-height: 1.3;
-    letter-spacing: 0.02em;
-  }
-  h2 .a { color: #c9a84c; }
-  h2 .b { color: #e8a84c; }
+.cc2{display:grid;grid-template-columns:1fr 1fr;gap:3vw;width:100%}
+.cc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2vw;width:100%}
 
-  p {
-    font-size: clamp(0.95rem, 3.8vw, 1.5rem);
-    line-height: 1.7; font-weight: 300;
-  }
-  p.sm { font-size: clamp(0.8rem, 3vw, 1.1rem); color: #9a9588; }
+.num{text-align:center}
+.num .n{font-family:"Songti SC","STSong","SimSun",serif;font-size:clamp(1.6rem,8vw,3.2rem);font-weight:900;color:#c9a84c;line-height:1.1}
+.num .n.b{color:#e8a84c}
+.num .d{font-size:clamp(0.7rem,2.5vw,0.9rem);color:#9a9588;font-weight:300;line-height:1.3}
 
-  .sub {
-    font-size: clamp(1rem, 4vw, 1.7rem);
-    font-weight: 300; color: #9a9588;
-    text-align: center; margin-top: 1.5vh;
-    letter-spacing: 0.08em;
-  }
+.hl{border:1px solid #2a2822;border-left:3px solid #c9a84c;padding:2vh 3vw;margin-top:1.5vh;background:rgba(201,168,76,0.03)}
+.hl .lb{color:#c9a84c;font-weight:500;font-size:clamp(0.6rem,2.3vw,0.8rem);letter-spacing:0.08em;margin-bottom:0.3vh}
+.hl p{font-size:clamp(0.85rem,3.2vw,1.2rem);line-height:1.6}
+.cx{border:1px solid #2a2822;padding:2.5vh 3vw;margin-top:2vh;background:rgba(201,168,76,0.04)}
+.cx p{font-size:clamp(0.9rem,3.5vw,1.4rem);line-height:1.7}
+.q{border-left:3px solid #2a2822;padding:1.2vh 3vw;margin:1.2vh 0;font-size:clamp(0.82rem,3vw,1.2rem);color:#9a9588;font-style:italic;line-height:1.6}
+.q .s{font-size:clamp(0.65rem,2.4vw,0.85rem);font-style:normal;color:#c9a84c;margin-top:0.5vh}
+.tl2{position:relative;width:100%;padding-left:0.8rem}
+.tl2::before{content:'';position:absolute;left:0;top:0.3rem;bottom:0.3rem;width:1px;background:#2a2822}
+.tl2 .itm{padding-left:3vw;margin-bottom:1.2vh;position:relative}
+.tl2 .itm::before{content:'';position:absolute;left:-4px;top:0.5rem;width:9px;height:9px;border-radius:50%;background:#2a2822}
+.tl2 .yr{font-size:clamp(0.7rem,2.6vw,0.9rem);color:#c9a84c;font-weight:600}
+.tl2 .tx{font-size:clamp(0.78rem,2.8vw,1.05rem);font-weight:300;line-height:1.5}
 
-  .tc { text-align: center; align-items: center; }
-  .tl { text-align: left; align-items: flex-start; }
-  .mt1 { margin-top: 1.5vh; }
-  .mt2 { margin-top: 2.5vh; }
-  .mt3 { margin-top: 4vh; }
+.tag{display:inline-block;padding:0.2vh 2vw;font-size:clamp(0.6rem,2.2vw,0.8rem);font-weight:500;border-radius:3px;margin-right:0.8vw;margin-bottom:0.5vh;white-space:nowrap}
+.tag.g{background:rgba(201,168,76,0.12);color:#c9a84c;border:1px solid rgba(201,168,76,0.25)}
 
-  .dv {
-    width: 3rem; height: 2px;
-    background: #2a2822; margin: 1.2vh 0;
-  }
-  .dv.c { margin: 1.2vh auto; }
+.tbl{width:100%;border:1px solid #2a2822;font-size:clamp(0.72rem,2.8vw,1rem)}
+.tbl .r{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,0.03)}
+.tbl .r:last-child{border-bottom:none}
+.tbl .h{padding:1vh 2vw;font-weight:700;background:rgba(255,255,255,0.04);color:#c9a84c}
+.tbl .c{padding:0.8vh 2vw;font-weight:300;line-height:1.5;border-right:1px solid rgba(255,255,255,0.03)}
+.tbl .c:last-child{border-right:none}
+.tbl .c.cy{color:#5bb8b0}
+.tbl .c.br{color:#e8a84c}
 
-  .card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid #2a2822;
-    border-radius: 4px; padding: 2vh 3vw;
-    margin-bottom: 1.2vh;
-  }
-  .card .lb {
-    font-size: clamp(0.65rem, 2.5vw, 0.85rem);
-    color: #c9a84c; letter-spacing: 0.08em;
-    font-weight: 500; margin-bottom: 0.3vh;
-  }
-  .card .bd {
-    font-size: clamp(0.9rem, 3.5vw, 1.4rem);
-    line-height: 1.6; font-weight: 300;
-  }
+.tbl2{width:100%;border:1px solid #2a2822;font-size:clamp(0.72rem,2.8vw,1rem)}
+.tbl2 .r{display:grid;grid-template-columns:1fr 1.8fr 1.5fr;border-bottom:1px solid rgba(255,255,255,0.03)}
+.tbl2 .r:last-child{border-bottom:none}
+.tbl2 .h{padding:1vh 2vw;font-weight:700;background:rgba(255,255,255,0.04);color:#c9a84c}
+.tbl2 .c{padding:0.8vh 2vw;font-weight:300;line-height:1.4}
+.tbl2 .c.br{color:#e8a84c}
+.tbl2 .c.r{color:#c0392b}
 
-  .cc2 {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 3vw; width: 100%;
-  }
-  .cc3 {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 2vw; width: 100%;
-  }
-
-  .num { text-align: center; }
-  .num .n {
-    font-family: "Songti SC","STSong","Noto Serif SC","SimSun",serif;
-    font-size: clamp(1.6rem, 8vw, 3.2rem);
-    font-weight: 900; color: #c9a84c; line-height: 1.1;
-  }
-  .num .n.b { color: #e8a84c; }
-  .num .d {
-    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
-    color: #9a9588; font-weight: 300; line-height: 1.3;
-  }
-
-  .q {
-    border-left: 3px solid #2a2822;
-    padding: 1.2vh 3vw; margin: 1.2vh 0;
-    font-size: clamp(0.82rem, 3vw, 1.2rem);
-    color: #9a9588; font-style: italic; line-height: 1.6;
-  }
-  .q .s {
-    font-size: clamp(0.65rem, 2.4vw, 0.85rem);
-    font-style: normal; color: #c9a84c; margin-top: 0.5vh;
-  }
-
-  .hl {
-    border: 1px solid #2a2822;
-    border-left: 3px solid #c9a84c;
-    padding: 2vh 3vw; margin-top: 1.5vh;
-    background: rgba(201,168,76,0.03);
-  }
-  .hl .lb {
-    color: #c9a84c; font-weight: 500;
-    font-size: clamp(0.6rem, 2.3vw, 0.8rem);
-    letter-spacing: 0.08em; margin-bottom: 0.3vh;
-  }
-  .hl p { font-size: clamp(0.85rem, 3.2vw, 1.2rem); line-height: 1.6; }
-
-  .cx {
-    border: 1px solid #2a2822;
-    padding: 2.5vh 3vw; margin-top: 2vh;
-    background: rgba(201,168,76,0.04);
-  }
-  .cx p { font-size: clamp(0.9rem, 3.5vw, 1.4rem); line-height: 1.7; }
-
-  .tl2 { position: relative; width: 100%; padding-left: 0.8rem; }
-  .tl2::before {
-    content: ''; position: absolute; left: 0; top: 0.3rem; bottom: 0.3rem;
-    width: 1px; background: #2a2822;
-  }
-  .tl2 .itm { padding-left: 3vw; margin-bottom: 1.2vh; position: relative; }
-  .tl2 .itm::before {
-    content: ''; position: absolute; left: -4px; top: 0.5rem;
-    width: 9px; height: 9px; border-radius: 50%; background: #2a2822;
-  }
-  .tl2 .yr {
-    font-size: clamp(0.7rem, 2.6vw, 0.9rem);
-    color: #c9a84c; font-weight: 600;
-  }
-  .tl2 .tx {
-    font-size: clamp(0.78rem, 2.8vw, 1.05rem);
-    font-weight: 300; line-height: 1.5;
-  }
-
-  .tag {
-    display: inline-block; padding: 0.2vh 2vw;
-    font-size: clamp(0.6rem, 2.2vw, 0.8rem);
-    font-weight: 500; border-radius: 3px;
-    margin-right: 0.8vw; margin-bottom: 0.5vh; white-space: nowrap;
-  }
-  .tag.g { background: rgba(201,168,76,0.12); color: #c9a84c; border: 1px solid rgba(201,168,76,0.25); }
-
-  .tbl {
-    width: 100%; border: 1px solid #2a2822;
-    font-size: clamp(0.72rem, 2.8vw, 1rem);
-  }
-  .tbl .r {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-  }
-  .tbl .r:last-child { border-bottom: none; }
-  .tbl .h {
-    padding: 1vh 2vw; font-weight: 700;
-    background: rgba(255,255,255,0.04); color: #c9a84c;
-  }
-  .tbl .c {
-    padding: 0.8vh 2vw; font-weight: 300; line-height: 1.5;
-    border-right: 1px solid rgba(255,255,255,0.03);
-  }
-  .tbl .c:last-child { border-right: none; }
-  .tbl .c.cy { color: #5bb8b0; }
-  .tbl .c.br { color: #e8a84c; }
-
-  .tbl2 {
-    width: 100%; border: 1px solid #2a2822;
-    font-size: clamp(0.72rem, 2.8vw, 1rem);
-  }
-  .tbl2 .r {
-    display: grid; grid-template-columns: 1fr 1.8fr 1.5fr;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-  }
-  .tbl2 .r:last-child { border-bottom: none; }
-  .tbl2 .h {
-    padding: 1vh 2vw; font-weight: 700;
-    background: rgba(255,255,255,0.04); color: #c9a84c;
-  }
-  .tbl2 .c {
-    padding: 0.8vh 2vw; font-weight: 300; line-height: 1.4;
-  }
-  .tbl2 .c.br { color: #e8a84c; }
-  .tbl2 .c.r { color: #c0392b; }
-
-  .nav {
-    position: fixed; bottom: 2vh; left: 50%;
-    transform: translateX(-50%);
-    display: flex; align-items: center; gap: 3vw;
-    z-index: 100;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    padding: 0.6vh 4vw; border-radius: 8px;
-    border: 1px solid #2a2822;
-  }
-  .nav button {
-    background: none; border: none;
-    color: #9a9588; font-size: 1.4rem;
-    cursor: pointer; padding: 0 1vw; line-height: 1;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .nav button:active { color: #c9a84c; }
-  .nav .dots { display: flex; gap: 2vw; }
-  .nav .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #2a2822; cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .nav .dot.on { background: #c9a84c; transform: scale(1.3); }
-  .nav .ct {
-    font-size: 0.75rem; color: #9a9588; font-weight: 300;
-    min-width: 4em; text-align: center;
-  }
-  .hint {
-    position: fixed; bottom: 7vh; left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.65rem; color: rgba(255,255,255,0.08);
-    letter-spacing: 0.1em; z-index: 99; pointer-events: none;
-    white-space: nowrap;
-  }
+.nav{position:fixed;bottom:2vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3vw;z-index:100;background:rgba(10,10,15,0.85);padding:0.6vh 4vw;border-radius:8px;border:1px solid #2a2822}
+.nav button{background:none;border:none;color:#9a9588;font-size:1.4rem;cursor:pointer;padding:0 1vw;line-height:1;-webkit-tap-highlight-color:transparent}
+.nav button:active{color:#c9a84c}
+.nav .dots{display:flex;gap:2vw}
+.nav .dot{width:7px;height:7px;border-radius:50%;background:#2a2822;cursor:pointer;transition:background 0.3s;-webkit-tap-highlight-color:transparent}
+.nav .dot.on{background:#c9a84c}
+.nav .ct{font-size:0.75rem;color:#9a9588;font-weight:300;min-width:4em;text-align:center}
 </style>
 </head>
 <body>
 
-<!-- ════ 1: TITLE ════ -->
-<div class="slide tc show" data-i="0">
+<div class="slide c on" data-i="0">
   <p style="font-size:1.5rem;color:#2a2822;letter-spacing:0.5em;margin-bottom:1.5vh;">⏤⏤⏤</p>
   <h1>古越国真的<br>没有青铜器吗？</h1>
   <p class="sub">南方青铜文明的真相与误解</p>
@@ -264,49 +93,31 @@
   <p style="margin-top:4vh;font-size:clamp(0.65rem,2.5vw,0.85rem);color:#c9a84c;font-weight:300;letter-spacing:0.05em;">2026 · 龙游调研笔记</p>
 </div>
 
-<!-- ════ 2: 问题源起 ════ -->
-<div class="slide tl" data-i="1">
+<div class="slide" data-i="1">
   <h2>一、<span class="a">问题源起</span></h2>
   <div class="dv"></div>
   <p>龙游博物馆战国展陈中，有陶器，却几乎没有青铜器。</p>
   <p class="mt1">同行本科生脱口而出：<span style="color:#c9a84c;">"古越国太落后了，到战国竟然还没有青铜器。"</span></p>
   <div class="dv mt2"></div>
   <p style="color:#9a9588;">这个判断触及了一个更深层的问题：<br>南方（古越国）和北方（中原）在青铜时代<br><span style="color:#e8e4dd;font-weight:400;">到底差了一个代际，还是只是发展路径不同？</span></p>
-  <div class="hl">
-    <div class="lb">💡 核心追问</div>
-    <p>一个地方的"落后"，究竟是能力不足，还是战略选择？</p>
-  </div>
+  <div class="hl"><div class="lb">💡 核心追问</div><p>一个地方的"落后"，究竟是能力不足，还是战略选择？</p></div>
 </div>
 
-<!-- ════ 3: 结论总览 ════ -->
-<div class="slide tl" data-i="2">
+<div class="slide" data-i="2">
   <h2>二、<span class="a">结论总览</span></h2>
   <div class="dv"></div>
   <p style="color:#9a9588;">这个观察 <span style="color:#c9a84c;font-weight:500;">"部分准确，整体不准确"</span></p>
   <div class="cc2 mt1">
-    <div class="card">
-      <div class="lb" style="color:#7cb342;">✓ 准确</div>
-      <div class="bd" style="color:#7cb342;">越国确实青铜礼器少<br><span style="font-size:0.85em;color:#9a9588;">越国铜器仅76件，礼乐器22件<br>——不到吴国的一半</span></div>
-    </div>
-    <div class="card">
-      <div class="lb" style="color:#c0392b;">✗ 不准确</div>
-      <div class="bd" style="color:#c0392b;">不等于"没有青铜器"<br><span style="font-size:0.85em;color:#9a9588;">更不等于"落后一个代际"<br>——吴越兵器技术反超中原</span></div>
-    </div>
+    <div class="card"><div class="lb" style="color:#7cb342;">✓ 准确</div><div class="bd" style="color:#7cb342;">越国确实青铜礼器少<br><span style="font-size:0.85em;color:#9a9588;">越国铜器仅76件，礼乐器22件<br>——不到吴国的一半</span></div></div>
+    <div class="card"><div class="lb" style="color:#c0392b;">✗ 不准确</div><div class="bd" style="color:#c0392b;">不等于"没有青铜器"<br><span style="font-size:0.85em;color:#9a9588;">更不等于"落后一个代际"<br>——吴越兵器技术反超中原</span></div></div>
   </div>
   <div class="cc2 mt1">
-    <div class="card">
-      <div class="lb">🔑 关键判断</div>
-      <div class="bd">不是<span style="color:#c0392b;">"做不出"</span>，而是<span style="color:#7cb342;">"选择不这么做"</span></div>
-    </div>
-    <div class="card">
-      <div class="lb">📐 正确框架</div>
-      <div class="bd">不是"代际差"<br>而是<span style="color:#c9a84c;">"路径差"</span></div>
-    </div>
+    <div class="card"><div class="lb">🔑 关键判断</div><div class="bd">不是<span style="color:#c0392b;">"做不出"</span>，而是<span style="color:#7cb342;">"选择不这么做"</span></div></div>
+    <div class="card"><div class="lb">📐 正确框架</div><div class="bd">不是"代际差"<br>而是<span style="color:#c9a84c;">"路径差"</span></div></div>
   </div>
 </div>
 
-<!-- ════ 4: 姑蔑国 ════ -->
-<div class="slide tl" data-i="3">
+<div class="slide" data-i="3">
   <h2>三、<span class="a">最新考古</span></h2>
   <p style="font-size:clamp(0.8rem,3vw,1rem);color:#5bb8b0;">2026年6月 · 衢州姑蔑博物馆开馆</p>
   <div class="dv"></div>
@@ -319,8 +130,7 @@
   <p class="sm">姑蔑人用原始瓷仿制青铜礼器，大尊小尊排成一列，模仿中原的"列鼎制度"。</p>
 </div>
 
-<!-- ════ 5: 越国兵器 ════ -->
-<div class="slide tl" data-i="4">
+<div class="slide" data-i="4">
   <h2>四、<span class="a">越国青铜</span>：兵器天下第一</h2>
   <div class="dv"></div>
   <div class="cc2">
@@ -329,24 +139,13 @@
       <div class="num mt2" style="text-align:left;"><div class="n b">50<span style="font-size:0.4em;color:#9a9588;">%</span></div><div class="d">吴越剑占全国一半，超过中原+楚国</div></div>
     </div>
     <div>
-      <div class="card">
-        <div class="lb">⚔ 吴越兵器"三绝"</div>
-        <div class="bd" style="font-size:clamp(0.85rem,3.2vw,1.2rem);line-height:2;">
-          <span class="tag g">复合剑</span> 剑脊柔韧+剑刃锋利<br>
-          <span class="tag g">菱形纹</span> 千年不腐暗格纹饰<br>
-          <span class="tag g">同心圆</span> 11道细环＜0.2mm
-        </div>
-      </div>
-      <div class="card mt1">
-        <div class="lb">📜 古籍认证</div>
-        <div class="bd" style="color:#9a9588;font-style:italic;">"吴粤之剑，迁乎其地而弗能为良"<br><span style="font-size:0.8em;">——《考工记》</span></div>
-      </div>
+      <div class="card"><div class="lb">⚔ 吴越兵器"三绝"</div><div class="bd" style="font-size:clamp(0.85rem,3.2vw,1.2rem);line-height:2;"><span class="tag g">复合剑</span> 剑脊柔韧+剑刃锋利<br><span class="tag g">菱形纹</span> 千年不腐暗格纹饰<br><span class="tag g">同心圆</span> 11道细环＜0.2mm</div></div>
+      <div class="card mt1"><div class="lb">📜 古籍认证</div><div class="bd" style="color:#9a9588;font-style:italic;">"吴粤之剑，迁乎其地而弗能为良"<br><span style="font-size:0.8em;">——《考工记》</span></div></div>
     </div>
   </div>
 </div>
 
-<!-- ════ 6: 对比 ════ -->
-<div class="slide tl" data-i="5">
+<div class="slide" data-i="5">
   <h2>五、<span class="a">中原 vs 南方</span></h2>
   <p class="sm">不是代际差，是路径差</p>
   <div class="dv"></div>
@@ -362,8 +161,7 @@
   <p class="sm mt1">区别在于<span style="color:#c9a84c;font-weight:400;">战略优先级</span>：耕战优先，礼器用原始瓷替代。</p>
 </div>
 
-<!-- ════ 7: 错觉原因 ════ -->
-<div class="slide tl" data-i="6">
+<div class="slide" data-i="6">
   <h2>六、为什么会有<span class="a">"错觉"</span>？</h2>
   <div class="dv"></div>
   <div class="card"><div class="lb">🏛 展陈侧重不同</div><div class="bd">龙游博物馆以地质和自然展厅为特色，历史文物展陈有限</div></div>
@@ -372,8 +170,7 @@
   <div class="card"><div class="lb">🧱 原始瓷替代青铜</div><div class="bd">"陶器多青铜少"不是落后标志，而是<span style="color:#c9a84c;">用原始瓷替代</span>的反映</div></div>
 </div>
 
-<!-- ════ 8: 学术界共识 ════ -->
-<div class="slide tl" data-i="7">
+<div class="slide" data-i="7">
   <h2>七、<span class="a">学术界共识</span></h2>
   <div class="dv"></div>
   <div class="tl2">
@@ -385,8 +182,7 @@
   <div class="q">"衢江考古是百越考古的重大突破，为理解'多元一体'中华文明在长江下游的融入路径提供了关键实证。"<div class="s">—— 王巍 · 中国社科院学部委员</div></div>
 </div>
 
-<!-- ════ 9: 真正没有青铜器的地方 ════ -->
-<div class="slide tl" data-i="8">
+<div class="slide" data-i="8">
   <h2>八、<span class="a">真正没有青铜器</span>的地方</h2>
   <div class="dv"></div>
   <div class="tbl2">
@@ -399,8 +195,7 @@
   <p class="sm mt1"><span style="color:#c0392b;">真正"没有青铜器"的是岭南</span>——直到战国晚期才从楚越传入少量。龙游不是"落后"，而是"路径不同"。</p>
 </div>
 
-<!-- ════ 10: 总结 ════ -->
-<div class="slide tl" data-i="9">
+<div class="slide" data-i="9">
   <h2>九、<span class="a">总结</span></h2>
   <div class="dv"></div>
   <div class="tbl">
@@ -417,58 +212,21 @@
 </div>
 
 <div class="nav">
-  <button id="prevBtn">←</button>
-  <div class="dots" id="dots"></div>
-  <span class="ct" id="counter">1 / 10</span>
-  <button id="nextBtn">→</button>
+  <button id="p">←</button>
+  <div class="dots" id="d"></div>
+  <span class="ct" id="c">1 / 10</span>
+  <button id="n">→</button>
 </div>
-<div class="hint">← 滑动翻页 →</div>
 
 <script>
 (function(){
-  var slides = document.querySelectorAll('.slide');
-  var dots = document.getElementById('dots');
-  var ct = document.getElementById('counter');
-  var prev = document.getElementById('prevBtn');
-  var next = document.getElementById('nextBtn');
-  var cur = 0, total = slides.length;
-
-  for (var i = 0; i < total; i++) {
-    var d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' on' : '');
-    (function(idx){ d.addEventListener('click', function(){ go(idx); }); })(i);
-    dots.appendChild(d);
-  }
-
-  function go(idx) {
-    if (idx < 0 || idx >= total || idx === cur) return;
-    slides[cur].className = 'slide tl';
-    if (cur === 0) slides[cur].className = 'slide tc';
-    slides[idx].className = 'slide show';
-    if (idx === 0) slides[idx].className += ' tc';
-    else slides[idx].className += ' tl';
-    cur = idx;
-    var ds = document.querySelectorAll('.dot');
-    for (var i = 0; i < ds.length; i++) ds[i].className = 'dot' + (i === cur ? ' on' : '');
-    ct.textContent = (cur + 1) + ' / ' + total;
-  }
-
-  prev.addEventListener('click', function(){ go(cur - 1); });
-  next.addEventListener('click', function(){ go(cur + 1); });
-
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(cur - 1);
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-      e.preventDefault(); go(cur + 1);
-    }
-  });
-
-  var tx = 0;
-  document.addEventListener('touchstart', function(e){ tx = e.changedTouches[0].screenX; });
-  document.addEventListener('touchend', function(e){
-    var dx = e.changedTouches[0].screenX - tx;
-    if (Math.abs(dx) > 50) { if (dx < 0) go(cur + 1); else go(cur - 1); }
-  });
+  var s=document.querySelectorAll('.slide'),dl=document.getElementById('d'),ct=document.getElementById('c'),p=document.getElementById('p'),n=document.getElementById('n'),cur=0,t=s.length;
+  for(var i=0;i<t;i++){var d=document.createElement('div');d.className='dot'+(i===0?' on':'');(function(j){d.addEventListener('click',function(){g(j)})})(i);dl.appendChild(d)}
+  function g(idx){if(idx<0||idx>=t||idx===cur)return;s[cur].className='slide';s[idx].className='slide on';cur=idx;var ds=document.querySelectorAll('.dot');for(var i=0;i<ds.length;i++)ds[i].className='dot'+(i===cur?' on':'');ct.textContent=(cur+1)+' / '+t}
+  p.addEventListener('click',function(){g(cur-1)});n.addEventListener('click',function(){g(cur+1)});
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')g(cur-1);if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();g(cur+1)}});
+  var tx=0;document.addEventListener('touchstart',function(e){tx=e.changedTouches[0].screenX});
+  document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].screenX-tx;if(Math.abs(dx)>50){if(dx<0)g(cur+1);else g(cur-1)}});
 })();
 </script>
 </body>
