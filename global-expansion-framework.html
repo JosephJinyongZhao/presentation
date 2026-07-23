@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卖产品·囤资产·培养人：一个可迁移的全球化扩张框架</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  background:#07070d;color:#d8d8e8;
+  min-height:100vh;overflow-x:hidden
+}
+.slide{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:6vh 6vw;position:relative;
+  border-bottom:1px solid #181830
+}
+.slide:last-child{border-bottom:none}
+.inner{
+  max-width:1100px;width:100%;
+  margin:0 auto
+}
+h1{
+  font-size:clamp(2.8rem,4.5vw,4.2rem);
+  font-weight:900;letter-spacing:0.04em;
+  line-height:1.3;margin-bottom:0.3em
+}
+h2{
+  font-size:clamp(2rem,3.2vw,3rem);
+  font-weight:800;letter-spacing:0.03em;
+  line-height:1.35;margin-bottom:0.5em
+}
+h3{
+  font-size:clamp(1.3rem,2vw,1.8rem);
+  font-weight:700;margin-bottom:0.4em
+}
+p,li{
+  font-size:clamp(1.1rem,1.6vw,1.5rem);
+  line-height:1.7;color:#b0b0c8
+}
+.small{font-size:clamp(0.85rem,1.1vw,1rem);color:#6a6a8a}
+.subtitle{font-size:clamp(1.1rem,1.5vw,1.4rem);color:#7c7ca0;letter-spacing:0.08em;margin-top:0.5em}
+.accent{color:#7c9fcf}
+.gold{color:#d4a84b}
+.green{color:#5abf8a}
+.pink{color:#e87a9f}
+.cyan{color:#5fc8d4}
+.meta{font-size:clamp(0.8rem,1vw,0.95rem);color:#5c5c78;margin-top:2rem;font-family:monospace}
+
+/* step cards */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
+.step-card{
+  background:linear-gradient(135deg,#0f0f1a,#12122a);
+  border:1px solid #252545;border-radius:16px;
+  padding:2rem;position:relative;overflow:hidden
+}
+.step-card::before{
+  content:'';position:absolute;top:0;left:0;
+  width:100%;height:3px
+}
+.step-card:nth-child(1)::before{background:linear-gradient(90deg,#7c9fcf,#5fc8d4)}
+.step-card:nth-child(2)::before{background:linear-gradient(90deg,#d4a84b,#e87a9f)}
+.step-card:nth-child(3)::before{background:linear-gradient(90deg,#5abf8a,#7c9fcf)}
+.step-num{
+  font-size:clamp(2.5rem,3.5vw,3.2rem);font-weight:900;
+  margin-bottom:0.3rem;line-height:1
+}
+.step-card:nth-child(1) .step-num{color:#7c9fcf}
+.step-card:nth-child(2) .step-num{color:#d4a84b}
+.step-card:nth-child(3) .step-num{color:#5abf8a}
+.step-title{font-size:clamp(1.2rem,1.8vw,1.6rem);font-weight:700;margin-bottom:0.8rem}
+.step-desc{font-size:clamp(0.9rem,1.2vw,1.1rem);color:#9494b0;line-height:1.6}
+
+/* comparison grid */
+.comp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.5rem}
+.comp-header{background:#1a1a35;padding:0.8rem 1rem;border-radius:10px;text-align:center;font-weight:700;font-size:clamp(0.85rem,1.1vw,1rem)}
+.comp-cell{background:#0f0f1a;border:1px solid #252545;padding:0.8rem 1rem;border-radius:10px;text-align:center;font-size:clamp(0.85rem,1.1vw,1rem);color:#b0b0c8}
+
+/* two column */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem}
+.col-card{background:#0f0f1a;border:1px solid #252545;border-radius:14px;padding:1.5rem}
+
+/* checklist */
+.checklist{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.5rem}
+.check-col{background:#0f0f1a;border:1px solid #252545;border-radius:14px;padding:1.5rem}
+.check-col h3{font-size:clamp(1rem,1.3vw,1.2rem);margin-bottom:0.8rem}
+.check-item{font-size:clamp(0.85rem,1.1vw,1rem);color:#9494b0;line-height:1.5;margin-bottom:0.5rem;padding-left:1.2rem;position:relative}
+.check-item::before{content:'□';position:absolute;left:0;color:#5c5c78}
+
+/* tag */
+.tag{
+  display:inline-block;padding:0.2rem 0.8rem;
+  border-radius:6px;font-size:clamp(0.75rem,0.9vw,0.85rem);
+  font-weight:600;letter-spacing:0.05em;margin-right:0.5rem;margin-bottom:0.5rem
+}
+.tag-blue{background:#1a2a4a;color:#7c9fcf}
+.tag-gold{background:#3a2a0a;color:#d4a84b}
+.tag-green{background:#0a2a1a;color:#5abf8a}
+.tag-pink{background:#3a0a1a;color:#e87a9f}
+
+/* risk */
+.risk-items{display:grid;gap:1.2rem;margin-top:1.5rem}
+.risk-item{background:#0f0f1a;border:1px solid #2a1a1a;border-radius:14px;padding:1.5rem;border-left:3px solid #6a3a3a}
+.risk-item h3{color:#e87a9f;margin-bottom:0.3rem;font-size:clamp(1rem,1.3vw,1.2rem)}
+.risk-item p{font-size:clamp(0.9rem,1.2vw,1.1rem);color:#b0b0c8}
+
+/* arrow */
+.arrow-chain{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2rem 0}
+.arrow-box{
+  background:#0f0f1a;border:1px solid #252545;border-radius:12px;
+  padding:1rem 1.5rem;text-align:center;flex:1
+}
+.arrow-box .label{font-size:clamp(0.8rem,1vw,0.9rem);color:#6a6a8a;margin-bottom:0.3rem}
+.arrow-box .val{font-size:clamp(1.1rem,1.5vw,1.3rem);font-weight:700}
+.arrow-sym{font-size:clamp(1.5rem,2vw,2rem);color:#5c5c78;flex-shrink:0}
+
+/* page number */
+.page-num{
+  position:absolute;bottom:3vh;right:4vw;
+  font-size:clamp(0.8rem,1vw,0.95rem);color:#3c3c58;
+  font-family:monospace
+}
+
+/* divider */
+hr{margin:1.5rem 0;border:none;border-top:1px solid #1a1a35}
+
+/* emphasis */
+.emphasis{
+  border-left:3px solid #7c9fcf;
+  padding:1rem 1.5rem;margin:1.5rem 0;
+  background:#0a0a18;border-radius:0 12px 12px 0;
+  font-size:clamp(1.1rem,1.5vw,1.4rem);color:#c8c8e0;font-style:italic
+}
+
+/* case card */
+.case-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.5rem}
+.case-card{background:#0f0f1a;border:1px solid #252545;border-radius:14px;padding:1.5rem;text-align:center}
+.case-card .icon{font-size:clamp(2rem,3vw,2.8rem);margin-bottom:0.5rem}
+.case-card h3{font-size:clamp(1rem,1.3vw,1.2rem);margin-bottom:0.5rem}
+.case-card p{font-size:clamp(0.85rem,1.1vw,1rem);color:#9494b0;line-height:1.5}
+
+/* stat */
+.stat-row{display:flex;gap:1.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.stat-box{flex:1;min-width:200px;background:#0f0f1a;border:1px solid #252545;border-radius:14px;padding:1.5rem;text-align:center}
+.stat-box .num{font-size:clamp(2rem,3vw,2.8rem);font-weight:900;margin-bottom:0.3rem}
+.stat-box .lbl{font-size:clamp(0.85rem,1.1vw,1rem);color:#6a6a8a}
+.stat-box:nth-child(1) .num{color:#7c9fcf}
+.stat-box:nth-child(2) .num{color:#d4a84b}
+.stat-box:nth-child(3) .num{color:#5abf8a}
+
+/* industry cards */
+.industry-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.5rem}
+.industry-card{background:#0f0f1a;border:1px solid #252545;border-radius:14px;padding:1.5rem}
+.industry-card h3{font-size:clamp(1rem,1.3vw,1.2rem);margin-bottom:0.5rem}
+.industry-card .status{font-size:clamp(0.85rem,1.1vw,1rem);margin-bottom:0.3rem}
+.industry-card .status.yes{color:#5abf8a}
+.industry-card .status.partial{color:#d4a84b}
+.industry-card .status.no{color:#6a6a8a}
+.industry-card .detail{font-size:clamp(0.8rem,1vw,0.9rem);color:#7c7ca0}
+
+@media(max-width:768px){
+  .steps,.comp-grid,.two-col,.checklist,.case-grid,.industry-grid{grid-template-columns:1fr}
+  .arrow-chain{flex-direction:column}
+  .slide{padding:5vh 5vw}
+}
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide">
+  <div class="inner" style="text-align:center">
+    <div style="display:flex;justify-content:center;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <span class="tag tag-blue">卖产品</span>
+      <span style="color:#5c5c78;font-size:2rem;line-height:1">→</span>
+      <span class="tag tag-gold">囤资产</span>
+      <span style="color:#5c5c78;font-size:2rem;line-height:1">→</span>
+      <span class="tag tag-green">培养人</span>
+    </div>
+    <h1>一个可迁移的<br>全球化扩张框架</h1>
+    <p class="subtitle">从外国公司在中国，到中国企业出海，再到国家战略——三步递进，一以贯之</p>
+    <div style="margin-top:3rem">
+      <p style="color:#6a6a8a;font-size:clamp(0.9rem,1.1vw,1.1rem)">2026.07 · 杭州 · 和张俞聊出海之后的思考</p>
+    </div>
+  </div>
+  <div class="page-num">1 / 13</div>
+</div>
+
+<!-- Slide 2: Framework Overview -->
+<div class="slide">
+  <div class="inner">
+    <h2>框架内核：<span class="accent">三步递进</span></h2>
+    <p style="margin-bottom:0.5rem">不是线性时间阶段，而是逻辑优先级——每一步向上跃迁，都是认知和能力的质的飞跃</p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title" style="color:#7c9fcf">卖产品</div>
+        <div class="step-desc">以产品为先锋进入目标市场，验证需求，建立品牌认知，获取现金流。产品是成本最低的"试金石"。</div>
+        <div class="small" style="margin-top:1rem">时间窗口：1-3年</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title" style="color:#d4a84b">囤资产</div>
+        <div class="step-desc">用产品积累的利润投资本地化资产——生产设施、供应链、品牌渠道。资产让外来者变成"半个本地人"。</div>
+        <div class="small" style="margin-top:1rem">时间窗口：3-7年</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title" style="color:#5abf8a">培养人</div>
+        <div class="step-desc">培养本地人才团队，建立本地化管理体系。资产可以被没收，人才和价值观才是真正的"不可带走的价值"。</div>
+        <div class="small" style="margin-top:1rem">持续进行，越早越好</div>
+      </div>
+    </div>
+    <div class="emphasis">
+      "卖产品容易，从卖产品到囤资产难，从囤资产到培养人更难。"
+    </div>
+  </div>
+  <div class="page-num">2 / 13</div>
+</div>
+
+<!-- Slide 3: Step 1 Detail -->
+<div class="slide">
+  <div class="inner">
+    <h2>第一步：<span class="accent">卖产品</span></h2>
+    <p class="subtitle">市场验证与现金流</p>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">核心</div><div class="lbl">产品是试金石</div></div>
+      <div class="stat-box"><div class="num">1-3年</div><div class="lbl">时间窗口</div></div>
+      <div class="stat-box"><div class="num">轻资产</div><div class="lbl">资源配置</div></div>
+    </div>
+    <div class="two-col" style="margin-top:1.5rem">
+      <div class="col-card">
+        <h3>关键指标</h3>
+        <p style="font-size:clamp(0.9rem,1.2vw,1.1rem)">市场接受度 · 客户反馈 · 复购率 · 单位经济模型</p>
+      </div>
+      <div class="col-card">
+        <h3 style="color:#e87a9f">典型风险</h3>
+        <p style="font-size:clamp(0.9rem,1.2vw,1.1rem);color:#b0b0c8">产品与市场不匹配 · 价格定位错误 · 渠道选择失误</p>
+      </div>
+    </div>
+    <hr>
+    <h3 style="margin-top:0.5rem">核心逻辑</h3>
+    <p>用产品触摸市场温度，比任何调研都更真实。产品是探索的先锋，也是理解本地需求的窗口。</p>
+  </div>
+  <div class="page-num">3 / 13</div>
+</div>
+
+<!-- Slide 4: Step 2 Detail -->
+<div class="slide">
+  <div class="inner">
+    <h2>第二步：<span class="gold">囤资产</span></h2>
+    <p class="subtitle">本地扎根与壁垒构建</p>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">核心</div><div class="lbl">资产是护城河</div></div>
+      <div class="stat-box"><div class="num">3-7年</div><div class="lbl">时间窗口</div></div>
+      <div class="stat-box"><div class="num">重资产</div><div class="lbl">资源配置</div></div>
+    </div>
+    <div class="two-col" style="margin-top:1.5rem">
+      <div class="col-card">
+        <h3>关键指标</h3>
+        <p style="font-size:clamp(0.9rem,1.2vw,1.1rem)">本地化率 · 资产回报率 · 供应链效率 · 品牌认知度</p>
+      </div>
+      <div class="col-card">
+        <h3 style="color:#e87a9f">典型风险</h3>
+        <p style="font-size:clamp(0.9rem,1.2vw,1.1rem);color:#b0b0c8">资金压力 · 本地政策变化 · 管理复杂性剧增</p>
+      </div>
+    </div>
+    <hr>
+    <h3 style="margin-top:0.5rem">核心逻辑</h3>
+    <p>产品可以被模仿，资产是更深的护城河。本地化资产让外来者变成"半个本地人"——从"卖东西"到"建东西"的认知跃迁。</p>
+  </div>
+  <div class="page-num">4 / 13</div>
+</div>
+
+<!-- Slide 5: Step 3 Detail -->
+<div class="slide">
+  <div class="inner">
+    <h2>第三步：<span class="green">培养人</span></h2>
+    <p class="subtitle">价值沉淀与生态构建</p>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">核心</div><div class="lbl">人是最大的回报</div></div>
+      <div class="stat-box"><div class="num">持续</div><div class="lbl">时间窗口</div></div>
+      <div class="stat-box"><div class="num">人力资本</div><div class="lbl">资源配置</div></div>
+    </div>
+    <div class="two-col" style="margin-top:1.5rem">
+      <div class="col-card">
+        <h3>关键指标</h3>
+        <p style="font-size:clamp(0.9rem,1.2vw,1.1rem)">本地高管比例 · 人才留存率 · 团队自主决策能力</p>
+      </div>
+      <div class="col-card">
+        <h3 style="color:#e87a9f">典型风险</h3>
+        <p style="font-size:clamp(0.9rem,1.2vw,1.1rem);color:#b0b0c8">文化冲突 · 人才流失 · 价值观稀释</p>
+      </div>
+    </div>
+    <div class="emphasis">
+      "能带走的是资产，带不走的是人。而人，是最大的回报。"
+    </div>
+  </div>
+  <div class="page-num">5 / 13</div>
+</div>
+
+<!-- Slide 6: Historical Cases Overview -->
+<div class="slide">
+  <div class="inner">
+    <h2>历史验证：<span class="accent">外国公司在中国</span></h2>
+    <p style="margin-bottom:1rem">三个案例，三种结局——验证了"三步走"不是自动发生的</p>
+    <div class="case-grid">
+      <div class="case-card" style="border-color:#1a2a4a">
+        <div class="icon">🚗</div>
+        <h3 style="color:#7c9fcf">大众汽车</h3>
+        <p>三步都做到了，培养了中国第一代汽车人。即使市场份额下降，培养的人已渗透到整个产业。</p>
+        <div class="small" style="margin-top:0.8rem;color:#5abf8a">✅ 完整三步走</div>
+      </div>
+      <div class="case-card" style="border-color:#2a2a0a">
+        <div class="icon">🧴</div>
+        <h3 style="color:#d4a84b">宝洁</h3>
+        <p>三步都做了，但"卖产品"太成功导致后两步节奏没跟上。不过培养的人成为新消费时代的核心力量。</p>
+        <div class="small" style="margin-top:0.8rem;color:#d4a84b">⚠️ 节奏失衡</div>
+      </div>
+      <div class="case-card">
+        <div class="icon">📱</div>
+        <h3 style="color:#6a6a8a">只做第一步的外资</h3>
+        <p>诺基亚、摩托罗拉、家乐福——把中国当销售市场，不建本地研发，不培养本地高管，被快速边缘化。</p>
+        <div class="small" style="margin-top:0.8rem;color:#e87a9f">❌ 止步第一步</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">6 / 13</div>
+</div>
+
+<!-- Slide 7: Case Deep Dive - VW & P&G -->
+<div class="slide">
+  <div class="inner">
+    <h2>案例深潜：<span class="accent">大众与宝洁</span></h2>
+    <div class="two-col">
+      <div class="col-card" style="border-color:#1a2a4a">
+        <div class="small" style="color:#7c9fcf;font-weight:700;margin-bottom:0.5rem">大众汽车</div>
+        <div style="margin-bottom:0.8rem">
+          <div class="small" style="color:#7c9fcf">1980s · 卖产品</div>
+          <p style="font-size:clamp(0.85rem,1.1vw,1rem)">桑塔纳进入中国，先卖车测试需求</p>
+        </div>
+        <div style="margin-bottom:0.8rem">
+          <div class="small" style="color:#d4a84b">1990s-2000s · 囤资产</div>
+          <p style="font-size:clamp(0.85rem,1.1vw,1rem)">合资建厂、建立本地供应链、研发中心</p>
+        </div>
+        <div>
+          <div class="small" style="color:#5abf8a">2000s-2020s · 培养人</div>
+          <p style="font-size:clamp(0.85rem,1.1vw,1rem)">中国第一代汽车工程师和管理者，今天新能源产业的工程师很多都有大众背景</p>
+        </div>
+      </div>
+      <div class="col-card" style="border-color:#2a2a0a">
+        <div class="small" style="color:#d4a84b;font-weight:700;margin-bottom:0.5rem">宝洁</div>
+        <div style="margin-bottom:0.8rem">
+          <div class="small" style="color:#7c9fcf">1988-1995 · 卖产品</div>
+          <p style="font-size:clamp(0.85rem,1.1vw,1rem)">海飞丝、飘柔，用品牌+广告打开市场</p>
+        </div>
+        <div style="margin-bottom:0.8rem">
+          <div class="small" style="color:#d4a84b">1995-2010 · 囤资产</div>
+          <p style="font-size:clamp(0.85rem,1.1vw,1rem)">中国研发中心、供应链网络、分销体系</p>
+        </div>
+        <div>
+          <div class="small" style="color:#5abf8a">2010至今 · 培养人</div>
+          <p style="font-size:clamp(0.85rem,1.1vw,1rem)">被称为中国消费品的"黄埔军校"，大量管理者进入阿里、京东、字节跳动</p>
+        </div>
+      </div>
+    </div>
+    <div class="emphasis" style="margin-top:1rem">
+      "即使大众在中国市场份额下降，但它培养的人已经渗透到中国汽车产业的每一个角落。"
+    </div>
+  </div>
+  <div class="page-num">7 / 13</div>
+</div>
+
+<!-- Slide 8: China Going Global - Current Status -->
+<div class="slide">
+  <div class="inner">
+    <h2>中国企业出海：<span class="accent">两步半现状</span></h2>
+    <p style="margin-bottom:1rem">大多数企业处于"卖产品→囤资产"之间，极少进入"培养人"阶段</p>
+    <div class="industry-grid">
+      <div class="industry-card" style="border-color:#1a2a4a">
+        <h3 style="color:#7c9fcf">跨境电商</h3>
+        <p class="status yes">✅ 卖产品：做得很极致</p>
+        <p class="status partial">🔄 囤资产：正在做</p>
+        <p class="status no">❌ 培养人：几乎没有</p>
+        <div class="detail" style="margin-top:0.5rem">SHEIN、Temu、TikTok Shop——核心决策仍在中国，本地团队多为执行层</div>
+      </div>
+      <div class="industry-card" style="border-color:#2a2a0a">
+        <h3 style="color:#d4a84b">制造业出海</h3>
+        <p class="status yes">✅ 卖产品：全球领先</p>
+        <p class="status partial">🔄 囤资产：进行中</p>
+        <p class="status partial">🔜 培养人：刚开始</p>
+        <div class="detail" style="margin-top:0.5rem">宁德时代、比亚迪、海尔——海外建厂、研发中心，本地化管理和人才体系建设起步</div>
+      </div>
+      <div class="industry-card">
+        <h3 style="color:#6a6a8a">互联网/服务出海</h3>
+        <p class="status yes">✅ 卖产品：全球化覆盖</p>
+        <p class="status partial">🔄 囤资产：部分在做</p>
+        <p class="status no">❌ 培养人：严重不足</p>
+        <div class="detail" style="margin-top:0.5rem">TikTok、米哈游——数据本地化、合规架构在做，但本地决策权、人才体系严重不足</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">8 / 13</div>
+</div>
+
+<!-- Slide 9: Actionable Recommendations -->
+<div class="slide">
+  <div class="inner">
+    <h2>企业出海：<span class="accent">三步法建议</span></h2>
+    <div class="checklist">
+      <div class="check-col" style="border-color:#1a2a4a">
+        <h3 style="color:#7c9fcf">卖产品阶段</h3>
+        <div class="check-item">以B2B合作切入，产品证明实力</div>
+        <div class="check-item">建立海外销售和服务团队</div>
+        <div class="check-item">选择1-2个重点市场深度验证</div>
+        <div class="check-item">建立本地化客户反馈机制</div>
+        <div class="check-item">了解本地法规和合规要求</div>
+      </div>
+      <div class="check-col" style="border-color:#2a2a0a">
+        <h3 style="color:#d4a84b">囤资产阶段</h3>
+        <div class="check-item">建立本地化生产基地</div>
+        <div class="check-item">投资本地供应链和物流网络</div>
+        <div class="check-item">建立本地研发中心</div>
+        <div class="check-item">投资本地化品牌建设</div>
+        <div class="check-item">与本地政府和产业伙伴合作</div>
+      </div>
+      <div class="check-col" style="border-color:#0a2a1a">
+        <h3 style="color:#5abf8a">培养人阶段</h3>
+        <div class="check-item">培养本地高管，给予真实决策权</div>
+        <div class="check-item">建立跨文化人才培养体系</div>
+        <div class="check-item">从"中国团队做全球"转向"全球团队做全球"</div>
+        <div class="check-item">培养本地化创新生态</div>
+        <div class="check-item">设计"退出时的人才生态"</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">9 / 13</div>
+</div>
+
+<!-- Slide 10: National Level -->
+<div class="slide">
+  <div class="inner">
+    <h2>国家层面：<span class="accent">中国的全球化三步走</span></h2>
+    <div class="steps" style="margin-top:1.5rem">
+      <div class="step-card">
+        <div class="step-num" style="color:#7c9fcf">✓</div>
+        <div class="step-title" style="color:#7c9fcf">已完成</div>
+        <div class="step-desc">中国制造走向全球（服装、家电、新能源）<br>基建产能输出（高铁、桥梁、港口）<br>文化产品初步出海（短视频、游戏、网文）</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="color:#d4a84b">→</div>
+        <div class="step-title" style="color:#d4a84b">正在做</div>
+        <div class="step-desc">一带一路基建投资（港口、铁路、能源）<br>海外工业园区建设<br>人民币跨境支付系统（CIPS）</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="color:#5abf8a">?</div>
+        <div class="step-title" style="color:#5abf8a">需要做</div>
+        <div class="step-desc">培养了解中国、认同中国价值的本地人才<br>建立中国标准的国际教育体系<br>让本地人成为"中国故事"的共同讲述者</div>
+      </div>
+    </div>
+    <div class="emphasis" style="margin-top:1rem">
+      "从'讲中国故事'到'帮本地人讲自己的故事'——培养人，是全球化最深层的护城河。"
+    </div>
+  </div>
+  <div class="page-num">10 / 13</div>
+</div>
+
+<!-- Slide 11: National Level Operations -->
+<div class="slide">
+  <div class="inner">
+    <h2>国家层面：<span class="accent">操作建议</span></h2>
+    <div class="case-grid">
+      <div class="case-card" style="border-color:#1a2a4a">
+        <div class="icon">🏢</div>
+        <h3 style="color:#7c9fcf">企业层面</h3>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem)">人才本地化率纳入政策鼓励<br>建立"中国出海企业人才联盟"<br>鼓励"反向导师"机制</p>
+      </div>
+      <div class="case-card" style="border-color:#2a2a0a">
+        <div class="icon">🎓</div>
+        <h3 style="color:#d4a84b">教育层面</h3>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem)">升级"留学中国"计划<br>建立"中国商业案例"国际推广体系<br>推动"中国标准"的职业教育输出</p>
+      </div>
+      <div class="case-card" style="border-color:#0a2a1a">
+        <div class="icon">🎨</div>
+        <h3 style="color:#5abf8a">文化层面</h3>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem)">从"讲中国故事"到"帮本地人讲自己的故事"<br>培养"文化桥梁"型人才<br>建立"中国-本地"共创机制</p>
+      </div>
+    </div>
+    <hr>
+    <h3 style="margin-top:0.5rem">历史的镜子</h3>
+    <div class="two-col" style="margin-top:1rem">
+      <div class="col-card">
+        <div class="small" style="color:#7c9fcf;font-weight:700">英国（19世纪）</div>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem)">卖纺织品→建铁路港口→培养英式教育体系。即使殖民体系瓦解，英语、普通法、议会制度依然在全球发挥作用。</p>
+      </div>
+      <div class="col-card">
+        <div class="small" style="color:#d4a84b;font-weight:700">美国（20世纪）</div>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem)">卖消费品→马歇尔计划→留学制度+文化输出。即使军事存在收缩，"美国模式"的影响力依然深远。</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">11 / 13</div>
+</div>
+
+<!-- Slide 12: Critical Review -->
+<div class="slide">
+  <div class="inner">
+    <h2>批判性审视：<span class="pink">框架的边界</span></h2>
+    <div class="risk-items">
+      <div class="risk-item">
+        <h3>隐含假设一：长期主义可行</h3>
+        <p>三步走需要10-20年，但地缘政治变化可能在3-5年内打断进程。在快速变化的环境中，长期主义可能是奢侈品。</p>
+      </div>
+      <div class="risk-item">
+        <h3>隐含假设二：培养人一定带来回报</h3>
+        <p>历史上，培养的人可能反过来成为竞争对手。这个框架需要接受"培养的人可能不为你所用"的现实。</p>
+      </div>
+      <div class="risk-item">
+        <h3>隐含假设三：三步是递进的</h3>
+        <p>现实中三步应该同时推进。只卖不囤→短视；只囤不培养人→资产可能变成"沉没资产"。</p>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:1.5rem">
+      <div class="col-card" style="border-color:#1a2a4a">
+        <h3 style="font-size:clamp(1rem,1.3vw,1.2rem)">改进方向</h3>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem)">三步并行推进，资源分配上有所侧重<br>建立"可带走的资产"——可迁移的人才<br>进入市场时就想好退出的路径</p>
+      </div>
+      <div class="col-card" style="border-color:#2a1a1a">
+        <h3 style="font-size:clamp(1rem,1.3vw,1.2rem);color:#e87a9f">核心风险</h3>
+        <p style="font-size:clamp(0.85rem,1.1vw,1rem);color:#b0b0c8">培养人回报周期太长，企业可能没耐心<br>本地化与全球化之间的组织张力<br>被动退出时培养的人可能无法保护资产</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">12 / 13</div>
+</div>
+
+<!-- Slide 13: Conclusion -->
+<div class="slide">
+  <div class="inner" style="text-align:center">
+    <div style="display:flex;justify-content:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
+      <span class="tag tag-blue">卖产品</span>
+      <span style="font-size:3rem;color:#3c3c58;line-height:1">→</span>
+      <span class="tag tag-gold">囤资产</span>
+      <span style="font-size:3rem;color:#3c3c58;line-height:1">→</span>
+      <span class="tag tag-green">培养人</span>
+    </div>
+    <h2>能带走的是资产，<br><span class="accent">带不走的是人</span></h2>
+    <p style="font-size:clamp(1.2rem,1.8vw,1.6rem);margin-top:1.5rem;color:#9494b0;line-height:1.8">
+      而人，是最大的回报
+    </p>
+    <hr style="max-width:400px;margin:2rem auto">
+    <p style="font-size:clamp(0.9rem,1.2vw,1.1rem);color:#6a6a8a;max-width:700px;margin:0 auto;line-height:1.8">
+      对个人来说，这个框架也有启发：你在一家公司、一个行业、一段关系里，是在"卖产品"（消耗现有价值），还是在"囤资产"（积累不可替代的能力），还是在"培养人"（帮助他人成长，从而获得更深的连接和回报）？
+    </p>
+    <div class="meta" style="margin-top:2.5rem">2026.07 · 杭州 · 和张俞聊出海之后的思考</div>
+  </div>
+  <div class="page-num">13 / 13</div>
+</div>
+
+</body>
+</html>
