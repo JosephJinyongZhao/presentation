@@ -93,8 +93,12 @@ hr{margin:1.5rem 0;border:none;border-top:1px solid #1a1a35}
 #bar{height:100%;background:linear-gradient(90deg,#7c9fcf,#5abf8a);transition:width .5s ease;width:0%}
 #pg{position:fixed;bottom:2.5vh;right:3vw;z-index:100;font-size:clamp(0.8rem,1vw,0.95rem);color:#5c5c78;font-family:monospace}
 
-/* hint */
-#hint{position:fixed;bottom:2.5vh;left:50%;transform:translateX(-50%);z-index:100;font-size:clamp(0.75rem,0.9vw,0.85rem);color:#3c3c58;animation:pulse 2s ease-in-out infinite;text-align:center}
+/* nav buttons */
+#nav{position:fixed;bottom:5vh;left:0;width:100%;display:flex;justify-content:space-between;padding:0 4vw;z-index:200;pointer-events:none}
+.nav-btn{width:clamp(44px,5vw,56px);height:clamp(44px,5vw,56px);border-radius:50%;border:1px solid #3c3c68;background:rgba(7,7,13,0.7);color:#7c7ca0;font-size:clamp(1.2rem,1.5vw,1.5rem);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;pointer-events:auto;backdrop-filter:blur(8px)}
+.nav-btn:hover{border-color:#7c9fcf;color:#7c9fcf;background:rgba(12,12,30,0.9)}
+.nav-btn:disabled{opacity:0.2;cursor:default;pointer-events:none}
+#hint{position:fixed;bottom:11vh;left:50%;transform:translateX(-50%);z-index:100;font-size:clamp(0.75rem,0.9vw,0.85rem);color:#3c3c58;animation:pulse 2s ease-in-out infinite;text-align:center;pointer-events:none}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:.8}}
 
 @media(max-width:768px){
@@ -108,7 +112,8 @@ hr{margin:1.5rem 0;border:none;border-top:1px solid #1a1a35}
 
 <div id="progress"><div id="bar"></div></div>
 <div id="pg">1 / 13</div>
-<div id="hint">← → 键盘翻页 · 或滑动</div>
+<div id="nav"><button class="nav-btn" id="prevBtn">‹</button><button class="nav-btn" id="nextBtn">›</button></div>
+<div id="hint">← → 键盘翻页 · 点击按钮 · 滑动</div>
 
 <div id="wrap">
 
@@ -396,14 +401,18 @@ hr{margin:1.5rem 0;border:none;border-top:1px solid #1a1a35}
 (function(){
 var wrap=document.getElementById('wrap'),total=13,cur=0;
 var bar=document.getElementById('bar'),pg=document.getElementById('pg'),hint=document.getElementById('hint');
+var prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn');
+prevBtn.addEventListener('click',function(){go(cur-1)});
+nextBtn.addEventListener('click',function(){go(cur+1)});
 function go(n){
   if(n<0)n=0;if(n>=total)n=total-1;if(n===cur)return;
   cur=n;wrap.style.transform='translateX(-'+(cur*100)+'vw)';
   bar.style.width=((cur+1)/total*100)+'%';
   pg.textContent=(cur+1)+' / '+total;
+  prevBtn.disabled=(cur===0);nextBtn.disabled=(cur===total-1);
   hint.style.display=(cur>0&&cur<total-1)?'none':'block';
   if(cur===total-1)hint.textContent='首页 · 按 Home 回到开头';
-  else if(cur===0)hint.textContent='→ 键盘翻页 · 或滑动';
+  else if(cur===0)hint.textContent='← → 键盘翻页 · 点击按钮 · 滑动';
 }
 document.addEventListener('keydown',function(e){
   if(e.key==='ArrowLeft')go(cur-1);
