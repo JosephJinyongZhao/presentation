@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI时代讲座的本质转变</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121c;
+    --bg3: #1a1a2e;
+    --text: #e8e6e3;
+    --text-dim: #88869e;
+    --accent: #f0c040;
+    --accent2: #e8885a;
+    --accent3: #5a9fe8;
+    --line: rgba(240, 192, 64, 0.15);
+    --glow: rgba(240, 192, 64, 0.08);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ===== Slide Container ===== */
+  .slides {
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+  }
+
+  /* ===== Slide Inner ===== */
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ===== Typography ===== */
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+  h1 .highlight {
+    color: var(--accent);
+  }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 0.6em;
+    color: var(--text);
+  }
+  h2 .accent-line {
+    display: inline-block;
+    width: 2.4em;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    vertical-align: middle;
+    margin-right: 0.4em;
+  }
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.5em;
+    letter-spacing: 0.02em;
+  }
+  p {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    line-height: 1.8;
+    margin-bottom: 0.6em;
+    font-weight: 300;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-top: 0.3em;
+  }
+  .quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.3rem, 2.8vw, 2rem);
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--accent);
+    border-left: 4px solid var(--accent);
+    padding-left: 1.5em;
+    margin: 1em 0;
+  }
+  .quote .attribution {
+    display: block;
+    font-size: 0.6em;
+    font-weight: 400;
+    color: var(--text-dim);
+    margin-top: 0.5em;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .tagline {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    margin: 0.8em 0;
+  }
+
+  /* ===== Lists ===== */
+  ul, ol {
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    line-height: 1.9;
+    padding-left: 1.5em;
+    margin-bottom: 0.5em;
+    color: var(--text);
+    font-weight: 300;
+  }
+  li { margin-bottom: 0.2em; }
+  li strong { color: var(--accent2); font-weight: 500; }
+
+  /* ===== Table ===== */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1em 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+  }
+  th {
+    background: var(--bg3);
+    color: var(--accent);
+    padding: 0.7em 1em;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  td {
+    padding: 0.6em 1em;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-weight: 300;
+  }
+  tr:last-child td { border: none; }
+  tr:hover td { background: rgba(240,192,64,0.04); }
+
+  /* ===== Grid Cards ===== */
+  .grid-2, .grid-3 {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    margin: 1.2em 0;
+  }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: clamp(1rem, 2vw, 1.6rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .card .num {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.3;
+    line-height: 1;
+    margin-bottom: 0.3em;
+  }
+  .card h4 {
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4em;
+  }
+  .card p {
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  /* ===== Flow Diagram ===== */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.5vw, 1.2rem);
+    margin: 1.5em 0;
+    flex-wrap: wrap;
+  }
+  .flow-item {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: clamp(0.6rem, 1.5vw, 1.2rem) clamp(1rem, 2vw, 1.8rem);
+    text-align: center;
+    font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .flow-item .label {
+    font-size: 0.7em;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-top: 0.3em;
+  }
+  .flow-arrow {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    color: var(--accent);
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  .flow-arrow-down {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--accent);
+    opacity: 0.5;
+  }
+
+  /* ===== Model Ring ===== */
+  .ring-model {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8em;
+    margin: 1.5em 0;
+  }
+  .ring-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+  .ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    color: var(--text);
+    font-weight: 500;
+    text-align: center;
+    font-size: clamp(0.75rem, 1.4vw, 1rem);
+    padding: 0.5em;
+    line-height: 1.4;
+    background: rgba(240,192,64,0.04);
+    flex-shrink: 0;
+  }
+  .ring.r1 { width: clamp(6rem, 12vw, 10rem); height: clamp(6rem, 12vw, 10rem); }
+  .ring.r2 { width: clamp(5rem, 10vw, 8rem); height: clamp(5rem, 10vw, 8rem); }
+  .ring.r3 { width: clamp(4rem, 8vw, 6.5rem); height: clamp(4rem, 8vw, 6.5rem); }
+  .ring-desc {
+    font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    max-width: 20em;
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.5em 1.2em;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.3em 0.5em;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .nav button:hover { color: var(--accent); }
+  .nav .page-num {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    min-width: 5em;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .nav .progress {
+    width: 8em;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .nav .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    border-radius: 2px;
+  }
+
+  /* ===== Section Decor ===== */
+  .section-badge {
+    display: inline-block;
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    padding: 0.3em 1em;
+    border-radius: 20px;
+    margin-bottom: 1em;
+    opacity: 0.7;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 1.5em 0;
+    opacity: 0.3;
+  }
+
+  /* ===== Split Layout ===== */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+  }
+  .split-right {
+    position: relative;
+  }
+  .deco-box {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    background: var(--bg2);
+    min-height: 10em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .deco-box .big-num {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.15;
+    line-height: 1;
+    position: absolute;
+    top: 0.2em; right: 0.3em;
+  }
+  .deco-box p {
+    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+    margin-bottom: 0.4em;
+  }
+
+  /* ===== Steps ===== */
+  .steps {
+    counter-reset: step;
+    margin: 1em 0;
+  }
+  .step {
+    counter-increment: step;
+    display: flex;
+    gap: 1em;
+    margin-bottom: 0.8em;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: clamp(1.8rem, 3vw, 2.4rem);
+    height: clamp(1.8rem, 3vw, 2.4rem);
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: clamp(0.8rem, 1.4vw, 1rem);
+  }
+  .step-content {
+    flex: 1;
+  }
+  .step-content h4 {
+    font-size: clamp(0.9rem, 1.7vw, 1.2rem);
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.2em;
+  }
+  .step-content p {
+    font-size: clamp(0.8rem, 1.4vw, 1rem);
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .split { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow-arrow { display: none; }
+    .flow-arrow-down { display: block; }
+    .nav .progress { width: 4em; }
+    h1 { font-size: clamp(1.8rem, 7vw, 2.8rem); }
+    h2 { font-size: clamp(1.3rem, 5vw, 2rem); }
+    p { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
+    .ring-model .ring-row { flex-direction: column; }
+  }
+
+  /* ===== Fade-in ===== */
+  .slide.active .fade-up {
+    animation: fadeUp 0.7s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .fade-up:nth-child(2) { animation-delay: 0.05s; }
+  .slide.active .fade-up:nth-child(3) { animation-delay: 0.1s; }
+  .slide.active .fade-up:nth-child(4) { animation-delay: 0.15s; }
+  .slide.active .fade-up:nth-child(5) { animation-delay: 0.2s; }
+  .slide.active .fade-up:nth-child(6) { animation-delay: 0.25s; }
+  .slide.active .fade-up:nth-child(7) { animation-delay: 0.3s; }
+  .slide.active .fade-up:nth-child(8) { animation-delay: 0.35s; }
+  .slide.active .fade-up:nth-child(9) { animation-delay: 0.4s; }
+  .slide.active .fade-up:nth-child(10) { animation-delay: 0.45s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Background Deco ===== */
+  .bg-glow {
+    position: fixed;
+    top: -20vh; right: -10vw;
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-glow2 {
+    position: fixed;
+    bottom: -30vh; left: -10vw;
+    width: 50vw; height: 50vw;
+    background: radial-gradient(circle, rgba(90,159,232,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .slide-inner { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<div class="slides" id="slides">
+
+  <!-- ===== Slide 1: Title ===== -->
+  <div class="slide active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-up section-badge">2026.07.25 晨间灵感</div>
+      <h1 class="fade-up">AI时代讲座的<span class="highlight">本质转变</span></h1>
+      <p class="fade-up subtitle" style="margin-top:0.5em;">从知识传递到即兴启发</p>
+      <hr style="width:60%;margin:2em auto;">
+      <div class="fade-up" style="margin-top:1em;">
+        <p style="font-size:clamp(1rem,2vw,1.4rem);color:var(--text-dim);max-width:800px;margin:0 auto;">
+          过去，你给听众"知道"<br>
+          <span style="color:var(--accent);font-weight:500;">现在，你给听众"想到"</span>
+        </p>
+      </div>
+      <div class="fade-up" style="margin-top:2.5em;">
+        <p style="font-size:clamp(0.8rem,1.4vw,1rem);color:var(--text-dim);">← → 键盘翻页 · 点击下方导航</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 2: Core Proposition ===== -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">核心命题</div>
+      <h2 class="fade-up"><span class="accent-line"></span>一句话版本</h2>
+      <div class="quote fade-up" style="font-size:clamp(1.4rem,3vw,2.2rem);">
+        AI时代，讲座的价值不再在于"传递你不知道的知识"，<br>
+        而在于"在现场激发你从未想过要问的问题"。
+      </div>
+      <div class="split fade-up" style="margin-top:1.5em;">
+        <div>
+          <p style="font-weight:300;">当知识获取成本趋近于零，<strong style="color:var(--accent);">讲座的稀缺性从"信息差"转移到"思维差"</strong>。</p>
+          <p style="font-weight:300;color:var(--text-dim);">听众不再需要你告诉他答案——他随时可以问AI。</p>
+          <p style="font-weight:300;color:var(--text-dim);">他需要的是：<strong style="color:var(--accent2);">你让他意识到自己应该问什么。</strong></p>
+        </div>
+        <div class="deco-box" style="position:relative;">
+          <span class="big-num">?</span>
+          <p style="font-weight:600;margin-bottom:0.5em;">旧范式</p>
+          <p style="font-size:clamp(0.75rem,1.3vw,0.95rem);color:var(--text-dim);">我有答案 → 你来听</p>
+          <hr style="margin:0.6em 0;">
+          <p style="font-weight:600;margin-bottom:0.5em;color:var(--accent);">新范式</p>
+          <p style="font-size:clamp(0.75rem,1.3vw,0.95rem);color:var(--text-dim);">我有问题 → 你来找 → AI来答</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 3: Knowledge Democratization ===== -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 一</div>
+      <h2 class="fade-up"><span class="accent-line"></span>知识民主化：AI瓦解"知道"的价值</h2>
+      <p class="fade-up" style="color:var(--text-dim);">传统讲座的底层假设——信息不对称——正在被AI彻底瓦解：</p>
+      <div class="grid-3 fade-up" style="margin-top:1em;">
+        <div class="card">
+          <div class="num">01</div>
+          <h4>信息获取成本趋零</h4>
+          <p>任何人在任何时间都可以向AI获取结构化的知识输出，质量不亚于中等水平的讲座。</p>
+        </div>
+        <div class="card">
+          <div class="num">02</div>
+          <h4>知识更新速度碾压</h4>
+          <p>AI的知识库实时更新，而讲座内容从准备到交付存在天然的时间差。</p>
+        </div>
+        <div class="card">
+          <div class="num">03</div>
+          <h4>个性化成为标配</h4>
+          <p>AI可以为每个人定制知识输出，而讲座只能面向"平均听众"。</p>
+        </div>
+      </div>
+      <div class="fade-up quote" style="font-size:clamp(1rem,1.8vw,1.4rem);margin-top:1em;">
+        当"知道更多"不再是稀缺资源，讲座的竞争壁垒必须从<strong>"信息存量"</strong>转向<strong>"认知质量"</strong>。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 4: Value Migration ===== -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 二</div>
+      <h2 class="fade-up"><span class="accent-line"></span>价值迁移：从"答案"到"问题"</h2>
+      <div class="table-wrap fade-up">
+        <table>
+          <thead>
+            <tr><th>传统范式</th><th>AI时代范式</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>我有答案，你来听</td><td>我有问题，AI来答</td></tr>
+            <tr><td>知识是稀缺品</td><td style="color:var(--accent);">提问力是稀缺品</td></tr>
+            <tr><td>讲者 = 知识权威</td><td style="color:var(--accent);">讲者 = 思维引导者</td></tr>
+            <tr><td>成功 = 讲得清楚</td><td style="color:var(--accent);">成功 = 问得精准</td></tr>
+            <tr><td>听众被动接收</td><td style="color:var(--accent);">听众主动生成</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fade-up quote" style="font-size:clamp(1.1rem,2vw,1.6rem);margin-top:0.8em;">
+        <strong style="color:var(--accent);">答案的边际成本趋零，而问题的边际价值趋无穷。</strong>
+      </div>
+      <div class="grid-3 fade-up" style="margin-top:1em;">
+        <div class="card"><p style="font-size:clamp(0.75rem,1.3vw,0.95rem);">打开AI无法自行生成的<strong>思考方向</strong></p></div>
+        <div class="card"><p style="font-size:clamp(0.75rem,1.3vw,0.95rem);">连接听众自身的<strong>经验与知识</strong></p></div>
+        <div class="card"><p style="font-size:clamp(0.75rem,1.3vw,0.95rem);">产生持续发酵的<strong>认知效应</strong>——讲座结束后，问题还在</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 5: Improvisation ===== -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 三</div>
+      <h2 class="fade-up"><span class="accent-line"></span>即兴的本质：思维框架的现场构建</h2>
+      <div class="split fade-up">
+        <div>
+          <div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.5em;margin-bottom:1em;">
+            <p style="font-weight:600;color:var(--text-dim);margin-bottom:0.5em;">传统讲座 = "知识放映"</p>
+            <p style="font-size:clamp(0.8rem,1.4vw,1rem);">讲者按预设路径输出信息，听众像看电影——看完了，但框架还是讲者的。</p>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:1.5em;">
+            <p style="font-weight:600;color:var(--accent);margin-bottom:0.5em;">即兴讲座 = "框架共建"</p>
+            <p style="font-size:clamp(0.8rem,1.4vw,1rem);">讲者和听众在现场共同构建临时思维空间，碰撞出新的角度。</p>
+          </div>
+        </div>
+        <div>
+          <div class="flow" style="flex-direction:column;gap:0.8em;">
+            <div class="flow-item" style="width:100%;">触 发<span class="label">抛出认知冲突的"种子"</span></div>
+            <div class="flow-arrow-down">↓</div>
+            <div class="flow-item" style="width:100%;">连 接<span class="label">听众用自己的经验回应</span></div>
+            <div class="flow-arrow-down">↓</div>
+            <div class="flow-item" style="width:100%;">生 成<span class="label">在连接中产生新理解</span></div>
+            <div class="flow-arrow-down">↓</div>
+            <div class="flow-item" style="width:100%;">反 馈<span class="label">听众反应调整讲者方向</span></div>
+          </div>
+          <p style="font-size:clamp(0.75rem,1.3vw,0.9rem);color:var(--text-dim);margin-top:0.8em;text-align:center;">即兴不是"随便讲"，而是"在现场构建"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 6: Role Shift ===== -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 四</div>
+      <h2 class="fade-up"><span class="accent-line"></span>讲座者角色的根本转变</h2>
+      <div class="table-wrap fade-up">
+        <table>
+          <thead>
+            <tr><th>维度</th><th>传统角色</th><th style="color:var(--accent);">AI时代角色</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>核心能力</td><td>知识储备 + 表达能力</td><td style="color:var(--accent);">问题设计 + 即兴连接</td></tr>
+            <tr><td>准备方式</td><td>写讲稿、做PPT</td><td style="color:var(--accent);">设计问题序列、准备触发点</td></tr>
+            <tr><td>价值来源</td><td>你说了什么</td><td style="color:var(--accent);">你引发了什么</td></tr>
+            <tr><td>成功标准</td><td>听众记住了多少</td><td style="color:var(--accent);">听众开始问什么</td></tr>
+            <tr><td>风险</td><td>讲错、讲不全</td><td style="color:var(--accent2);">无法应对现场生成的方向</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fade-up quote" style="font-size:clamp(1rem,1.8vw,1.3rem);margin-top:0.8em;">
+        <strong>本质转变</strong>：从"内容生产者"到"思维催化剂"<br>
+        <span style="font-size:0.8em;color:var(--text-dim);">你不是在输送知识，你是在催化思考。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 7: Critique ===== -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">批判性审视</div>
+      <h2 class="fade-up"><span class="accent-line"></span>五个不能忽视的边界</h2>
+      <div class="grid-2 fade-up" style="margin-top:0.5em;">
+        <div class="card">
+          <div class="num">01</div>
+          <h4>即兴 ≠ 无准备</h4>
+          <p>即兴演讲者需要更深厚的储备。爵士乐手即兴演奏之前，已经练了上千个小时的音阶和和弦。<strong style="color:var(--accent2);">真正的即兴，是准备到极致后的自然流露。</strong></p>
+        </div>
+        <div class="card">
+          <div class="num">02</div>
+          <h4>知识基础仍是必要条件</h4>
+          <p>没有知识基础的"提问引导"是空洞的。讲者的知识价值不在于"比AI知道得多"，而在于"<strong style="color:var(--accent2);">比AI知道得更灵活</strong>"。</p>
+        </div>
+        <div class="card">
+          <div class="num">03</div>
+          <h4>提问能力不是天然就有的</h4>
+          <p>大多数人只会问"怎么用""能做什么"——引导提问本身是一种需要刻意练习的技能，不是换个方式讲那么简单。</p>
+        </div>
+        <div class="card">
+          <div class="num">04</div>
+          <h4>技术依赖的三个风险</h4>
+          <p>AI回答的准确性 · 碎片化发散 · "即时满足"陷阱 —— 需要平衡即兴和结构性。</p>
+        </div>
+        <div class="card" style="grid-column:1/-1;">
+          <div class="num">05</div>
+          <h4>边界条件：不是所有讲座都适合</h4>
+          <p>入门级知识普及、标准化技能培训、考核导向的讲座——仍然需要结构化的知识输入。<strong style="color:var(--accent);">最适用的场景：听众有一定基础，需要的是"不同的视角"和"更好的问题"。</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 8: Three-Ring Model ===== -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">方法框架 · 一</div>
+      <h2 class="fade-up"><span class="accent-line"></span>三环模型：实时循环</h2>
+      <div class="ring-model fade-up">
+        <div class="ring-row">
+          <div class="ring r1" style="border-color:var(--accent);">问题<br>触发环</div>
+          <div class="ring-desc">抛出能引发认知冲突的"种子"</div>
+        </div>
+        <div class="flow-arrow-down" style="display:block;font-size:1.2rem;margin:-0.3em 0;">↓</div>
+        <div class="ring-row">
+          <div class="ring r2" style="border-color:var(--accent2);">框架<br>共建环</div>
+          <div class="ring-desc">和听众一起构建思维框架</div>
+        </div>
+        <div class="flow-arrow-down" style="display:block;font-size:1.2rem;margin:-0.3em 0;">↓</div>
+        <div class="ring-row">
+          <div class="ring r3" style="border-color:var(--accent3);">方向<br>引导环</div>
+          <div class="ring-desc">在发散中保持方向感</div>
+        </div>
+      </div>
+      <p class="fade-up" style="text-align:center;font-size:clamp(0.85rem,1.5vw,1.05rem);color:var(--text-dim);">三环不是顺序执行，而是实时循环——每一轮对话都在三层之间流动</p>
+    </div>
+  </div>
+
+  <!-- ===== Slide 9: Steps 1-4 ===== -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">方法框架 · 二</div>
+      <h2 class="fade-up"><span class="accent-line"></span>操作步骤：准备阶段</h2>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>设计"问题种子"（3-5个）</h4>
+            <p>不是知识点，而是能引发认知冲突的角度。例如："如果AI能帮你做所有决策，你还剩下什么？"</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>准备"分支素材"（每个种子3个方向）</h4>
+            <p>预判听众可能的反应方向，每个方向准备1-2个"接住"的素材（案例、反问、数据）。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>设计"结构锚点"</h4>
+            <p>3-4个"必须到达"的认知节点——不管怎么即兴都要带听众到达的地方。</p>
+          </div>
+        </div>
+      </div>
+      <hr class="fade-up">
+      <h2 class="fade-up" style="margin-top:0.5em;"><span class="accent-line"></span>操作步骤：现场执行</h2>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>开场——建立"认知契约"</h4>
+            <p>"今天不是来给你们答案的，是来帮你们找到更好的问题。"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 10: Steps 5-8 ===== -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">方法框架 · 三</div>
+      <h2 class="fade-up"><span class="accent-line"></span>操作步骤：现场执行与收尾</h2>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>抛出种子 → 观察反应 → 选择方向</h4>
+            <p>观察听众的反应，如果某个方向引发强烈反应，优先深挖；如果冷场，换个角度重新抛。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>实时接入AI作为"协作者"</h4>
+            <p>当场用AI搜索，但AI的回答不是终点——追问AI"这个回答的假设是什么？"</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-content">
+            <h4>定期"收束"</h4>
+            <p>每15-20分钟做一次总结，把发散的内容拉回到结构锚点。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">8</div>
+          <div class="step-content">
+            <h4>留下"带得走的问题"</h4>
+            <p style="color:var(--accent);">结束时不要给"总结"，要给出"接下来值得你继续追问的问题"。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 11: Scenario Strategy ===== -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">方法框架 · 四</div>
+      <h2 class="fade-up"><span class="accent-line"></span>场景适配策略</h2>
+      <div class="grid-2 fade-up">
+        <div class="card">
+          <h4 style="color:var(--accent);">企业内训（有基础）</h4>
+          <p>种子 → 讨论 → AI验证 → 总结，循环迭代</p>
+        </div>
+        <div class="card">
+          <h4 style="color:var(--accent2);">公开讲座（背景杂）</h4>
+          <p>开场先做"认知摸底"，根据现场选择种子</p>
+        </div>
+        <div class="card">
+          <h4 style="color:var(--accent3);">学术分享（专业强）</h4>
+          <p>用"未解决的悖论"作为种子，引导追问</p>
+        </div>
+        <div class="card">
+          <h4 style="color:var(--accent);">面向C端（零基础）</h4>
+          <p>先做15分钟"最小知识输入"，再进入即兴模式</p>
+        </div>
+        <div class="card" style="grid-column:1/-1;">
+          <h4 style="color:var(--accent2);">线上直播</h4>
+          <p>用弹幕/评论作为实时反馈，设置"投票式"方向选择</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 12: Framework Template ===== -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">方法框架 · 五</div>
+      <h2 class="fade-up"><span class="accent-line"></span>可复用的讲座框架</h2>
+      <div class="deco-box fade-up" style="position:relative;overflow:hidden;">
+        <span class="big-num" style="font-size:5rem;">⌛</span>
+        <pre style="font-size:clamp(0.7rem,1.3vw,0.95rem);line-height:1.8;color:var(--text);font-family:'Noto Sans SC',sans-serif;overflow-x:auto;white-space:pre-wrap;">
+<span style="color:var(--accent);">┌─ 开场（5分钟）</span>
+│  认知契约 + 今日问题种子预览
+│
+<span style="color:var(--accent2);">├─ 第一轮（15-20分钟）</span>
+│  种子A → 听众反应 → 方向选择 → 追问 → 收束
+│
+<span style="color:var(--accent3);">├─ 第二轮（15-20分钟）</span>
+│  种子B → 听众反应 → 方向选择 → 追问 → 收束
+│
+<span style="color:var(--accent);">├─ 第三轮（15-20分钟）</span>
+│  种子C → 听众反应 → 方向选择 → 追问 → 收束
+│
+<span style="color:var(--accent2);">├─ 收束（10分钟）</span>
+│  三颗种子连成一条线 → 留下"带得走的问题"
+│
+<span style="color:var(--text-dim);">└─ 开放对话（弹性）</span>
+    听众自选方向深入</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slide 13: Summary ===== -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-up section-badge">总结</div>
+      <h1 class="fade-up" style="font-size:clamp(2rem,4.5vw,3.6rem);">从"知道"到"想到"</h1>
+      <div class="split fade-up" style="margin-top:2em;text-align:left;">
+        <div class="deco-box" style="border-color:rgba(255,255,255,0.1);">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--text-dim);">知道</p>
+          <p style="font-size:clamp(0.85rem,1.5vw,1.1rem);">是终点——讲完就结束了</p>
+        </div>
+        <div class="deco-box" style="border-color:var(--accent);">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent);">想到</p>
+          <p style="font-size:clamp(0.85rem,1.5vw,1.1rem);">是起点——讲座结束后，思考才刚刚开始</p>
+        </div>
+      </div>
+      <hr class="fade-up" style="width:60%;margin:2em auto;">
+      <div class="fade-up" style="margin-top:1em;">
+        <p style="font-size:clamp(1rem,1.8vw,1.3rem);color:var(--text-dim);font-weight:300;">
+          一个被激发的问题，<br>
+          <span style="color:var(--accent);font-weight:600;font-size:1.2em;">比一打被记住的答案更有价值。</span>
+        </p>
+      </div>
+      <div class="fade-up" style="margin-top:2.5em;">
+        <p style="font-size:clamp(0.7rem,1.2vw,0.85rem);color:var(--text-dim);">小勇 · 2026年7月25日晨间灵感</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Navigation ===== -->
+<div class="nav" id="nav">
+  <button onclick="prevSlide()" title="上一页">←</button>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:7.7%;"></div></div>
+  <span class="page-num" id="pageNum">1 / 13</span>
+  <button onclick="nextSlide()" title="下一页">→</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function goTo(n) {
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === n);
+  });
+  current = n;
+  document.getElementById('pageNum').textContent = (n + 1) + ' / ' + total;
+  document.getElementById('progressBar').style.width = ((n + 1) / total * 100) + '%';
+}
+
+function nextSlide() { if (current < total - 1) goTo(current + 1); }
+function prevSlide() { if (current > 0) goTo(current - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+});
+
+// Touch support
+let touchStartY = 0;
+document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
+document.addEventListener('touchend', (e) => {
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dy) > 50) { dy < 0 ? nextSlide() : prevSlide(); }
+});
+</script>
+
+</body>
+</html>
