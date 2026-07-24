@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>身份的自由：从被定义到为我所用</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #08080f;
+    --bg2: #111120;
+    --bg3: #1a1a30;
+    --text: #e8e6e3;
+    --text-dim: #7a78a0;
+    --accent: #7c5cfc;
+    --accent2: #f472b6;
+    --accent3: #34d399;
+    --line: rgba(124,92,252,0.15);
+    --glow: rgba(124,92,252,0.06);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slides { height: 100vh; width: 100vw; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0; transition: opacity 0.6s ease;
+    pointer-events: none; overflow-y: auto;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; position: relative; }
+  .slide-inner { max-width: 1100px; width: 100%; margin: 0 auto; }
+
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    font-weight: 900; line-height: 1.3; letter-spacing: 0.04em;
+    color: var(--text);
+  }
+  h1 .highlight { color: var(--accent); }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    font-weight: 700; line-height: 1.4; margin-bottom: 0.6em;
+    color: var(--text);
+  }
+  h2 .accent-line {
+    display: inline-block; width: 2.4em; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    vertical-align: middle; margin-right: 0.4em;
+  }
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    font-weight: 600; color: var(--accent); margin-bottom: 0.5em;
+    letter-spacing: 0.02em;
+  }
+  p {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    line-height: 1.8; margin-bottom: 0.6em;
+    font-weight: 300; color: var(--text);
+  }
+  .subtitle {
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    color: var(--text-dim); font-weight: 300; margin-top: 0.3em;
+  }
+  .quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    font-weight: 600; line-height: 1.6;
+    color: var(--accent2);
+    border-left: 4px solid var(--accent2);
+    padding-left: 1.5em; margin: 1em 0;
+  }
+  .quote .attribution {
+    display: block; font-size: 0.6em; font-weight: 400;
+    color: var(--text-dim); margin-top: 0.5em;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .tagline {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700; color: var(--accent);
+    text-align: center; margin: 0.8em 0;
+  }
+
+  ul, ol {
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    line-height: 1.9; padding-left: 1.5em;
+    margin-bottom: 0.5em; color: var(--text);
+    font-weight: 300;
+  }
+  li { margin-bottom: 0.2em; }
+  li strong { color: var(--accent2); font-weight: 500; }
+
+  .table-wrap { width: 100%; overflow-x: auto; margin: 1em 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+  }
+  th {
+    background: var(--bg3); color: var(--accent);
+    padding: 0.7em 1em; text-align: left;
+    font-weight: 600; border-bottom: 2px solid var(--accent);
+  }
+  td {
+    padding: 0.6em 1em;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-weight: 300;
+  }
+  tr:last-child td { border: none; }
+  tr:hover td { background: rgba(124,92,252,0.04); }
+
+  .grid-2, .grid-3 {
+    display: grid; gap: clamp(1rem, 2vw, 1.5rem); margin: 1.2em 0;
+  }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: clamp(1rem, 2vw, 1.6rem);
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .card .num {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 900; color: var(--accent);
+    opacity: 0.3; line-height: 1; margin-bottom: 0.3em;
+  }
+  .card h4 {
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    font-weight: 600; color: var(--text); margin-bottom: 0.4em;
+  }
+  .card p {
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 300; line-height: 1.7; color: var(--text-dim);
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+  }
+
+  .deco-box {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    background: var(--bg2);
+    min-height: 8em;
+    position: relative;
+    overflow: hidden;
+  }
+  .deco-box .big-num {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900; color: var(--accent);
+    opacity: 0.12; line-height: 1;
+    position: absolute; top: 0.2em; right: 0.3em;
+  }
+  .deco-box p {
+    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+    margin-bottom: 0.4em;
+  }
+
+  .flow {
+    display: flex; align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.5vw, 1.2rem);
+    margin: 1.5em 0; flex-wrap: wrap;
+  }
+  .flow-item {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: clamp(0.6rem, 1.5vw, 1.2rem) clamp(1rem, 2vw, 1.8rem);
+    text-align: center;
+    font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+    font-weight: 500; flex-shrink: 0;
+  }
+  .flow-item .label {
+    font-size: 0.7em; color: var(--text-dim);
+    font-weight: 300; margin-top: 0.3em;
+  }
+  .flow-arrow {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    color: var(--accent); opacity: 0.5; flex-shrink: 0;
+  }
+  .flow-arrow-down {
+    display: none;
+    font-size: 1.5rem; color: var(--accent); opacity: 0.5;
+  }
+
+  .section-badge {
+    display: inline-block;
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+    font-weight: 500; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    border: 1px solid var(--accent);
+    padding: 0.3em 1em; border-radius: 20px;
+    margin-bottom: 1em; opacity: 0.7;
+  }
+
+  hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 1.5em 0; opacity: 0.3;
+  }
+
+  .steps { counter-reset: step; margin: 1em 0; }
+  .step {
+    counter-increment: step;
+    display: flex; gap: 1em; margin-bottom: 0.8em;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: clamp(1.8rem, 3vw, 2.4rem);
+    height: clamp(1.8rem, 3vw, 2.4rem);
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: clamp(0.8rem, 1.4vw, 1rem);
+  }
+  .step-content { flex: 1; }
+  .step-content h4 {
+    font-size: clamp(0.9rem, 1.7vw, 1.2rem);
+    font-weight: 600; color: var(--text); margin-bottom: 0.2em;
+  }
+  .step-content p {
+    font-size: clamp(0.8rem, 1.4vw, 1rem);
+    color: var(--text-dim); font-weight: 300;
+  }
+
+  /* ===== Identity Model ===== */
+  .model-rings {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5em;
+    margin: 1.5em 0;
+    flex-wrap: wrap;
+  }
+  .model-ring {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .ring-circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+    font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    padding: 0.3em;
+    background: rgba(124,92,252,0.04);
+  }
+  .ring-circle.r-big {
+    width: clamp(7rem, 14vw, 11rem);
+    height: clamp(7rem, 14vw, 11rem);
+    border-color: var(--accent);
+  }
+  .ring-circle.r-mid {
+    width: clamp(5.5rem, 11vw, 8.5rem);
+    height: clamp(5.5rem, 11vw, 8.5rem);
+    border-color: var(--accent2);
+  }
+  .ring-circle.r-small {
+    width: clamp(4rem, 8vw, 6.5rem);
+    height: clamp(4rem, 8vw, 6.5rem);
+    border-color: var(--accent3);
+  }
+  .ring-label {
+    font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+    color: var(--text-dim);
+    margin-top: 0.6em;
+    font-weight: 300;
+  }
+
+  /* ===== Cage-Tool Comparison ===== */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.5em;
+    align-items: center;
+    margin: 1.5em 0;
+  }
+  .compare-left {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.2em;
+  }
+  .compare-right {
+    background: rgba(124,92,252,0.06);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.2em;
+  }
+  .compare-title {
+    font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+    font-weight: 600;
+    margin-bottom: 0.5em;
+  }
+  .compare-item {
+    font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+    color: var(--text-dim);
+    padding: 0.3em 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .compare-item:last-child { border: none; }
+  .compare-vs {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 700;
+    color: var(--accent2);
+    opacity: 0.6;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed; bottom: 3vh; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1.2em;
+    z-index: 100;
+    background: rgba(8,8,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.5em 1.2em;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav button {
+    background: none; border: none;
+    color: var(--text-dim); font-size: 1.4rem;
+    cursor: pointer; padding: 0.3em 0.5em;
+    transition: color 0.2s; line-height: 1;
+  }
+  .nav button:hover { color: var(--accent); }
+  .nav .page-num {
+    font-size: 0.9rem; color: var(--text-dim);
+    font-weight: 300; min-width: 5em; text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .nav .progress {
+    width: 8em; height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px; overflow: hidden;
+  }
+  .nav .progress-bar {
+    height: 100%; background: var(--accent);
+    transition: width 0.4s ease; border-radius: 2px;
+  }
+
+  .bg-glow {
+    position: fixed; top: -20vh; right: -10vw;
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .bg-glow2 {
+    position: fixed; bottom: -30vh; left: -10vw;
+    width: 50vw; height: 50vw;
+    background: radial-gradient(circle, rgba(244,114,182,0.04) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .slide-inner { position: relative; z-index: 1; }
+
+  /* Animations */
+  .slide.active .fade-up {
+    animation: fadeUp 0.7s ease forwards;
+    opacity: 0;
+  }
+  .slide.active .fade-up:nth-child(2) { animation-delay: 0.05s; }
+  .slide.active .fade-up:nth-child(3) { animation-delay: 0.1s; }
+  .slide.active .fade-up:nth-child(4) { animation-delay: 0.15s; }
+  .slide.active .fade-up:nth-child(5) { animation-delay: 0.2s; }
+  .slide.active .fade-up:nth-child(6) { animation-delay: 0.25s; }
+  .slide.active .fade-up:nth-child(7) { animation-delay: 0.3s; }
+  .slide.active .fade-up:nth-child(8) { animation-delay: 0.35s; }
+  .slide.active .fade-up:nth-child(9) { animation-delay: 0.4s; }
+  .slide.active .fade-up:nth-child(10) { animation-delay: 0.45s; }
+  .slide.active .fade-up:nth-child(11) { animation-delay: 0.5s; }
+  .slide.active .fade-up:nth-child(12) { animation-delay: 0.55s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .split { grid-template-columns: 1fr; }
+    .compare { grid-template-columns: 1fr; }
+    .compare-vs { text-align: center; padding: 0.5em 0; }
+    .model-rings { flex-direction: column; gap: 1em; }
+    .nav .progress { width: 4em; }
+    h1 { font-size: clamp(1.8rem, 7vw, 2.8rem); }
+    h2 { font-size: clamp(1.3rem, 5vw, 2rem); }
+    p { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<div class="slides" id="slides">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-up section-badge">2026.07.25 晨间灵感</div>
+      <h1 class="fade-up">身份的<span class="highlight">自由</span></h1>
+      <p class="fade-up subtitle" style="margin-top:0.5em;">从被定义到为我所用</p>
+      <hr style="width:60%;margin:2em auto;">
+      <div class="fade-up" style="margin-top:1em;">
+        <p style="font-size:clamp(1.1rem,2.2vw,1.6rem);color:var(--text-dim);max-width:750px;margin:0 auto;font-weight:300;">
+          不要受限于身份——无论是自己对自己的认知，还是别人投射给你的标签。<br>
+          <span style="color:var(--accent);font-weight:500;">让身份成为工具，而非牢笼。</span>
+        </p>
+      </div>
+      <div class="fade-up" style="margin-top:2.5em;">
+        <p style="font-size:clamp(0.8rem,1.4vw,1rem);color:var(--text-dim);">← → 键盘翻页 · 点击下方导航</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Core Proposition -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">核心命题</div>
+      <h2 class="fade-up"><span class="accent-line"></span>觉察·理解·点破·选择</h2>
+      <div class="quote fade-up" style="font-size:clamp(1.3rem,2.6vw,1.9rem);">
+        好的方式是能够觉察，同时理解其局限和约束，<br>
+        主动点破，灵活选择此刻愿意承担什么身份——<br>
+        <span style="color:var(--accent);">为我所用，而非被其束缚。</span>
+      </div>
+      <div class="split fade-up" style="margin-top:1.5em;">
+        <div class="deco-box" style="border-color:var(--accent);">
+          <span class="big-num">"</span>
+          <p style="font-weight:300;color:var(--text-dim);">别人看你是"老师"所以你得有知识</p>
+          <p style="font-weight:300;color:var(--text-dim);">看你是"行政"所以你没内容</p>
+          <p style="font-weight:300;color:var(--text-dim);">看你是"博士"所以你应该什么都知道</p>
+        </div>
+        <div class="deco-box" style="border-color:var(--accent2);">
+          <span class="big-num" style="color:var(--accent2);">!</span>
+          <p style="color:var(--accent2);font-weight:500;">你可以点破这些简化标签</p>
+          <p style="font-weight:300;color:var(--text-dim);">用一个更灵活的姿态</p>
+          <p style="font-weight:300;color:var(--text-dim);">重新定义自己的价值</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Label Mechanism -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 一</div>
+      <h2 class="fade-up"><span class="accent-line"></span>身份标签的本质：认知的简化机制</h2>
+      <p class="fade-up" style="color:var(--text-dim);">人类大脑有天然的带宽限制——面对复杂的人，无法每次都重新评估，所以用标签简化：</p>
+      <div class="grid-3 fade-up">
+        <div class="card">
+          <div class="num">"老师"</div>
+          <p>有知识、能讲授</p>
+        </div>
+        <div class="card">
+          <div class="num">"行政"</div>
+          <p>服务性、执行性</p>
+        </div>
+        <div class="card">
+          <div class="num">"博士"</div>
+          <p>有深度、什么都知道</p>
+        </div>
+      </div>
+      <div class="fade-up" style="text-align:center;margin-top:1em;">
+        <p style="font-size:clamp(1rem,1.8vw,1.3rem);color:var(--text-dim);">
+          <span style="color:var(--accent);font-weight:500;">这些标签不是恶意的。</span> 它们是社会认知的必要简化。
+        </p>
+        <p style="font-size:clamp(1.1rem,2vw,1.5rem);font-weight:600;color:var(--accent2);">
+          问题在于：简化一旦固化，就变成了约束。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Two-way Binding -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 二</div>
+      <h2 class="fade-up"><span class="accent-line"></span>标签的双向作用：双层锁</h2>
+      <div class="grid-2 fade-up">
+        <div class="card" style="border-color:var(--accent2);">
+          <div class="num" style="color:var(--accent2);">外部投射</div>
+          <p style="font-size:clamp(0.8rem,1.4vw,1rem);">别人怎么看你</p>
+          <hr style="margin:0.5em 0;">
+          <p style="font-size:clamp(0.75rem,1.3vw,0.9rem);color:var(--text-dim);font-style:italic;">
+            "你是行政人员，做好服务就行，不需要有太多想法。"<br><br>
+            "你是老师，你应该知道这个问题的答案。"<br><br>
+            "你是北大博士，所以你应该……"
+          </p>
+        </div>
+        <div class="card" style="border-color:var(--accent3);">
+          <div class="num" style="color:var(--accent3);">内部自我确认</div>
+          <p style="font-size:clamp(0.8rem,1.4vw,1rem);">你怎么看自己</p>
+          <hr style="margin:0.5em 0;">
+          <p style="font-size:clamp(0.75rem,1.3vw,0.9rem);color:var(--text-dim);font-style:italic;">
+            "我就是一个搞行政的，没什么核心能力。"<br><br>
+            "我是老师，我得端着。"<br><br>
+            "我是创业者，我输不起。"
+          </p>
+        </div>
+      </div>
+      <div class="fade-up" style="text-align:center;margin-top:0.5em;">
+        <p style="font-size:clamp(1rem,1.8vw,1.4rem);font-weight:600;color:var(--accent2);">
+          最危险的是两者的合流——<br>
+          别人这么看你，你也这么看自己，<br>
+          标签变成了牢笼的<span style="color:var(--accent);">双层锁</span>。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Identity as Tool -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 三</div>
+      <h2 class="fade-up"><span class="accent-line"></span>身份不是本质，是功能</h2>
+      <p class="fade-up" style="color:var(--text-dim);">从"我是谁"到"此刻我是什么"——</p>
+      <div class="compare fade-up">
+        <div class="compare-left">
+          <div class="compare-title" style="color:var(--text-dim);">被身份束缚</div>
+          <div class="compare-item">"我必须符合这个身份"</div>
+          <div class="compare-item">身份是终点</div>
+          <div class="compare-item">害怕身份被挑战</div>
+          <div class="compare-item">维护身份的一致性</div>
+          <div class="compare-item">身份越厚，负担越重</div>
+        </div>
+        <div class="compare-vs">vs</div>
+        <div class="compare-right">
+          <div class="compare-title" style="color:var(--accent);">使用身份</div>
+          <div class="compare-item">"这个身份此刻对我有用"</div>
+          <div class="compare-item">身份是工具</div>
+          <div class="compare-item">主动切换身份</div>
+          <div class="compare-item">追求身份的灵活性</div>
+          <div class="compare-item">身份越薄，越能用</div>
+        </div>
+      </div>
+      <div class="fade-up" style="text-align:center;">
+        <p style="font-size:clamp(0.9rem,1.6vw,1.2rem);color:var(--text-dim);">
+          你不需要"是"一个老师——你可以在需要的时候<span style="color:var(--accent);font-weight:500;">扮演</span>老师的角色<br>
+          你不需要"是"一个行政——你可以在需要的时候<span style="color:var(--accent);font-weight:500;">发挥</span>连接者的价值
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: The Art of Pointing Out -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 四</div>
+      <h2 class="fade-up"><span class="accent-line"></span>点破的艺术：把标签放在桌面上</h2>
+      <p class="fade-up" style="color:var(--text-dim);">把隐形的标签显性化——</p>
+      <div class="deco-box fade-up" style="border-color:var(--accent2);margin-bottom:1em;">
+        <span class="big-num" style="color:var(--accent2);">"</span>
+        <p style="font-size:clamp(0.85rem,1.5vw,1.1rem);font-style:italic;color:var(--text);">
+          "我知道，在大家的认知里，行政就是做服务、没有核心内容的。<br>
+          但我想说的是，在一个组织里，<strong style="color:var(--accent2);">连接和整合本身就是一种核心能力</strong>——<br>
+          而且，我恰好有一些有意思的东西想和大家分享。"
+        </p>
+      </div>
+      <div class="grid-3 fade-up">
+        <div class="card">
+          <div class="num">01</div>
+          <h4>承认合理性</h4>
+          <p>"我知道大家这么看"——不对抗，先接住对方视角</p>
+        </div>
+        <div class="card">
+          <div class="num">02</div>
+          <h4>指出局限</h4>
+          <p>"但连接也是核心能力"——温和地打开缺口</p>
+        </div>
+        <div class="card">
+          <div class="num">03</div>
+          <h4>打开新可能</h4>
+          <p>"我有一些不同的东西"——给出新的叙事</p>
+        </div>
+      </div>
+      <div class="fade-up" style="text-align:center;margin-top:0.5em;">
+        <p style="font-size:clamp(1rem,1.8vw,1.3rem);font-weight:600;color:var(--accent);">
+          点破不是对抗，是解构。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Flexible Selection -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">深度展开 · 五</div>
+      <h2 class="fade-up"><span class="accent-line"></span>灵活选择：从"被定义"到"主动定义"</h2>
+      <p class="fade-up" style="color:var(--text-dim);">在不同场景下，选择最适合当前目标的身份姿态：</p>
+      <div class="grid-2 fade-up">
+        <div class="card">
+          <div class="num" style="font-size:clamp(0.9rem,1.5vw,1.1rem);color:var(--accent);">学术圈</div>
+          <h4>调用"北大博士"</h4>
+          <p>学术身份建立信任基础</p>
+        </div>
+        <div class="card">
+          <div class="num" style="font-size:clamp(0.9rem,1.5vw,1.1rem);color:var(--accent2);">企业对接</div>
+          <h4>调用"商学院管理者"</h4>
+          <p>社交身份减少沟通成本</p>
+        </div>
+        <div class="card">
+          <div class="num" style="font-size:clamp(0.9rem,1.5vw,1.1rem);color:var(--accent3);">给学生讲课</div>
+          <h4>调用"老师"</h4>
+          <p>知识传递身份建立教学关系</p>
+        </div>
+        <div class="card">
+          <div class="num" style="font-size:clamp(0.9rem,1.5vw,1.1rem);color:var(--accent);">和创业者聊天</div>
+          <h4>调用"创新探索者"</h4>
+          <p>平等对话更容易碰撞火花</p>
+        </div>
+      </div>
+      <div class="fade-up" style="text-align:center;margin-top:0.5em;">
+        <p style="font-size:clamp(1rem,1.8vw,1.4rem);font-weight:500;color:var(--accent);">
+          这不是虚伪，这是成熟。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Critical 1-3 -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">批判性审视</div>
+      <h2 class="fade-up"><span class="accent-line"></span>五个不能忽视的边界</h2>
+      <div class="split fade-up">
+        <div>
+          <div class="card" style="margin-bottom:0.8em;">
+            <div class="num">01</div>
+            <h4>灵活 ≠ 虚无</h4>
+            <p>完全没有核心身份会失去可信度锚点。正确的框架是：<strong style="color:var(--accent);">有核心，可延展</strong>。</p>
+          </div>
+          <div class="card" style="margin-bottom:0.8em;">
+            <div class="num">02</div>
+            <h4>社会资本不平等</h4>
+            <p>有些身份自带信用，有些自带阻力。清楚自己的"身份资本"，在需要时调用，但不受其束缚。</p>
+          </div>
+          <div class="card">
+            <div class="num">03</div>
+            <h4>点破不一定有效</h4>
+            <p>用幽默代替对抗，用成果代替声明，选对人再点破。</p>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:0.8em;">
+            <div class="num">04</div>
+            <h4>心理代价</h4>
+            <p>持续切换身份是认知消耗。解决方案：<strong style="color:var(--accent2);">内核稳定，外围灵活</strong>。</p>
+          </div>
+          <div class="card" style="margin-bottom:0.8em;">
+            <div class="num">05</div>
+            <h4>不要表演身份</h4>
+            <p>最大的风险：为了不被束缚而开始表演。<strong style="color:var(--accent2);">真正的自由是知道能选，但选自己舒服的方式。</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Family -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">家庭中的特殊意义</div>
+      <h2 class="fade-up"><span class="accent-line"></span>家庭中的身份固化</h2>
+      <div class="grid-3 fade-up">
+        <div class="card" style="border-color:var(--accent2);">
+          <div class="num" style="color:var(--accent2);">父母眼中</div>
+          <p>你永远是孩子——即使你40岁，有自己的孩子。</p>
+        </div>
+        <div class="card" style="border-color:var(--accent);">
+          <div class="num" style="color:var(--accent);">伴侣眼中</div>
+          <p>你可能是"需要被照顾的一方"或"理所当然的一方"。</p>
+        </div>
+        <div class="card" style="border-color:var(--accent3);">
+          <div class="num" style="color:var(--accent3);">孩子眼中</div>
+          <p>你首先是"爸爸/妈妈"——这个身份压过一切。</p>
+        </div>
+      </div>
+      <div class="fade-up" style="margin-top:0.5em;">
+        <p style="font-size:clamp(0.9rem,1.6vw,1.2rem);color:var(--text-dim);text-align:center;">
+          家庭身份是社会中最顽固的标签——由几十年的互动习得，很难被"点破"。
+        </p>
+        <p style="font-size:clamp(0.9rem,1.6vw,1.2rem);color:var(--accent2);text-align:center;font-weight:500;">
+          最危险的是：你在外面可以灵活切换身份，<br>但一回家就自动套回那个"几十年前的角色"——而且你自己都没意识到。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Family Methods -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">家庭中的突破</div>
+      <h2 class="fade-up"><span class="accent-line"></span>三种家庭身份突破方法</h2>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>主动展示"另一种身份"</h4>
+            <p>在父母面前谈谈工作判断和决策逻辑；在伴侣面前展示不常做的领域能力；在孩子面前展示"非父母"的一面。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>用"认知契约"重置家庭角色</h4>
+            <p>和父母认真谈一次："有些事我希望你们听听我的意见。"和伴侣约定用"专业分工"而不是"角色分工"讨论重要决策。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>让家庭看到你的"成长轨迹"</h4>
+            <p>分享学习笔记、思考文章。让家人看到你在外面做了什么——不是炫耀，是让他们更新对你的认知画像。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Practical Steps 1-5 -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">操作建议 · 一</div>
+      <h2 class="fade-up"><span class="accent-line"></span>觉察：识别你的"身份清单"</h2>
+      <div class="steps fade-up">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>写下你的身份清单</h4>
+            <p>社会身份：北大博士、光华老师、管理者、创业者……家庭身份：儿子、丈夫、爸爸……隐形标签：在不同人群中被贴上的标签。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>识别每个身份的"应该"</h4>
+            <p>"北大博士→什么都知道→不能承认不知道"——每个身份都带着隐形的"应该"。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>问自己：哪些约束你在意？哪些可以放下？</h4>
+            <p>不是所有"应该"都需要遵守。选择权在你手上。</p>
+          </div>
+        </div>
+      </div>
+      <hr class="fade-up">
+      <h2 class="fade-up" style="margin-top:0.5em;"><span class="accent-line"></span>点破的三种场景话术</h2>
+      <div class="grid-3 fade-up">
+        <div class="card">
+          <p style="font-size:clamp(0.7rem,1.2vw,0.85rem);font-style:italic;color:var(--text);">"我理解，从工作分工来看，我确实在行政岗位。但我想说的是，行政的核心不是服务，而是连接——而连接本身就是一种有深度的能力。"</p>
+        </div>
+        <div class="card">
+          <p style="font-size:clamp(0.7rem,1.2vw,0.85rem);font-style:italic;color:var(--text);">"我在说'我就是个搞行政的'——这句话到底是事实，还是我给自己画的线？"</p>
+        </div>
+        <div class="card">
+          <p style="font-size:clamp(0.7rem,1.2vw,0.85rem);font-style:italic;color:var(--text);">"今天我想换个身份说话——不是作为教务老师，而是作为一个和各位一样在思考商业模式的人。"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Decision Framework -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <div class="fade-up section-badge">操作建议 · 二</div>
+      <h2 class="fade-up"><span class="accent-line"></span>决策框架与反向输出</h2>
+      <div class="grid-2 fade-up">
+        <div class="card" style="border-color:var(--accent);">
+          <div class="num" style="color:var(--accent);">4问</div>
+          <h4>身份选择框架</h4>
+          <p>当面对需要身份定位的场合时：</p>
+          <ol style="font-size:clamp(0.75rem,1.3vw,0.9rem);color:var(--text-dim);padding-left:1.2em;">
+            <li>这个场合需要我调用什么身份？</li>
+            <li>这个身份对我有什么好处？</li>
+            <li>这个身份对我有什么坏处？</li>
+            <li>能不能用"叠加身份"来回应？</li>
+          </ol>
+          <p style="margin-top:0.5em;font-weight:500;color:var(--accent);">把身份从"默认的"变成"选择的"。</p>
+        </div>
+        <div class="card" style="border-color:var(--accent2);">
+          <div class="num" style="color:var(--accent2);">↺</div>
+          <h4>反向输出</h4>
+          <p style="margin-bottom:0.5em;">主动展示与身份"不符"的内容：</p>
+          <p style="font-size:clamp(0.75rem,1.3vw,0.9rem);color:var(--text-dim);">
+            • 被看作"行政" → 分享深度分析<br>
+            • 被看作"老师" → 承认不知道，邀请对方教你<br>
+            • 被看作"创业者" → 分享失败经历和反思
+          </p>
+          <p style="margin-top:0.5em;font-weight:500;color:var(--accent2);">反向输出不是"打破"身份，而是"扩展"身份。</p>
+        </div>
+      </div>
+      <hr class="fade-up">
+      <div class="fade-up" style="text-align:center;">
+        <p style="font-size:clamp(0.9rem,1.5vw,1.1rem);color:var(--text-dim);">
+          <strong style="color:var(--accent);">身份观察日记</strong>：每周花5分钟，记录被什么身份框住了、做了什么"符合身份"但不对的事、下次怎么做。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: Summary -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="fade-up section-badge">总结</div>
+      <h1 class="fade-up" style="font-size:clamp(2rem,4.5vw,3.6rem);">从"被定义"<br>到<span class="highlight">"主动定义"</span></h1>
+      <div class="fade-up" style="margin-top:1.5em;display:flex;flex-wrap:wrap;gap:2em;justify-content:center;">
+        <div class="deco-box" style="border-color:var(--accent);min-width:6em;flex:1;max-width:300px;">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent);">觉察</p>
+          <p style="font-size:clamp(0.8rem,1.3vw,0.95rem);">别人在用标签看我<br>我对自己有标签</p>
+        </div>
+        <div class="deco-box" style="border-color:var(--accent2);min-width:6em;flex:1;max-width:300px;">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent2);">理解</p>
+          <p style="font-size:clamp(0.8rem,1.3vw,0.95rem);">标签是简化机制<br>不是我的本质</p>
+        </div>
+        <div class="deco-box" style="border-color:var(--accent3);min-width:6em;flex:1;max-width:300px;">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent3);">点破</p>
+          <p style="font-size:clamp(0.8rem,1.3vw,0.95rem);">把隐形的标签<br>放到桌面上</p>
+        </div>
+      </div>
+      <div class="fade-up" style="margin-top:1em;display:flex;flex-wrap:wrap;gap:2em;justify-content:center;">
+        <div class="deco-box" style="border-color:var(--accent);min-width:6em;flex:1;max-width:300px;">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent);">选择</p>
+          <p style="font-size:clamp(0.8rem,1.3vw,0.95rem);">此刻我想要<br>什么身份</p>
+        </div>
+        <div class="deco-box" style="border-color:var(--accent2);min-width:6em;flex:1;max-width:300px;">
+          <p style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent2);">行动</p>
+          <p style="font-size:clamp(0.8rem,1.3vw,0.95rem);">用这个身份<br>去达成目标</p>
+        </div>
+      </div>
+      <hr class="fade-up" style="width:60%;margin:2em auto;">
+      <div class="fade-up">
+        <p style="font-size:clamp(1.1rem,2vw,1.5rem);color:var(--text-dim);font-weight:300;max-width:700px;margin:0 auto;">
+          "你到底是做什么的？"<br>
+          <span style="color:var(--accent);font-weight:600;font-size:1.2em;">"看情况。看此刻我需要成为什么。"</span>
+        </p>
+      </div>
+      <div class="fade-up" style="margin-top:2.5em;">
+        <p style="font-size:clamp(0.7rem,1.2vw,0.85rem);color:var(--text-dim);">小勇 · 2026年7月25日晨间灵感</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav" id="nav">
+  <button onclick="prevSlide()" title="上一页">←</button>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:7.7%;"></div></div>
+  <span class="page-num" id="pageNum">1 / 13</span>
+  <button onclick="nextSlide()" title="下一页">→</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+function goTo(n) {
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === n);
+  });
+  current = n;
+  document.getElementById('pageNum').textContent = (n + 1) + ' / ' + total;
+  document.getElementById('progressBar').style.width = ((n + 1) / total * 100) + '%';
+}
+
+function nextSlide() { if (current < total - 1) goTo(current + 1); }
+function prevSlide() { if (current > 0) goTo(current - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+});
+
+let touchStartY = 0;
+document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
+document.addEventListener('touchend', (e) => {
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dy) > 50) { dy < 0 ? nextSlide() : prevSlide(); }
+});
+</script>
+
+</body>
+</html>
