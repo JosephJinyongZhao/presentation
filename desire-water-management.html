@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>欲望的治水之道</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a28;
+    --gold: #d4a74a;
+    --gold-light: #e8c87a;
+    --gold-dim: #a8833a;
+    --text: #e8e4dc;
+    --text-dim: #8a867e;
+    --text-bright: #f5f0e8;
+    --accent-red: #c44a4a;
+    --accent-green: #4a9a6a;
+    --accent-blue: #4a7acc;
+    --accent-orange: #cc8a3a;
+    --accent-purple: #8a6acc;
+    --gradient-gold: linear-gradient(135deg, var(--gold), var(--gold-light));
+    --shadow: 0 4px 60px rgba(0,0,0,0.5);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── Slide Container ── */
+  .slide-container {
+    width: 100vw; height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  /* ── Typography ── */
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+  }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5em;
+  }
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 0.4em;
+  }
+  .subtitle {
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-top: 0.5em;
+  }
+  p, li {
+    font-size: clamp(1rem, 1.5vw, 1.5rem);
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .highlight {
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .accent-red { color: var(--accent-red); }
+  .accent-green { color: var(--accent-green); }
+  .accent-blue { color: var(--accent-blue); }
+  .accent-orange { color: var(--accent-orange); }
+
+  /* ── Layout Helpers ── */
+  .content { width: 100%; max-width: 1100px; }
+  .text-center { text-align: center; }
+  .flex-row { display: flex; gap: 2vw; align-items: stretch; }
+  .flex-col { display: flex; flex-direction: column; gap: 1.5vh; }
+  .flex-1 { flex: 1; }
+  .gap-lg { gap: 3vh; }
+  .mt-1 { margin-top: 1em; }
+  .mt-2 { margin-top: 2em; }
+  .mb-1 { margin-bottom: 1em; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid rgba(212, 167, 74, 0.15);
+    border-radius: var(--radius);
+    padding: 1.5em 2em;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: rgba(212, 167, 74, 0.4); }
+  .card-gold {
+    background: linear-gradient(135deg, rgba(212,167,74,0.1), rgba(212,167,74,0.03));
+    border: 1px solid rgba(212, 167, 74, 0.3);
+  }
+  .card-title {
+    font-size: clamp(1rem, 1.3vw, 1.3rem);
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.5em;
+  }
+
+  /* ── Grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5vw; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5vw; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1vw; }
+
+  /* ── Flowchart (CSS) ── */
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8em;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    flex-wrap: wrap;
+  }
+  .flow-box {
+    background: var(--bg2);
+    border: 1px solid rgba(212, 167, 74, 0.3);
+    border-radius: 8px;
+    padding: 0.6em 1.2em;
+    font-size: clamp(0.85rem, 1.1vw, 1.1rem);
+    color: var(--text);
+    text-align: center;
+    min-width: 80px;
+  }
+  .flow-box.gold { background: rgba(212, 167, 74, 0.15); border-color: var(--gold); }
+  .flow-box.green { background: rgba(74, 154, 106, 0.15); border-color: var(--accent-green); }
+  .flow-box.red { background: rgba(196, 74, 74, 0.15); border-color: var(--accent-red); }
+  .flow-box.blue { background: rgba(74, 122, 204, 0.15); border-color: var(--accent-blue); }
+  .flow-arrow { color: var(--gold-dim); font-size: 1.5em; }
+  .flow-label { font-size: clamp(0.7rem, 0.9vw, 0.9rem); color: var(--text-dim); }
+
+  /* ── Table ── */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.85rem, 1.1vw, 1.1rem);
+  }
+  th {
+    background: rgba(212, 167, 74, 0.12);
+    color: var(--gold);
+    font-weight: 600;
+    padding: 0.8em 1em;
+    text-align: left;
+    border-bottom: 1px solid rgba(212, 167, 74, 0.3);
+  }
+  td {
+    padding: 0.7em 1em;
+    border-bottom: 1px solid rgba(212, 167, 74, 0.08);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Callout ── */
+  .callout {
+    background: rgba(212, 167, 74, 0.06);
+    border-left: 3px solid var(--gold);
+    padding: 1.2em 1.5em;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: clamp(0.95rem, 1.3vw, 1.3rem);
+    line-height: 1.7;
+    color: var(--text-bright);
+  }
+  .callout.blue { border-left-color: var(--accent-blue); background: rgba(74, 122, 204, 0.06); }
+  .callout.red { border-left-color: var(--accent-red); background: rgba(196, 74, 74, 0.06); }
+  .callout.green { border-left-color: var(--accent-green); background: rgba(74, 154, 106, 0.06); }
+
+  /* ── Quote ── */
+  .quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.2rem, 2vw, 2rem);
+    font-style: italic;
+    color: var(--gold-light);
+    text-align: center;
+    padding: 1em 2em;
+    border-top: 1px solid rgba(212, 167, 74, 0.2);
+    border-bottom: 1px solid rgba(212, 167, 74, 0.2);
+    line-height: 1.6;
+  }
+
+  /* ── Step Indicator ── */
+  .step-indicator {
+    display: flex;
+    gap: 0.5em;
+    margin-top: 1em;
+  }
+  .step-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(212, 167, 74, 0.2);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .step-dot.active { background: var(--gold); transform: scale(1.3); }
+  .step-dot.done { background: rgba(212, 167, 74, 0.5); }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 0.6em 1.2em;
+    border-radius: 30px;
+    border: 1px solid rgba(212, 167, 74, 0.15);
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid rgba(212, 167, 74, 0.3);
+    color: var(--text-dim);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .nav-page {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    min-width: 60px;
+    text-align: center;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+  .nav-page span { color: var(--gold); }
+
+  /* ── List ── */
+  ul, ol { padding-left: 1.5em; }
+  li { margin-bottom: 0.3em; }
+  li::marker { color: var(--gold-dim); }
+
+  /* ── Decorative Divider ── */
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--gradient-gold);
+    margin: 0.5em 0 1em;
+  }
+  .divider.center { margin: 0.5em auto 1em; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block;
+    padding: 0.2em 0.8em;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 500;
+  }
+  .badge.gold { background: rgba(212, 167, 74, 0.15); color: var(--gold); }
+  .badge.green { background: rgba(74, 154, 106, 0.15); color: var(--accent-green); }
+  .badge.red { background: rgba(196, 74, 74, 0.15); color: var(--accent-red); }
+  .badge.blue { background: rgba(74, 122, 204, 0.15); color: var(--accent-blue); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .flex-row { flex-direction: column; }
+  }
+
+  /* ── Animations ── */
+  .slide.active .fade-in { animation: fadeIn 0.6s ease forwards; }
+  .slide.active .fade-up { animation: fadeUp 0.6s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .fade-in { opacity: 0; }
+  .fade-up { opacity: 0; transform: translateY(20px); }
+  .d1 { animation-delay: 0.1s !important; }
+  .d2 { animation-delay: 0.2s !important; }
+  .d3 { animation-delay: 0.3s !important; }
+  .d4 { animation-delay: 0.4s !important; }
+  .d5 { animation-delay: 0.5s !important; }
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="app">
+
+  <!-- ════════════ Slide 1: Title ════════════ -->
+  <div class="slide active" data-index="0">
+    <div class="content text-center">
+      <div class="fade-in d1" style="font-size:clamp(0.9rem,1.2vw,1.2rem);color:var(--gold-dim);letter-spacing:0.3em;margin-bottom:1em;">欲 望 的 治 水 之 道</div>
+      <h1 class="fade-up d2">堵与疏的深度对话</h1>
+      <div class="divider center" style="margin:1em auto;"></div>
+      <p class="subtitle fade-up d3" style="max-width:700px;margin:0 auto;">深夜刷视频的渴望背后，<br>是神经、心理、演化三股暗流在涌动。</p>
+      <p class="fade-up d4" style="margin-top:2em;color:var(--text-dim);font-size:clamp(0.8rem,1vw,1rem);letter-spacing:0.1em;">2026.07.26</p>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 2: 缘起 ════════════ -->
+  <div class="slide" data-index="1">
+    <div class="content">
+      <h2 class="fade-in d1">缘起</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout fade-up d3" style="margin-top:1em;">
+        "昨天晚上23:50继续刷了会视频，明显不是理性的选择，<br>但它会有潜在的机制。"
+      </div>
+      <div class="flex-row" style="margin-top:2em;gap:2vw;">
+        <div class="card flex-1 fade-up d4">
+          <div class="card-title">❓ 一个核心追问</div>
+          <p>是堵还是疏？<br><span class="text-dim">堵——渴望反弹更烈</span><br><span class="text-dim">疏——脉冲式持续来</span></p>
+        </div>
+        <div class="card flex-1 fade-up d5">
+          <div class="card-title">🔍 两个层面</div>
+          <p><span class="highlight">层面一</span>：对机制的深刻理解</p>
+          <p><span class="highlight">层面二</span>：行为和实践的落地</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 3: 堵与疏 ════════════ -->
+  <div class="slide" data-index="2">
+    <div class="content">
+      <h2 class="fade-in d1">堵与疏：一个古老的比喻</h2>
+      <div class="divider fade-up d2"></div>
+      <p class="fade-up d3" style="margin-bottom:1.5em;">大禹治水的智慧——鲧用"堵"失败，禹用"疏"成功。</p>
+      <div class="grid-2" style="margin-bottom:1.5em;">
+        <div class="card fade-up d3" style="border-color:rgba(196,74,74,0.3);">
+          <div class="card-title" style="color:var(--accent-red);">⎔ 堵的逻辑</div>
+          <ul>
+            <li>筑堤坝拦截洪水</li>
+            <li>意志力对抗欲望</li>
+            <li>禁欲、戒断、切断</li>
+            <li class="accent-red">短期有效，长期溃堤</li>
+          </ul>
+        </div>
+        <div class="card fade-up d4" style="border-color:rgba(74,154,106,0.3);">
+          <div class="card-title" style="color:var(--accent-green);">〰 疏的逻辑</div>
+          <ul>
+            <li>开河道引导水流</li>
+            <li>理解并接纳欲望</li>
+            <li>引导、替代、转化</li>
+            <li class="accent-green">短期温和，长期可持续</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout blue fade-up d5">
+        <strong>核心洞察</strong>：堵和疏不是二选一，而是两个层面——<strong>堵是对行为的约束，疏是对欲望的驾驭</strong>。治水既需要堤坝（防止泛滥），也需要河道（引导流向）。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 4: 多巴胺循环 ════════════ -->
+  <div class="slide" data-index="3">
+    <div class="content">
+      <h2 class="fade-in d1">短视频渴望的底层机制</h2>
+      <div class="divider fade-up d2"></div>
+      <h3 class="fade-up d3">神经生物学层面：多巴胺循环</h3>
+      <div class="flowchart fade-up d4" style="margin-top:1em;">
+        <div class="flow-row">
+          <div class="flow-box gold">看到App图标</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">刷到一条视频</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-arrow">↕</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-box green">多巴胺释放<br><span class="flow-label">愉悦感</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box gold">想再来一条<br><span class="flow-label">渴望</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box blue">不确定性期待<br><span class="flow-label">下一条说不定更好</span></div>
+        </div>
+        <div class="flow-row" style="margin-top:0.5em;">
+          <div class="flow-box red" style="border-color:var(--accent-red);">⏺ 循环加速<br><span class="flow-label">越刷越想刷</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 5: 四个核心机制 ════════════ -->
+  <div class="slide" data-index="4">
+    <div class="content">
+      <h2 class="fade-in d1">四个核心机制</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-2 fade-up d3" style="margin-top:1em;">
+        <div class="card">
+          <div class="card-title">🎰 可变比率强化</div>
+          <p>不知道下一条是否有趣，但总会有。<br><span class="text-dim" style="font-size:0.85em;">就像老虎机，不定时给奖赏</span></p>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ 即时满足</div>
+          <p>滑动→获取→滑动→获取<br><span class="text-dim" style="font-size:0.85em;">反馈周期 < 5秒</span></p>
+        </div>
+        <div class="card">
+          <div class="card-title">🧠 低认知负荷</div>
+          <p>无需思考，被动接收<br><span class="text-dim" style="font-size:0.85em;">大脑处于"自动驾驶"</span></p>
+        </div>
+        <div class="card">
+          <div class="card-title">🏃 逃避现实</div>
+          <p>临时避难所<br><span class="text-dim" style="font-size:0.85em;">躲避焦虑、压力、无聊</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 6: 欲望是信号 ════════════ -->
+  <div class="slide" data-index="5">
+    <div class="content">
+      <h2 class="fade-in d1">欲望不是敌人，是信号</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="quote fade-up d3" style="margin-bottom:1.5em;">
+        每一次刷视频的渴望，都在告诉你某件事
+      </div>
+      <div class="grid-2 fade-up d4">
+        <div class="card" style="border-color:rgba(212,167,74,0.2);">
+          <div class="card-title">表面欲望</div>
+          <ul>
+            <li>"想刷视频"</li>
+            <li>"停不下来"</li>
+            <li>"睡前刷"</li>
+            <li>"无聊就刷"</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(212,167,74,0.2);">
+          <div class="card-title">可能的底层需求</div>
+          <ul>
+            <li>需要放松 / 恢复注意力</li>
+            <li>在逃避某个困难任务</li>
+            <li>不想面对明天的压力</li>
+            <li>缺乏有意义的活动填充</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 7: 演化不匹配 ════════════ -->
+  <div class="slide" data-index="6">
+    <div class="content">
+      <h2 class="fade-in d1">演化不匹配</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout green fade-up d3" style="margin-bottom:1.5em;">
+        <strong>人类大脑从未为"无限选择"而设计。</strong>
+      </div>
+      <div class="flex-row fade-up d4" style="gap:2vw;">
+        <div class="card flex-1" style="border-color:rgba(74,154,106,0.2);">
+          <div class="card-title" style="color:var(--accent-green);">🌍 原始环境</div>
+          <ul>
+            <li>资源稀缺</li>
+            <li>一个果子是珍贵奖励</li>
+            <li>发现后多巴胺释放</li>
+            <li>寻找行为自动停止</li>
+          </ul>
+        </div>
+        <div class="card flex-1" style="border-color:rgba(74,122,204,0.2);">
+          <div class="card-title" style="color:var(--accent-blue);">📱 现代环境</div>
+          <ul>
+            <li>无限"果子"</li>
+            <li>每个视频都是奖励</li>
+            <li>多巴胺持续释放</li>
+            <li>寻找行为永不停止</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 8: 白熊效应 ════════════ -->
+  <div class="slide" data-index="7">
+    <div class="content">
+      <h2 class="fade-in d1">为什么压抑会反弹</h2>
+      <div class="divider fade-up d2"></div>
+      <h3 class="fade-up d3">白熊效应（Ironic Process Theory）</h3>
+      <div class="callout fade-up d4" style="margin:1em 0;">
+        <strong>试着不要想白熊。结果你满脑子都是白熊。</strong><br>
+        —— 哈佛大学心理学家 Wegner
+      </div>
+      <div class="grid-2 fade-up d5">
+        <div class="card" style="border-color:rgba(196,74,74,0.2);">
+          <div class="card-title" style="color:var(--accent-red);">压抑的双重过程</div>
+          <ol>
+            <li>有意识地搜索替代想法</li>
+            <li>无意识地监控"是否成功"</li>
+          </ol>
+          <p class="accent-red" style="margin-top:0.5em;">第二步激活了念头本身</p>
+        </div>
+        <div class="card" style="border-color:rgba(196,74,74,0.2);">
+          <div class="card-title" style="color:var(--accent-red);">短视频场景</div>
+          <p>"不要刷" → 大脑检查"有没有在想刷" → 强化了"刷"的念头</p>
+          <p class="accent-red" style="margin-top:0.5em;">深夜意志力耗尽时猛烈反弹</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 9: 恶性循环 ════════════ -->
+  <div class="slide" data-index="8">
+    <div class="content">
+      <h2 class="fade-in d1">意志力-反弹恶性循环</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="flowchart fade-up d3" style="margin-top:1em;">
+        <div class="flow-row">
+          <div class="flow-box gold">决定不刷视频</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box red">消耗意志力</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-arrow">↓</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-box">白天工作消耗更多</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box red">晚上意志力枯竭</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-arrow">↓</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-box red" style="border-color:var(--accent-red);">反弹更猛烈</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">自责</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box red">更低的自尊</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-arrow">↻ 回到起点</div>
+        </div>
+      </div>
+      <div class="callout blue fade-up d4" style="margin-top:1em;">
+        <strong>关键转折</strong>：不要用意志力去"堵"欲望，而是用智慧去"设计"环境。<br>
+        意志力是有限的资源，环境设计是无限的杠杆。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 10: 疏的三个层次 ════════════ -->
+  <div class="slide" data-index="9">
+    <div class="content">
+      <h2 class="fade-in d1">疏的三个层次</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-3 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="border-color:rgba(74,122,204,0.3);">
+          <div class="card-title" style="color:var(--accent-blue);">🌊 行为替代</div>
+          <p>用其他活动替代刷视频</p>
+          <p class="text-dim" style="font-size:0.85em;margin-top:0.5em;">把洪水引到另一条河道</p>
+        </div>
+        <div class="card" style="border-color:rgba(212,167,74,0.3);">
+          <div class="card-title" style="color:var(--gold);">🏗 环境设计</div>
+          <p>改变触发条件，降低诱惑</p>
+          <p class="text-dim" style="font-size:0.85em;margin-top:0.5em;">在河道上游修建水库</p>
+        </div>
+        <div class="card" style="border-color:rgba(74,154,106,0.3);">
+          <div class="card-title" style="color:var(--accent-green);">🧠 认知重构</div>
+          <p>重新理解欲望，与它共处</p>
+          <p class="text-dim" style="font-size:0.85em;margin-top:0.5em;">学会预测和利用水势</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 11: 系统方案概览 ════════════ -->
+  <div class="slide" data-index="10">
+    <div class="content">
+      <h2 class="fade-in d1">系统方案：堤坝 + 河道 + 水库</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-3 fade-up d3" style="margin-top:1em;">
+        <div class="card card-gold" style="text-align:center;">
+          <div style="font-size:2.5em;margin-bottom:0.3em;">⎔</div>
+          <div class="card-title">堤坝策略</div>
+          <p class="text-dim" style="font-size:0.85em;">短期行为约束</p>
+          <p style="margin-top:0.5em;">在关键时刻阻止冲动，留出做选择的时间</p>
+        </div>
+        <div class="card card-gold" style="text-align:center;">
+          <div style="font-size:2.5em;margin-bottom:0.3em;">〰</div>
+          <div class="card-title">河道策略</div>
+          <p class="text-dim" style="font-size:0.85em;">疏导与替代</p>
+          <p style="margin-top:0.5em;">为欲望找到出口，而不是堵死它</p>
+        </div>
+        <div class="card card-gold" style="text-align:center;">
+          <div style="font-size:2.5em;margin-bottom:0.3em;">🏗</div>
+          <div class="card-title">水库策略</div>
+          <p class="text-dim" style="font-size:0.85em;">环境设计</p>
+          <p style="margin-top:0.5em;">从源头减少欲望的触发频率</p>
+        </div>
+      </div>
+      <div class="callout blue fade-up d4" style="margin-top:1.5em;">
+        <strong>核心原则</strong>：不是"永远不刷"，而是"想刷的时候，等一下再决定"。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 12: 堤坝策略 ════════════ -->
+  <div class="slide" data-index="11">
+    <div class="content">
+      <h2 class="fade-in d1">⎔ 堤坝策略</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="table-wrap fade-up d3">
+        <table>
+          <thead>
+            <tr><th style="width:28%;">策略</th><th style="width:42%;">具体做法</th><th>原理</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge gold">10分钟法则</span></td><td>想刷的时候，告诉自己"等10分钟再决定"</td><td>10分钟后冲动高峰过去</td></tr>
+            <tr><td><span class="badge gold">物理隔离</span></td><td>手机放在另一个房间 / 充电盒</td><td>增加摩擦成本</td></tr>
+            <tr><td><span class="badge gold">时间锁定</span></td><td>使用App定时锁（Forest、番茄钟等）</td><td>在决定前加上一道"闸门"</td></tr>
+            <tr><td><span class="badge gold">睡前仪式</span></td><td>睡前1小时手机放客厅，替代为看书/听播客</td><td>在意志力薄弱时段"设防"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 13: 河道策略 ════════════ -->
+  <div class="slide" data-index="12">
+    <div class="content">
+      <h2 class="fade-in d1">〰 河道策略</h2>
+      <div class="divider fade-up d2"></div>
+      <p class="fade-up d3 text-dim" style="margin-bottom:1em;">替代行为必须满足<strong style="color:var(--gold);">同样的底层需求</strong></p>
+      <div class="table-wrap fade-up d4">
+        <table>
+          <thead>
+            <tr><th style="width:20%;">底层需求</th><th style="width:35%;">替代行为</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge blue">放松</span></td><td>冥想 / 腹式呼吸 / 散步</td><td>5分钟效果优于刷30分钟视频</td></tr>
+            <tr><td><span class="badge red">逃避困难</span></td><td>番茄工作法（25分钟→5分钟休息）</td><td>不是逃避，而是分解任务</td></tr>
+            <tr><td><span class="badge gold">无聊/寻求刺激</span></td><td>高质量纪录片 / 播客</td><td>内容密度更高，同样被动接收</td></tr>
+            <tr><td><span class="badge green">社交连接</span></td><td>给朋友发消息 / 打电话</td><td>真正的连接，不是虚拟陪伴</td></tr>
+            <tr><td><span class="badge blue">睡前放松</span></td><td>听音频（白噪音 / 故事 / 播客）</td><td>无需看屏幕，减少蓝光干扰</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 14: 水库策略 ════════════ -->
+  <div class="slide" data-index="13">
+    <div class="content">
+      <h2 class="fade-in d1">🏗 水库策略</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout fade-up d3" style="margin-bottom:1.5em;">
+        <strong>环境设计 > 意志力</strong>。如果你把手机放在伸手可及的地方，不要在深夜责怪自己"意志力不够"。你不是在与欲望战斗，你是在与一个被精心设计的推荐算法战斗——而算法有几百名工程师在优化它。
+      </div>
+      <div class="grid-2 fade-up d4">
+        <div class="card">
+          <div class="card-title">📱 数字环境</div>
+          <ul>
+            <li>删除App，用浏览器网页版替代</li>
+            <li>关闭个性化推荐</li>
+            <li>设置屏幕使用时间限制</li>
+            <li>开启灰度模式（黑白显示）</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🏠 物理环境</div>
+          <ul>
+            <li>卧室不放手机和电脑</li>
+            <li>睡前手机放客厅充电</li>
+            <li>用实体闹钟替代手机闹铃</li>
+            <li>在固定时间、固定地点禁用手机</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 15: 认知重构 ════════════ -->
+  <div class="slide" data-index="14">
+    <div class="content">
+      <h2 class="fade-in d1">🧠 认知重构</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-3 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">🔄</div>
+          <div class="card-title">从"我不该"</div>
+          <p class="accent-red" style="font-size:1.2em;">→</p>
+          <div class="card-title" style="color:var(--accent-green);">到"我选择"</div>
+          <p class="text-dim" style="font-size:0.85em;margin-top:0.5em;">外部规则 → 内在决定</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">🔄</div>
+          <div class="card-title">从"意志力不行"</div>
+          <p class="accent-red" style="font-size:1.2em;">→</p>
+          <div class="card-title" style="color:var(--accent-green);">到"大脑如此设计"</div>
+          <p class="text-dim" style="font-size:0.85em;margin-top:0.5em;">自我批判 → 自我好奇</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">🔄</div>
+          <div class="card-title">从"一次失控=失败"</div>
+          <p class="accent-red" style="font-size:1.2em;">→</p>
+          <div class="card-title" style="color:var(--accent-green);">到"波动是正常"</div>
+          <p class="text-dim" style="font-size:0.85em;margin-top:0.5em;">允许反复，持续向前</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 16: 实践四步走 ════════════ -->
+  <div class="slide" data-index="15">
+    <div class="content">
+      <h2 class="fade-in d1">实践四步走</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-4 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="text-align:center;">
+          <div class="step-indicator" style="justify-content:center;margin-bottom:0.5em;">
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+          </div>
+          <div class="card-title" style="color:var(--accent-blue);">建立觉察</div>
+          <p class="badge blue">1-3天</p>
+          <p class="text-dim" style="margin-top:0.5em;font-size:0.85em;">记录"刷视频冲动"出现的时间、场景、感受</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="step-indicator" style="justify-content:center;margin-bottom:0.5em;">
+            <div class="step-dot done"></div>
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+          </div>
+          <div class="card-title" style="color:var(--gold);">设计环境</div>
+          <p class="badge gold">1周</p>
+          <p class="text-dim" style="margin-top:0.5em;font-size:0.85em;">从最容易的改变开始，一次只做1-2个</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="step-indicator" style="justify-content:center;margin-bottom:0.5em;">
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+          </div>
+          <div class="card-title" style="color:var(--accent-green);">建立替代</div>
+          <p class="badge green">2周</p>
+          <p class="text-dim" style="margin-top:0.5em;font-size:0.85em;">找到"替代-满足"的新回路</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="step-indicator" style="justify-content:center;margin-bottom:0.5em;">
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot active"></div>
+          </div>
+          <div class="card-title" style="color:var(--accent-purple);">处理失控</div>
+          <p class="badge" style="background:rgba(138,106,204,0.15);color:var(--accent-purple);">长期</p>
+          <p class="text-dim" style="margin-top:0.5em;font-size:0.85em;">失控是系统的一部分，不是系统的失败</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 17: 更深层的思考 ════════════ -->
+  <div class="slide" data-index="16">
+    <div class="content">
+      <h2 class="fade-in d1">更深层的思考</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout fade-up d3" style="margin-bottom:1.5em;">
+        <strong>你昨晚的自我觉察已经触及了核心——</strong><br>
+        "当放弃了对这个的觉察，很多时候就会持续的有这样的渴望。"
+      </div>
+      <div class="quote fade-up d4">
+        真正的"疏"，不是把欲望从这个出口引导到那个出口，<br>
+        而是看见欲望、理解欲望、然后选择如何回应它。
+      </div>
+      <p class="fade-up d5" style="margin-top:1.5em;text-align:center;color:var(--gold-light);font-size:clamp(1.1rem,1.5vw,1.5rem);">
+        你不需要"战胜"欲望，你只需要"看到"它。<br>
+        当你看到它的时候，它已经失去了无意识控制你的力量。
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 18: Ending ════════════ -->
+  <div class="slide" data-index="17">
+    <div class="content text-center">
+      <div class="fade-in d1" style="font-size:clamp(0.9rem,1.2vw,1.2rem);color:var(--gold-dim);letter-spacing:0.3em;margin-bottom:1em;">欲 望 的 治 水 之 道</div>
+      <h2 class="fade-up d2" style="color:var(--text-bright);">堵在智，疏在慧</h2>
+      <div class="divider center" style="margin:1em auto;"></div>
+      <div class="quote fade-up d3" style="border:none;padding:1em 0;">
+        大禹治水不是一次完成的，<br>
+        而是持续了十三年。三过家门而不入。
+      </div>
+      <p class="fade-up d4" style="margin-top:1.5em;color:var(--text-dim);">
+        你的"治水"也会是一个过程，<br>
+        不是一次"决定"就能解决的。<br>
+        <span class="highlight">允许反复，但不要放弃观察和调整。</span>
+      </p>
+      <p class="fade-up d5" style="margin-top:2em;color:var(--gold-dim);font-size:clamp(0.8rem,1vw,1rem);">
+        ← 键盘方向键翻页 · 点击左右翻页 →
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ Navigation Bar ════════════ -->
+<div class="nav-bar" id="navBar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div class="nav-page"><span id="currentPage">1</span> / <span id="totalPages">18</span></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<script>
+  (function() {
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+
+    const currentSpan = document.getElementById('currentPage');
+    const totalSpan = document.getElementById('totalPages');
+    totalSpan.textContent = total;
+
+    function goTo(index) {
+      if (index < 0) index = 0;
+      if (index >= total) index = total - 1;
+      if (index === current) return;
+      slides[current].classList.remove('active');
+      slides[index].classList.add('active');
+      current = index;
+      currentSpan.textContent = current + 1;
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+
+    document.getElementById('nextBtn').addEventListener('click', next);
+    document.getElementById('prevBtn').addEventListener('click', prev);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        prev();
+      }
+    });
+
+    // Click navigation: left half = prev, right half = next
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.nav-bar')) return;
+      if (e.target.closest('.slide')) {
+        const rect = document.querySelector('.slide-container').getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        if (x < rect.width / 2) prev();
+        else next();
+      }
+    });
+
+    // Touch swipe
+    let touchStartX = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].clientX;
+    });
+    document.addEventListener('touchend', function(e) {
+      const diff = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) prev();
+        else next();
+      }
+    });
+  })();
+</script>
+</body>
+</html>
