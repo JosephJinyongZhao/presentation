@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顺风易，逆风何以为继？</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #080c12;
+    --bg2: #0e1420;
+    --bg3: #162030;
+    --steel: #5a7a9a;
+    --steel-light: #7a9aba;
+    --gold: #c4a050;
+    --gold-light: #d4b870;
+    --copper: #b87840;
+    --text: #d8dce4;
+    --text-dim: #8890a0;
+    --text-bright: #e8ecf4;
+    --accent-blue: #4a7acc;
+    --accent-green: #4a9a6a;
+    --accent-red: #b84a4a;
+    --accent-orange: #c48a40;
+    --gradient: linear-gradient(135deg, var(--steel), var(--gold));
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .slide-container {
+    width: 100vw; height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  /* ── Typography ── */
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.8rem, 5.5vw, 5rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+  }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+    font-weight: 700;
+    color: var(--steel);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4em;
+  }
+  h2.gold { color: var(--gold); }
+  h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    font-weight: 600;
+    color: var(--steel-light);
+    margin-bottom: 0.3em;
+  }
+  .subtitle {
+    font-size: clamp(0.95rem, 1.5vw, 1.5rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    margin-top: 0.5em;
+  }
+  p, li {
+    font-size: clamp(0.95rem, 1.4vw, 1.4rem);
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .highlight-steel { color: var(--steel-light); font-weight: 500; }
+  .highlight-gold { color: var(--gold); font-weight: 500; }
+  .accent-red { color: var(--accent-red); }
+  .accent-green { color: var(--accent-green); }
+  .accent-blue { color: var(--accent-blue); }
+
+  .content { width: 100%; max-width: 1100px; }
+  .text-center { text-align: center; }
+  .flex-row { display: flex; gap: 2vw; align-items: stretch; }
+  .flex-col { display: flex; flex-direction: column; gap: 1.5vh; }
+  .flex-1 { flex: 1; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid rgba(90, 122, 154, 0.15);
+    border-radius: var(--radius);
+    padding: 1.3em 1.8em;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: rgba(90, 122, 154, 0.4); }
+  .card-gold {
+    background: linear-gradient(135deg, rgba(196, 160, 80, 0.08), rgba(196, 160, 80, 0.02));
+    border: 1px solid rgba(196, 160, 80, 0.25);
+  }
+  .card-title {
+    font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+    font-weight: 700;
+    color: var(--steel);
+    margin-bottom: 0.4em;
+  }
+  .card-title.gold { color: var(--gold); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5vw; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5vw; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1vw; }
+
+  .table-wrap { width: 100%; overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.8rem, 1.05vw, 1.05rem);
+  }
+  th {
+    background: rgba(90, 122, 154, 0.12);
+    color: var(--steel-light);
+    font-weight: 600;
+    padding: 0.7em 1em;
+    text-align: left;
+    border-bottom: 1px solid rgba(90, 122, 154, 0.3);
+  }
+  td {
+    padding: 0.6em 1em;
+    border-bottom: 1px solid rgba(90, 122, 154, 0.08);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .callout {
+    background: rgba(90, 122, 154, 0.06);
+    border-left: 3px solid var(--steel);
+    padding: 1em 1.4em;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--text-bright);
+  }
+  .callout.gold { border-left-color: var(--gold); background: rgba(196, 160, 80, 0.06); }
+  .callout.red { border-left-color: var(--accent-red); background: rgba(184, 74, 74, 0.06); }
+  .callout.green { border-left-color: var(--accent-green); background: rgba(74, 154, 106, 0.06); }
+  .callout.blue { border-left-color: var(--accent-blue); background: rgba(74, 122, 204, 0.06); }
+
+  .quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+    font-style: italic;
+    color: var(--gold-light);
+    text-align: center;
+    padding: 0.8em 1.5em;
+    border-top: 1px solid rgba(196, 160, 80, 0.2);
+    border-bottom: 1px solid rgba(196, 160, 80, 0.2);
+    line-height: 1.6;
+  }
+
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(135deg, var(--steel), var(--gold));
+    margin: 0.4em 0 0.8em;
+  }
+  .divider.center { margin: 0.4em auto 0.8em; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.15em 0.6em;
+    border-radius: 4px;
+    font-size: 0.78em;
+    font-weight: 500;
+  }
+  .badge.steel { background: rgba(90, 122, 154, 0.15); color: var(--steel-light); }
+  .badge.gold { background: rgba(196, 160, 80, 0.15); color: var(--gold); }
+  .badge.green { background: rgba(74, 154, 106, 0.15); color: var(--accent-green); }
+  .badge.red { background: rgba(184, 74, 74, 0.15); color: var(--accent-red); }
+
+  ul, ol { padding-left: 1.5em; }
+  li { margin-bottom: 0.25em; }
+  li::marker { color: var(--steel); }
+
+  /* ── Flowchart ── */
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6em;
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8em;
+    flex-wrap: wrap;
+  }
+  .flow-box {
+    background: var(--bg2);
+    border: 1px solid rgba(90, 122, 154, 0.3);
+    border-radius: 8px;
+    padding: 0.5em 1em;
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    color: var(--text);
+    text-align: center;
+    min-width: 70px;
+  }
+  .flow-box.steel { background: rgba(90, 122, 154, 0.12); border-color: var(--steel); }
+  .flow-box.gold { background: rgba(196, 160, 80, 0.12); border-color: var(--gold); }
+  .flow-box.green { background: rgba(74, 154, 106, 0.12); border-color: var(--accent-green); }
+  .flow-box.red { background: rgba(184, 74, 74, 0.12); border-color: var(--accent-red); }
+  .flow-arrow { color: var(--text-dim); font-size: 1.3em; }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    z-index: 100;
+    background: rgba(8, 12, 18, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 0.6em 1.2em;
+    border-radius: 30px;
+    border: 1px solid rgba(90, 122, 154, 0.15);
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid rgba(90, 122, 154, 0.3);
+    color: var(--text-dim);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover { border-color: var(--steel); color: var(--steel); }
+  .nav-page {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    min-width: 60px;
+    text-align: center;
+    font-weight: 300;
+  }
+  .nav-page span { color: var(--steel); }
+
+  /* ── Animations ── */
+  .slide.active .fade-in { animation: fadeIn 0.6s ease forwards; }
+  .slide.active .fade-up { animation: fadeUp 0.6s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { opacity: 0; }
+  .fade-up { opacity: 0; transform: translateY(20px); }
+  .d1 { animation-delay: 0.1s !important; }
+  .d2 { animation-delay: 0.2s !important; }
+  .d3 { animation-delay: 0.3s !important; }
+  .d4 { animation-delay: 0.4s !important; }
+  .d5 { animation-delay: 0.5s !important; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .flex-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="app">
+
+  <!-- ════════════ Slide 1: Title ════════════ -->
+  <div class="slide active" data-index="0">
+    <div class="content text-center">
+      <div class="fade-in d1" style="font-size:clamp(0.85rem,1.1vw,1.1rem);color:var(--steel);letter-spacing:0.25em;margin-bottom:1em;">顺 风 易 · 逆 风 何 以 为 继</div>
+      <h1 class="fade-up d2">英国百年衰而不溃的<br>制度文化启示</h1>
+      <div class="divider center" style="margin:1.2em auto;"></div>
+      <p class="subtitle fade-up d3" style="max-width:700px;margin:0 auto;">从工业革命的巅峰到百年衰退<br>它败了，却没有溃</p>
+      <p class="fade-up d4" style="margin-top:2em;color:var(--text-dim);font-size:clamp(0.75rem,0.9vw,0.9rem);letter-spacing:0.1em;">2026.07.26</p>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 2: 缘起 ════════════ -->
+  <div class="slide" data-index="1">
+    <div class="content">
+      <h2 class="fade-in d1">缘起</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout fade-up d3" style="margin-bottom:1.5em;">
+        <strong>与杭州EMBA朋友的聊天</strong>——谈到英国工业革命的辉煌，与百年衰退中"败而不溃"的韧性。打顺风局是容易的，但怎么打逆风局？
+      </div>
+      <div class="grid-2 fade-up d4">
+        <div class="card">
+          <div class="card-title">🇬🇧 英国的故事</div>
+          <p>从全球霸主到地区强国<br>百年衰退中始终"败而不溃"</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🇨🇳 中国的处境</div>
+          <p>四十年顺风增长后，面临第一次真正的"逆风局"——如何未雨绸缪？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 3: 顺风逆风 ════════════ -->
+  <div class="slide" data-index="2">
+    <div class="content">
+      <h2 class="fade-in d1">两种历史阶段，两种生存逻辑</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-2 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="border-color:rgba(90,122,154,0.3);">
+          <div class="card-title" style="color:var(--steel);">🌊 顺风局</div>
+          <ul>
+            <li>趋势向上，资源充裕</li>
+            <li>犯错被增长掩盖</li>
+            <li>制度红利 > 个人努力</li>
+            <li>扩张期，机会多，容错高</li>
+            <li class="highlight-steel">核心能力：抓住机会</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(196,160,80,0.3);">
+          <div class="card-title gold">🌪 逆风局</div>
+          <ul>
+            <li>趋势向下，资源紧缩</li>
+            <li>犯错代价暴露</li>
+            <li>制度损耗 > 个人努力</li>
+            <li>收缩期，机会少，容错低</li>
+            <li class="highlight-gold">核心能力：守住底线</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout gold fade-up d4" style="margin-top:1.5em;">
+        <strong>核心命题</strong>：中国过去四十年一直在打"顺风局"。当趋势转向，需要的不是"顺风时的能力"，而是"逆风时的韧性"。英国是理解"逆风韧性"最好的案例。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 4: 工业革命 ════════════ -->
+  <div class="slide" data-index="3">
+    <div class="content">
+      <h2 class="fade-in d1">工业革命：顺风局的制度奠基</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="table-wrap fade-up d3">
+        <table>
+          <thead>
+            <tr><th style="width:18%;">因素</th><th style="width:42%;">具体表现</th><th>意义</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge steel">制度基础</span></td><td>1688年光荣革命，产权保护制度化</td><td>投资者敢投长期资本</td></tr>
+            <tr><td><span class="badge steel">金融革命</span></td><td>英格兰银行(1694)、国债市场</td><td>为大工业融资</td></tr>
+            <tr><td><span class="badge steel">煤炭地理</span></td><td>煤铁资源邻近，交通便利</td><td>能源成本远低于欧洲</td></tr>
+            <tr><td><span class="badge steel">全球网络</span></td><td>殖民地、海军、贸易路线</td><td>规模效应催生需求</td></tr>
+            <tr><td><span class="badge steel">科学传统</span></td><td>皇家学会(1660)、经验主义</td><td>技术迭代有知识基础</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 5: 制度遗产 ════════════ -->
+  <div class="slide" data-index="4">
+    <div class="content">
+      <h2 class="fade-in d1">制度遗产：顺风时创造，逆风时维系</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="table-wrap fade-up d3">
+        <table>
+          <thead>
+            <tr><th style="width:20%;">制度遗产</th><th style="width:38%;">顺风时的作用</th><th>逆风时的价值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge gold">普通法</span></td><td>保护产权，促进商业契约</td><td>可预期的法律框架，降低不确定性</td></tr>
+            <tr><td><span class="badge gold">议会制度</span></td><td>平衡各方利益，避免专制</td><td>渐进改良取代暴力革命</td></tr>
+            <tr><td><span class="badge gold">市民社会</span></td><td>自治团体、行业协会、慈善</td><td>政府失灵时社会自我修复</td></tr>
+            <tr><td><span class="badge gold">大学智库</span></td><td>知识生产与人才培养</td><td>衰退中的智力储备和思想出口</td></tr>
+            <tr><td><span class="badge gold">金融体系</span></td><td>为工业化融资</td><td>制造业衰退，金融服务仍保持全球竞争力</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout blue fade-up d4" style="margin-top:1em;">
+        <strong>关键洞察</strong>：这些制度遗产不是在"逆风"时才建立的，而是在"顺风"时积累的。逆风时能使用的，都是顺风时已经建好的。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 6: 衰退时间线 ════════════ -->
+  <div class="slide" data-index="5">
+    <div class="content">
+      <h2 class="fade-in d1">英国百年衰退：多重冲击</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="table-wrap fade-up d3">
+        <table>
+          <thead>
+            <tr><th style="width:15%;">时期</th><th style="width:30%;">冲击</th><th>应对</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge steel">1870-1914</span></td><td>美德崛起，相对衰退</td><td>转向金融帝国，殖民地优先</td></tr>
+            <tr><td><span class="badge steel">1914-1918</span></td><td>一战，国力耗尽</td><td>举债参战，丧失最大债权国地位</td></tr>
+            <tr><td><span class="badge steel">1929-1939</span></td><td>大萧条，金本位崩溃</td><td>放弃自由贸易，转向帝国特惠制</td></tr>
+            <tr><td><span class="badge steel">1945-1970s</span></td><td>非殖民化，帝国瓦解</td><td>苏伊士危机(1956)标志大国地位终结</td></tr>
+            <tr><td><span class="badge steel">1970s</span></td><td>滞胀，"英国病"</td><td>撒切尔改革，去工业化加速</td></tr>
+            <tr><td><span class="badge steel">2008-2020</span></td><td>金融危机→脱欧</td><td>身份认同危机，政治分裂</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 7: 核心问题 ════════════ -->
+  <div class="slide" data-index="6">
+    <div class="content text-center">
+      <h2 class="fade-in d1 gold">为什么败而不溃？</h2>
+      <div class="divider center fade-up d2"></div>
+      <div class="callout green fade-up d3" style="margin-bottom:2em;text-align:left;">
+        <strong>核心追问</strong>：英国丧失了帝国、丧失了制造业领导地位、丧失了全球霸权——但为什么没有像苏联那样解体？没有像阿根廷那样跌入中等收入陷阱？没有像西班牙那样沦为二流后就失去了活力？
+      </div>
+      <div class="grid-2 fade-up d4">
+        <div class="card card-gold">
+          <div class="card-title gold">并非"不会溃"</div>
+          <p>英国也经历了剧烈痛苦——阶级固化、区域失衡、社会撕裂。但它有六道"防线"。</p>
+        </div>
+        <div class="card card-gold">
+          <div class="card-title gold">制度在起作用</div>
+          <p>不是英国人不痛苦，而是制度让痛苦没有变成"崩溃"。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 8: 六重因素 ════════════ -->
+  <div class="slide" data-index="7">
+    <div class="content">
+      <h2 class="fade-in d1">败而不溃的六重防线</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-3 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">⚖️</div>
+          <div class="card-title" style="color:var(--steel);">法治传统</div>
+          <p class="text-dim" style="font-size:0.85em;">衰退中最大的风险不是"变穷"，而是"不确定性"</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">🏛</div>
+          <div class="card-title" style="color:var(--gold);">议会制度</div>
+          <p class="text-dim" style="font-size:0.85em;">渐进改良的"泄洪道"，把革命转化为改革</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">🤝</div>
+          <div class="card-title" style="color:var(--accent-green);">市民社会</div>
+          <p class="text-dim" style="font-size:0.85em;">国家之外的"社会免疫系统"</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">📚</div>
+          <div class="card-title" style="color:var(--accent-blue);">知识传统</div>
+          <p class="text-dim" style="font-size:0.85em;">衰退中的思想储备和清醒认知</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">🌐</div>
+          <div class="card-title" style="color:var(--steel);">全球网络</div>
+          <p class="text-dim" style="font-size:0.85em;">帝国褪色后的软基础设施</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2em;margin-bottom:0.3em;">💰</div>
+          <div class="card-title" style="color:var(--gold);">金融体系</div>
+          <p class="text-dim" style="font-size:0.85em;">伦敦城的"金融飞地"韧性</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 9: 法治 ════════════ -->
+  <div class="slide" data-index="8">
+    <div class="content">
+      <h2 class="fade-in d1">⚖️ 法治传统——最底层的安全网</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout fade-up d3" style="margin-bottom:1.5em;">
+        <strong>关键洞察</strong>：当国家衰退时，最大的风险不是"变穷"，而是"不确定性"。法治提供了确定性——即使经济下滑，产权、契约、继承这些基本规则不变。这让资本和人才有留下的理由，而不是用脚投票。
+      </div>
+      <div class="flex-row fade-up d4">
+        <div class="card flex-1" style="border-color:rgba(90,122,154,0.2);">
+          <div class="card-title">普通法的两个关键特征</div>
+          <ul>
+            <li><strong>判例法</strong>：法律随社会变迁逐步演化</li>
+            <li><strong>司法独立</strong>：行政权力变化，法院系统保持连续性</li>
+          </ul>
+        </div>
+        <div class="card flex-1" style="border-color:rgba(90,122,154,0.2);">
+          <div class="card-title">对比视角</div>
+          <p>许多发展中国家在衰退时面临"法治崩溃"——产权不确定、契约无法执行、资本外逃。英国保持了法治的连续性，这是"败而不溃"的第一道防线。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 10: 议会制度 ════════════ -->
+  <div class="slide" data-index="9">
+    <div class="content">
+      <h2 class="fade-in d1">🏛 议会制度——渐进改良的泄洪道</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout gold fade-up d3" style="margin-bottom:1.5em;">
+        <strong>核心机制</strong>：议会制度将社会矛盾从"街头"引入"会场"，把"革命"转化为"改革"。每次危机——宪章运动、工会斗争、苏伊士危机——都通过议会博弈而非暴力解决。
+      </div>
+      <div class="flowchart fade-up d4">
+        <div class="flow-row">
+          <div class="flow-box red">社会矛盾积累</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box steel">议会博弈</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box green">渐进改革</div>
+        </div>
+        <div class="flow-row" style="margin-top:0.5em;">
+          <div class="flow-box" style="border-color:var(--text-dim);">而非</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-box red">社会矛盾积累</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box gold">街头抗议</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box red">暴力革命</div>
+        </div>
+      </div>
+      <div class="callout blue fade-up d5" style="margin-top:1em;">
+        <strong>泄洪道的代价</strong>：慢。但慢的代价远低于"革命"的代价。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 11: 市民社会 ════════════ -->
+  <div class="slide" data-index="10">
+    <div class="content">
+      <h2 class="fade-in d1">🤝 市民社会——社会免疫系统</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="flowchart fade-up d3">
+        <div class="flow-row">
+          <div class="flow-box red">国家能力下降</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">公共服务缺口</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-arrow">↓</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-box gold">市民社会强大</div>
+          <div class="flow-arrow" style="font-size:0.9em;display:flex;flex-direction:column;align-items:center;">是<br>↓</div>
+          <div class="flow-box green">社会自行组织补位</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box steel">社会功能维持</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-box" style="border-color:var(--text-dim);font-size:0.8em;">市民社会薄弱</div>
+          <div class="flow-arrow" style="font-size:0.9em;display:flex;flex-direction:column;align-items:center;">否<br>↓</div>
+          <div class="flow-box red">公共服务崩溃</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box red">社会失序</div>
+        </div>
+      </div>
+      <div class="callout gold fade-up d4" style="margin-top:1em;">
+        <strong>对中国的启示</strong>：中国社会高度依赖"单位"和"政府"组织资源，市民社会发育不足。当政府和单位能力减弱时，社会自我修复的"免疫系统"可能不够强壮。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 12: 知识传统 ════════════ -->
+  <div class="slide" data-index="11">
+    <div class="content">
+      <h2 class="fade-in d1">📚 知识传统——衰退中的思想储备</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout blue fade-up d3" style="margin-bottom:1.5em;">
+        <strong>关键人物网络</strong>：凯恩斯在1930年代大萧条中提出新理论→帮助战后重建；哈耶克在1940年代"计划经济热"时坚持自由市场→为1970-80年代撒切尔改革提供思想弹药。这些思想不是在"需要"的时候才产生的，而是知识传统持续运转的结果。
+      </div>
+      <div class="grid-3 fade-up d4">
+        <div class="card">
+          <div class="card-title">独立性</div>
+          <p>大学不被政治和经济直接控制，保持批判空间</p>
+        </div>
+        <div class="card">
+          <div class="card-title">连续性</div>
+          <p>牛津剑桥800年历史，代际传承的智慧</p>
+        </div>
+        <div class="card">
+          <div class="card-title">全球性</div>
+          <p>英语世界知识网络，思想和人才自由流动</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 13: 全球网络 ════════════ -->
+  <div class="slide" data-index="12">
+    <div class="content">
+      <h2 class="fade-in d1">🌐 全球网络——帝国褪色后的软基础设施</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="table-wrap fade-up d3">
+        <table>
+          <thead>
+            <tr><th style="width:15%;">网络</th><th style="width:40%;">具体内容</th><th>衰退中的价值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge steel">语言</span></td><td>英语成为全球通用语言</td><td>文化产品天然有全球市场</td></tr>
+            <tr><td><span class="badge steel">法律</span></td><td>普通法覆盖全球三分之一人口</td><td>伦敦成为国际商业仲裁首选地</td></tr>
+            <tr><td><span class="badge steel">金融</span></td><td>伦敦城的全球连接</td><td>制造业衰退，金融服务业依然强劲</td></tr>
+            <tr><td><span class="badge steel">教育</span></td><td>牛津剑桥的全球品牌</td><td>吸引全球人才和资本</td></tr>
+            <tr><td><span class="badge steel">文化</span></td><td>莎士比亚、披头士、英超</td><td>文化输出持续创造经济价值</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout fade-up d4" style="margin-top:1em;">
+        <strong>关键洞察</strong>：英国在衰退中保持了"全球连接者"的身份——即使不再制造最好的产品，仍然是全球资金、人才、思想流动的枢纽。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 14: 金融体系 ════════════ -->
+  <div class="slide" data-index="13">
+    <div class="content">
+      <h2 class="fade-in d1">💰 金融体系——伦敦城的韧性之谜</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout gold fade-up d3" style="margin-bottom:1.5em;">
+        <strong>伦敦城（City of London）</strong>是一个"城中之城"——有自己的市议会、法律体系、税收规则，甚至有自己的警察。当英国制造业衰退、殖民地独立、海军收缩时，伦敦城仍然是全球金融中心。
+      </div>
+      <div class="grid-2 fade-up d4">
+        <div class="card" style="border-color:rgba(196,160,80,0.2);">
+          <div class="card-title gold">积极作用</div>
+          <p>像一个"金融飞地"，与英国实体经济脱钩，为英国提供衰退中的"收入缓冲区"——金融服务的利润、税收、就业，弥补了制造业的损失。</p>
+        </div>
+        <div class="card" style="border-color:rgba(184,74,74,0.2);">
+          <div class="card-title" style="color:var(--accent-red);">批判性视角</div>
+          <p>伦敦城的"独立"也意味着金融资本的逻辑优先于国家利益——2008年金融危机、脱欧后金融业迁往欧盟，暴露了"金融飞地"的局限性。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 15: 批判性审视 ════════════ -->
+  <div class="slide" data-index="14">
+    <div class="content">
+      <h2 class="fade-in d1">⚠️ 批判性审视：代价与边界</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="callout red fade-up d3" style="margin-bottom:1.5em;">
+        <strong>如果只看到英国"败而不溃"的成功一面，就会陷入"制度决定论"的陷阱。</strong>英国经验有其代价、边界和不可复制性。
+      </div>
+      <div class="table-wrap fade-up d4">
+        <table>
+          <thead>
+            <tr><th style="width:25%;">代价类型</th><th style="width:40%;">具体表现</th><th>长期影响</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge red">阶级固化</span></td><td>社会流动性极低，精英自我复制</td><td>创新活力下降，人才浪费</td></tr>
+            <tr><td><span class="badge red">区域失衡</span></td><td>伦敦+东南部繁荣，其他地区衰退</td><td>政治分裂，脱欧的深层原因</td></tr>
+            <tr><td><span class="badge red">去工业化代价</span></td><td>制造业工人失业，社区瓦解</td><td>社会撕裂，民粹主义抬头</td></tr>
+            <tr><td><span class="badge red">帝国包袱</span></td><td>战后长期维持全球角色成本</td><td>经济复苏缓慢，资源错配</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 16: 不可复制 ════════════ -->
+  <div class="slide" data-index="15">
+    <div class="content">
+      <h2 class="fade-in d1">三个不可复制</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-3 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5em;margin-bottom:0.3em;">1</div>
+          <div class="card-title">先发优势</div>
+          <p>英国是第一个工业化国家，占据了"全球枢纽"位置。后来者无法复制"枢纽"地位——一个网络只需要一个中心。</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5em;margin-bottom:0.3em;">2</div>
+          <div class="card-title">帝国遗产</div>
+          <p>英语、普通法、金融网络——这些是帝国扩张的副产品。中国没有殖民历史，全球影响力需要从零建设。</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5em;margin-bottom:0.3em;">3</div>
+          <div class="card-title">岛国地理</div>
+          <p>英吉利海峡天然防御，降低军事成本。中国是大陆国家，国防成本、地缘压力远高于英国。</p>
+        </div>
+      </div>
+      <div class="callout red fade-up d4" style="margin-top:1.5em;">
+        <strong>最诚实的判断</strong>：与其说英国经验可以"借鉴"，不如说它提供了"警示"——它告诉我们：当一个国家从顺风转入逆风，即使制度再完善，也难免经历痛苦。
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 17: 启示 ════════════ -->
+  <div class="slide" data-index="16">
+    <div class="content">
+      <h2 class="fade-in d1">对中国的启示：从顺风到逆风</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-2 fade-up d3" style="margin-top:1em;">
+        <div class="card">
+          <div class="card-title">👤 个人层面</div>
+          <ul>
+            <li>从"追风口"到"建护城河"</li>
+            <li>深耕一个领域，成为不可替代</li>
+            <li>现金为王，降低杠杆</li>
+            <li>接受波动的常态</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🏢 企业层面</div>
+          <ul>
+            <li>从"增长第一"到"生存第一"</li>
+            <li>降本增效，现金流为王</li>
+            <li>聚焦核心业务</li>
+            <li>技术护城河是最可靠资产</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🏛 组织层面</div>
+          <ul>
+            <li>规则清晰，减少内部博弈成本</li>
+            <li>能力分散而非集中</li>
+            <li>持续投入知识储备</li>
+            <li>保持外部连接，寻找"飞地"机会</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🌍 国家层面</div>
+          <ul>
+            <li>法治的延续性比"完善"更重要</li>
+            <li>培育社会自组织能力</li>
+            <li>知识的独立性是长期安全的保障</li>
+            <li>全球连接是"安全带"而非"奢侈品"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 18: 行动建议 ════════════ -->
+  <div class="slide" data-index="17">
+    <div class="content">
+      <h2 class="fade-in d1">短期与长期行动建议</h2>
+      <div class="divider fade-up d2"></div>
+      <div class="grid-3 fade-up d3" style="margin-top:1em;">
+        <div class="card" style="border-color:rgba(196,160,80,0.3);">
+          <div class="step-indicator" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.5em;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(196,160,80,0.2);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(196,160,80,0.2);"></div>
+          </div>
+          <div class="card-title gold" style="text-align:center;">短期 1-2年</div>
+          <p class="text-dim" style="font-size:0.85em;text-align:center;">现金为王，聚焦核心</p>
+          <ul style="margin-top:0.5em;">
+            <li>降低负债，增加储蓄</li>
+            <li>盘点核心技能</li>
+            <li>现金流管理</li>
+            <li>砍掉非核心业务</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(90,122,154,0.3);">
+          <div class="step-indicator" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.5em;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--steel);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--steel);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(90,122,154,0.2);"></div>
+          </div>
+          <div class="card-title" style="text-align:center;">中期 2-5年</div>
+          <p class="text-dim" style="font-size:0.85em;text-align:center;">能力建设，制度优化</p>
+          <ul style="margin-top:0.5em;">
+            <li>深耕到"不可替代"</li>
+            <li>建立知识管理体系</li>
+            <li>培养中层骨干</li>
+            <li>建设技术护城河</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(74,154,106,0.3);">
+          <div class="step-indicator" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.5em;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);"></div>
+          </div>
+          <div class="card-title" style="color:var(--accent-green);text-align:center;">长期 5-10年+</div>
+          <p class="text-dim" style="font-size:0.85em;text-align:center;">文化重塑，价值认同</p>
+          <ul style="margin-top:0.5em;">
+            <li>找到"为什么做这件事"</li>
+            <li>建立超越利润的使命</li>
+            <li>培育法治文化</li>
+            <li>培育独立知识传统</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Slide 19: 结语 ════════════ -->
+  <div class="slide" data-index="18">
+    <div class="content text-center">
+      <div class="fade-in d1" style="font-size:clamp(0.85rem,1.1vw,1.1rem);color:var(--steel);letter-spacing:0.25em;margin-bottom:1em;">逆 风 局 不 是 终 点</div>
+      <h2 class="fade-up d2 gold" style="color:var(--text-bright);">而是新起点</h2>
+      <div class="divider center" style="margin:1em auto;"></div>
+      <div class="quote fade-up d3" style="border:none;padding:1em 0;">
+        英国在衰退中仍然产生了凯恩斯、哈耶克、罗素、维特根斯坦——<br>这些思想至今影响着世界。
+      </div>
+      <p class="fade-up d4" style="margin-top:1.5em;color:var(--text-dim);">
+        逆风局的真正考验，不是你失去多少，<br>而是你在失去中还保留了什么——<br><span class="highlight-gold">以及你能否在失去中找到新的方向。</span>
+      </p>
+      <div class="callout fade-up d5" style="margin-top:1.5em;text-align:left;">
+        <strong>个人行动</strong>：降低负债，深耕技能，保持连接，接受波动。<br>
+        <strong>组织行动</strong>：规则清晰，知识储备，分散风险，聚焦核心。<br>
+        <strong>勿忘</strong>：制度不是"设计"出来的，是"生长"出来的。
+      </div>
+      <p class="fade-up d5" style="margin-top:1.5em;color:var(--text-dim);font-size:clamp(0.75rem,0.9vw,0.9rem);">
+        ← 键盘方向键翻页 · 点击左右翻页 →
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ Navigation ════════════ -->
+<div class="nav-bar" id="navBar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div class="nav-page"><span id="currentPage">1</span> / <span id="totalPages">19</span></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  const currentSpan = document.getElementById('currentPage');
+  const totalSpan = document.getElementById('totalPages');
+  totalSpan.textContent = total;
+
+  function goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= total) index = total - 1;
+    if (index === current) return;
+    slides[current].classList.remove('active');
+    slides[index].classList.add('active');
+    current = index;
+    currentSpan.textContent = current + 1;
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); prev();
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.nav-bar')) return;
+    if (e.target.closest('.slide')) {
+      const rect = document.querySelector('.slide-container').getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      if (x < rect.width / 2) prev();
+      else next();
+    }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].clientX;
+  });
+  document.addEventListener('touchend', function(e) {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) prev();
+      else next();
+    }
+  });
+})();
+</script>
+</body>
+</html>
