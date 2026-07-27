@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三资本框架与个人发展</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f1a;
+    --bg3: #14142a;
+    --fg: #e8e6f0;
+    --fg2: #9895b0;
+    --accent: #6c5ce7;
+    --accent2: #a29bfe;
+    --gold: #f5cd5f;
+    --green: #00cec9;
+    --red: #fd79a8;
+    --blue: #74b9ff;
+    --orange: #fdcb6e;
+    --card: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.06);
+  }
+
+  html { font-size: clamp(14px, 1.2vw, 22px); }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slide-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem 8rem;
+    opacity: 0;
+    transform: scale(0.97);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    overflow-y: auto;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    z-index: 10;
+  }
+
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Typography */
+  .slide h1 { font-size: 3.2rem; font-weight: 900; line-height: 1.25; margin-bottom: 1.2rem; }
+  .slide h2 { font-size: 2.4rem; font-weight: 700; line-height: 1.3; margin-bottom: 1rem; }
+  .slide h3 { font-size: 1.6rem; font-weight: 500; line-height: 1.4; margin-bottom: 0.8rem; color: var(--accent2); }
+  .slide p { font-size: 1.25rem; font-weight: 300; line-height: 1.7; margin-bottom: 0.8rem; color: var(--fg); }
+  .slide .subtitle { font-size: 1.6rem; font-weight: 300; color: var(--fg2); margin-bottom: 2rem; }
+  .slide .small { font-size: 1rem; color: var(--fg2); }
+
+  .highlight { color: var(--gold); font-weight: 500; }
+  .highlight-purple { color: var(--accent2); font-weight: 500; }
+  .highlight-green { color: var(--green); font-weight: 500; }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 100;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 1.5rem;
+    border-radius: 3rem;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--fg2);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0.3rem 0.8rem;
+    border-radius: 0.3rem;
+    transition: all 0.2s;
+  }
+  .nav button:hover { color: var(--fg); background: rgba(255,255,255,0.08); }
+  .nav .counter { font-size: 0.9rem; color: var(--fg2); min-width: 5rem; text-align: center; }
+  .nav .progress-bar {
+    width: 12rem; height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .nav .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  /* Cover */
+  .slide-cover {
+    background: radial-gradient(ellipse at 50% 30%, #1a1040 0%, #0a0a0f 60%);
+  }
+  .slide-cover h1 {
+    font-size: 4rem;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--accent2) 50%, var(--green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+  .slide-cover .subtitle { font-size: 1.8rem; }
+  .slide-cover .meta { font-size: 1.1rem; color: var(--fg2); margin-top: 2rem; }
+  .slide-cover .ornament {
+    display: flex; gap: 0.5rem; margin: 1.5rem 0;
+    font-size: 1.5rem; color: var(--accent2); opacity: 0.5;
+  }
+
+  /* Cards */
+  .card-grid { display: grid; gap: 1.5rem; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 1.8rem;
+    transition: all 0.3s;
+  }
+  .card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+  .card .icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .card h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .card p { font-size: 1rem; line-height: 1.5; color: var(--fg2); }
+
+  /* Interactive diagram */
+  .diagram-3cap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+  .cap-node {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 0 3rem rgba(108,92,231,0.15);
+  }
+  .cap-node .cap-icon { font-size: 2.8rem; margin-bottom: 0.3rem; }
+  .cap-node .cap-label { font-size: 1.1rem; }
+  .cap-node .cap-en { font-size: 0.7rem; opacity: 0.6; font-weight: 300; }
+  .cap-physical { background: radial-gradient(circle at 30% 30%, rgba(116,185,255,0.25), rgba(116,185,255,0.05)); border: 2px solid rgba(116,185,255,0.3); }
+  .cap-human { background: radial-gradient(circle at 30% 30%, rgba(0,206,201,0.25), rgba(0,206,201,0.05)); border: 2px solid rgba(0,206,201,0.3); }
+  .cap-social { background: radial-gradient(circle at 30% 30%, rgba(253,121,168,0.25), rgba(253,121,168,0.05)); border: 2px solid rgba(253,121,168,0.3); }
+
+  .cap-arrows {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.8rem;
+    color: var(--fg2);
+    opacity: 0.5;
+  }
+
+  /* List styling */
+  .slide ul, .slide ol { font-size: 1.1rem; font-weight: 300; line-height: 1.7; padding-left: 1.5rem; margin-bottom: 0.8rem; }
+  .slide li { margin-bottom: 0.4rem; color: var(--fg); }
+  .slide li strong { color: var(--fg); }
+
+  .blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 1rem 2rem;
+    margin: 1.2rem 0;
+    background: rgba(108,92,231,0.05);
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--fg2);
+  }
+
+  /* Table */
+  .stylish-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.2rem 0;
+    font-size: 1rem;
+  }
+  .stylish-table th {
+    background: rgba(108,92,231,0.15);
+    padding: 0.8rem 1.2rem;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid rgba(108,92,231,0.2);
+  }
+  .stylish-table th:first-child { border-radius: 0.5rem 0 0 0; }
+  .stylish-table th:last-child { border-radius: 0 0.5rem 0 0; }
+  .stylish-table td {
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--fg2);
+  }
+  .stylish-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 0.2rem;
+  }
+  .tag-crit { background: rgba(253,121,168,0.15); color: var(--red); border: 1px solid rgba(253,121,168,0.2); }
+  .tag-insight { background: rgba(0,206,201,0.15); color: var(--green); border: 1px solid rgba(0,206,201,0.2); }
+  .tag-action { background: rgba(253,203,110,0.15); color: var(--orange); border: 1px solid rgba(253,203,110,0.2); }
+
+  /* Numbered list large */
+  .num-list { counter-reset: item; list-style: none; padding: 0; }
+  .num-list li { counter-increment: item; padding-left: 3rem; position: relative; margin-bottom: 1rem; font-size: 1.1rem; }
+  .num-list li::before {
+    content: counter(item);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background: rgba(108,92,231,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+
+  /* Divider */
+  .divider { width: 3rem; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); margin: 1rem 0 1.5rem 0; }
+
+  /* Scroll */
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 2rem; }
+    .slide h1 { font-size: 2rem; }
+    .slide h2 { font-size: 1.6rem; }
+    .slide p { font-size: 1rem; }
+    .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
+    .diagram-3cap { flex-direction: column; gap: 1rem; }
+    .cap-node { width: 7rem; height: 7rem; }
+    .nav .progress-bar { width: 6rem; }
+    .slide-cover h1 { font-size: 2.4rem; }
+  }
+
+  /* Key prompt */
+  .key-box {
+    text-align: center;
+    padding: 2rem;
+    margin: 1rem 0;
+    border-radius: 1rem;
+    background: rgba(108,92,231,0.08);
+    border: 1px solid rgba(108,92,231,0.15);
+  }
+  .key-box .key-q { font-size: 1.8rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem; }
+  .key-box .key-a { font-size: 1.2rem; color: var(--fg2); }
+
+  /* Flow arrows */
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1rem 0; flex-wrap: wrap; }
+  .flow-item {
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.6rem;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  .flow-arrow { font-size: 1.5rem; color: var(--fg2); opacity: 0.4; }
+
+  .bg-gradient-right { background: linear-gradient(135deg, rgba(108,92,231,0.05), transparent); }
+  .bg-gradient-left { background: linear-gradient(225deg, rgba(0,206,201,0.05), transparent); }
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="app">
+  <!-- 1. Cover -->
+  <div class="slide slide-cover active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div class="ornament">✦ ✦ ✦</div>
+      <h1>三资本框架与个人发展</h1>
+      <div class="subtitle">一次对话引发的系统论述与批判性审视</div>
+      <div class="divider" style="margin:1.5rem auto;"></div>
+      <p style="font-size:1.3rem;color:var(--fg2);max-width:700px;margin:0 auto;">
+        从衢州站候车时的一次对话出发，通过物质资本、人力资本、社会资本的三维框架，
+        思考个人发展的底层逻辑——以及这个框架本身的边界与局限。
+      </p>
+      <div class="meta">
+        <span>2026年7月27日 · 衢州—杭州高铁</span>
+      </div>
+      <div style="margin-top:3rem;">
+        <span style="font-size:0.9rem;color:var(--fg2);opacity:0.5;">← 键盘方向键 / 点击导航 →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 缘起 -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <span class="tag tag-insight">缘起</span>
+      <h2 style="margin-top:0.5rem;">一次车站对话</h2>
+      <div class="divider"></div>
+      <p>2026年7月27日晨，在衢州站候车时，与沃土计划学生<span class="highlight">马雪东</span>做了一次深入的交流。</p>
+      <p>话题从衢州调研的个体感受出发，延伸到经济发展的底层逻辑，最终落脚到个人发展的框架性思考。</p>
+      <p>我向他介绍了<span class="highlight-purple">物质资本、人力资本、社会资本</span>的三维分析框架，并鼓励他从家乡<span class="highlight">平凉</span>的视角做对比思考。</p>
+      <div class="blockquote">
+        事后回顾，这不仅仅是一次对学生的指导，更是一次帮自己梳理框架的过程。
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 三资本概览 -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner" style="text-align:center;">
+      <span class="tag tag-insight">核心框架</span>
+      <h2 style="margin-top:0.5rem;">经济发展的三个底层维度</h2>
+      <div class="divider" style="margin:1rem auto;"></div>
+      <div class="diagram-3cap">
+        <div class="cap-node cap-physical">
+          <div class="cap-icon">🏗️</div>
+          <div class="cap-label">物质资本</div>
+          <div class="cap-en">Physical Capital</div>
+        </div>
+        <div class="cap-arrows">⟷</div>
+        <div class="cap-node cap-human">
+          <div class="cap-icon">🧠</div>
+          <div class="cap-label">人力资本</div>
+          <div class="cap-en">Human Capital</div>
+        </div>
+        <div class="cap-arrows">⟷</div>
+        <div class="cap-node cap-social">
+          <div class="cap-icon">🤝</div>
+          <div class="cap-label">社会资本</div>
+          <div class="cap-en">Social Capital</div>
+        </div>
+      </div>
+      <p style="max-width:700px;margin:1.5rem auto 0;font-size:1.1rem;color:var(--fg2);">
+        三种资本不是独立运作的，而是相互促进或相互制约。<br>
+        在个人发展层面，需要<span class="highlight">平衡配置</span>——缺失任何一种都会导致结构性缺陷。
+      </p>
+    </div>
+  </div>
+
+  <!-- 4. 物质资本 -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <span class="tag" style="background:rgba(116,185,255,0.15);color:var(--blue);border:1px solid rgba(116,185,255,0.2);">资本一</span>
+      <h2 style="margin-top:0.5rem;">物质资本 <span style="font-size:1.2rem;font-weight:300;color:var(--fg2);">Physical Capital</span></h2>
+      <div class="divider"></div>
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <h4>📌 定义</h4>
+          <p>生产过程中使用的物质投入，包括机器设备、基础设施、厂房、工具等有形资产。</p>
+        </div>
+        <div class="card">
+          <h4>📈 经济角色</h4>
+          <p>经济增长最直接的驱动力之一（Solow模型）。中国前四十年的大规模基建和制造业扩张，本质上是物质资本的快速积累。</p>
+        </div>
+        <div class="card">
+          <h4>⚠️ 关键特性</h4>
+          <p><span class="highlight">边际收益递减</span>——在资本稀缺时回报极高，资本充裕后回报逐渐下降。</p>
+        </div>
+        <div class="card">
+          <h4>🧑 个人映射</h4>
+          <p>储蓄、房产、投资等有形资产，以及工作所需的工具、设备、技术条件——个人发展的"硬基础"。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 人力资本 -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <span class="tag" style="background:rgba(0,206,201,0.15);color:var(--green);border:1px solid rgba(0,206,201,0.2);">资本二</span>
+      <h2 style="margin-top:0.5rem;">人力资本 <span style="font-size:1.2rem;font-weight:300;color:var(--fg2);">Human Capital</span></h2>
+      <div class="divider"></div>
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <h4>📌 定义</h4>
+          <p>个体通过教育、培训、经验积累而形成的能力存量，包括知识、技能、健康等。</p>
+        </div>
+        <div class="card">
+          <h4>📈 经济角色</h4>
+          <p>长期经济增长的核心驱动力（Lucas, 1988）。中国从"人口红利"向"人才红利"转型，本质是人力资本替代物质资本成为主引擎。</p>
+        </div>
+        <div class="card">
+          <h4>🔑 关键特征</h4>
+          <p><span class="highlight">不可分离性</span>——附着于个体，无法转让。<br>
+          <span class="highlight">累积性</span>——知识越多，学习新知识的能力越强。</p>
+        </div>
+        <div class="card">
+          <h4>🧑 个人映射</h4>
+          <p>专业技能、通识素养、认知框架、学习能力、健康状态——你带走的是你的能力，不是你的职位。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 社会资本 -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <span class="tag" style="background:rgba(253,121,168,0.15);color:var(--red);border:1px solid rgba(253,121,168,0.2);">资本三</span>
+      <h2 style="margin-top:0.5rem;">社会资本 <span style="font-size:1.2rem;font-weight:300;color:var(--fg2);">Social Capital</span></h2>
+      <div class="divider"></div>
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <h4>📌 定义</h4>
+          <p>个体或群体通过社会网络获取的资源，包括信任、规范、关系网络、信息渠道等。</p>
+        </div>
+        <div class="card">
+          <h4>📈 经济角色</h4>
+          <p>经济发展中最被低估的因素（Putnam, 1993）。中国经济的"关系型"特征，使得社会资本在商业中扮演远超西方经济体的角色。</p>
+        </div>
+        <div class="card">
+          <h4>🔗 两种类型</h4>
+          <p><span class="highlight">桥接型</span>（Bridging）——连接不同群体的弱关系<br>
+          <span class="highlight">黏合型</span>（Bonding）——同质群体内部的强关系</p>
+        </div>
+        <div class="card">
+          <h4>🧑 个人映射</h4>
+          <p>校友网络、同事关系、导师关系、行业人脉——决定了你能获取多少"信息差"和"机会差"。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 互动关系 -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <span class="tag tag-insight">核心洞察</span>
+      <h2 style="margin-top:0.5rem;">三者的互动关系</h2>
+      <div class="divider"></div>
+      <div class="card-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="card" style="border-color:rgba(116,185,255,0.15);">
+          <div style="text-align:center;font-size:2rem;margin-bottom:0.5rem;">🏗️ × 🧠</div>
+          <h4 style="text-align:center;">物质资本 × 人力资本</h4>
+          <p>设备降低学习门槛，但物质充裕也可能削弱人力资本积累的动力——<span class="highlight">"资源诅咒"</span></p>
+        </div>
+        <div class="card" style="border-color:rgba(0,206,201,0.15);">
+          <div style="text-align:center;font-size:2rem;margin-bottom:0.5rem;">🧠 × 🤝</div>
+          <h4 style="text-align:center;">人力资本 × 社会资本</h4>
+          <p>名校教育同时带来校友网络；社会资本也能促进人力资本获取——<span class="highlight">内推效应</span></p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.15);">
+          <div style="text-align:center;font-size:2rem;margin-bottom:0.5rem;">🤝 × 🏗️</div>
+          <h4 style="text-align:center;">社会资本 × 物质资本</h4>
+          <p>社会资本可转化为商业机会和融资渠道；物质资本也可购买社会资本——<span class="highlight">双向转化</span></p>
+        </div>
+      </div>
+      <div class="key-box" style="margin-top:1rem;">
+        <p style="font-size:1.3rem;color:var(--fg);">过度偏重任何一种都会导致结构性缺陷：<br>
+        <span style="color:var(--fg2);font-size:1rem;">守财奴 · 孤岛 · 投机者</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 框架的价值 -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <span class="tag tag-insight">方法论</span>
+      <h2 style="margin-top:0.5rem;">框架的价值：从"感受"到"结构"</h2>
+      <div class="divider"></div>
+      <p>我问马雪东的第一个问题：<span class="highlight">"你自己对这次调研有什么感受？"</span></p>
+      <p style="color:var(--fg2);">感受是流变的、模糊的、难以迁移的。框架的作用，就是把感受<span class="highlight-purple">结构化</span>。</p>
+      <div class="card-grid card-grid-3" style="margin-top:1rem;">
+        <div class="card">
+          <div class="icon" style="color:var(--blue);">🔍</div>
+          <h4>解释性</h4>
+          <p>为什么有些地方发展快，有些慢？——看三种资本的配置</p>
+        </div>
+        <div class="card">
+          <div class="icon" style="color:var(--green);">🔮</div>
+          <h4>预测性</h4>
+          <p>这个地方未来会怎样？——看哪种资本在积累，哪种在流失</p>
+        </div>
+        <div class="card">
+          <div class="icon" style="color:var(--gold);">⚡</div>
+          <h4>行动性</h4>
+          <p>我该做什么？——看自己的比较优势，识别需要补充的资本</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. 平凉×衢州 -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <span class="tag tag-insight">比较视角</span>
+      <h2 style="margin-top:0.5rem;">平凉 × 衢州</h2>
+      <div class="divider"></div>
+      <p>马雪东是<span class="highlight">甘肃平凉</span>人。平凉地处陇东，衢州位于浙西——这个对比的张力远大于"省内差异"。</p>
+      <div class="card-grid card-grid-2" style="margin-top:0.8rem;">
+        <div class="card" style="border-color:rgba(253,121,168,0.15);">
+          <h4>📍 平凉（甘肃）</h4>
+          <p>西部欠发达地区 · 黄土高原<br>以农业和资源型产业为主<br>人均GDP远低于全国平均</p>
+        </div>
+        <div class="card" style="border-color:rgba(0,206,201,0.15);">
+          <h4>📍 衢州（浙江）</h4>
+          <p>东部发达省份 · 长三角腹地<br>从传统工业向生态经济转型<br>高铁网络密集，制度环境成熟</p>
+        </div>
+      </div>
+      <div class="blockquote" style="margin-top:0.5rem;">
+        核心问题：这些差距不是"谁更努力"的问题，而是初始条件、历史路径、地理禀赋共同塑造的结果。<br>
+        <strong style="color:var(--gold);">哪些差距可以弥补？哪些是结构性的？</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. 从看经济到看自己 -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <span class="tag tag-insight">框架应用</span>
+      <h2 style="margin-top:0.5rem;">从"看经济"到"看自己"</h2>
+      <div class="divider"></div>
+      <div class="blockquote">
+        如果你能分析一个地区的经济发展是哪种资本在驱动、哪种资本在缺失，<br>
+        你就能分析你自己的发展——你的优势资本是什么？你的短板资本是什么？<br>
+        你需要在哪个方向积累？
+      </div>
+      <p style="margin-top:1rem;">对马雪东而言，从平凉到北京再到衢州，本身就是一次<span class="highlight">跨区域的资本积累过程</span>。</p>
+      <div class="flow-row">
+        <span class="flow-item" style="background:rgba(253,121,168,0.1);border:1px solid rgba(253,121,168,0.15);">平凉</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-item" style="background:rgba(116,185,255,0.1);border:1px solid rgba(116,185,255,0.15);">北大（平台）</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-item" style="background:rgba(0,206,201,0.1);border:1px solid rgba(0,206,201,0.15);">衢州调研</span>
+      </div>
+      <div class="key-box" style="margin-top:1rem;">
+        <div class="key-q">关键问题</div>
+        <div class="key-a">如何把平台赋予的社会资本，真正转化为自身的人力资本？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. 批判总览 -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <span class="tag tag-crit">批判性审视</span>
+      <h2 style="margin-top:0.5rem;">五个批判视角</h2>
+      <div class="divider"></div>
+      <p style="color:var(--fg2);margin-bottom:1.2rem;">跳出"指导者"视角，审视这次对话和框架本身</p>
+      <div class="card-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>1️⃣ 过度简化</h4>
+          <p>资本的边界是模糊的，过度依赖框架可能导致在错误的地方寻找精确性</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>2️⃣ 单向性假设</h4>
+          <p>我来自浙江，是东部平台的受益者——我是否真的理解了一个西部学生进入北大后的文化冲击？</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>3️⃣ 精英主义倾向</h4>
+          <p>"积累资本"、"寻找导师"——对资源匮乏的群体可能是一种隐性暴力</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>4️⃣ 作用机制理解不足</h4>
+          <p>说了"做什么"，没说清楚"为什么有效"以及"什么条件下无效"</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);grid-column:1/3;">
+          <h4>5️⃣ 时代背景的盲点</h4>
+          <p>AI正在重新定义人力资本，数字网络改变社会资本的性质——框架需要被时代重新校准</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. 批判1 -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <span class="tag tag-crit">批判一</span>
+      <h2 style="margin-top:0.5rem;">框架是否过度简化？</h2>
+      <div class="divider"></div>
+      <p>三资本框架高度抽象。真实世界中，<span class="highlight">资本的边界是模糊的</span>——社会资本和人力资本之间的界限在哪里？</p>
+      <div class="card" style="margin:0.8rem 0;border-color:rgba(253,121,168,0.15);">
+        <h4>💡 一个例子</h4>
+        <p>一个校友关系，既给你信息（社会资本），也通过交流提升你的认知（人力资本）。这种分类的便利性，是以牺牲真实复杂性为代价的。</p>
+      </div>
+      <div class="blockquote">
+        <strong>隐含假设批判</strong>：框架假设三种资本是可区分的、可度量的、可管理的。<br>
+        但现实是，它们往往纠缠在一起，无法独立管理。<br>
+        过度依赖框架可能导致<span class="highlight">在错误的地方寻找精确性</span>。
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. 批判2 -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner">
+      <span class="tag tag-crit">批判二</span>
+      <h2 style="margin-top:0.5rem;">知识传递的"单向性"假设</h2>
+      <div class="divider"></div>
+      <p>在这次对话中，我是"指导者"，马雪东是"接收者"。但真正有效的学习不是单向的知识传递，而是<span class="highlight">双向的认知碰撞</span>。</p>
+      <div class="card" style="margin:0.8rem 0;border-color:rgba(253,121,168,0.15);">
+        <h4>🤔 自我批判的问题</h4>
+        <ul>
+          <li>我真的理解了他作为<span class="highlight">平凉</span>人在衢州的感受吗？还是我只是在应用我的框架？</li>
+          <li>我来自浙江，在北大读书、工作——<span class="highlight">我有没有真正理解</span>一个西部学生进入北大后面临的文化冲击和适应成本？</li>
+          <li>他可能从平凉到北京的经历本身，就是一个<span class="highlight-purple">更生动的发展经济学案例</span>。</li>
+        </ul>
+      </div>
+      <div class="blockquote">
+        改进方向：真正有效的对话应该是双方都提出假设，双方都接受挑战。
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. 批判3 -->
+  <div class="slide" data-index="13">
+    <div class="slide-inner">
+      <span class="tag tag-crit">批判三</span>
+      <h2 style="margin-top:0.5rem;">框架的"精英主义"倾向</h2>
+      <div class="divider"></div>
+      <p>"积累资本"、"寻找导师"、"利用平台"——这些建议对<span class="highlight">拥有资源的人</span>有效，但对<span class="highlight">资源匮乏的群体</span>可能是一种隐性暴力。</p>
+      <div class="card" style="margin:0.8rem 0;border-color:rgba(253,121,168,0.15);">
+        <h4>⚠️ 隐含假设批判</h4>
+        <p>框架假设个体有足够的选择空间和自主性。但真实世界中，很多人的选择受制于家庭背景、经济条件、地域限制。</p>
+        <p>对他们说"你要积累人力资本和社会资本"，就像对饿着肚子的人说"你要注意营养均衡"——<span class="highlight">正确，但缺乏对前提条件的承认</span>。</p>
+      </div>
+      <div class="key-box">
+        <div class="key-q">尖锐的问题</div>
+        <div class="key-a">如果一个人出生在平凉农村，父母没有能力提供教育投资，当地没有优质学校——<br>三资本框架对他而言，是一种分析工具，还是一种嘲讽？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15. 批判4 -->
+  <div class="slide" data-index="14">
+    <div class="slide-inner">
+      <span class="tag tag-crit">批判四</span>
+      <h2 style="margin-top:0.5rem;">作用机制理解不足</h2>
+      <div class="divider"></div>
+      <p>建议的效果取决于对<span class="highlight">作用机制</span>的理解，而不仅仅是"要多做"。</p>
+      <div class="card-grid card-grid-2" style="margin-top:0.8rem;">
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>📉 社会资本的边际收益递减</h4>
+          <p>不是认识越多的人越好——有效的社交网络有最优规模</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>🛤️ 人力资本的路径依赖</h4>
+          <p>早期的专业选择会锁定未来的发展方向</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>🔄 转化条件</h4>
+          <p>不是所有社交关系都能提升能力——<span class="highlight">"弱连接+高质量信息交流"</span>的组合才有效</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>💸 转换成本</h4>
+          <p>从西部到北京的学生，家乡的强关系网络在北大可能不再适用，需要重建一套新的社会资本体系</p>
+        </div>
+      </div>
+      <div class="blockquote">
+        框架的价值不在于给出答案，而在于告诉你答案的边界在哪里。
+      </div>
+    </div>
+  </div>
+
+  <!-- 16. 批判5 -->
+  <div class="slide" data-index="15">
+    <div class="slide-inner">
+      <span class="tag tag-crit">批判五</span>
+      <h2 style="margin-top:0.5rem;">时代背景的"盲点"</h2>
+      <div class="divider"></div>
+      <p>三资本框架是经济学经典的产物，但<span class="highlight">当前的时代正在改变资本积累的底层逻辑</span>：</p>
+      <div class="card-grid card-grid-3" style="margin-top:0.8rem;">
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <div class="icon" style="color:var(--blue);">🤖</div>
+          <h4>AI × 人力资本</h4>
+          <p>什么知识值得学？什么技能会贬值？传统教育体系的人力资本积累模式正在被挑战</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <div class="icon" style="color:var(--green);">🌐</div>
+          <h4>数字 × 社会资本</h4>
+          <p>线上弱连接的价值被放大，线下强关系的价值在变化——社会资本的性质正在重构</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <div class="icon" style="color:var(--gold);">📉</div>
+          <h4>回报率 × 物质资本</h4>
+          <p>资本回报率长期下降，影响物质资本积累的激励和决策</p>
+        </div>
+      </div>
+      <div class="blockquote">
+        <strong>自我批判</strong>：在对话中提到了"明白时代的机遇"，但没有具体展开——三资本框架本身需要被时代背景重新校准。
+      </div>
+    </div>
+  </div>
+
+  <!-- 17. 教别人=教自己 -->
+  <div class="slide" data-index="16">
+    <div class="slide-inner">
+      <span class="tag tag-insight">深层收获</span>
+      <h2 style="margin-top:0.5rem;">为什么"教别人"是最有效的学习方式？</h2>
+      <div class="divider"></div>
+      <div class="blockquote">
+        你以为你在教别人，其实你在帮自己梳理思考。
+      </div>
+      <p style="margin-top:1rem;">当你向另一个人解释一个框架时，你被迫：</p>
+      <ol class="num-list" style="margin-top:0.8rem;">
+        <li><strong>简化</strong>——剔除噪音，保留核心</li>
+        <li><strong>结构化</strong>——把零散的想法组织成逻辑链条</li>
+        <li><strong>举例</strong>——用具体案例验证抽象概念</li>
+        <li><strong>应对质疑</strong>——在对方的反应中发现自己思考的漏洞</li>
+      </ol>
+      <p style="margin-top:1rem;color:var(--fg2);">这就是<span class="highlight">费曼学习法</span>——如果你不能简单地解释一个概念，你就没有真正理解它。</p>
+    </div>
+  </div>
+
+  <!-- 18. 自我使用说明书 -->
+  <div class="slide" data-index="17">
+    <div class="slide-inner">
+      <span class="tag tag-insight">方法论</span>
+      <h2 style="margin-top:0.5rem;">框架的"自我使用说明书"</h2>
+      <div class="divider"></div>
+      <p style="color:var(--fg2);margin-bottom:0.8rem;">我对马雪东的建议——同样适用于我自己</p>
+      <table class="stylish-table">
+        <thead>
+          <tr>
+            <th>建议方向</th>
+            <th>对马雪东的意义</th>
+            <th>对我自己的意义</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>建立自己的框架</strong></td>
+            <td>从零散感受到系统分析</td>
+            <td>持续更新和挑战自己的框架，避免固化</td>
+          </tr>
+          <tr>
+            <td><strong>建立人跟人的联系</strong></td>
+            <td>利用光华平台扩展社交资本</td>
+            <td>连接不同领域的人，打破信息茧房</td>
+          </tr>
+          <tr>
+            <td><strong>寻找导师</strong></td>
+            <td>获得方向性指引</td>
+            <td>在需要时寻求更高维度的视角</td>
+          </tr>
+          <tr>
+            <td><strong>明白时代的机遇</strong></td>
+            <td>定位自己的比较优势</td>
+            <td>在AI时代重新定义自己的价值</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 19. 迭代而非固化 -->
+  <div class="slide" data-index="18">
+    <div class="slide-inner">
+      <span class="tag tag-insight">心智模式</span>
+      <h2 style="margin-top:0.5rem;">框架的"迭代"而非"固化"</h2>
+      <div class="divider"></div>
+      <div class="blockquote">
+        框架最大的陷阱是让人以为自己找到了答案。<br>
+        三资本框架是一个有用的分析工具，但如果你把它当作"终极真理"，它就变成了思维的牢笼。
+      </div>
+      <div class="card-grid card-grid-2" style="margin-top:1rem;">
+        <div class="card" style="border-color:rgba(0,206,201,0.12);">
+          <h4>✅ 健康的使用方式</h4>
+          <ul>
+            <li>用框架<span class="highlight">提问</span>，而不是用框架回答</li>
+            <li>接受框架的<span class="highlight">局限性</span>，并寻找例外</li>
+            <li>定期<span class="highlight">更新</span>框架，纳入新的视角</li>
+            <li>在不同场景下尝试<span class="highlight">不同的框架</span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <h4>❌ 危险的使用方式</h4>
+          <ul>
+            <li>把框架当作<span class="highlight">绝对真理</span></li>
+            <li>用框架<span class="highlight">替代思考</span></li>
+            <li>拒绝<span class="highlight">挑战</span>框架的假设</li>
+            <li>在所有场景<span class="highlight">套用同一套</span>框架</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 20. 框架升级 -->
+  <div class="slide" data-index="19">
+    <div class="slide-inner">
+      <span class="tag tag-action">框架升级</span>
+      <h2 style="margin-top:0.5rem;">四资本 + 三条件</h2>
+      <div class="divider"></div>
+      <p>基于批判性审视，对原始三资本框架做升级</p>
+      <div class="diagram-3cap" style="gap:1.5rem;">
+        <div class="cap-node cap-physical" style="width:7rem;height:7rem;">
+          <div class="cap-icon" style="font-size:2rem;">🏗️</div>
+          <div class="cap-label" style="font-size:0.8rem;">物质</div>
+        </div>
+        <div class="cap-node cap-human" style="width:7rem;height:7rem;">
+          <div class="cap-icon" style="font-size:2rem;">🧠</div>
+          <div class="cap-label" style="font-size:0.8rem;">人力</div>
+        </div>
+        <div class="cap-node cap-social" style="width:7rem;height:7rem;">
+          <div class="cap-icon" style="font-size:2rem;">🤝</div>
+          <div class="cap-label" style="font-size:0.8rem;">社会</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <div style="width:7rem;height:7rem;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(245,205,95,0.25), rgba(245,205,95,0.05));border:2px solid rgba(245,205,95,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-size:2rem;">❤️</div>
+            <div style="font-size:0.8rem;font-weight:600;">心理资本</div>
+            <div style="font-size:0.6rem;opacity:0.6;font-weight:300;">+Psychological</div>
+          </div>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:0.8rem;color:var(--fg2);">+ 三个条件变量：<span class="highlight">市场匹配度</span> · <span class="highlight">转换成本</span> · <span class="highlight">可持续性</span></p>
+    </div>
+  </div>
+
+  <!-- 21. 心理资本 -->
+  <div class="slide" data-index="20">
+    <div class="slide-inner">
+      <span class="tag tag-action">框架升级</span>
+      <h2 style="margin-top:0.5rem;">心理资本：被忽略的第四种资本</h2>
+      <div class="divider"></div>
+      <p style="color:var(--fg2);">物质资本、人力资本、社会资本都是"外部可观察"的资本——但个人发展的真正瓶颈往往在<span class="highlight">内部</span>。</p>
+      <div class="card-grid card-grid-2" style="margin-top:0.8rem;">
+        <div class="card" style="border-color:rgba(245,205,95,0.15);">
+          <h4>💪 自我效能感</h4>
+          <p>相信自己能完成特定任务</p>
+        </div>
+        <div class="card" style="border-color:rgba(245,205,95,0.15);">
+          <h4>🌟 希望</h4>
+          <p>坚持目标并在必要时调整路径</p>
+        </div>
+        <div class="card" style="border-color:rgba(245,205,95,0.15);">
+          <h4>🛡️ 韧性</h4>
+          <p>从逆境中恢复的能力</p>
+        </div>
+        <div class="card" style="border-color:rgba(245,205,95,0.15);">
+          <h4>☀️ 乐观</h4>
+          <p>对积极结果的现实预期</p>
+        </div>
+      </div>
+      <div class="blockquote" style="margin-top:0.5rem;">
+        没有心理资本，其他资本的积累效率会大幅下降。<br>
+        尤其对于从西部走到顶尖平台的学生——<span class="highlight">从"我不属于这里"到"我能在这里做到"的自我认知转变，可能是最关键的资本。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 22. 三个条件变量 -->
+  <div class="slide" data-index="21">
+    <div class="slide-inner">
+      <span class="tag tag-action">框架升级</span>
+      <h2 style="margin-top:0.5rem;">三种资本 ≠ 绝对价值</h2>
+      <div class="divider"></div>
+      <p>任何一种资本的价值都不是绝对的，而是取决于<span class="highlight">三个条件</span>：</p>
+      <div class="card-grid card-grid-3" style="margin-top:0.8rem;">
+        <div class="card" style="border-color:rgba(0,206,201,0.12);">
+          <div class="icon" style="color:var(--green);">🎯</div>
+          <h4>市场匹配度</h4>
+          <p>你的资本是否被市场需要？</p>
+          <p style="font-size:0.9rem;color:var(--fg2);">再多的专业技能，如果市场需求在萎缩，回报率也在下降</p>
+        </div>
+        <div class="card" style="border-color:rgba(116,185,255,0.12);">
+          <div class="icon" style="color:var(--blue);">🔄</div>
+          <h4>转换成本</h4>
+          <p>你的资本能否有效转化为其他资本？</p>
+          <p style="font-size:0.9rem;color:var(--fg2);">社会资本不可转让，人力资本不可分离——转换需要时间和机会</p>
+        </div>
+        <div class="card" style="border-color:rgba(253,121,168,0.12);">
+          <div class="icon" style="color:var(--red);">⏳</div>
+          <h4>可持续性</h4>
+          <p>你的资本是否会随时间贬值？</p>
+          <p style="font-size:0.9rem;color:var(--fg2);">终身学习不是口号，而是人力资本保值的必要条件</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 23. 从积累到配置 -->
+  <div class="slide" data-index="22">
+    <div class="slide-inner">
+      <span class="tag tag-action">框架升级</span>
+      <h2 style="margin-top:0.5rem;">从"资本积累"到"资本配置"</h2>
+      <div class="divider"></div>
+      <p>升级后的框架不再是"要多积累某一种资本"，而是<span class="highlight">问题导向的资本配置决策</span>：</p>
+      <div class="card-grid card-grid-2" style="margin-top:0.8rem;">
+        <div class="card" style="border-color:rgba(108,92,231,0.15);">
+          <h4>🔍 诊断</h4>
+          <p>你当前的发展瓶颈是什么？</p>
+          <p style="color:var(--fg2);font-size:0.95rem;">信息差？能力差？资源差？心理状态差？</p>
+        </div>
+        <div class="card" style="border-color:rgba(108,92,231,0.15);">
+          <h4>📊 优先级</h4>
+          <p>哪种资本的补充能带来最高回报？</p>
+          <p style="color:var(--fg2);font-size:0.95rem;">识别边际收益最高的资本类型</p>
+        </div>
+        <div class="card" style="border-color:rgba(108,92,231,0.15);">
+          <h4>🛤️ 转化路径</h4>
+          <p>不同资本之间的转换路径是什么？</p>
+          <p style="color:var(--fg2);font-size:0.95rem;">如何把社会资本转化为人力资本？</p>
+        </div>
+        <div class="card" style="border-color:rgba(108,92,231,0.15);">
+          <h4>⏰ 时机</h4>
+          <p>资本积累的边际收益何时开始递减？</p>
+          <p style="color:var(--fg2);font-size:0.95rem;">在正确的时间切换配置方向</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 24. 结语 -->
+  <div class="slide" data-index="23">
+    <div class="slide-inner" style="text-align:center;">
+      <span class="tag tag-insight">结语</span>
+      <h2 style="margin-top:0.5rem;">对话的真正意义</h2>
+      <div class="divider" style="margin:1rem auto;"></div>
+      <div class="blockquote" style="text-align:left;max-width:800px;margin:0 auto;">
+        这次车站对话，表面上是"老师教学生"，实际上是一个双向的框架验证过程。<br><br>
+        对马雪东来说，从平凉到北京再到衢州，他走过的路本身就是一幅<span class="highlight">中国区域发展不平衡的微观图景</span>。<br><br>
+        对我来说，通过解释一个框架，我发现了这个框架的漏洞和边界——<span class="highlight">发现框架的边界比使用框架更重要</span>。
+      </div>
+      <div class="key-box" style="margin-top:1.5rem;max-width:800px;margin-left:auto;margin-right:auto;">
+        <div class="key-q">最后的追问</div>
+        <div class="key-a">真正的教育不是传递答案，而是传递提问的能力。<br><br>
+        我的框架有多大的解释力？它的边界在哪里？<br>
+        我什么时候该换一个框架？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 25. 后记 -->
+  <div class="slide" data-index="24">
+    <div class="slide-inner" style="text-align:center;">
+      <span class="tag tag-crit">后记</span>
+      <h2 style="margin-top:0.5rem;">一次值得反思的错误</h2>
+      <div class="divider" style="margin:1rem auto;"></div>
+      <p style="max-width:750px;margin:0 auto;font-size:1.2rem;">
+        初稿中将马雪东的家乡误记为<span class="highlight">浙江平阳</span>，后经核实为<span class="highlight">甘肃平凉</span>。
+      </p>
+      <p style="max-width:750px;margin:1rem auto;color:var(--fg2);">
+        修正后，比较视角从"省内差异"变为"东西部差异"，批判性审视中的"温州商业直觉"假设也随之调整。
+      </p>
+      <div class="blockquote" style="max-width:750px;margin:1rem auto;text-align:left;">
+        <strong>这一更正本身就说明了一个问题</strong>——在讨论"理解他人处境"时，我连他来自哪里都没搞清楚。值得反思。
+      </div>
+      <p style="margin-top:2rem;color:var(--fg2);font-size:0.9rem;">🔗 飞书文档：<a href="https://ncnqx2d8345t.feishu.cn/wiki/CtLVwHmH7iXaoOk5TjicRtpHnNe" style="color:var(--accent2);text-decoration:none;">三资本框架与个人发展</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prevSlide()">◀</button>
+  <span class="counter" id="counter">1 / 25</span>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:4%"></div>
+  </div>
+  <button onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  const total = slides.length;
+
+  function updateSlide() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('progressFill').style.width = `${((current + 1) / total) * 100}%`;
+  }
+
+  function nextSlide() {
+    if (current < total - 1) { current++; updateSlide(); }
+  }
+  function prevSlide() {
+    if (current > 0) { current--; updateSlide(); }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+  });
+
+  updateSlide();
+</script>
+</body>
+</html>
