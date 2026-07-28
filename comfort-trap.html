@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安逸的陷阱</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f1a;
+    --card: #14141f;
+    --border: #1e1e35;
+    --text: #d4d4e8;
+    --text-dim: #7a7a8e;
+    --accent: #f0c040;
+    --accent2: #e06040;
+    --accent3: #40a0d0;
+    --green: #50c080;
+    --red: #d05050;
+    --orange: #e09040;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* === Slides === */
+  .slides { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 5vh 6vw;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  /* === Typography === */
+  .slide-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2rem, 4vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+  }
+  .slide-sub {
+    font-size: clamp(1rem, 1.6vw, 2rem);
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-bottom: 2em;
+    line-height: 1.6;
+  }
+  .slide-body {
+    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    line-height: 1.7;
+    max-width: 80%;
+  }
+
+  /* === Accent lines === */
+  .accent-line {
+    width: 3em; height: 3px;
+    background: var(--accent);
+    margin-bottom: 1.5em;
+  }
+
+  /* === Grid / Cards === */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2vw; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5vw; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5vw 1.8vw;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .card-label {
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent); margin-bottom: 0.8em; font-weight: 500;
+  }
+  .card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1rem, 1.3vw, 1.6rem);
+    font-weight: 700;
+    margin-bottom: 0.5em;
+  }
+  .card-body {
+    font-size: clamp(0.8rem, 1vw, 1.2rem);
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* === Visual bars === */
+  .bar-group { margin: 1.5em 0; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 1em; }
+  .bar-label { width: 10em; font-size: clamp(0.85rem, 1.1vw, 1.3rem); flex-shrink: 0; }
+  .bar-track { flex: 1; height: 2em; background: var(--card); border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill {
+    height: 100%; border-radius: 4px;
+    display: flex; align-items: center; padding-left: 0.8em;
+    font-size: 0.75em; font-weight: 600; color: #000;
+    width: 0; transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .slide.active .bar-fill { /* widths set inline */ }
+
+  /* === Timeline === */
+  .timeline { position: relative; padding-left: 2em; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--border);
+  }
+  .tl-item { position: relative; margin-bottom: 1.5em; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -2em; top: 0.5em;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); transform: translateX(-4px);
+  }
+  .tl-title { font-size: clamp(0.9rem, 1.2vw, 1.4rem); font-weight: 600; }
+  .tl-body { font-size: clamp(0.8rem, 1vw, 1.2rem); color: var(--text-dim); }
+
+  /* === Question block === */
+  .q-block {
+    background: var(--card);
+    border-left: 4px solid var(--accent2);
+    border-radius: 0 12px 12px 0;
+    padding: 1.5vw 2vw;
+    margin-bottom: 1.5em;
+  }
+  .q-num {
+    display: inline-block;
+    background: var(--accent2); color: #fff;
+    width: 2em; height: 2em; border-radius: 50%;
+    text-align: center; line-height: 2em;
+    font-weight: 700; font-size: clamp(0.8rem, 1vw, 1.2rem);
+    margin-right: 0.8em;
+  }
+  .q-text {
+    font-size: clamp(1rem, 1.3vw, 1.6rem);
+    font-weight: 600;
+    display: inline;
+  }
+
+  /* === Navigation === */
+  .nav {
+    position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1.5em;
+    z-index: 100;
+  }
+  .nav-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-dots { display: flex; gap: 0.5em; }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+  .page-indicator {
+    font-size: 0.8rem; color: var(--text-dim);
+    min-width: 4em; text-align: center;
+  }
+
+  /* === Progress bar === */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 200;
+    transition: width 0.5s;
+  }
+
+  /* === Responsive === */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .slide-body { max-width: 100%; font-size: 0.9rem; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .card { padding: 1em; }
+    .bar-label { width: 6em; font-size: 0.8rem; }
+    .q-text { font-size: 0.95rem; }
+  }
+
+  /* === Noise texture === */
+  .noise {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 999;
+  }
+
+  /* Center layout helper */
+  .center-content { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .full-center { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+
+  /* Highlight */
+  .hl { color: var(--accent); }
+  .hl-r { color: var(--accent2); }
+  .hl-b { color: var(--accent3); }
+  .hl-g { color: var(--green); }
+  .small { font-size: 0.8em; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="noise"></div>
+
+<div class="slides" id="slides">
+
+  <!-- ====== PAGE 1: TITLE ====== -->
+  <div class="slide active" data-index="0">
+    <div class="full-center">
+      <div style="font-size:clamp(0.8rem,1vw,1.2rem);letter-spacing:0.3em;color:var(--accent);margin-bottom:2em;font-weight:500;">2026 · 自我审视</div>
+      <div class="slide-title" style="font-size:clamp(3rem,7vw,8rem);text-align:center;">安逸的陷阱</div>
+      <div class="accent-line" style="margin:1.5em auto;"></div>
+      <div class="slide-sub" style="text-align:center;max-width:60%;margin:0 auto;">
+        舒适底子下的危机感——一次自我审视
+      </div>
+      <div style="margin-top:3em;font-size:clamp(0.8rem,1vw,1.2rem);color:var(--text-dim);">
+        ← → 或点击导航翻页
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 2: 你的底子拆解 ====== -->
+  <div class="slide" data-index="1">
+    <div class="center-content">
+      <div class="accent-line"></div>
+      <div class="slide-title">你的"底子"到底是什么？</div>
+      <div class="slide-sub">你以为的底子 vs 实际上的底子</div>
+      <div class="bar-group">
+        <div class="bar-row">
+          <div class="bar-label">住房</div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--red);" data-w="15">15%</div></div>
+          <div style="margin-left:1em;font-size:0.8em;color:var(--red);flex-shrink:0;">家庭支持</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">职位</div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--orange);" data-w="30">30%</div></div>
+          <div style="margin-left:1em;font-size:0.8em;color:var(--orange);flex-shrink:0;">平台大于个人</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">社交网络</div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--accent);" data-w="55">55%</div></div>
+          <div style="margin-left:1em;font-size:0.8em;color:var(--accent);flex-shrink:0;">自己经营</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">收入来源</div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--orange);" data-w="25">25%</div></div>
+          <div style="margin-left:1em;font-size:0.8em;color:var(--orange);flex-shrink:0;">单一收入结构</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">认知能力</div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--green);" data-w="85">85%</div></div>
+          <div style="margin-left:1em;font-size:0.8em;color:var(--green);flex-shrink:0;">真正的底子</div>
+        </div>
+      </div>
+      <div style="margin-top:1.5em;font-size:clamp(0.85rem,1.1vw,1.3rem);color:var(--text-dim);">
+        最硬的资产是认知能力，但最依赖的资产<span class="hl-r">来自外部给予</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 3: 三种依赖 ====== -->
+  <div class="slide" data-index="2">
+    <div class="center-content">
+      <div class="accent-line"></div>
+      <div class="slide-title">过度依赖的三种表现</div>
+      <div class="slide-sub" style="margin-bottom:2.5em;">舒适中的脆弱性</div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-label">依赖一</div>
+          <div class="card-title">对平台的依赖</div>
+          <div class="card-body">
+            "光华"两字带来的信任，有多少是因为你个人，有多少是因为你代表光华？<br><br>
+            <span class="hl-r">如果有一天离开，多少人会继续跟着你？</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">依赖二</div>
+          <div class="card-title">对家庭的依赖</div>
+          <div class="card-body">
+            住房、生活开销有家庭支持，让你缺少了"必须自己立住"的紧迫感。<br><br>
+            <span class="hl-r">缓冲垫也在悄悄削弱你的生存本能。</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">依赖三</div>
+          <div class="card-title">对安逸的依赖</div>
+          <div class="card-body">
+            西安偏安逸，环境在塑造你的节奏。在杭州感受到的紧迫感，回到西安会慢慢消散。<br><br>
+            <span class="hl-r">环境对人的影响是潜移默化的。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 4: 认知超前于行动 ====== -->
+  <div class="slide" data-index="3">
+    <div class="center-content">
+      <div class="accent-line"></div>
+      <div class="slide-title">认知超前于行动</div>
+      <div class="slide-sub">你的大脑已经跑到了前面，但身体还在原地</div>
+
+      <div style="position:relative;height:8em;margin:2em 0;">
+        <div style="position:absolute;left:0;right:0;top:0;height:3px;background:var(--border);border-radius:2px;"></div>
+        <div style="position:absolute;left:0;width:70%;top:0;height:3px;background:var(--accent);border-radius:2px;"></div>
+        <div style="position:absolute;left:70%;top:-0.5em;transform:translateX(-50%);">
+          <div style="background:var(--accent);color:#000;padding:0.3em 0.8em;border-radius:6px;font-size:0.75em;font-weight:600;white-space:nowrap;">
+            认知地图 <span style="opacity:0.6;">70%</span>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;width:25%;top:3em;height:3px;background:var(--accent2);border-radius:2px;"></div>
+        <div style="position:absolute;left:25%;top:2.5em;transform:translateX(-50%);">
+          <div style="background:var(--accent2);color:#fff;padding:0.3em 0.8em;border-radius:6px;font-size:0.75em;font-weight:600;white-space:nowrap;">
+            行动地图 <span style="opacity:0.6;">25%</span>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;top:6em;text-align:center;color:var(--text-dim);font-size:0.85em;">
+          差距 = 焦虑的来源
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:1em;">
+        <div class="card">
+          <div class="card-label">原因一</div>
+          <div class="card-title">安逸的许可</div>
+          <div class="card-body">生存压力不大，所以有了"先想清楚再做"的奢侈。但"想清楚"可能永远没有尽头。</div>
+        </div>
+        <div class="card">
+          <div class="card-label">原因二</div>
+          <div class="card-title">完美主义</div>
+          <div class="card-body">习惯把一件事想透彻再动手。每一步都合理，但每一步都拉长了"从想到做"的距离。</div>
+        </div>
+        <div class="card">
+          <div class="card-label">原因三</div>
+          <div class="card-title">多重身份</div>
+          <div class="card-body">你身上有太多身份，任何一个都很难获得足够的"专注时间"。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 5: 三条真相 ====== -->
+  <div class="slide" data-index="4">
+    <div class="center-content">
+      <div class="accent-line"></div>
+      <div class="slide-title">三条真相</div>
+      <div class="slide-sub">面对现实，才能改变现实</div>
+
+      <div class="grid-2" style="margin-top:1em;">
+        <div class="card" style="grid-column:1;">
+          <div class="card-label" style="color:var(--green);">真相一</div>
+          <div class="card-title" style="font-size:clamp(1.1rem,1.4vw,1.7rem);">你的核心竞争力是"认知+连接"</div>
+          <div class="card-body">
+            不是"平台+职位"。认知能力、社交能力、表达输出——这些不依赖任何平台，是你的"肉身资产"。<br>
+            <span class="hl">但你没有充分变现它们。</span>
+          </div>
+        </div>
+        <div class="card" style="grid-column:2;">
+          <div class="card-label" style="color:var(--accent);">真相二</div>
+          <div class="card-title" style="font-size:clamp(1.1rem,1.4vw,1.7rem);">安逸不是敌人，但安逸+不自知是</div>
+          <div class="card-body">
+            你已经意识到了——这很好。但下一步是<span class="hl-r">"不安逸地行动"</span>，而不是在"知道安逸中继续安逸"。
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1em;">
+        <div class="card-label" style="color:var(--accent3);">真相三</div>
+        <div class="card-title" style="font-size:clamp(1.1rem,1.4vw,1.7rem);">不需要放弃安逸，但需要在安逸中播种</div>
+        <div class="card-body">
+          不需要辞职、不需要搬家、不需要All-in。但需要在安逸的土壤里，播下几颗不安分的种子——
+          <span class="hl">一个可变现的知识产品、一个不依赖平台的个人品牌、一个持续产生现金流的小生意、一个可随时启动的外部机会。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 6: 五个阶梯 ====== -->
+  <div class="slide" data-index="5">
+    <div class="center-content">
+      <div class="accent-line"></div>
+      <div class="slide-title">从认知到行动的五个阶梯</div>
+      <div class="slide-sub">不是同时做五个，是选两个，设定三个月时间节点</div>
+
+      <div class="timeline" style="margin-top:1em;">
+        <div class="tl-item">
+          <div class="tl-title">阶梯一 <span class="hl">· 锁定战场前置的具体落点</span></div>
+          <div class="tl-body">知识产品 + AI应用，3个月内看到可量化的产出</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">阶梯二 <span class="hl">· 收入多样化时间表</span></div>
+          <div class="tl-body">12个月内，建立起至少一条不依赖职务的可预期收入渠道</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">阶梯三 <span class="hl">· 外部视角信息摄入机制</span></div>
+          <div class="tl-body">每周一次长三角/珠三角朋友交流，每月一次"走出去"</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">阶梯四 <span class="hl">· 反安逸的日常习惯</span></div>
+          <div class="tl-body">每天一个"必须完成"的任务，每周一个"不舒服"的尝试</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">阶梯五 <span class="hl">· 不后悔的决策框架</span></div>
+          <div class="tl-body">"如果五年后回头看，我会因为没做这件事而后悔吗？"——是，就去做</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 7: 三个追问 ====== -->
+  <div class="slide" data-index="6">
+    <div class="center-content">
+      <div class="accent-line"></div>
+      <div class="slide-title">三个追问</div>
+      <div class="slide-sub">不是要让你焦虑，而是要让你诚实面对</div>
+
+      <div class="q-block" style="margin-top:2em;">
+        <span class="q-num">1</span>
+        <div class="q-text">如果光华明天不再需要你，你的下一个选择是什么？</div>
+      </div>
+      <div class="q-block">
+        <span class="q-num">2</span>
+        <div class="q-text">如果家庭不再提供支持，你的经济状况能支撑多久？</div>
+      </div>
+      <div class="q-block">
+        <span class="q-num">3</span>
+        <div class="q-text">如果西安的舒适环境让你失去了危机感，五年后你拿什么和杭州、深圳的同龄人竞争？</div>
+      </div>
+
+      <div style="margin-top:2em;padding:1.5vw 2vw;border:1px dashed var(--border);border-radius:12px;text-align:center;">
+        <div style="font-size:clamp(1rem,1.3vw,1.6rem);font-weight:600;color:var(--accent);">
+          你的优势在于——你还有时间、有认知、有资源、有选择。
+        </div>
+        <div style="font-size:clamp(0.9rem,1.1vw,1.3rem);color:var(--accent2);margin-top:0.5em;">
+          但这些优势都有保质期。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PAGE 8: 结语 ====== -->
+  <div class="slide" data-index="7">
+    <div class="full-center">
+      <div class="slide-title" style="text-align:center;font-size:clamp(2rem,5vw,5rem);">
+        从"知道"到"做到"
+      </div>
+      <div class="accent-line" style="margin:1.5em auto;"></div>
+      <div class="slide-sub" style="text-align:center;max-width:70%;">
+        你写这篇自我审视，价值不在于文字，而在于
+        <span class="hl">明天早上醒来，你会不会做一件和昨天不一样的事</span>。
+      </div>
+      <div style="margin-top:3em;text-align:center;font-size:clamp(1.2rem,1.8vw,2.2rem);color:var(--text-dim);">
+        "从"知道"到"做到"的鸿沟，<br>是人和人之间最大的差距。"
+      </div>
+      <div style="margin-top:2em;font-size:clamp(0.8rem,1vw,1.2rem);color:var(--text-dim);letter-spacing:0.2em;">
+        你已经在"知道"这一头站得很高了。<br>
+        <span class="hl">现在，跨过去。</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="page-indicator" id="pageInd">1 / 8</span>
+  <button class="nav-btn" id="nextBtn">→</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const dots = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dots.appendChild(d);
+  }
+
+  const pageInd = document.getElementById('pageInd');
+  const progress = document.getElementById('progress');
+
+  function goTo(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= total) idx = total - 1;
+    if (idx === current) return;
+    slides[current].classList.remove('active');
+    slides[idx].classList.add('active');
+    current = idx;
+    updateUI();
+    // animate bars
+    document.querySelectorAll('.bar-fill').forEach(b => {
+      if (current === 1) {
+        b.style.width = b.dataset.w + '%';
+      } else {
+        b.style.width = '0%';
+      }
+    });
+  }
+
+  function updateUI() {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    pageInd.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  // Touch support
+  let touchX = 0;
+  document.addEventListener('touchstart', e => { touchX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - touchX;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  });
+
+  // Init bars on page 2
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => {
+      if (current === 1) b.style.width = b.dataset.w + '%';
+    });
+  }, 300);
+</script>
+
+</body>
+</html>
