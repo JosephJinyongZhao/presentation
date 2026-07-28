@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>纵深中国 · 方案汇报</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+  :root{
+    --bg:#08080e;
+    --bg2:#0d0d18;
+    --card:#111121;
+    --card-hover:#1a1a30;
+    --border:#1a1a35;
+    --text:#d0d0e4;
+    --text-dim:#6a6a80;
+    --gold:#f0c040;
+    --gold2:#d4a830;
+    --red:#e06040;
+    --blue:#40a0d0;
+    --green:#50c080;
+    --cyan:#40c8c8;
+  }
+
+  html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;overflow:hidden;user-select:none}
+
+  .slides{position:relative;width:100vw;height:100dvh}
+  .slide{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:5vh 5vw;
+    opacity:0;pointer-events:none;
+    transition:opacity .5s cubic-bezier(.22,1,.36,1);
+    overflow-y:auto
+  }
+  .slide.active{opacity:1;pointer-events:auto}
+  .slide::-webkit-scrollbar{display:none}
+
+  /* Typography */
+  .st{font-family:'Noto Serif SC',serif;font-size:clamp(1.5rem,5vw,3.5rem);font-weight:900;line-height:1.3;margin-bottom:.4em}
+  .st2{font-size:clamp(1.2rem,3.5vw,2.5rem);font-weight:700;line-height:1.4;margin-bottom:.5em}
+  .st3{font-size:clamp(1rem,2.8vw,1.8rem);font-weight:600;margin-bottom:.6em}
+  .ss{font-size:clamp(.85rem,2.2vw,1.3rem);color:var(--text-dim);font-weight:300;line-height:1.7;margin-bottom:1.5em}
+  .sb{font-size:clamp(.85rem,2.2vw,1.3rem);line-height:1.7;max-width:90%}
+  .sb-full{font-size:clamp(.85rem,2.2vw,1.3rem);line-height:1.7}
+  .small{font-size:clamp(.7rem,1.8vw,1rem);color:var(--text-dim)}
+
+  .accent-line{width:2.5em;height:3px;background:var(--gold);margin-bottom:1.2em;border-radius:2px}
+
+  /* Cards */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:2vw}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5vw}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:1.2em 1.2em;transition:all .3s
+  }
+  .card:active{border-color:var(--gold);background:var(--card-hover)}
+  .cl{font-size:clamp(.65rem,1.6vw,.85rem);text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:.6em;font-weight:500}
+  .ct{font-family:'Noto Serif SC',serif;font-size:clamp(.85rem,2.2vw,1.3rem);font-weight:700;margin-bottom:.4em}
+  .cb{font-size:clamp(.75rem,1.8vw,1rem);color:var(--text-dim);line-height:1.6}
+
+  /* Bars */
+  .br{margin:.6em 0;display:flex;align-items:center}
+  .bl{width:7em;font-size:clamp(.75rem,1.8vw,1rem);flex-shrink:0;color:var(--text-dim)}
+  .bt{flex:1;height:1.6em;background:var(--card);border-radius:3px;overflow:hidden;position:relative}
+  .bf{
+    height:100%;border-radius:3px;display:flex;align-items:center;padding-left:.6em;
+    font-size:clamp(.6rem,1.5vw,.8rem);font-weight:600;color:#000;
+    width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)
+  }
+
+  /* Timeline */
+  .tl{position:relative;padding-left:1.5em}
+  .tl::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--border)}
+  .tli{position:relative;margin-bottom:1em}
+  .tli::before{content:'';position:absolute;left:-1.5em;top:.4em;width:8px;height:8px;border-radius:50%;background:var(--gold);transform:translateX(-3px)}
+  .tlt{font-size:clamp(.85rem,2.2vw,1.2rem);font-weight:600}
+  .tlb{font-size:clamp(.75rem,1.8vw,1rem);color:var(--text-dim)}
+
+  /* Highlight tag */
+  .tag{
+    display:inline-block;padding:.2em .6em;border-radius:4px;
+    font-size:clamp(.65rem,1.6vw,.85rem);font-weight:500;margin:.2em
+  }
+  .tag-g{background:rgba(240,192,64,.15);color:var(--gold)}
+  .tag-r{background:rgba(224,96,64,.15);color:var(--red)}
+  .tag-b{background:rgba(64,160,208,.15);color:var(--blue)}
+  .tag-c{background:rgba(64,200,200,.15);color:var(--cyan)}
+
+  /* Q block */
+  .qb{
+    background:var(--card);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;
+    padding:1em 1.2em;margin-bottom:1em
+  }
+  .qbt{font-size:clamp(.85rem,2.2vw,1.3rem);font-weight:600}
+
+  /* Nav */
+  .nav{
+    position:fixed;bottom:2vh;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:1em;z-index:100;
+    background:rgba(8,8,14,.8);backdrop-filter:blur(10px);padding:.4em 1em;border-radius:20px;border:1px solid var(--border)
+  }
+  .nb{
+    width:36px;height:36px;border-radius:50%;
+    border:1px solid var(--border);background:var(--card);color:var(--text);
+    font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all .3s;-webkit-tap-highlight-color:transparent
+  }
+  .nb:active{border-color:var(--gold);color:var(--gold);background:var(--card-hover)}
+  .nd{display:flex;gap:.4em}
+  .ndot{
+    width:6px;height:6px;border-radius:50%;background:var(--border);
+    cursor:pointer;transition:all .3s
+  }
+  .ndot.active{background:var(--gold);width:18px;border-radius:3px}
+  .pi{font-size:clamp(.65rem,1.5vw,.8rem);color:var(--text-dim);min-width:3em;text-align:center}
+
+  /* Progress */
+  .prog{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));z-index:200;transition:width .5s}
+
+  /* Noise */
+  .noise{position:fixed;inset:0;pointer-events:none;opacity:.02;z-index:999;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")
+  }
+
+  @media(max-width:480px){
+    .slide{padding:4vh 4vw}
+    .grid-2,.grid-3{grid-template-columns:1fr;gap:1.5vw}
+    .sb{max-width:100%}
+    .bl{width:5em;font-size:clamp(.7rem,2vw,.85rem)}
+    .nav{gap:.6em;padding:.3em .8em}
+  }
+
+  .hl{color:var(--gold)}
+  .hl-r{color:var(--red)}
+  .hl-b{color:var(--blue)}
+  .hl-g{color:var(--green)}
+  .mt1{margin-top:.8em}
+  .mt2{margin-top:1.5em}
+  .mb1{margin-bottom:.8em}
+
+  .center{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+  .scroll-content{flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding-top:3vh}
+</style>
+</head>
+<body>
+
+<div class="prog" id="prog"></div>
+<div class="noise"></div>
+
+<div class="slides" id="slides">
+
+  <!-- P1: Title -->
+  <div class="slide active" data-i="0">
+    <div class="center">
+      <div class="small" style="letter-spacing:.25em;color:var(--gold);margin-bottom:2em">北大光华管理学院 · 西安分院</div>
+      <div class="st" style="font-size:clamp(2.5rem,8vw,5rem);text-align:center">纵深中国</div>
+      <div class="accent-line" style="margin:1.2em auto"></div>
+      <div class="ss" style="text-align:center;max-width:80%;margin:0 auto">步履所至，皆为新知</div>
+      <div class="ss" style="text-align:center;margin-top:1em;font-size:clamp(.7rem,1.8vw,1rem);color:var(--text-dim)">分院非学位研学产品 · 方案汇报</div>
+      <div style="margin-top:2.5em;font-size:clamp(.7rem,1.8vw,1rem);color:var(--text-dim)">滕飞老师 审阅</div>
+    </div>
+  </div>
+
+  <!-- P2: 背景 -->
+  <div class="slide" data-i="1">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">为什么做这件事？</div>
+      <div class="ss">转型期企业家的真实需求</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="cl">问题一</div>
+          <div class="ct">看不清方向</div>
+          <div class="cb">传统模式失效，新机会在哪？企业家需要"看到别人在做什么"</div>
+        </div>
+        <div class="card">
+          <div class="cl">问题二</div>
+          <div class="ct">走不出圈子</div>
+          <div class="cb">信息茧房，不知道别的产业、别的区域的机会在哪</div>
+        </div>
+      </div>
+
+      <div class="mt2" style="display:flex;flex-wrap:wrap;gap:.4em">
+        <span class="tag tag-g">沃土调研10个点</span>
+        <span class="tag tag-b">延边模块经验</span>
+        <span class="tag tag-c">分院网络覆盖</span>
+        <span class="tag tag-g">校友企业资源</span>
+      </div>
+
+      <div class="sb-full mt1" style="color:var(--text-dim)">
+        校友和杭州企业家反馈：<span class="hl">"很想去看"</span>——需求真实存在
+      </div>
+    </div>
+  </div>
+
+  <!-- P3: 产品框架 -->
+  <div class="slide" data-i="2">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">产品框架</div>
+      <div class="ss">步履所至，皆为新知</div>
+
+      <div class="mb1" style="font-size:clamp(.85rem,2.2vw,1.2rem);font-weight:600">选点逻辑</div>
+      <div class="grid-2" style="margin-bottom:1em">
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem);color:var(--gold)">代表性产业</div><div class="cb">当地最具特色的产业集群</div></div>
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem);color:var(--blue)">转型样本</div><div class="cb">传统产业升级的典型案例</div></div>
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem);color:var(--cyan)">新经济样本</div><div class="cb">面向未来的创新企业</div></div>
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem);color:var(--green)">政府生态</div><div class="cb">当地营商环境与政策解读</div></div>
+      </div>
+
+      <div class="mb1" style="font-size:clamp(.85rem,2.2vw,1.2rem);font-weight:600">标准行程（2-3天）</div>
+      <div class="tl">
+        <div class="tli"><div class="tlt">Day 1</div><div class="tlb">下午到达 → 破冰 → 背景介绍</div></div>
+        <div class="tli"><div class="tlt">Day 2</div><div class="tlb">上午参访2-3家企业 → 下午政府/政研室系统讲解 → 晚上复盘</div></div>
+        <div class="tli"><div class="tlt">Day 3</div><div class="tlb">上午参访1-2家企业 → 下午总结 → 返程</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P4: 交付模式 -->
+  <div class="slide" data-i="3">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">轻量化交付模式</div>
+      <div class="ss">参照延边模块逻辑，但做得更轻</div>
+
+      <div class="grid-2" style="margin-bottom:1em">
+        <div class="card">
+          <div class="cl">行程设计</div>
+          <div class="cb">标准化模板 + 定制化调整</div>
+        </div>
+        <div class="card">
+          <div class="cl">企业对接</div>
+          <div class="cb">沃土已建立联系 + 校友网络</div>
+        </div>
+        <div class="card">
+          <div class="cl">政府对接</div>
+          <div class="cb">分院渠道 + 当地校友引荐</div>
+        </div>
+        <div class="card">
+          <div class="cl">后勤保障</div>
+          <div class="cb">第三方服务商外包</div>
+        </div>
+      </div>
+
+      <div class="qb">
+        <div class="qbt" style="font-size:clamp(.8rem,2vw,1.1rem);color:var(--gold)">核心原则</div>
+        <div class="cb" style="margin-top:.3em">不是一个人带队，而是建立可复制的交付体系。<br>分院运营团队为主要交付力量，教授/专家轮流带队。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P5: 分院网络2.0 -->
+  <div class="slide" data-i="4">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">与分院网络2.0的双向赋能</div>
+
+      <div class="grid-2" style="margin-bottom:1em">
+        <div class="card" style="border-left:3px solid var(--gold)">
+          <div class="cl" style="color:var(--gold)">分院 → 纵深中国</div>
+          <div class="cb">分院提供当地政府关系、企业资源、校友网络</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--cyan)">
+          <div class="cl" style="color:var(--cyan)">纵深中国 → 分院</div>
+          <div class="cb">研学活动增加分院运营密度，提升校友互动频率</div>
+        </div>
+      </div>
+
+      <div class="card" style="border:1px dashed var(--border);text-align:center;padding:1.2em">
+        <div class="sb-full" style="font-weight:600">
+          分院基础从<span class="hl">"节点（关系）"</span><br>升级为<span class="hl">"节点 + 内容"</span>
+        </div>
+        <div class="small mt1">所有模块项目选内容时，有丰富的调研内容库</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P6: 目标客户+商业模式 -->
+  <div class="slide" data-i="5">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">目标客户与商业模式</div>
+
+      <div class="st3" style="font-size:clamp(.8rem,2vw,1.1rem);color:var(--gold);margin-bottom:.5em">目标客群</div>
+      <div class="grid-2" style="margin-bottom:1em">
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">光华校友企业家</div><div class="cb">信任学校品牌，有转型需求</div></div>
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">分院企业家学员</div><div class="cb">持续学习需求</div></div>
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">EMBA/MBA校友</div><div class="cb">对深度内容有追求</div></div>
+        <div class="card"><div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">非校友企业家</div><div class="cb">通过校友推荐引入</div></div>
+      </div>
+
+      <div class="st3" style="font-size:clamp(.8rem,2vw,1.1rem);color:var(--gold);margin-bottom:.5em">定价参考</div>
+      <div class="grid-2">
+        <div class="card" style="border-left:3px solid var(--blue)">
+          <div class="cl" style="color:var(--blue)">标准版</div>
+          <div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">X元/人</div>
+          <div class="cb">企业参访+政府讲解+复盘讨论</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--gold)">
+          <div class="cl" style="color:var(--gold)">尊享版</div>
+          <div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">X元/人</div>
+          <div class="cb">标准版+私董会+一对一产业咨询</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P7: 潜在线路 -->
+  <div class="slide" data-i="6">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">首批潜在线路</div>
+
+      <div class="grid-2" style="margin-bottom:1em">
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div class="cl" style="color:var(--green)">衢州线</div>
+          <div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">新材料+IP经济转型</div>
+          <div class="cb">特种纸企业、卡游、上市公司</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--blue)">
+          <div class="cl" style="color:var(--blue)">杭州线</div>
+          <div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">数字经济+新消费</div>
+          <div class="cb">阿里系、新消费品牌</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--cyan)">
+          <div class="cl" style="color:var(--cyan)">深圳线</div>
+          <div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">硬科技+供应链</div>
+          <div class="cb">华为、大疆、华强北</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--red)">
+          <div class="cl" style="color:var(--red)">成都线</div>
+          <div class="ct" style="font-size:clamp(.75rem,1.8vw,1rem)">新消费+城市更新</div>
+          <div class="cb">新消费品牌、文创</div>
+        </div>
+      </div>
+
+      <div class="small" style="text-align:center;color:var(--text-dim)">
+        每条线路都有分院覆盖 + 已有资源基础
+      </div>
+    </div>
+  </div>
+
+  <!-- P8: 实施路径 -->
+  <div class="slide" data-i="7">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">实施路径</div>
+
+      <div class="tl">
+        <div class="tli">
+          <div class="tlt" style="color:var(--gold)">近期 · 战略会前</div>
+          <div class="tlb">← 明确方向<span class="hl">→ 约韩代玲</span>沟通可行性 → 选定试点城市</div>
+        </div>
+        <div class="tli">
+          <div class="tlt" style="color:var(--gold)">中期 · 战略会后至年底</div>
+          <div class="tlb">完成1次试点研学 → 收集反馈 → 建立SOP → 确定定价</div>
+        </div>
+        <div class="tli">
+          <div class="tlt" style="color:var(--gold)">长期 · 2027年</div>
+          <div class="tlb">拓展3-5条线路 → 可复制交付体系 → 纳入产品目录 → 探索与MBA/EMBA联动</div>
+        </div>
+      </div>
+
+      <div class="qb mt2">
+        <div class="qbt" style="font-size:clamp(.8rem,2vw,1.1rem);color:var(--gold)">MVP试点建议</div>
+        <div class="cb" style="margin-top:.3em">不等完美方案，先带1-2个企业家跑一个点试水，验证需求</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P9: 需要您支持 -->
+  <div class="slide" data-i="8">
+    <div class="scroll-content">
+      <div class="accent-line"></div>
+      <div class="st2">需要您支持</div>
+      <div class="ss">三个关键问题，想听听您的判断</div>
+
+      <div class="qb">
+        <div class="cl" style="color:var(--gold);margin-bottom:.3em">议题一</div>
+        <div class="qbt" style="font-size:clamp(.85rem,2.2vw,1.2rem)">战略定位</div>
+        <div class="cb">这个产品在分院非学位体系中的优先级如何？</div>
+      </div>
+      <div class="qb">
+        <div class="cl" style="color:var(--gold);margin-bottom:.3em">议题二</div>
+        <div class="qbt" style="font-size:clamp(.85rem,2.2vw,1.2rem)">韩代玲对接</div>
+        <div class="cb">战略会时能否帮我约团委韩代玲一起商量可行性？</div>
+      </div>
+      <div class="qb">
+        <div class="cl" style="color:var(--gold);margin-bottom:.3em">议题三</div>
+        <div class="qbt" style="font-size:clamp(.85rem,2.2vw,1.2rem)">资源投入</div>
+        <div class="cb">需要分配多少人力/预算来启动试点？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P10: End -->
+  <div class="slide" data-i="9">
+    <div class="center">
+      <div class="st" style="font-size:clamp(2rem,7vw,4rem);text-align:center">步履所至<br>皆为新知</div>
+      <div class="accent-line" style="margin:1.5em auto"></div>
+      <div class="ss" style="text-align:center;max-width:80%">期待您的指导和下一步推进方向</div>
+      <div class="small mt2">赵锦勇 · 2026年7月</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button class="nb" id="prev">‹</button>
+  <div class="nd" id="dots"></div>
+  <span class="pi" id="pi">1/10</span>
+  <button class="nb" id="next">›</button>
+</div>
+
+<script>
+  const s=document.querySelectorAll('.slide'),n=s.length;let c=0;
+  const d=document.getElementById('dots');
+  for(let i=0;i<n;i++){const o=document.createElement('div');o.className='ndot'+(i===0?' active':'');o.onclick=()=>g(i);d.appendChild(o)}
+  const pi=document.getElementById('pi'),pr=document.getElementById('prog');
+  function g(i){
+    if(i<0)i=0;if(i>=n)i=n-1;if(i===c)return;
+    s[c].classList.remove('active');s[i].classList.add('active');c=i;
+    document.querySelectorAll('.ndot').forEach((o,j)=>o.classList.toggle('active',j===c));
+    pi.textContent=(c+1)+'/'+n;pr.style.width=((c+1)/n*100)+'%';
+    document.querySelectorAll('.bf').forEach(b=>{b.style.width=c===1?b.dataset.w+'%':'0%'});
+  }
+  document.getElementById('prev').onclick=()=>g(c-1);
+  document.getElementById('next').onclick=()=>g(c+1);
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')g(c-1);if(e.key==='ArrowRight')g(c+1)});
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX});
+  document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-tx;if(Math.abs(dx)>50){if(dx<0)g(c+1);else g(c-1)}});
+  setTimeout(()=>{document.querySelectorAll('.bf').forEach(b=>{if(c===1)b.style.width=b.dataset.w+'%'})},300);
+</script>
+
+</body>
+</html>
