@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体验品信任品品牌构建 · 社交推荐落地路径</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e17;
+    --bg2: #0f1628;
+    --card: #131d35;
+    --card2: #182544;
+    --accent: #4fc3f7;
+    --accent2: #29b6f6;
+    --accent3: #81d4fa;
+    --gold: #ffd54f;
+    --green: #66bb6a;
+    --red: #ef5350;
+    --text: #e0e6f0;
+    --text2: #8899b4;
+    --text3: #5a6d8a;
+    --glow: 0 0 20px rgba(79,195,247,0.15);
+    --glow-accent: 0 0 30px rgba(79,195,247,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  /* Slide container */
+  .slides { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 5vh 8vw;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    overflow: hidden;
+  }
+  .slide.active { opacity: 1; visibility: visible; z-index: 10; }
+
+  /* Background decoration */
+  .slide::before {
+    content: ''; position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 40%, rgba(79,195,247,0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 60%, rgba(79,195,247,0.02) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .slide-content {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 1100px;
+    height: 100%; display: flex; flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Typography */
+  h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 900; letter-spacing: 0.02em; line-height: 1.25; }
+  h2 { font-size: clamp(1.6rem, 3.2vw, 2.8rem); font-weight: 700; letter-spacing: 0.01em; line-height: 1.3; }
+  h3 { font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 500; line-height: 1.4; }
+  p, li { font-size: clamp(0.9rem, 1.6vw, 1.25rem); line-height: 1.7; color: var(--text2); }
+  .accent { color: var(--accent); }
+  .gold { color: var(--gold); }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .text3 { color: var(--text3); }
+
+  /* Title slide */
+  .slide-title h1 { margin-bottom: 1.5rem; }
+  .slide-title .subtitle { font-size: clamp(1rem, 1.8vw, 1.4rem); color: var(--text2); margin-bottom: 2rem; }
+  .slide-title .meta { font-size: clamp(0.75rem, 1.1vw, 0.9rem); color: var(--text3); }
+
+  /* Accent line */
+  .accent-line {
+    width: 60px; height: 3px; background: var(--accent);
+    margin: 1.2rem 0 1.5rem; border-radius: 2px;
+    box-shadow: var(--glow);
+  }
+  .accent-line.centered { margin: 1.2rem auto 1.5rem; }
+
+  /* Cards */
+  .card-grid { display: grid; gap: 1.2rem; width: 100%; margin-top: 1rem; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .card {
+    background: linear-gradient(135deg, var(--card), var(--card2));
+    border: 1px solid rgba(79,195,247,0.1);
+    border-radius: 12px; padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); border-color: rgba(79,195,247,0.25); }
+  .card .icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+  .card h4 { font-size: clamp(0.9rem, 1.4vw, 1.1rem); font-weight: 700; margin-bottom: 0.4rem; }
+  .card p { font-size: clamp(0.75rem, 1.1vw, 0.9rem); line-height: 1.5; }
+
+  /* Steps / timeline */
+  .step-row { display: flex; gap: 0; width: 100%; margin-top: 1.5rem; }
+  .step-item { flex: 1; text-align: center; position: relative; }
+  .step-item:not(:last-child)::after {
+    content: '→'; position: absolute; right: -0.5rem; top: 0.8rem;
+    font-size: 1.5rem; color: var(--accent); opacity: 0.5;
+  }
+  .step-num {
+    width: 2.5rem; height: 2.5rem; border-radius: 50%;
+    background: var(--accent); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1rem; margin: 0 auto 0.5rem;
+    box-shadow: 0 0 15px rgba(79,195,247,0.3);
+  }
+  .step-label { font-size: clamp(0.75rem, 1.1vw, 0.9rem); color: var(--text2); }
+
+  /* Ladder / funnel */
+  .ladder { display: flex; flex-direction: column; gap: 0.4rem; width: 100%; max-width: 700px; margin: 1rem auto; }
+  .ladder-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.7rem 1.2rem; border-radius: 8px;
+    background: linear-gradient(135deg, var(--card), var(--card2));
+    border: 1px solid rgba(79,195,247,0.08);
+  }
+  .ladder-item .label { font-weight: 500; font-size: clamp(0.85rem, 1.2vw, 1rem); min-width: 100px; }
+  .ladder-item .desc { color: var(--text2); font-size: clamp(0.75rem, 1vw, 0.85rem); flex: 1; }
+  .ladder-item .arrow { color: var(--accent); font-size: 1.2rem; }
+
+  /* Table */
+  .table-wrap { width: 100%; overflow-x: auto; margin-top: 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(0.75rem, 1.1vw, 0.9rem); }
+  th { background: rgba(79,195,247,0.1); color: var(--accent); font-weight: 600; padding: 0.7rem 0.8rem; text-align: left; border-bottom: 1px solid rgba(79,195,247,0.15); }
+  td { padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(79,195,247,0.05); color: var(--text2); }
+  tr:hover td { background: rgba(79,195,247,0.03); }
+
+  /* Quote block */
+  .quote-block {
+    background: linear-gradient(135deg, rgba(79,195,247,0.06), rgba(79,195,247,0.02));
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem 2rem; margin: 1.5rem 0;
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .quote-block .source { display: block; margin-top: 0.8rem; color: var(--text3); font-size: 0.85rem; }
+
+  /* Checklist */
+  .checklist { list-style: none; margin-top: 0.8rem; }
+  .checklist li {
+    padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.6rem;
+    font-size: clamp(0.85rem, 1.3vw, 1.05rem); color: var(--text2);
+  }
+  .checklist .ck { color: var(--green); font-weight: 700; }
+  .checklist .cr { color: var(--red); font-weight: 700; }
+  .checklist .cb { color: var(--accent); font-weight: 700; }
+
+  /* Bullet list */
+  .bullets { list-style: none; margin-top: 0.5rem; }
+  .bullets li {
+    padding: 0.35rem 0; padding-left: 1.2rem; position: relative;
+    font-size: clamp(0.85rem, 1.3vw, 1.05rem); color: var(--text2);
+  }
+  .bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); opacity: 0.6; }
+
+  /* Highlight box */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(79,195,247,0.08), rgba(255,213,79,0.04));
+    border: 1px solid rgba(79,195,247,0.15);
+    border-radius: 12px; padding: 1.2rem 1.5rem; margin-top: 0.8rem;
+  }
+  .highlight-box p { font-size: clamp(0.85rem, 1.3vw, 1rem); }
+
+  /* Navigation */
+  .nav {
+    position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; align-items: center; gap: 0.6rem;
+    background: rgba(10,14,23,0.85); backdrop-filter: blur(12px);
+    padding: 0.5rem 1.2rem; border-radius: 30px;
+    border: 1px solid rgba(79,195,247,0.1);
+  }
+  .nav-btn {
+    width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    border: 1px solid rgba(79,195,247,0.2);
+    background: transparent; color: var(--text2);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,195,247,0.08); }
+  .page-indicator { color: var(--text3); font-size: 0.8rem; min-width: 3.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .dots { display: flex; gap: 0.3rem; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text3); cursor: pointer; transition: all 0.2s;
+  }
+  .dot.active { background: var(--accent); box-shadow: 0 0 8px rgba(79,195,247,0.4); width: 18px; border-radius: 3px; }
+  .dot:hover { background: var(--text2); }
+
+  /* Keyboard hint */
+  .key-hint { position: fixed; bottom: 5.5rem; left: 50%; transform: translateX(-50%); z-index: 99; color: var(--text3); font-size: 0.7rem; opacity: 0.5; letter-spacing: 0.05em; }
+
+  /* Section number */
+  .section-num {
+    font-size: clamp(0.75rem, 1vw, 0.85rem); color: var(--accent); letter-spacing: 0.1em;
+    margin-bottom: 0.5rem; font-weight: 500;
+  }
+
+  /* Two-column layout */
+  .two-col { display: flex; gap: 2rem; width: 100%; margin-top: 0.8rem; }
+  .two-col > * { flex: 1; }
+  .two-col h4 { font-size: clamp(0.9rem, 1.3vw, 1.1rem); margin-bottom: 0.5rem; }
+
+  /* Tag */
+  .tag {
+    display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px;
+    font-size: 0.75rem; font-weight: 500; margin-right: 0.3rem;
+  }
+  .tag-blue { background: rgba(79,195,247,0.15); color: var(--accent); }
+  .tag-green { background: rgba(102,187,106,0.15); color: var(--green); }
+  .tag-gold { background: rgba(255,213,79,0.15); color: var(--gold); }
+  .tag-red { background: rgba(239,83,80,0.15); color: var(--red); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+    .two-col { flex-direction: column; gap: 1rem; }
+    .step-row { flex-direction: column; gap: 0.8rem; }
+    .step-item:not(:last-child)::after { content: '↓'; right: auto; bottom: -0.7rem; top: auto; left: 50%; }
+    .nav { gap: 0.4rem; padding: 0.4rem 0.8rem; }
+    .dots { display: none; }
+  }
+
+  /* Scrollbar hide */
+  .slide-content { overflow-y: auto; scrollbar-width: none; }
+  .slide-content::-webkit-scrollbar { display: none; }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.active .slide-content > * { animation: fadeUp 0.5s ease forwards; }
+  .slide.active .slide-content > *:nth-child(2) { animation-delay: 0.05s; }
+  .slide.active .slide-content > *:nth-child(3) { animation-delay: 0.1s; }
+  .slide.active .slide-content > *:nth-child(4) { animation-delay: 0.15s; }
+  .slide.active .slide-content > *:nth-child(5) { animation-delay: 0.2s; }
+
+  /* Glow text */
+  .glow { text-shadow: 0 0 30px rgba(79,195,247,0.2); }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ============ SLIDE 1: TITLE ============ -->
+  <div class="slide slide-title active" data-index="0">
+    <div class="slide-content" style="text-align:center">
+      <div class="section-num" style="color:var(--text3)">体验品 · 信任品 · 品牌构建</div>
+      <h1 class="glow" style="font-size:clamp(2rem,4.5vw,3.8rem)">
+        品牌建立之前，<br><span class="accent">社交推荐就是你的品牌</span>
+      </h1>
+      <div class="accent-line centered"></div>
+      <p class="subtitle" style="max-width:700px;margin:0 auto">
+        教育、医疗、AI培训——体验品/信任品在品牌尚未建立时，<br>如何通过社交机制跨越信任鸿沟
+      </p>
+      <div style="margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <span class="tag tag-blue">社交推荐</span>
+        <span class="tag tag-green">社群信任</span>
+        <span class="tag tag-gold">品牌构建</span>
+        <span class="tag tag-red">避坑指南</span>
+      </div>
+      <div class="meta" style="margin-top:2.5rem">基于小勇 2026.7.30 晨间思考 · 续《教育作为体验品与信任品》</div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 2: THE PROBLEM ============ -->
+  <div class="slide" data-index="1">
+    <div class="slide-content">
+      <div class="section-num">一 · 核心追问</div>
+      <h2>品牌建立之前，<span class="accent">怎么办？</span></h2>
+      <div class="accent-line"></div>
+      <div class="two-col">
+        <div>
+          <h4 style="color:var(--accent)">已论证的命题</h4>
+          <ul class="bullets">
+            <li>教育是体验品 + 信任品</li>
+            <li>价格信号失效，广告效果有限</li>
+            <li>品牌即信任，复购验证信任</li>
+            <li>轻资产高毛利 <em>可能</em>，但信任积累需要时间</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="color:var(--gold)">未被回答的问题</h4>
+          <ul class="bullets">
+            <li>品牌需要时间，<strong>那在品牌建立之前怎么办？</strong></li>
+            <li>不能等信任建立了再开始——<strong>得边做边建</strong></li>
+            <li>答案：<span class="accent">通过社交机制跨越信任鸿沟</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:1.5rem">
+        <p style="color:var(--accent);font-weight:500">核心命题：体验品/信任品在品牌尚未建立时，如何通过社交推荐、社群网络、公益展示等低成本方式，建立信任传递的"基础设施"？</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: FOUR TRUST SOURCES ============ -->
+  <div class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="section-num">二 · 信任传递的底层机制</div>
+      <h2>信任的四种来源</h2>
+      <div class="accent-line"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>信任来源</th><th>传递速度</th><th>承载量</th><th>典型场景</th><th style="color:var(--accent)">效率</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>直接体验</strong></td><td>慢</td><td>单个</td><td>自己试听、试读</td><td style="color:var(--text3)">★☆☆☆☆</td></tr>
+            <tr style="background:rgba(79,195,247,0.04)"><td><strong style="color:var(--accent)">社交推荐</strong></td><td style="color:var(--accent)">中</td><td>1-10人</td><td>朋友推荐、同事介绍</td><td style="color:var(--accent)">★★★★☆</td></tr>
+            <tr><td><strong>专家背书</strong></td><td>快</td><td>10-100人</td><td>行业领袖、KOL推荐</td><td style="color:var(--gold)">★★★★☆</td></tr>
+            <tr><td><strong>品牌声誉</strong></td><td>极慢</td><td>无限</td><td>新东方、得到</td><td style="color:var(--text3)">★★☆☆☆</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="quote-block" style="margin-top:1rem">
+        <strong>社交推荐</strong>是品牌建立前效率最高的信任传递方式：比直接体验快（不用自己试），比专家背书真实（朋友不会骗我），比品牌建设成本低（不需要大规模广告投入）。
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: SIGNAL THEORY ============ -->
+  <div class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="section-num">二 · 信号理论视角</div>
+      <h2>为什么社交推荐<span class="accent">比广告有效</span></h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="icon">🛡️</div>
+          <h4>推荐人承担声誉风险</h4>
+          <p>推荐朋友去听课，如果课不好，推荐人的信誉受损。所以推荐人不会轻易推荐——推荐本身就是品质信号。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🤝</div>
+          <h4>接收者信任推荐人</h4>
+          <p>接收者相信推荐人不会拿自己的信誉开玩笑。社交推荐 ≈ 用自己的社交信用做担保，比任何广告都可信。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🎯</div>
+          <h4>匹配度天然筛选</h4>
+          <p>推荐人了解被推荐人的需求和水平。推荐比算法更精准——"你适合这个"比"这个很好"有效一百倍。</p>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:1rem;text-align:center">
+        <p style="font-size:clamp(0.9rem,1.3vw,1.05rem)">光华校友推荐比百度广告有效一百倍——<span class="accent">不是因为光华的名气，而是因为推荐人用自己的社交信用做了担保。</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: FOUR LAYERS ============ -->
+  <div class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="section-num">二 · 社交推荐四层次</div>
+      <h2>从 L1 私聊到 L4 裂变</h2>
+      <div class="accent-line"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>层次</th><th>信任强度</th><th>传播范围</th><th>关键动作</th></tr>
+          </thead>
+          <tbody>
+            <tr style="background:rgba(79,195,247,0.06)"><td><strong style="color:var(--accent)">L1：一对一私聊</strong></td><td style="color:var(--accent);font-weight:700">最高</td><td>1人</td><td>直接推荐，信任传递最完整</td></tr>
+            <tr><td><strong>L2：小群推荐</strong></td><td>高</td><td>3-20人</td><td>群内口碑，附带讨论和验证</td></tr>
+            <tr><td><strong>L3：公开分享</strong></td><td>中</td><td>20-200人</td><td>朋友圈、公众号，信任稀释但范围扩大</td></tr>
+            <tr><td><strong>L4：裂变传播</strong></td><td>低</td><td>200+人</td><td>激励转发，信任最弱但范围最大</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box" style="margin-top:0.8rem">
+        <p><strong style="color:var(--accent)">关键洞察：</strong>品牌建立初期，你不需要L4的广度，你需要L1的深度。<br><span class="accent">10个被深度信任的学员推荐，远好于1000个被轻度看到的路人。</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: TRUST STOCK ============ -->
+  <div class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="section-num">三 · AI辅导品牌构建</div>
+      <h2>你的<span class="accent">信任存量</span>评估</h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-3">
+        <div class="card" style="border-color:rgba(79,195,247,0.2)">
+          <div class="icon">🎓</div>
+          <h4>光华身份</h4>
+          <p>北大光华西安分院运营总监，接触企业家、MBA学员、校友网络。信任基础：机构背书 + 个人职业身份。</p>
+        </div>
+        <div class="card" style="border-color:rgba(255,213,79,0.2)">
+          <div class="icon">🧑‍🤝‍🧑</div>
+          <h4>个人社交网络</h4>
+          <p>AI小组成员、读书会、骑友群、酒友圈。信任基础：共同经历 + 持续互动。已登记75人，分布各层级。</p>
+        </div>
+        <div class="card" style="border-color:rgba(102,187,106,0.2)">
+          <div class="icon">📝</div>
+          <h4>内容输出</h4>
+          <p>已产出大量飞书文档、HTML演示文稿、GitHub Pages公开内容。信任基础：能力展示 + 持续输出。</p>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:0.8rem;text-align:center">
+        <p style="color:var(--accent);font-weight:500">你不是从零开始的。信任存量可以支撑"轻启动"——从现有社交节点开始，不需要广告投放，不需要大规模品牌建设。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: THREE RINGS ============ -->
+  <div class="slide" data-index="6">
+    <div class="slide-content">
+      <div class="section-num">三 · 品牌构建路径</div>
+      <h2><span class="accent">三环策略</span>：从深度到广度</h2>
+      <div class="accent-line"></div>
+      <div class="two-col">
+        <div>
+          <div class="card" style="margin-bottom:0.8rem;border-color:rgba(79,195,247,0.3)">
+            <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem">
+              <span style="font-size:1.5rem">🔵</span>
+              <h4 style="margin:0;color:var(--accent)">内环：核心学员</h4>
+            </div>
+            <p>10-20人深度体验，极致交付。目标：让他们的体验好到愿意主动推荐。</p>
+          </div>
+          <div class="card" style="margin-bottom:0.8rem;border-color:rgba(255,213,79,0.3)">
+            <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem">
+              <span style="font-size:1.5rem">🟡</span>
+              <h4 style="margin:0;color:var(--gold)">中环：社群网络</h4>
+            </div>
+            <p>50-200人学习型社群。社群的核心不是内容，是连接——让学员之间互相产生价值。</p>
+          </div>
+          <div class="card" style="border-color:rgba(102,187,106,0.3)">
+            <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem">
+              <span style="font-size:1.5rem">🟢</span>
+              <h4 style="margin:0;color:var(--green)">外环：公开内容</h4>
+            </div>
+            <p>扩大影响力，建立"AI+教育"专业形象。内容为信任服务，不是为流量服务。</p>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+          <div style="width:200px;height:200px;border-radius:50%;border:2px solid rgba(79,195,247,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:radial-gradient(circle at center,rgba(79,195,247,0.05) 0%,transparent 70%)">
+            <div style="position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(255,213,79,0.15);transform:scale(0.7)"></div>
+            <div style="position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(102,187,106,0.1);transform:scale(0.45)"></div>
+            <span style="font-size:1.2rem;color:var(--accent);font-weight:700">信任</span>
+            <span style="font-size:0.75rem;color:var(--text3)">深度 · 密度 · 广度</span>
+          </div>
+          <div style="margin-top:1rem;text-align:center">
+            <p style="font-size:0.8rem;color:var(--text3)">🔵 内环 · 🟡 中环 · 🟢 外环</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: TRUST LADDER ============ -->
+  <div class="slide" data-index="7">
+    <div class="slide-content">
+      <div class="section-num">三 · 信任阶梯</div>
+      <h2>从免费到<span class="accent">信任</span></h2>
+      <div class="accent-line"></div>
+      <p style="margin-bottom:0.5rem">体验品/信任品的最大挑战：消费者在没有信任之前不愿意付费，但不提供服务无法建立信任。</p>
+      <div class="ladder">
+        <div class="ladder-item"><span class="label">免费内容</span><span class="arrow">→</span><span class="desc">建立认知</span></div>
+        <div class="ladder-item"><span class="label">公益讲座</span><span class="arrow">→</span><span class="desc">验证能力</span></div>
+        <div class="ladder-item"><span class="label">低价体验课</span><span class="arrow">→</span><span class="desc">建立信任</span></div>
+        <div class="ladder-item"><span class="label">小班课程</span><span class="arrow">→</span><span class="desc">深度体验</span></div>
+        <div class="ladder-item"><span class="label">深度辅导</span><span class="arrow">→</span><span class="desc">口碑传播</span></div>
+        <div class="ladder-item"><span class="label">年度会员</span><span class="arrow">→</span><span class="desc">持续价值</span></div>
+      </div>
+      <div class="highlight-box" style="margin-top:0.8rem">
+        <p>关键原则：每一级阶梯都要设计"推荐机制"——不是消费后才说"欢迎推荐"，而是在用户获得价值的那一刻，顺其自然地让他想到"这个对我朋友也有用"。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 9: RECOMMENDATION ENGINE ============ -->
+  <div class="slide" data-index="8">
+    <div class="slide-content">
+      <div class="section-num">四 · 推荐系统设计</div>
+      <h2>"推荐引擎"<span class="accent">四步设计</span></h2>
+      <div class="accent-line"></div>
+      <div class="step-row">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-label" style="font-weight:600;color:var(--accent);margin-bottom:0.3rem">识别节点</div>
+          <div class="step-label" style="font-size:0.8rem">谁是超级用户？<br>如何触达？</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-label" style="font-weight:600;color:var(--accent);margin-bottom:0.3rem">设计理由</div>
+          <div class="step-label" style="font-size:0.8rem">聚焦"适合谁"<br>而非"多好"</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-label" style="font-weight:600;color:var(--accent);margin-bottom:0.3rem">构建回路</div>
+          <div class="step-label" style="font-size:0.8rem">推荐→体验→反馈<br>→再推荐的正循环</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-label" style="font-weight:600;color:var(--accent);margin-bottom:0.3rem">量化效果</div>
+          <div class="step-label" style="font-size:0.8rem">记录来源、分析转化<br>优化路径</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:1.5rem">
+        <p>推荐不是"让用户帮你转发"，而是<strong style="color:var(--accent)">设计可分享的体验</strong>。用户最有动力推荐的时候，不是"你让我帮忙"的时候，而是"自己获得了超出预期的价值，忍不住想分享"的时候。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 10: FOUR PATHS ============ -->
+  <div class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="section-num">四 · 你的推荐路径</div>
+      <h2>四条 <span class="accent">社交推荐路径</span></h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-4">
+        <div class="card" style="border-color:rgba(79,195,247,0.2)">
+          <div class="icon">🎓</div>
+          <h4>光华校友圈</h4>
+          <p>信任基础最强——"光华校友"本身就是信任信号。推荐转化率最高，覆盖范围有限。</p>
+          <div style="margin-top:0.4rem"><span class="tag tag-blue">转化率最高</span></div>
+        </div>
+        <div class="card" style="border-color:rgba(102,187,106,0.2)">
+          <div class="icon">🤖</div>
+          <h4>AI小组成员</h4>
+          <p>已建立共学关系。设计"邀请朋友一起学"机制，每个成员带1-2人，实现自生长。</p>
+          <div style="margin-top:0.4rem"><span class="tag tag-green">自生长</span></div>
+        </div>
+        <div class="card" style="border-color:rgba(255,213,79,0.2)">
+          <div class="icon">📚</div>
+          <h4>读书会/兴趣群</h4>
+          <p>信任来自共同兴趣。从"AI主题分享"切入，适合做"公益讲座→体验课"转化漏斗。</p>
+          <div style="margin-top:0.4rem"><span class="tag tag-gold">转化漏斗</span></div>
+        </div>
+        <div class="card" style="border-color:rgba(239,83,80,0.2)">
+          <div class="icon">🏢</div>
+          <h4>分院合作伙伴</h4>
+          <p>企业客户、政府关系。合作方推荐 ≈ 权威背书，适合做企业AI培训定向推荐。</p>
+          <div style="margin-top:0.4rem"><span class="tag tag-red">信任最强</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 11: COMMUNITY ============ -->
+  <div class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="section-num">五 · 社群信任放大器</div>
+      <h2>社群 <span class="accent">vs</span> 个人品牌</h2>
+      <div class="accent-line"></div>
+      <div class="two-col">
+        <div class="card" style="border-color:rgba(79,195,247,0.15)">
+          <h4 style="color:var(--text3)">个人品牌（线性）</h4>
+          <div style="display:flex;align-items:center;gap:0.5rem;margin:1rem 0;flex-wrap:wrap">
+            <span class="tag tag-blue">你</span>
+            <span style="color:var(--text3)">→</span>
+            <span class="tag tag-blue">学员A</span>
+            <span style="color:var(--text3)">→</span>
+            <span class="tag tag-blue">A的推荐</span>
+          </div>
+          <p style="font-size:0.85rem">信任传递路径单一，依赖个人持续输出，一旦中断信任链断裂。</p>
+        </div>
+        <div class="card" style="border-color:rgba(102,187,106,0.2)">
+          <h4 style="color:var(--green)">社群（网络状）</h4>
+          <div style="display:flex;align-items:center;gap:0.5rem;margin:1rem 0;flex-wrap:wrap;justify-content:center">
+            <span class="tag tag-green">你</span>
+            <span style="color:var(--text3)">↔</span>
+            <span class="tag tag-green">学员A</span>
+            <span style="color:var(--text3)">↔</span>
+            <span class="tag tag-green">学员B</span>
+            <span style="color:var(--text3)">↔</span>
+            <span class="tag tag-green">学员C</span>
+          </div>
+          <p style="font-size:0.85rem">当学员之间互相产生价值，社群价值超过"内容"本身。信任从"学员信任你"变为"学员信任这个社群"。</p>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:0.8rem">
+        <p><strong style="color:var(--green)">网络效应的力量：</strong>社群的价值不在于你提供了多少内容，而在于学员之间产生了多少连接。一个互相连接的社群，信任稳定性远高于个人品牌。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 12: COMMUNITY MODELS ============ -->
+  <div class="slide" data-index="11">
+    <div class="slide-content">
+      <div class="section-num">五 · 社群模式对比</div>
+      <h2>三种社群 <span class="accent">信任模型</span></h2>
+      <div class="accent-line"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模式</th><th>代表</th><th>信任基础</th><th>规模化难度</th><th>适合阶段</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>中心化</strong><br><span style="font-size:0.75rem;color:var(--text3)">老师→学员</span></td><td>得到、混沌</td><td>老师个人品牌</td><td>低（标准化）</td><td>初期</td></tr>
+            <tr><td><strong>去中心化</strong><br><span style="font-size:0.75rem;color:var(--text3)">学员↔学员</span></td><td>生财有术</td><td>社群氛围+筛选</td><td>高（需文化）</td><td>中期</td></tr>
+            <tr style="background:rgba(79,195,247,0.06)"><td><strong style="color:var(--accent)">混合型</strong><br><span style="font-size:0.75rem;color:var(--text3)">老师+学员共学</span></td><td style="color:var(--text3)">尚无明确标杆</td><td style="color:var(--accent)">老师引导+学员互助</td><td>中</td><td style="color:var(--accent)">全程</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="quote-block" style="margin-top:0.8rem">
+        <strong>AI小组最适合的模式</strong>：混合型。你提供引导和框架，学员之间形成互助和共学。"老师"的角色不是知识传递者，而是<strong style="color:var(--accent)">学习环境的设计者</strong>。
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 13: COMMUNITY KEY ACTIONS ============ -->
+  <div class="slide" data-index="12">
+    <div class="slide-content">
+      <div class="section-num">五 · 社群建设关键动作</div>
+      <h2>三个 <span class="accent">关键动作</span></h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="icon">🚪</div>
+          <h4>设定筛选门槛</h4>
+          <p>邀请制+审核制——不是"能不能进来"，而是"进来的人是谁推荐的"。<strong style="color:var(--red)">一个破坏者造成的信任损失，需要十个贡献者才能弥补。</strong></p>
+        </div>
+        <div class="card">
+          <div class="icon">🔄</div>
+          <h4>设计互动机制</h4>
+          <p>每周固定分享（轮值制）、每月线下活动、问题互助。让学员之间产生横向连接，而不是只有学员和你的纵向连接。</p>
+        </div>
+        <div class="card">
+          <div class="icon">📊</div>
+          <h4>建立信任证据体系</h4>
+          <p>学员案例、推荐记录、社群活跃度——这些是"可验证的信任信号"，比你说"我讲得好"有说服力一百倍。</p>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:0.8rem">
+        <p>论坛/公益活动的价值：对潜在用户是"免费试吃"，对你是"持续展示交付质量"——不需要每次都说服一个新用户信任你。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 14: PITFALLS ============ -->
+  <div class="slide" data-index="13">
+    <div class="slide-content">
+      <div class="section-num">六 · 避坑指南</div>
+      <h2>四条最容易踩的 <span class="red">坑</span></h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-2">
+        <div class="card" style="border-color:rgba(239,83,80,0.2)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.5rem;color:var(--red)">⚠️</span>
+            <h4 style="color:var(--red);margin:0">把推荐等同于"转发"</h4>
+          </div>
+          <p>用户不愿意推荐，不是机制问题，是产品价值还没好到让用户愿意用自己的社交信用做担保。问题不在推荐机制，在<strong>产品体验</strong>。</p>
+        </div>
+        <div class="card" style="border-color:rgba(255,213,79,0.2)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.5rem;color:var(--gold)">⚠️</span>
+            <h4 style="color:var(--gold);margin:0">过早追求规模</h4>
+          </div>
+          <p>信任积累是指数曲线。前3-6个月专注深度体验，衡量指标不是"学员数量"，是"推荐率"和"复购率"。推荐率超50%再考虑规模化。</p>
+        </div>
+        <div class="card" style="border-color:rgba(102,187,106,0.2)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.5rem;color:var(--green)">⚠️</span>
+            <h4 style="color:var(--green);margin:0">忽视主观性负面口碑</h4>
+          </div>
+          <p>体验品：即使你做得很好，也一定会有人觉得不好。"不好"的传播动力是"好"的3倍。明确目标客群，主动收集反馈并第一时间沟通。</p>
+        </div>
+        <div class="card" style="border-color:rgba(79,195,247,0.2)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.5rem;color:var(--accent)">⚠️</span>
+            <h4 style="color:var(--accent);margin:0">把活跃度当价值</h4>
+          </div>
+          <p>高活跃度 ≠ 高价值。衡量社群的核心不是"消息数量"，而是"深度讨论比例"和"有价值输出频率"。设定沉默权——不需要每个人都发言，但需要每个人都有收获。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 15: CASES ============ -->
+  <div class="slide" data-index="14">
+    <div class="slide-content">
+      <div class="section-num">七 · 最佳实践案例</div>
+      <h2>四个 <span class="accent">可借鉴的案例</span></h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-2">
+        <div class="card" style="border-color:rgba(79,195,247,0.15)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.2rem;color:var(--gold)">💰</span>
+            <h4 style="margin:0">生财有术</h4>
+          </div>
+          <p><strong>模式：</strong>亦仁个人IP → 严格筛选 → 社群氛围 → 网络效应<br>
+          <strong>可借鉴：</strong>筛选机制是信任的"过滤器"；社群氛围是筛选出来的，不是设计出来的。<br>
+          <strong style="color:var(--red)">不可复制：</strong>全職运营 + 长期信任积累</p>
+        </div>
+        <div class="card" style="border-color:rgba(255,213,79,0.15)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.2rem;color:var(--accent)">📱</span>
+            <h4 style="margin:0">得到</h4>
+          </div>
+          <p><strong>模式：</strong>罗振宇个人IP → 得到APP → 订阅制<br>
+          <strong>可借鉴：</strong>信任从个人转移到品牌/平台；订阅制是最理想的体验品变现模式。<br>
+          <strong style="color:var(--red)">不可复制：</strong>启动资金和媒体资源</p>
+        </div>
+        <div class="card" style="border-color:rgba(102,187,106,0.15)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.2rem;color:var(--green)">🛠️</span>
+            <h4 style="margin:0">小鹅通</h4>
+          </div>
+          <p><strong>模式：</strong>"工具即信任"——每个用户都是信任节点<br>
+          <strong>可迁移：</strong>学员的成果展示比你的宣传更有说服力。设计"学员作品展示"机制。</p>
+        </div>
+        <div class="card" style="border-color:rgba(239,83,80,0.15)">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+            <span style="font-size:1.2rem;color:var(--accent)">🌊</span>
+            <h4 style="margin:0">混沌学园</h4>
+          </div>
+          <p><strong>模式：</strong>大课→平台→研习社→同学会<br>
+          <strong>可借鉴：</strong>产品分层；线下连接是信任的"放大器"——线上聊天100次不如线下见面1次。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 16: ACTION PLAN ============ -->
+  <div class="slide" data-index="15">
+    <div class="slide-content">
+      <div class="section-num">八 · 行动框架</div>
+      <h2>三个阶段 <span class="accent">行动计划</span></h2>
+      <div class="accent-line"></div>
+      <div class="card-grid card-grid-3">
+        <div class="card" style="border-color:rgba(79,195,247,0.2)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+            <h4 style="color:var(--accent);margin:0">0-3个月</h4>
+            <span class="tag tag-blue">信任启动</span>
+          </div>
+          <p style="font-size:0.8rem"><strong>验证"你的AI辅导是否值得推荐"</strong></p>
+          <ul class="bullets" style="font-size:0.8rem">
+            <li>1-2期小班体验课（3-5人），推荐制</li>
+            <li>收集推荐理由 + 建立教学内容矩阵</li>
+            <li>启动公益AI讲座（每月1期）</li>
+          </ul>
+          <p style="font-size:0.75rem;color:var(--text3);margin-top:0.4rem">指标：推荐率≥50% · 转化率≥10%</p>
+        </div>
+        <div class="card" style="border-color:rgba(255,213,79,0.2)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+            <h4 style="color:var(--gold);margin:0">3-6个月</h4>
+            <span class="tag tag-gold">信任放大</span>
+          </div>
+          <p style="font-size:0.8rem"><strong>建立推荐→体验→反馈正循环</strong></p>
+          <ul class="bullets" style="font-size:0.8rem">
+            <li>"推荐人激励"机制（荣誉+身份）</li>
+            <li>建立学员案例库 + 社群共学模式</li>
+            <li>设计信任阶梯产品线</li>
+          </ul>
+          <p style="font-size:0.75rem;color:var(--text3);margin-top:0.4rem">指标：复购率≥40% · 月新增≥10人</p>
+        </div>
+        <div class="card" style="border-color:rgba(102,187,106,0.2)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+            <h4 style="color:var(--green);margin:0">6-12个月</h4>
+            <span class="tag tag-green">信任规模化</span>
+          </div>
+          <p style="font-size:0.8rem"><strong>个人品牌→社群品牌信任转移</strong></p>
+          <ul class="bullets" style="font-size:0.8rem">
+            <li>培养学员讲师，信任从"你"扩散到"你们"</li>
+            <li>打造品牌活动（AI论坛、共学营）</li>
+            <li>建立信任网络数据系统</li>
+          </ul>
+          <p style="font-size:0.75rem;color:var(--text3);margin-top:0.4rem">指标：月均增长≥20% · 推荐转化率≥30%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 17: CRITICAL REVIEW ============ -->
+  <div class="slide" data-index="16">
+    <div class="slide-content">
+      <div class="section-num">九 · 批判性综合</div>
+      <h2>你对了什么？<span class="accent">忽略了什么？</span></h2>
+      <div class="accent-line"></div>
+      <div class="two-col">
+        <div>
+          <div class="card" style="border-color:rgba(102,187,106,0.2)">
+            <h4 style="color:var(--green)">✅ 你对了</h4>
+            <ul class="checklist">
+              <li><span class="ck">✓</span> 社交推荐是体验品最有效的信任传递方式</li>
+              <li><span class="ck">✓</span> 论坛/公益活动是低成本展示窗口</li>
+              <li><span class="ck">✓</span> 学员网络推荐比广告可信</li>
+              <li><span class="ck">✓</span> 社群建设是信任放大器</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="border-color:rgba(239,83,80,0.2)">
+            <h4 style="color:var(--red)">❌ 你忽略了</h4>
+            <ul class="checklist">
+              <li><span class="cr">✗</span> 社交推荐有"信任成本"——推荐人在消耗社交信用</li>
+              <li><span class="cr">✗</span> 社群不是"建"出来的，是"长"出来的</li>
+              <li><span class="cr">✗</span> 推荐不是"激励出来的"，是"值得的"</li>
+              <li><span class="cr">✗</span> 线上推荐 ≠ 线下信任——需要"身体在场"的体验</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="quote-block" style="margin-top:1rem">
+        <strong>修正后的命题：</strong>体验品/信任品的品牌建立，核心不是"品牌建设"，而是"信任传递"。社交推荐是最有效的信任传递方式，但前提是：你的产品体验足够好，好到让推荐人愿意用自己的社交信用做担保。<br>
+        <span class="source">—— 论坛、推荐、社群不是"营销手段"，而是"信任基础设施"</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 18: FINAL ============ -->
+  <div class="slide slide-title" data-index="17">
+    <div class="slide-content" style="text-align:center">
+      <div class="section-num" style="color:var(--text3)">十 · 结语</div>
+      <h1 class="glow" style="font-size:clamp(2rem,4vw,3.5rem)">
+        在品牌建立之前，<br>
+        <span class="accent">社交推荐就是你的品牌</span>
+      </h1>
+      <div class="accent-line centered"></div>
+      <p style="max-width:650px;margin:1rem auto;font-size:clamp(1rem,1.6vw,1.2rem);color:var(--text2)">
+        每一次推荐，都是一次信任传递。<br>
+        每一次信任传递，都是一次品牌建设。
+      </p>
+      <p style="max-width:700px;margin:2rem auto;font-size:clamp(0.9rem,1.3vw,1.05rem);color:var(--text3)">
+        你不需要等品牌建立后再开始——<br>
+        你只需要让每一次体验好到让别人愿意推荐。
+      </p>
+      <div style="margin-top:2.5rem;display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap">
+        <span class="tag tag-blue">社交推荐</span>
+        <span class="tag tag-green">社群信任</span>
+        <span class="tag tag-gold">信任基础设施</span>
+        <span class="tag tag-red">从信任到推荐</span>
+      </div>
+      <div class="meta" style="margin-top:2.5rem">基于小勇 2026.7.30 晨间思考 · 共18页</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="key-hint">← 方向键 / 滚轮 →</div>
+<div class="nav" id="nav">
+  <button class="nav-btn" onclick="prevSlide()" title="上一页">◀</button>
+  <div class="dots" id="dots"></div>
+  <span class="page-indicator" id="pageIndicator">1 / 18</span>
+  <button class="nav-btn" onclick="nextSlide()" title="下一页">▶</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // Dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= total) index = total - 1;
+    if (index === current) return;
+    slides[current].classList.remove('active');
+    slides[index].classList.add('active');
+    current = index;
+    updateUI();
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  function updateUI() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    document.getElementById('pageIndicator').textContent = (current + 1) + ' / ' + total;
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  });
+
+  // Wheel
+  let wheelTimeout;
+  document.addEventListener('wheel', e => {
+    if (wheelTimeout) return;
+    wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 600);
+    if (e.deltaY > 0) nextSlide();
+    else prevSlide();
+  }, { passive: true });
+
+  // Touch
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dy) > Math.abs(dx)) {
+      if (dy < -30) nextSlide();
+      else if (dy > 30) prevSlide();
+    } else {
+      if (dx < -30) nextSlide();
+      else if (dx > 30) prevSlide();
+    }
+  }, { passive: true });
+</script>
+</body>
+</html>
