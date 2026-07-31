@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>"哇时刻"设计 · 价值传递中的可感知与可信任</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --gold: #d4a84b;
+    --gold-light: #f0d080;
+    --gold-glow: rgba(212, 168, 75, 0.15);
+    --text: #e8e4dd;
+    --text-dim: #8a867e;
+    --border: rgba(212, 168, 75, 0.2);
+    --slide-w: min(90vw, 1200px);
+    --slide-h: min(80vh, 720px);
+    --red: #c0392b;
+    --blue: #2d6a9f;
+    --green: #2d6a4f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(212, 168, 75, 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(45, 106, 79, 0.02) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 3px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .deck { position: relative; width: var(--slide-w); height: var(--slide-h); z-index: 1; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 5% 7%;
+    opacity: 0; transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(20px) scale(0.98);
+    pointer-events: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+    border: 1px solid var(--border);
+    box-shadow: 0 0 80px rgba(0,0,0,0.4);
+  }
+  .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .nav {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 10;
+  }
+  .nav-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); cursor: pointer; transition: all 0.3s; border: 1px solid transparent;
+  }
+  .nav-dot.active { background: var(--gold); box-shadow: 0 0 12px var(--gold-glow); border-color: var(--gold); }
+  .nav-dot:hover { background: rgba(255,255,255,0.3); }
+  .arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 1px solid var(--border); background: rgba(0,0,0,0.4);
+    color: var(--text-dim); font-size: 20px; cursor: pointer; transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+  }
+  .arrow:hover { background: rgba(212, 168, 75, 0.15); color: var(--gold); border-color: var(--gold); }
+  .arrow-left { left: -60px; } .arrow-right { right: -60px; }
+  .arrow:active { transform: translateY(-50%) scale(0.95); }
+  .counter { position: absolute; top: 20px; right: 24px; font-size: 13px; color: var(--text-dim); font-weight: 300; letter-spacing: 1px; z-index: 5; }
+  .counter span { color: var(--gold); }
+
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem); font-weight: 900;
+    line-height: 1.25; margin-bottom: 0.3em; letter-spacing: 0.02em;
+  }
+  h1 .gold { color: var(--gold); }
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 700;
+    margin-bottom: 0.5em; letter-spacing: 0.02em;
+  }
+  h2 .gold { color: var(--gold); }
+  h3 {
+    font-size: clamp(1rem, 1.6vw, 1.3rem); font-weight: 500;
+    color: var(--gold); margin-bottom: 0.5em; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .subtitle { font-size: clamp(1rem, 1.8vw, 1.5rem); font-weight: 300; color: var(--text-dim); line-height: 1.6; max-width: 80%; margin-bottom: 1.5em; }
+  .tagline {
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem); line-height: 1.7; color: var(--text); font-weight: 300;
+    padding: 1.2em 1.5em; background: rgba(212, 168, 75, 0.06);
+    border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; margin-bottom: 1.2em;
+  }
+  .divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin: 0.8em 0 1.2em; }
+  .accent-line { width: 100%; height: 1px; background: linear-gradient(90deg, var(--border), transparent); margin: 0.8em 0; }
+  .corner { position: absolute; top: 16px; left: 20px; font-size: 11px; color: rgba(255,255,255,0.08); letter-spacing: 0.1em; font-weight: 300; z-index: 5; }
+  .badge { display: inline-block; padding: 0.2em 0.8em; border: 1px solid var(--border); border-radius: 20px; font-size: clamp(0.65rem, 0.8vw, 0.75rem); color: var(--gold); letter-spacing: 0.05em; margin-bottom: 0.8em; }
+
+  .cover { background: linear-gradient(135deg, #0d0d14 0%, #161620 50%, #0a0a0f 100%); position: relative; overflow: hidden; }
+  .cover::before { content: ''; position: absolute; top: -30%; right: -10%; width: 60%; height: 80%; background: radial-gradient(ellipse, rgba(212, 168, 75, 0.06), transparent 70%); pointer-events: none; }
+  .cover::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.3; }
+  .cover h1 { margin-bottom: 0.1em; }
+  .cover .role { font-size: clamp(1rem, 1.5vw, 1.2rem); color: var(--text-dim); font-weight: 300; letter-spacing: 0.15em; margin-bottom: 1.5em; }
+  .cover .hint { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-size: 13px; color: rgba(255,255,255,0.15); letter-spacing: 0.2em; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+
+  .closing { text-align: center; justify-content: center; align-items: center; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 0.5em; }
+  .col { display: flex; flex-direction: column; gap: 12px; }
+  .col-title { font-size: clamp(0.95rem, 1.4vw, 1.2rem); font-weight: 700; color: var(--gold); margin-bottom: 0.3em; }
+
+  .item-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .item-list li { font-size: clamp(0.8rem, 1.1vw, 0.95rem); line-height: 1.5; padding-left: 1.2em; position: relative; color: var(--text); }
+  .item-list li::before { content: '◆'; position: absolute; left: 0; color: var(--gold); font-size: 0.5em; top: 0.5em; }
+
+  .type-card {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 1.2em 1.2em 1em; display: flex; flex-direction: column; gap: 0.3em;
+  }
+  .type-card .icon { font-size: 1.4em; margin-bottom: 0.1em; }
+  .type-card .tname { font-size: clamp(0.85rem, 1.2vw, 1rem); font-weight: 700; color: var(--gold); }
+  .type-card .tmech { font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: var(--text-dim); font-style: italic; margin-bottom: 0.2em; }
+  .type-card .tdesc { font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: var(--text); line-height: 1.5; }
+
+  .principle-list { display: flex; flex-direction: column; gap: 8px; }
+  .principle-list .p-item { display: flex; align-items: flex-start; gap: 10px; font-size: clamp(0.8rem, 1.1vw, 0.95rem); line-height: 1.5; }
+  .principle-list .p-num { color: var(--gold); font-weight: 700; min-width: 1.5em; }
+
+  .case-card {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 1em 1.2em;
+  }
+  .case-card .cname { font-size: clamp(0.85rem, 1.1vw, 0.95rem); font-weight: 700; color: var(--gold); margin-bottom: 0.3em; }
+  .case-card .cdesc { font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: var(--text-dim); line-height: 1.5; }
+
+  .scene-table { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0.5em; }
+  .scene-row { display: contents; }
+  .scene-cell {
+    font-size: clamp(0.7rem, 0.9vw, 0.8rem); padding: 0.5em 0.8em;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 6px;
+    display: flex; flex-direction: column; gap: 0.2em;
+  }
+  .scene-cell .sc { color: var(--gold); font-weight: 500; }
+  .scene-cell .sd { color: var(--text-dim); }
+
+  @media (max-width: 768px) {
+    .slide { padding: 6% 5%; }
+    .two-col { grid-template-columns: 1fr; }
+    .scene-table { grid-template-columns: 1fr; }
+    .subtitle { max-width: 100%; }
+    .arrow { display: none; }
+  }
+
+  .slide-content { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(212,168,75,0.2) transparent; }
+  .slide-content::-webkit-scrollbar { width: 4px; }
+  .slide-content::-webkit-scrollbar-track { background: transparent; }
+  .slide-content::-webkit-scrollbar-thumb { background: rgba(212,168,75,0.2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+  <!-- SLIDE 1: Cover -->
+  <div class="slide cover active" data-index="0">
+    <div class="corner">WOW MOMENT</div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <h1>"哇时刻"设计</h1>
+      <div class="role">价值传递中的可感知与可信任</div>
+      <div class="divider"></div>
+      <div class="tagline" style="max-width:85%;">
+        "讲清楚"只能解决认知问题，<br>
+        <strong>"感受到了"</strong>才能解决信任和行动问题。
+      </div>
+      <div style="margin-top:1em;display:flex;gap:12px;flex-wrap:wrap;">
+        <span class="badge">即时创造型</span>
+        <span class="badge">诊断洞察型</span>
+        <span class="badge">亲手实践型</span>
+        <span class="badge">赠予价值型</span>
+      </div>
+    </div>
+    <div class="hint">← → 或点击翻页</div>
+  </div>
+
+  <!-- SLIDE 2: 引言 -->
+  <div class="slide" data-index="1">
+    <div class="counter"><span>01</span> / 10</div>
+    <div class="corner">WHY</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>为什么"哇时刻"比"讲清楚"更重要</h3>
+      <h2>讲述没有真实的体验，<br>而超预期的体验<span class="gold">才是魔术</span></h2>
+      <div class="divider"></div>
+      <div class="tagline" style="font-size:clamp(1rem,1.5vw,1.2rem);">
+        "讲述没有真实的体验，而这种超预期的体验则是让他们有情感触动，<br>并且有行动的动力的重要方式。"<br>
+        <span style="color:var(--text-dim);font-size:0.8em;">—— 赵婉婷</span>
+      </div>
+      <div class="two-col" style="gap:16px;margin-top:0.3em;">
+        <div class="col">
+          <div class="case-card">
+            <div class="cname">你的核心武器</div>
+            <div class="cdesc">HTML信息页——现场用对方熟悉的话题，立即生成有深度、优雅的演示页。同时覆盖三种"哇"：即时创造 + 赠予价值 + 诊断洞察。</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="case-card">
+            <div class="cname">本文目标</div>
+            <div class="cdesc">系统性地梳理"哇时刻"的设计方法，辅以现实中的最佳实践，让你可以随时调用不同方式，在不同场景中创造不同的超预期体验。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: 核心框架 -->
+  <div class="slide" data-index="2">
+    <div class="counter"><span>02</span> / 10</div>
+    <div class="corner">FRAMEWORK</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>核心框架</h3>
+      <h2>"哇时刻"的<span class="gold">四种类型</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:12px;">
+        <div class="type-card">
+          <div class="icon">✨</div>
+          <div class="tname">即时创造型</div>
+          <div class="tmech">"你亲眼看到它从无到有"</div>
+          <div class="tdesc">从0到1的创造过程在对方眼前发生，结果超出预期。震撼、魔术感。适用于初次接触、展示能力。</div>
+        </div>
+        <div class="type-card">
+          <div class="icon">🔍</div>
+          <div class="tname">诊断洞察型</div>
+          <div class="tmech">"你发现了我自己都没意识到的问题"</div>
+          <div class="tdesc">用结构化问题让对方对自己有"新发现"。信服、受重视。适用于深度咨询、建立专业信任。</div>
+        </div>
+        <div class="type-card">
+          <div class="icon">👐</div>
+          <div class="tname">亲手实践型</div>
+          <div class="tmech">"你自己做到了，而且效果出奇好"</div>
+          <div class="tdesc">让对方在你的指导下完成一个"小任务"。成就感、自信。适用于培训、教学、长期合作。</div>
+        </div>
+        <div class="type-card">
+          <div class="icon">🎁</div>
+          <div class="tname">赠予价值型</div>
+          <div class="tmech">"你给了我一个马上能用的东西"</div>
+          <div class="tdesc">见面结束后给对方一个"马上能用"的工具或模板。感激、欠人情。适用于社交破冰、关系建设。</div>
+        </div>
+      </div>
+      <div class="accent-line" style="margin-top:0.8em;"></div>
+      <div style="font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--text-dim);margin-top:0.3em;text-align:center;">
+        最好的"哇时刻"不是"我看你表演"，而是"我参与了，我被触动了，我得到了"
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 即时创造型 -->
+  <div class="slide" data-index="3">
+    <div class="counter"><span>03</span> / 10</div>
+    <div class="corner">TYPE 1</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>✨ 即时创造型</h3>
+      <h2>你的核心武器，<span class="gold">但不止HTML</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:14px;">
+        <div class="col">
+          <div class="case-card" style="border-color:rgba(212,168,75,0.3);">
+            <div class="cname">方法一：AI个人助理15分钟搭建</div>
+            <div class="cdesc">现场用对方手机/电脑，打开AI平台，搭建一个针对他个人需求的"迷你助理"——选一个他立刻能感受到价值的小场景。15分钟内从"听说过AI"到"拥有自己的AI助理"。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法二：数据可视化瞬间</div>
+            <div class="cdesc">现场输入对方的数据（日程、客户数据、时间分配），生成可视化图表。"原来我的时间是这样花的"——被照见的感觉比说教有效。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法三：现场定制化方案生成</div>
+            <div class="cdesc">用AI生成一份针对他具体问题的"解决方案框架"，10-15页。不是给通用建议，是给"只属于你"的建议。</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.95rem;">核心原则</div>
+          <div class="principle-list">
+            <div class="p-item"><span class="p-num">1</span>速度要快——超过15分钟就开始失去"魔术感"</div>
+            <div class="p-item"><span class="p-num">2</span>结果要美——视觉质量决定第一印象</div>
+            <div class="p-item"><span class="p-num">3</span>过程要透明——边做边解说，不要黑箱操作</div>
+            <div class="p-item"><span class="p-num">4</span>让用户参与——让他输入参数，有"共创"感</div>
+          </div>
+          <div class="accent-line" style="margin-top:0.5em;"></div>
+          <div style="font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--text-dim);">
+            💡 <span style="color:var(--gold);">优化方向：</span>完成后让对方自己翻一遍，而不是你演示给他看
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 诊断洞察型 -->
+  <div class="slide" data-index="4">
+    <div class="counter"><span>04</span> / 10</div>
+    <div class="corner">TYPE 2</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>🔍 诊断洞察型</h3>
+      <h2>让对方觉得<span class="gold">"你懂我"</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:14px;">
+        <div class="col">
+          <div class="case-card" style="border-color:rgba(212,168,75,0.3);">
+            <div class="cname">方法一：结构化诊断访谈</div>
+            <div class="cdesc">5-7个层层递进的问题，30分钟让对方对自己有"新发现"。你在30分钟里说出了他3年没想明白的事——这是最高级的信任建立。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法二：AI驱动的个人画像</div>
+            <div class="cdesc">输入对方背景信息，AI生成"个人画像"或"问题诊断报告"。对方看到"AI对我的判断"——如果准，信任度瞬间提升。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法三：对比分析</div>
+            <div class="cdesc">现场对比"你现在的状态"和"理想状态"，或"你"和"行业标杆"。可视化差距，让"需要改变"变成"可感知的差距"。</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.95rem;">核心原则</div>
+          <div class="principle-list">
+            <div class="p-item"><span class="p-num">1</span>对方是主角——不是"我在分析你"，是"你通过我的引导发现自己"</div>
+            <div class="p-item"><span class="p-num">2</span>结论要可验证——"我猜你早上起来会先看手机"——对方说"对"，信任就建立一点</div>
+            <div class="p-item"><span class="p-num">3</span>不要只说问题，要给路径——诊断后必须紧接着给一个"下一步"</div>
+          </div>
+          <div class="accent-line" style="margin-top:0.5em;"></div>
+          <div style="font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--text-dim);">
+            💡 <span style="color:var(--gold);">参考：</span>麦肯锡"初始假设"诊断、光辉国际领导力测评、HubSpot网站营销评分
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 亲手实践型 -->
+  <div class="slide" data-index="5">
+    <div class="counter"><span>05</span> / 10</div>
+    <div class="corner">TYPE 3</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>👐 亲手实践型</h3>
+      <h2>让对方<span class="gold">自己做到</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:14px;">
+        <div class="col">
+          <div class="case-card" style="border-color:rgba(212,168,75,0.3);">
+            <div class="cname">方法一：手把手工作坊（30分钟版）</div>
+            <div class="cdesc">选一个"3步就能完成"的任务，对方操作你指导，完成后让对方展示成果。"我自己也做到了"——成就感比说教强100倍。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法二：AI沙盘推演</div>
+            <div class="cdesc">让对方提出真实商业问题，用AI模拟推演不同决策的结果。"原来我的决策会导致这个结果"——模拟本身就是"哇"。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法三：即时反馈成就系统</div>
+            <div class="cdesc">设置"即时反馈机制"，让对方看到自己的进步。"我在进步"——这个感知本身就是动力。</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.95rem;">核心原则</div>
+          <div class="principle-list">
+            <div class="p-item"><span class="p-num">1</span>成功门槛要低——第一次任务一定要确保100%成功</div>
+            <div class="p-item"><span class="p-num">2</span>指导要少，做到要多——你的作用是"护航"，不是"代劳"</div>
+            <div class="p-item"><span class="p-num">3</span>完成后要"庆祝"——"你看，你做到了！"庆祝本身也是"哇"的一部分</div>
+          </div>
+          <div class="accent-line" style="margin-top:0.5em;"></div>
+          <div style="font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--text-dim);">
+            💡 <span style="color:var(--gold);">参考：</span>iPhone发布会现场演示、商学院688商业模拟营、Duolingo连胜机制
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 赠予价值型 -->
+  <div class="slide" data-index="6">
+    <div class="counter"><span>06</span> / 10</div>
+    <div class="corner">TYPE 4</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>🎁 赠予价值型</h3>
+      <h2>让对方带着<span class="gold">"礼物"</span>离开</h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:14px;">
+        <div class="col">
+          <div class="case-card" style="border-color:rgba(212,168,75,0.3);">
+            <div class="cname">方法一：工具/模板赠予</div>
+            <div class="cdesc">见面后48小时内，给对方一个"定制化"的工具，和他当天的交流内容相关。对方会记住这个"额外给的东西"——持续提醒他你的价值。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法二：知识卡片系列</div>
+            <div class="cdesc">每次见面后发3-5张"知识卡片"，一页一个核心观点。对方可以收藏、转发、反复看——你的价值持续存在。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">方法三：主动引荐</div>
+            <div class="cdesc">如果对方有需要，主动写一封引荐信，把他推荐给有价值的人。"你愿意用社交信用为我背书"——这是最高级的信任赠予。</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.95rem;">核心原则</div>
+          <div class="principle-list">
+            <div class="p-item"><span class="p-num">1</span>超出预期——给的东西要"比对方预期的多一点点"</div>
+            <div class="p-item"><span class="p-num">2</span>个性化——不是"群发"，是"只为你准备的"</div>
+            <div class="p-item"><span class="p-num">3</span>无附带条件——"这是给你的，不需要回报"</div>
+            <div class="p-item"><span class="p-num">4</span>时机要准——刚见面后的48小时是黄金窗口</div>
+          </div>
+          <div class="accent-line" style="margin-top:0.5em;"></div>
+          <div style="font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--text-dim);">
+            💡 <span style="color:var(--gold);">参考：</span>SaaS免费试用、咨询公司免费诊断报告、光华校友推荐
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 最佳实践案例 -->
+  <div class="slide" data-index="7">
+    <div class="counter"><span>07</span> / 10</div>
+    <div class="corner">BEST PRACTICES</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>最佳实践案例</h3>
+      <h2>从真实世界学习<span class="gold">"哇"的设计</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:10px;">
+        <div class="col">
+          <div class="case-card" style="border-color:rgba(212,168,75,0.3);">
+            <div class="cname">Steve Jobs · iPhone发布会</div>
+            <div class="cdesc">节奏设计：铺垫（三个革命性产品）→ 反转（其实是一个）→ 演示（现场）→ 亲手（看，这样滑动）→ 升华（世界不一样了）。制造期待→满足期待→超越期待。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">特斯拉 · 试驾体验</div>
+            <div class="cdesc">设计一串"哇"：开门自动→启动无声→加速推背→自动驾驶。每个环节一个冲击点，不能只靠一个"哇"。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">IDEO · 原型文化</div>
+            <div class="cdesc">不做PPT，直接做原型。客户说"想要更好的购物车"——3天做出一个。原型的粗糙程度不重要，"能看到"比"能描述"重要100倍。</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="case-card">
+            <div class="cname">HubSpot · 营销评分</div>
+            <div class="cdesc">免费工具=最好的销售。输入网站网址，自动生成评分报告。用"诊断"代替"推销"——他得到了价值，你得到了他的信任。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">Spotify · 年度Wrapped</div>
+            <div class="cdesc">用户自己的数据重新呈现。个性化+"你听了XX小时，等于从北京飞到纽约XX次"的趣味对比+可分享设计。被照见的感觉。</div>
+          </div>
+          <div class="case-card">
+            <div class="cname">SaaS · 免费试用</div>
+            <div class="cdesc">降低体验门槛：注册后30秒能用→引导式体验→5分钟内见效。让对方"先试，再决定"。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 实战场景对照 -->
+  <div class="slide" data-index="8">
+    <div class="counter"><span>08</span> / 10</div>
+    <div class="corner">SCENARIOS</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>实战场景对照</h3>
+      <h2>不同场景，<span class="gold">不同"哇"</span></h2>
+      <div class="divider"></div>
+      <div class="scene-table">
+        <div class="scene-cell"><span class="sc">初次见面/破冰</span><span class="sd">赠予价值型：HTML信息页+知识卡片</span></div>
+        <div class="scene-cell"><span class="sc">深度咨询/第二次见面</span><span class="sd">诊断洞察型：结构化诊断访谈</span></div>
+        <div class="scene-cell"><span class="sc">AI培训/教学</span><span class="sd">亲手实践型：手把手工作坊</span></div>
+        <div class="scene-cell"><span class="sc">产品介绍/演示</span><span class="sd">即时创造型：现场方案生成</span></div>
+        <div class="scene-cell"><span class="sc">长期客户/会员</span><span class="sd">组合使用：定期诊断+赠予工具</span></div>
+        <div class="scene-cell"><span class="sc">社交活动/聚会</span><span class="sd">即时创造型：快速Demo</span></div>
+        <div class="scene-cell"><span class="sc">校友会/正式场合</span><span class="sd">诊断洞察型+赠予价值型</span></div>
+        <div class="scene-cell" style="border-color:rgba(212,168,75,0.2);">
+          <span class="sc" style="color:var(--gold);">🌟 你的HTML信息页</span>
+          <span class="sd" style="color:var(--text);">同时覆盖三种"哇"：即时创造+赠予价值+诊断洞察</span>
+        </div>
+      </div>
+      <div class="accent-line" style="margin-top:0.8em;"></div>
+      <div style="font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--text-dim);margin-top:0.3em;text-align:center;">
+        <span style="color:var(--gold);">核心原则：</span>降低体验门槛，快速见效，让用户自己参与
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Closing -->
+  <div class="slide closing" data-index="9">
+    <div class="counter"><span>09</span> / 10</div>
+    <div class="corner">NEXT STEP</div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+      <div class="badge" style="margin-bottom:1em;">"哇时刻"工具箱</div>
+      <h2 style="margin-bottom:0.5em;">你的产品不只是"你提供什么"，<br>还包括<span class="gold">"对方如何发现自己需要它"</span></h2>
+      <div class="tagline" style="max-width:75%;font-size:clamp(0.95rem,1.4vw,1.2rem);text-align:center;border-left-color:transparent;border:1px solid rgba(212,168,75,0.15);">
+        最好的销售不是"我告诉你你需要我"，<br>
+        而是<strong>"你体验过之后，自己决定你需要我"</strong>
+      </div>
+      <div class="accent-line" style="width:30%;margin:1.5em auto;"></div>
+      <div style="font-size:clamp(0.75rem,1vw,0.9rem);color:var(--text-dim);max-width:70%;line-height:1.8;">
+        本周行动：<br>
+        ① 标准化HTML信息页生成流程为"3步操作"<br>
+        ② 设计2个诊断型问题框架（5-7个问题）<br>
+        ③ 准备3个15分钟Demo脚本
+      </div>
+      <div style="margin-top:1.5em;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+        <span class="badge" style="border-color:var(--gold);">即时创造</span>
+        <span class="badge" style="border-color:var(--gold);">诊断洞察</span>
+        <span class="badge" style="border-color:var(--gold);">亲手实践</span>
+        <span class="badge" style="border-color:var(--gold);">赠予价值</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav" id="nav"></div>
+  <button class="arrow arrow-left" id="prev">‹</button>
+  <button class="arrow arrow-right" id="next">›</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const nav = document.getElementById('nav');
+  let current = 0;
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goTo(i));
+    nav.appendChild(dot);
+  }
+  function goTo(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= total) idx = total - 1;
+    if (idx === current) return;
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    current = idx;
+  }
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  });
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+  });
+  document.querySelector('.deck').addEventListener('click', (e) => {
+    if (e.target.closest('.arrow') || e.target.closest('.nav-dot')) return;
+    if (current < total - 1) goTo(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
