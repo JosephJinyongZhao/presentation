@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人理性与家族集体 · 浙江二代"躺平"与潮汕"抱团"背后的制度逻辑</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f; --bg2: #111118; --bg3: #1a1a24;
+    --gold: #d4a84b; --gold-light: #f0d080;
+    --gold-glow: rgba(212, 168, 75, 0.15);
+    --text: #e8e4dd; --text-dim: #8a867e;
+    --border: rgba(212, 168, 75, 0.2);
+    --slide-w: min(90vw, 1200px); --slide-h: min(80vh, 720px);
+    --blue: #4a7fb5; --green: #4a8f6f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(212, 168, 75, 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(74, 127, 181, 0.02) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 3px);
+    pointer-events: none; z-index: 0;
+  }
+  .deck { position: relative; width: var(--slide-w); height: var(--slide-h); z-index: 1; }
+  .slide {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+    padding: 5% 7%; opacity: 0; transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(20px) scale(0.98); pointer-events: none;
+    border-radius: 12px; background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+    border: 1px solid var(--border); box-shadow: 0 0 80px rgba(0,0,0,0.4);
+  }
+  .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .nav {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 10;
+  }
+  .nav-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
+  .nav-dot.active { background: var(--gold); box-shadow: 0 0 12px var(--gold-glow); border-color: var(--gold); }
+  .nav-dot:hover { background: rgba(255,255,255,0.3); }
+  .arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+    width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--border);
+    background: rgba(0,0,0,0.4); color: var(--text-dim); font-size: 20px; cursor: pointer;
+    transition: all 0.3s; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+  }
+  .arrow:hover { background: rgba(212, 168, 75, 0.15); color: var(--gold); border-color: var(--gold); }
+  .arrow-left { left: -60px; } .arrow-right { right: -60px; }
+  .arrow:active { transform: translateY(-50%) scale(0.95); }
+  .counter { position: absolute; top: 20px; right: 24px; font-size: 13px; color: var(--text-dim); font-weight: 300; letter-spacing: 1px; z-index: 5; }
+  .counter span { color: var(--gold); }
+  .corner { position: absolute; top: 16px; left: 20px; font-size: 11px; color: rgba(255,255,255,0.08); letter-spacing: 0.1em; font-weight: 300; z-index: 5; }
+  .badge { display: inline-block; padding: 0.2em 0.8em; border: 1px solid var(--border); border-radius: 20px; font-size: clamp(0.65rem, 0.8vw, 0.75rem); color: var(--gold); letter-spacing: 0.05em; margin-bottom: 0.8em; }
+
+  h1 { font-family: 'Noto Serif SC', serif; font-size: clamp(2.2rem, 4.5vw, 3.8rem); font-weight: 900; line-height: 1.25; margin-bottom: 0.3em; letter-spacing: 0.02em; }
+  h1 .gold { color: var(--gold); }
+  h2 { font-family: 'Noto Serif SC', serif; font-size: clamp(1.5rem, 2.8vw, 2.4rem); font-weight: 700; margin-bottom: 0.5em; letter-spacing: 0.02em; }
+  h2 .gold { color: var(--gold); }
+  h2 .blue { color: var(--blue); }
+  h2 .green { color: var(--green); }
+  h3 { font-size: clamp(1rem, 1.6vw, 1.3rem); font-weight: 500; color: var(--gold); margin-bottom: 0.5em; letter-spacing: 0.05em; text-transform: uppercase; }
+  .subtitle { font-size: clamp(1rem, 1.8vw, 1.5rem); font-weight: 300; color: var(--text-dim); line-height: 1.6; max-width: 80%; margin-bottom: 1.5em; }
+  .tagline {
+    font-size: clamp(1rem, 1.6vw, 1.3rem); line-height: 1.7; color: var(--text); font-weight: 300;
+    padding: 1em 1.5em; background: rgba(212, 168, 75, 0.06);
+    border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; margin-bottom: 1em;
+  }
+  .tagline-sm { font-size: clamp(0.85rem, 1.2vw, 1rem); line-height: 1.6; }
+  .divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin: 0.6em 0 1em; }
+  .accent-line { width: 100%; height: 1px; background: linear-gradient(90deg, var(--border), transparent); margin: 0.8em 0; }
+  .slide-content { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(212,168,75,0.2) transparent; }
+  .slide-content::-webkit-scrollbar { width: 4px; }
+  .slide-content::-webkit-scrollbar-track { background: transparent; }
+  .slide-content::-webkit-scrollbar-thumb { background: rgba(212,168,75,0.2); border-radius: 2px; }
+
+  .cover { background: linear-gradient(135deg, #0d0d14 0%, #161620 50%, #0a0a0f 100%); position: relative; overflow: hidden; }
+  .cover::before { content: ''; position: absolute; top: -30%; right: -10%; width: 60%; height: 80%; background: radial-gradient(ellipse, rgba(212, 168, 75, 0.06), transparent 70%); pointer-events: none; }
+  .cover::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.3; }
+  .cover h1 { margin-bottom: 0.1em; }
+  .cover .role { font-size: clamp(0.9rem, 1.3vw, 1.1rem); color: var(--text-dim); font-weight: 300; letter-spacing: 0.15em; margin-bottom: 1.5em; }
+  .cover .hint { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-size: 13px; color: rgba(255,255,255,0.15); letter-spacing: 0.2em; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+  .closing { text-align: center; justify-content: center; align-items: center; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 0.3em; }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  .col-title { font-size: clamp(0.9rem, 1.3vw, 1.1rem); font-weight: 700; color: var(--gold); margin-bottom: 0.2em; }
+
+  .item-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .item-list li { font-size: clamp(0.75rem, 1vw, 0.9rem); line-height: 1.5; padding-left: 1.2em; position: relative; color: var(--text); }
+  .item-list li::before { content: '◆'; position: absolute; left: 0; color: var(--gold); font-size: 0.5em; top: 0.5em; }
+
+  .card {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 1em 1.2em;
+  }
+  .card .ctitle { font-size: clamp(0.8rem, 1.1vw, 0.95rem); font-weight: 700; color: var(--gold); margin-bottom: 0.2em; }
+  .card .cbody { font-size: clamp(0.7rem, 0.9vw, 0.82rem); color: var(--text-dim); line-height: 1.5; }
+
+  .comp-card {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 1em 1.2em; display: flex; flex-direction: column; gap: 0.2em;
+  }
+  .comp-card .clabel { font-size: clamp(0.65rem, 0.8vw, 0.75rem); color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .comp-card .cname { font-size: clamp(0.95rem, 1.4vw, 1.2rem); font-weight: 700; }
+  .comp-card .cname.zj { color: var(--blue); }
+  .comp-card .cname.cs { color: var(--green); }
+  .comp-card .cdesc { font-size: clamp(0.7rem, 0.9vw, 0.82rem); color: var(--text-dim); line-height: 1.5; }
+
+  .principle-list { display: flex; flex-direction: column; gap: 6px; }
+  .principle-list .p-item { display: flex; align-items: flex-start; gap: 8px; font-size: clamp(0.75rem, 1vw, 0.9rem); line-height: 1.5; }
+  .principle-list .p-num { color: var(--gold); font-weight: 700; min-width: 1.5em; }
+
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0.2em; }
+  .grid-4 .gitem {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px; padding: 0.6em 0.8em;
+  }
+  .grid-4 .gitem .gn { font-size: clamp(0.7rem, 0.9vw, 0.82rem); font-weight: 500; color: var(--gold); }
+  .grid-4 .gitem .gd { font-size: clamp(0.65rem, 0.8vw, 0.75rem); color: var(--text-dim); }
+
+  @media (max-width: 768px) {
+    .slide { padding: 6% 5%; } .two-col { grid-template-columns: 1fr; } .grid-4 { grid-template-columns: 1fr; }
+    .subtitle { max-width: 100%; } .arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+  <!-- SLIDE 1: Cover -->
+  <div class="slide cover active" data-index="0">
+    <div class="corner">ZHEJIANG vs CHAOSHAN</div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <h1>个人理性与家族集体</h1>
+      <div class="role">浙江二代"躺平"与潮汕"抱团"背后的制度逻辑</div>
+      <div class="divider"></div>
+      <div class="tagline" style="max-width:85%;font-size:clamp(0.95rem,1.4vw,1.2rem);">
+        "浙江二代很多躺平租厂房，的确是个人的最优选择，<br>但可能不是一个家族的最优选择。"<br>
+        <span style="color:var(--text-dim);font-size:0.8em;">—— 张俞</span>
+      </div>
+      <div style="margin-top:1em;display:flex;gap:12px;flex-wrap:wrap;">
+        <span class="badge" style="border-color:var(--blue);color:var(--blue);">浙江 · 个体理性</span>
+        <span class="badge" style="border-color:var(--green);color:var(--green);">潮汕 · 家族集体</span>
+        <span class="badge">制度经济学</span>
+        <span class="badge">二代接班</span>
+      </div>
+    </div>
+    <div class="hint">← → 或点击翻页</div>
+  </div>
+
+  <!-- SLIDE 2: 引言 -->
+  <div class="slide" data-index="1">
+    <div class="counter"><span>01</span> / 11</div>
+    <div class="corner">INTRODUCTION</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>引言</h3>
+      <h2>个人最优 vs <span class="gold">家族最优</span></h2>
+      <div class="divider"></div>
+      <div class="tagline" style="font-size:clamp(0.9rem,1.3vw,1.1rem);">
+        "个体理性导致集体非理性"——这是浙江二代接班问题的核心矛盾。<br>
+        对比的是潮汕模式：多子、抱团、共同利他——<br>
+        规则和制度是多次博弈的结果，潮汕群体经历了多次历史周期冲击，<br>
+        形成了稳固而有韧性的底层制度。
+      </div>
+      <div class="two-col" style="gap:12px;">
+        <div class="card" style="border-color:rgba(74,127,181,0.3);">
+          <div class="ctitle" style="color:var(--blue);">三个核心追问</div>
+          <div class="cbody">
+            1. 为什么浙江和潮汕的商业文化如此不同？<br>
+            2. "个人最优"和"家族最优"的矛盾有多深？<br>
+            3. 两种模式在今天各自面临什么挑战？
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(74,143,111,0.3);">
+          <div class="ctitle" style="color:var(--green);">核心命题</div>
+          <div class="cbody">
+            差异不是"先进 vs 落后"<br>
+            是"适应不同环境的两种制度安排"<br>
+            浙江适应市场化环境<br>
+            潮汕适应高风险环境
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: 浙江模式 -->
+  <div class="slide" data-index="2">
+    <div class="counter"><span>02</span> / 11</div>
+    <div class="corner">ZHEJIANG MODEL</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>浙江模式</h3>
+      <h2>个体理性的<span class="blue">商业深耕</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:12px;">
+        <div class="col">
+          <div class="col-title" style="font-size:0.9rem;">历史基因</div>
+          <div class="card" style="padding:0.6em 0.8em;">
+            <div class="cbody">
+              <strong style="color:var(--gold);">鸡毛换糖 → 全民皆商</strong><br>
+              人均耕地极少 → 被迫从事工商业<br>
+              计划经济边缘化 → 体制外生长<br>
+              改革开放先发 → "靠自己"的信念
+            </div>
+          </div>
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(74,127,181,0.2);">
+            <div class="ctitle" style="color:var(--blue);font-size:0.8rem;">核心特征：个体本位</div>
+            <div class="cbody" style="font-size:0.75rem;">
+              分散化 · 市场化 · 个体化 · 流动性<br>
+              每个家庭只做一个环节，通过市场交易形成产业链
+            </div>
+          </div>
+          <div style="font-size:clamp(0.65rem,0.8vw,0.75rem);color:var(--text-dim);">
+            💡 浙江每7个人就有一个"老板" · 约60%的二代不愿接班
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.9rem;">二代"躺平"的结构性原因</div>
+          <div class="principle-list">
+            <div class="p-item"><span class="p-num">1</span><span><strong>边际收益递减</strong>——从零到一收益极高，从一到十收益大幅下降</span></div>
+            <div class="p-item"><span class="p-num">2</span><span><strong>机会成本高</strong>——有能力就有更多选择，做企业不是唯一路径</span></div>
+            <div class="p-item"><span class="p-num">3</span><span><strong>风险不对称</strong>——父辈光脚不怕穿鞋，二代穿鞋怕输光</span></div>
+            <div class="p-item"><span class="p-num">4</span><span><strong>制度成本</strong>——代际传承面临高额税收、利益分配、治理转型</span></div>
+            <div class="p-item"><span class="p-num">5</span><span><strong>价值观变化</strong>——二代更看重生活质量，不认同"做企业就是一切"</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 潮汕模式 -->
+  <div class="slide" data-index="3">
+    <div class="counter"><span>03</span> / 11</div>
+    <div class="corner">CHAOSHAN MODEL</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>潮汕模式</h3>
+      <h2>家族集体的<span class="green">制度韧性</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:12px;">
+        <div class="col">
+          <div class="col-title" style="font-size:0.9rem;">历史基因</div>
+          <div class="card" style="padding:0.6em 0.8em;">
+            <div class="cbody">
+              <strong style="color:var(--gold);">下南洋 → 生存共同体</strong><br>
+              侨乡传统：海外潮汕人1500万，是本土3倍<br>
+              海洋压力：台风、海盗、战乱 → 筛选能抱团的人<br>
+              宗族延续：祠堂、族谱、族规 → 经济互助组织<br>
+              多子逻辑：风险分散，家族成员越多越安全
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.9rem;">核心特征：集体本位</div>
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(74,143,111,0.2);">
+            <div class="ctitle" style="color:var(--green);font-size:0.8rem;">制度优势</div>
+            <div class="cbody" style="font-size:0.75rem;">
+              <strong>风险分散</strong>——多子多线作战，家族整体风险降低<br>
+              <strong>信任成本低</strong>——家族内部几乎零成本融资<br>
+              <strong>资本积累快</strong>——"一句话"就够了，不需要银行<br>
+              <strong>传承机制成熟</strong>——多子意味着"总有一个愿意接"
+            </div>
+          </div>
+          <div style="font-size:clamp(0.65rem,0.8vw,0.75rem);color:var(--text-dim);">
+            💡 海外潮汕人控制东南亚约50%零售贸易 · 泰国前20富豪中潮汕裔占60%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 核心张力 -->
+  <div class="slide" data-index="4">
+    <div class="counter"><span>04</span> / 11</div>
+    <div class="corner">TENSION</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>核心张力</h3>
+      <h2>个人最优 <span class="gold">vs</span> 家族最优</h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:12px;">
+        <div class="col">
+          <div class="col-title" style="font-size:0.9rem;">囚徒困境中的博弈</div>
+          <div class="card" style="padding:0.6em 0.8em;">
+            <div class="cbody" style="font-size:0.75rem;">
+              <strong>个体躺平</strong> → 个人最优（无风险有收益），家族次优（企业终止）<br>
+              <strong>个体接班</strong> → 个人次优（高风险高付出），家族最优（企业延续）<br>
+              <strong>合作努力</strong> → 集体最优<br><br>
+              在没有外部制度约束的情况下，理性个体选择"躺平"是必然的。
+            </div>
+          </div>
+          <div class="card" style="padding:0.6em 0.8em;">
+            <div class="ctitle" style="font-size:0.8rem;">为什么浙江没形成潮汕式家族制度？</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              产业结构不同（轻工业小规模不需要大资本）<br>
+              历史路径不同（被边缘化反促个体崛起）<br>
+              家庭结构不同（独生子女政策更严格）<br>
+              制度环境不同（正式制度更完善，降低依赖家族的必要性）
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-title" style="font-size:0.9rem;">两种模式的各自困境</div>
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(74,127,181,0.2);">
+            <div class="ctitle" style="color:var(--blue);font-size:0.8rem;">浙江困境</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              代际传承困难，大量企业"没人接"<br>
+              过度个体化导致社会资本薄弱<br>
+              独生子女政策放大接班问题
+            </div>
+          </div>
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(74,143,111,0.2);">
+            <div class="ctitle" style="color:var(--green);font-size:0.8rem;">潮汕困境</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              多子结构可能导致"分家"后碎片化<br>
+              家族内斗可能消耗企业资源<br>
+              圈内信任太强，圈外信任太弱，限制规模<br>
+              集体主义可能压制个人创新
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 正反案例 -->
+  <div class="slide" data-index="5">
+    <div class="counter"><span>05</span> / 11</div>
+    <div class="corner">CASES</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>正反案例</h3>
+      <h2>成功与失败的<span class="gold">经验教训</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:10px;">
+        <div class="col">
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(74,143,111,0.3);">
+            <div class="ctitle" style="color:var(--green);">✅ 方太集团 · 家族传承典范</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              茅理翔让儿子茅忠群从零创建方太品牌，不是"接班"是"创业"。<br>
+              <strong>关键：</strong>给了二代选择权 + 建立现代治理结构 + 家族与企业分开。<br>
+              "你可以不接，但如果你接，我们按新规则来。"
+            </div>
+          </div>
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(74,143,111,0.3);">
+            <div class="ctitle" style="color:var(--green);">✅ 正大集团 · 潮汕帮海外网络</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              谢国民家族：家族内部明确分工，基金会统一管理资产，<br>按董事会方式决策而非家长制。<br>
+              <strong>关键：</strong>家族制度没有压制创新，制度化程度高。
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(192,57,43,0.3);">
+            <div class="ctitle" style="color:#c0392b;">❌ 海鑫钢铁 · 仓促接班</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              李海仓遇刺，22岁儿子李兆会仓促接班，10年内从山西最大民企到破产。<br>
+              <strong>失败原因：</strong>没有选择权、没有制度、没有过渡。<br>
+              接班不是"把权力交出去"，是"把制度建起来"。
+            </div>
+          </div>
+          <div class="card" style="padding:0.6em 0.8em;border-color:rgba(192,57,43,0.3);">
+            <div class="ctitle" style="color:#c0392b;">❌ 浙江某企业 · 分家即分崩</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              创始人去世后两个儿子平分股权，双重控制权谁也做不了主，<br>各自引入团队形成派系，最终被收购。<br>
+              <strong>教训：</strong>分家不只是分家产，是分决策权。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 批判性视角-潮汕 -->
+  <div class="slide" data-index="6">
+    <div class="counter"><span>06</span> / 11</div>
+    <div class="corner">CRITICAL I</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>批判性视角</h3>
+      <h2>对潮汕模式的<span class="gold">反思</span></h2>
+      <div class="divider"></div>
+      <div class="grid-4">
+        <div class="gitem">
+          <div class="gn">浪漫化的"团结"</div>
+          <div class="gd">家族团结背后是大量内部矛盾。为了维持表面团结，可能付出巨大的内部协调成本。</div>
+        </div>
+        <div class="gitem">
+          <div class="gn">多子的负担</div>
+          <div class="gd">教育、住房、婚姻——每个孩子都是巨大开支。"多生"的经济逻辑正在被城市化改变。</div>
+        </div>
+        <div class="gitem">
+          <div class="gn">圈内信任的代价</div>
+          <div class="gd">对外人不信任，限制企业规模。很多潮汕企业做不大，不是因为能力不够，是因为"不信任外人"。</div>
+        </div>
+        <div class="gitem">
+          <div class="gn">女性角色的缺失</div>
+          <div class="gd">女儿不参与家族企业，儿媳的角色是"相夫教子"。这不仅不公平，更是人才的巨大浪费。</div>
+        </div>
+      </div>
+      <div class="accent-line" style="margin-top:0.6em;"></div>
+      <div style="font-size:clamp(0.65rem,0.8vw,0.75rem);color:var(--text-dim);margin-top:0.2em;">
+        潮汕模式在特定历史条件下是优势，但在今天，这些优势正在变成束缚
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 批判性视角-浙江 -->
+  <div class="slide" data-index="7">
+    <div class="counter"><span>07</span> / 11</div>
+    <div class="corner">CRITICAL II</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>批判性视角</h3>
+      <h2>对浙江模式的<span class="gold">反思</span></h2>
+      <div class="divider"></div>
+      <div class="grid-4">
+        <div class="gitem">
+          <div class="gn">个体理性的代价</div>
+          <div class="gd">每个人只管自己，社会资本流失。公共品供给、长期合作、风险共担都出问题。</div>
+        </div>
+        <div class="gitem">
+          <div class="gn">"老板多"≠"企业强"</div>
+          <div class="gd">大量小微企业，但世界级品牌少。"每个人都是老板"可能带来"小而散"而非"大而强"。</div>
+        </div>
+        <div class="gitem">
+          <div class="gn">二代问题的本质</div>
+          <div class="gd">不是个人惰性，是结构性问题。当制度环境对"做企业"不友好时，理性选择就是"不做"。</div>
+        </div>
+        <div class="gitem">
+          <div class="gn">独生子女的脆弱性</div>
+          <div class="gd">一个孩子承载了太多期望和压力。在代际传承问题上，脆弱性被放大到极致。</div>
+        </div>
+      </div>
+      <div class="accent-line" style="margin-top:0.6em;"></div>
+      <div style="font-size:clamp(0.65rem,0.8vw,0.75rem);color:var(--text-dim);margin-top:0.2em;">
+        两种模式共同的盲区：过度依赖"人治"、忽视职业经理人、对政策变化脆弱、代际价值观冲突
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 多学科视角 -->
+  <div class="slide" data-index="8">
+    <div class="counter"><span>08</span> / 11</div>
+    <div class="corner">MULTI-DISCIPLINARY</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>多学科视角</h3>
+      <h2>从不同理论看<span class="gold">制度差异</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:8px;">
+        <div class="col">
+          <div class="card" style="padding:0.5em 0.8em;">
+            <div class="ctitle" style="font-size:0.8rem;">制度经济学 · 诺斯</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              制度是"约束人们互动的规则"。浙江和潮汕的差异源于不同历史路径——两种制度都是"适应性的"，但适应性不等于最优。
+            </div>
+          </div>
+          <div class="card" style="padding:0.5em 0.8em;">
+            <div class="ctitle" style="font-size:0.8rem;">博弈论 · 格里夫</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              集体主义文化用"多边惩罚"维持秩序，在信息不对称环境中更有效。<br>
+              个人主义文化用"双边惩罚"，在市场竞争激烈、创新需求高的环境中更有效。
+            </div>
+          </div>
+          <div class="card" style="padding:0.5em 0.8em;">
+            <div class="ctitle" style="font-size:0.8rem;">社会学 · 韦伯</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              浙江的"个体理性"与韦伯的"新教伦理"相似——个人奋斗、理性计算。<br>
+              潮汕的"家族集体"更接近"儒教伦理"——家庭责任、集体利益。
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="padding:0.5em 0.8em;">
+            <div class="ctitle" style="font-size:0.8rem;">政治经济学 · 阿西莫格鲁</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              包容性制度（保护产权、鼓励创新）是长期增长基础。<br>
+              浙江更接近包容性制度；潮汕有汲取性制度特征——家族内部包容，外部排斥。
+            </div>
+          </div>
+          <div class="card" style="padding:0.5em 0.8em;">
+            <div class="ctitle" style="font-size:0.8rem;">人类学 · 费孝通</div>
+            <div class="cbody" style="font-size:0.7rem;">
+              差序格局：以自己为中心，水波纹般向外扩散。<br>
+              潮汕是极端体现——圈子内部高度团结，外部高度警惕。<br>
+              浙江是弱化版——圈子边界更模糊。
+            </div>
+          </div>
+          <div class="card" style="padding:0.5em 0.8em;border-color:rgba(212,168,75,0.2);">
+            <div class="ctitle" style="font-size:0.8rem;color:var(--gold);">核心启示</div>
+            <div class="cbody" style="font-size:0.7rem;color:var(--text);">
+              两种模式都没有突破"差序格局"本身——中国企业的"制度化"之路，仍然任重道远。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: 解决方案 -->
+  <div class="slide" data-index="9">
+    <div class="counter"><span>09</span> / 11</div>
+    <div class="corner">SOLUTIONS</div>
+    <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>启示与方案</h3>
+      <h2>二代接班问题的<span class="gold">三条路径</span></h2>
+      <div class="divider"></div>
+      <div class="two-col" style="gap:12px;">
+        <div class="col">
+          <div class="card" style="padding:0.8em 1em;border-color:rgba(212,168,75,0.2);">
+            <div class="ctitle" style="font-size:0.9rem;">路径一：制度化传承</div>
+            <div class="cbody" style="font-size:0.75rem;">
+              建立"家族宪法"——明确家族成员在企业中的角色和权利<br>
+              家族理事会定期开会<br>
+              家族基金统一管理资产<br>
+              制定股权转让、继承、冲突解决机制
+            </div>
+          </div>
+          <div class="card" style="padding:0.8em 1em;border-color:rgba(212,168,75,0.2);">
+            <div class="ctitle" style="font-size:0.9rem;">路径二：两权分离</div>
+            <div class="cbody" style="font-size:0.75rem;">
+              家族保留所有权，引入职业经理人管理<br>
+              家族成员进入企业必须满足"能力+资格"条件<br>
+              独立董事会确保家族利益和企业利益分开
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="padding:0.8em 1em;border-color:rgba(212,168,75,0.2);">
+            <div class="ctitle" style="font-size:0.9rem;">路径三：灵活继承</div>
+            <div class="cbody" style="font-size:0.75rem;">
+              二代可以"不接"但"不卖"——保留股权，享受分红<br>
+              二代可以"创业"而非"接班"——用家族资源做新项目<br>
+              二代可以"部分参与"——只负责某个业务板块
+            </div>
+          </div>
+          <div class="card" style="padding:0.8em 1em;border-color:rgba(212,168,75,0.3);">
+            <div class="ctitle" style="font-size:0.9rem;color:var(--gold);">理想方向</div>
+            <div class="cbody" style="font-size:0.75rem;color:var(--text);">
+              在需要创新时用浙江的"个体理性"<br>
+              在需要风险共担时用潮汕的"家族集体"<br>
+              在任何时候，<strong>用制度化治理约束权力滥用</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Closing -->
+  <div class="slide closing" data-index="10">
+    <div class="counter"><span>10</span> / 11</div>
+    <div class="corner">CONCLUSION</div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+      <div class="badge" style="margin-bottom:1em;">个人理性 vs 家族集体</div>
+      <h2 style="margin-bottom:0.5em;">不是"谁好谁坏"，<br>是<span class="gold">不同环境下的不同适应策略</span></h2>
+      <div class="tagline" style="max-width:75%;font-size:clamp(0.9rem,1.3vw,1.1rem);text-align:center;border-left-color:transparent;border:1px solid rgba(212,168,75,0.15);">
+        这个矛盾的本质，不是"个人 vs 家族"的冲突，<br>
+        而是<strong>"短期利益 vs 长期利益"</strong>的冲突。<br><br>
+        任何制度、任何文化，如果不能解决<br>
+        短期利益和长期利益之间的平衡，<br>
+        最终都会被淘汰。
+      </div>
+      <div class="accent-line" style="width:30%;margin:1.5em auto;"></div>
+      <div style="font-size:clamp(0.7rem,0.9vw,0.82rem);color:var(--text-dim);max-width:70%;line-height:1.8;">
+        一个社会的制度，不是"设计"出来的，是"长"出来的。<br>
+        理解它为什么长成这样，比批评它"不够好"更有价值。
+      </div>
+      <div style="margin-top:1.2em;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <span class="badge" style="border-color:var(--blue);color:var(--blue);">浙江 · 个体理性</span>
+        <span class="badge" style="border-color:var(--green);color:var(--green);">潮汕 · 家族集体</span>
+        <span class="badge">制度经济学</span>
+        <span class="badge">二代接班</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav" id="nav"></div>
+  <button class="arrow arrow-left" id="prev">‹</button>
+  <button class="arrow arrow-right" id="next">›</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const nav = document.getElementById('nav');
+  let current = 0;
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', () => goTo(i));
+    nav.appendChild(dot);
+  }
+  function goTo(idx) {
+    if (idx < 0) idx = 0; if (idx >= total) idx = total - 1; if (idx === current) return;
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    current = idx;
+  }
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  });
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+  });
+  document.querySelector('.deck').addEventListener('click', (e) => {
+    if (e.target.closest('.arrow') || e.target.closest('.nav-dot')) return;
+    if (current < total - 1) goTo(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
