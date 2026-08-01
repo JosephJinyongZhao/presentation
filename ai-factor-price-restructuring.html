@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI时代的生产要素价格重构</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0c18;
+  --bg2: #0f1328;
+  --card: #141837;
+  --border: #252a50;
+  --text: #e4e7f0;
+  --text2: #8e93b0;
+  --accent: #60a5fa;
+  --accent2: #818cf8;
+  --gold: #fbbf24;
+  --green: #34d399;
+  --red: #fb7185;
+  --orange: #fb923c;
+  --radius: 16px;
+}
+html { font-size: clamp(14px, 1.8vw, 28px); }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+}
+.slides { width: 100%; height: 100vh; position: relative; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 5vh 6vw;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s;
+  overflow-y: auto;
+}
+.slide.active { opacity: 1; visibility: visible; z-index: 10; }
+.slide::-webkit-scrollbar { width: 4px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.nav {
+  position: fixed; bottom: 2.5vh; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 1.2rem;
+  z-index: 100; background: rgba(10,12,24,0.85);
+  padding: 0.6rem 1.8rem; border-radius: 100px;
+  backdrop-filter: blur(12px); border: 1px solid var(--border);
+}
+.nav-btn {
+  background: none; border: none; color: var(--text2);
+  font-size: 1.2rem; cursor: pointer; padding: 0.3rem 0.6rem;
+  transition: color 0.3s; font-family: inherit;
+}
+.nav-btn:hover { color: var(--accent); }
+.nav-dots { display: flex; gap: 0.4rem; }
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: all 0.3s; border: none;
+}
+.nav-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+.page-num { color: var(--text2); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.05em; min-width: 3rem; text-align: center; }
+
+.slide-title { text-align: center; }
+.slide-title h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2rem, 4.5vw, 4.5rem);
+  font-weight: 900; line-height: 1.3;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #e4e7f0 0%, #60a5fa 50%, #818cf8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.slide-title .sub {
+  font-size: clamp(1rem, 1.6vw, 1.6rem);
+  color: var(--text2); font-weight: 300;
+  max-width: 75%; margin: 0 auto;
+  line-height: 1.7;
+}
+.slide-title .meta { margin-top: 2.5rem; font-size: 0.8rem; color: var(--text2); letter-spacing: 0.1em; }
+.deco-line {
+  width: 80px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  margin: 1.5rem auto; border-radius: 2px;
+}
+
+.slide-content { text-align: left; align-items: flex-start; }
+.slide-content h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.5rem, 3vw, 3rem);
+  font-weight: 700; margin-bottom: 1rem;
+  color: var(--accent);
+}
+.slide-content h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  font-weight: 600; margin-bottom: 0.6rem;
+  color: var(--gold);
+}
+.slide-content p, .slide-content li {
+  font-size: clamp(0.85rem, 1.3vw, 1.3rem);
+  line-height: 1.8; color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.slide-content ul, .slide-content ol { padding-left: 1.5rem; width: 100%; }
+.slide-content li { margin-bottom: 0.3rem; }
+.slide-content strong { color: #fff; font-weight: 600; }
+.slide-content .highlight { color: var(--accent); }
+.slide-content .highlight-gold { color: var(--gold); }
+.slide-content .highlight-green { color: var(--green); }
+.slide-content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.8rem 1.2rem; margin: 0.8rem 0;
+  background: rgba(96,165,250,0.08);
+  border-radius: 0 8px 8px 0;
+  font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+  color: var(--text2); font-style: italic;
+  width: 100%;
+}
+.slide-content .inner-wrapper { width: 100%; max-width: 90vw; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; margin: 0.6rem 0; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; width: 100%; margin: 0.6rem 0; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8rem; width: 100%; margin: 0.6rem 0; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem 0.9rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.card .card-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+.card .card-title { font-weight: 600; font-size: clamp(0.85rem, 1.1vw, 1.1rem); margin-bottom: 0.3rem; color: #fff; }
+.card .card-desc { font-size: clamp(0.72rem, 0.95vw, 0.95rem); color: var(--text2); line-height: 1.6; }
+
+.table-wrap { width: 100%; overflow-x: auto; margin: 0.6rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: clamp(0.72rem, 1vw, 1rem); }
+th {
+  background: rgba(96,165,250,0.15);
+  color: var(--accent); font-weight: 600;
+  padding: 0.6rem 0.7rem; text-align: left;
+  border-bottom: 2px solid var(--accent);
+}
+td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.5; }
+tr:hover td { background: rgba(96,165,250,0.04); }
+
+.diagram { width: 100%; margin: 0.8rem 0; display: flex; justify-content: center; }
+.diagram svg { max-width: 100%; height: auto; }
+
+.slide-conclusion { text-align: center; }
+.slide-conclusion h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.4rem, 2.5vw, 2.5rem);
+  font-weight: 700; margin-bottom: 1.5rem;
+  color: var(--gold);
+}
+.slide-conclusion .big-quote {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.2rem, 2.2vw, 2.2rem);
+  line-height: 1.5; font-weight: 700;
+  max-width: 85%; margin: 1rem auto;
+  color: #fff;
+}
+.slide-conclusion .big-quote .highlight { color: var(--accent); }
+.slide-conclusion .big-quote .highlight-gold { color: var(--gold); }
+.slide-conclusion p {
+  font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+  color: var(--text2); line-height: 1.8;
+  max-width: 80%; margin: 0.5rem auto;
+}
+.final-q {
+  background: linear-gradient(135deg, rgba(96,165,250,0.1), rgba(129,140,248,0.1));
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem; margin: 1.5rem auto;
+  max-width: 85%;
+  text-align: center;
+}
+.final-q p { font-size: clamp(1rem, 1.5vw, 1.5rem); color: var(--accent); font-weight: 500; max-width: 100%; margin: 0; }
+.ends-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.price-down { color: var(--green); }
+.price-up { color: var(--red); }
+
+@media (max-width: 768px) {
+  .slide { padding: 3vh 4vw; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .slide-content .inner-wrapper { max-width: 100%; }
+  .slide-title .sub, .slide-conclusion .big-quote, .slide-conclusion p, .final-q { max-width: 100%; }
+}
+
+.slide.active .anim-up { animation: up 0.6s ease forwards; }
+@keyframes up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.3s; }
+.anim-delay-4 { animation-delay: 0.4s; }
+.anim-delay-5 { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+<!-- 0: Title -->
+<div class="slide slide-title active" data-index="0">
+  <div class="deco-line anim-up"></div>
+  <h1 class="anim-up anim-delay-1">AI时代的生产要素<br>价格重构</h1>
+  <p class="sub anim-up anim-delay-2">基于互补品与替代品的一般均衡分析框架</p>
+  <div class="deco-line anim-up anim-delay-2"></div>
+  <p class="meta anim-up anim-delay-3">2026.08 · 李嘉图 · 价格理论 · 小勇与小Ark</p>
+</div>
+
+<!-- 1: 引言 -->
+<div class="slide slide-content" data-index="1">
+  <div class="inner-wrapper">
+    <h2>引言：李嘉图的幽灵回来了</h2>
+    <blockquote>"你不应该盯着变便宜的事情，而是要去提前布局那些将来可能会变贵的。"</blockquote>
+    <p>这个直觉比大多数人意识到的要深刻得多——<strong>AI带来的不是单一技能被替代，而是整个产业链上要素相对价格的系统性重构。</strong></p>
+    <div class="diagram">
+      <svg viewBox="0 0 700 140" style="width:100%;max-width:700px;">
+        <defs>
+          <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="var(--green)"/>
+            <stop offset="100%" stop-color="var(--accent)"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="10" width="320" height="100" rx="10" fill="rgba(251,113,133,0.1)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="180" y="45" fill="var(--red)" font-size="18" text-anchor="middle" font-weight="bold">替代品 ↓ 变便宜</text>
+        <text x="180" y="70" fill="var(--text2)" font-size="13" text-anchor="middle">AI取代了某个人类技能</text>
+        <text x="180" y="90" fill="var(--text2)" font-size="13" text-anchor="middle">→ 该技能价格下跌</text>
+        <text x="360" y="60" fill="var(--text2)" font-size="28" text-anchor="middle">→</text>
+        <rect x="380" y="10" width="300" height="100" rx="10" fill="rgba(52,211,153,0.1)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="530" y="45" fill="var(--green)" font-size="18" text-anchor="middle" font-weight="bold">互补品 ↑ 变贵</text>
+        <text x="530" y="70" fill="var(--text2)" font-size="13" text-anchor="middle">每一次替代，都创造新的互补需求</text>
+        <text x="530" y="90" fill="var(--text2)" font-size="13" text-anchor="middle">→ 互补品价格必然上涨</text>
+      </svg>
+    </div>
+    <p>李嘉图两百年前问：机器取代工人，谁受益谁受损？今天的AI就是李嘉图说的"机器"——但这一次，它取代的是<strong>认知劳动</strong>。</p>
+  </div>
+</div>
+
+<!-- 2: Coding的例子 -->
+<div class="slide slide-content" data-index="2">
+  <div class="inner-wrapper">
+    <h2>一个直觉的例子：Coding</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>要素</th><th>AI影响</th><th>价格</th><th>逻辑</th></tr>
+        <tr><td><strong>编程</strong></td><td>被AI替代</td><td class="price-down">↓ 变便宜</td><td>AI写代码能力大幅提升，供给增加</td></tr>
+        <tr><td><strong>需求定义</strong></td><td>编程的互补品</td><td class="price-up">↑ 变贵</td><td>"做什么"的价值超过了"怎么做"</td></tr>
+        <tr><td><strong>验证/测试</strong></td><td>编程的互补品</td><td class="price-up">↑ 变贵</td><td>代码越多，验证边界越多，成为瓶颈</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:0.5rem;font-size:clamp(0.85rem,1.2vw,1.2rem);">你不需要一千个程序员了，但你需要<strong>懂业务、能判断"什么是对的"</strong>的人。</p>
+    <div class="grid-3" style="margin-top:0.5rem;">
+      <div class="card" style="border-color:var(--green);"><div class="card-icon" style="color:var(--green);">⬇️</div><div class="card-title">编程变便宜</div><div class="card-desc">AI可以自动生成大量代码，编码成本趋近于零</div></div>
+      <div class="card" style="border-color:var(--red);"><div class="card-icon" style="color:var(--red);">⬆️</div><div class="card-title">需求定义变贵</div><div class="card-desc">"做什么"比"怎么做"值钱——需要懂业务的人</div></div>
+      <div class="card" style="border-color:var(--red);"><div class="card-icon" style="color:var(--red);">⬆️</div><div class="card-title">验证变贵</div><div class="card-desc">代码量爆炸，验证能力成为瓶颈</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3: 一般均衡 -->
+<div class="slide slide-content" data-index="3">
+  <div class="inner-wrapper">
+    <h2>一般均衡：为什么不能只看替代</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 700 300" style="width:100%;max-width:700px;">
+        <rect x="20" y="10" width="300" height="55" rx="8" fill="rgba(251,113,133,0.12)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="170" y="40" fill="var(--red)" font-size="16" text-anchor="middle" font-weight="bold">① 替代效应</text>
+        <text x="170" y="57" fill="var(--text2)" font-size="12" text-anchor="middle">AI取代人类技能 → 价格下跌</text>
+
+        <line x1="170" y1="65" x2="170" y2="85" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="166,83 170,91 174,83" fill="var(--text2)"/>
+
+        <rect x="20" y="90" width="300" height="55" rx="8" fill="rgba(52,211,153,0.12)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="170" y="120" fill="var(--green)" font-size="16" text-anchor="middle" font-weight="bold">② 互补效应</text>
+        <text x="170" y="137" fill="var(--text2)" font-size="12" text-anchor="middle">被替代技能的互补品 → 价格上涨</text>
+
+        <line x1="170" y1="145" x2="170" y2="165" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="166,163 170,171 174,163" fill="var(--text2)"/>
+
+        <rect x="20" y="170" width="300" height="55" rx="8" fill="rgba(251,191,36,0.12)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="170" y="200" fill="var(--gold)" font-size="16" text-anchor="middle" font-weight="bold">③ 收入效应</text>
+        <text x="170" y="217" fill="var(--text2)" font-size="12" text-anchor="middle">AI降低总成本 → 需求扩张 → 新岗位</text>
+
+        <line x1="170" y1="225" x2="170" y2="245" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="166,243 170,251 174,243" fill="var(--text2)"/>
+
+        <rect x="20" y="250" width="300" height="40" rx="8" fill="rgba(96,165,250,0.12)" stroke="var(--accent)" stroke-width="2"/>
+        <text x="170" y="275" fill="var(--accent)" font-size="15" text-anchor="middle" font-weight="bold">④ 再均衡：资本+劳动力重新配置</text>
+
+        <text x="380" y="100" fill="var(--text2)" font-size="32" text-anchor="middle" style="text-anchor:middle;">→</text>
+        <text x="390" y="100" fill="var(--text)" font-size="14" text-anchor="middle" style="text-anchor:middle;">这是大多数AI讨论中<br/>缺失的一环</text>
+
+        <rect x="370" y="145" width="310" height="120" rx="10" fill="rgba(96,165,250,0.06)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="525" y="175" fill="var(--gold)" font-size="14" text-anchor="middle" font-weight="bold">李嘉图的完整逻辑</text>
+        <text x="525" y="200" fill="var(--text2)" font-size="12" text-anchor="middle">替代 → 互补 → 收入 → 再均衡</text>
+        <text x="525" y="220" fill="var(--text2)" font-size="12" text-anchor="middle">构成一个完整的闭环</text>
+        <text x="525" y="250" fill="var(--text2)" font-size="12" text-anchor="middle">只看替代，是静态思维</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- 4: 替代品-互补品矩阵 -->
+<div class="slide slide-content" data-index="4">
+  <div class="inner-wrapper">
+    <h2>核心分析框架</h2>
+    <p>对任何行业/职能，画出这个矩阵：</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>要素</th><th>与AI的关系</th><th>价格趋势</th><th>策略启示</th></tr>
+        <tr><td><strong>产出/结果</strong></td><td>互补品</td><td class="price-up">↑ 变贵</td><td>能"交付结果"的人更值钱</td></tr>
+        <tr><td><strong>流程/执行</strong></td><td>替代品</td><td class="price-down">↓ 变便宜</td><td>尽快自动化</td></tr>
+        <tr><td><strong>判断/决策</strong></td><td>互补品</td><td class="price-up">↑ 变贵</td><td>最稀缺</td></tr>
+        <tr><td><strong>数据/信息</strong></td><td>输入品</td><td class="price-down">↓ 变便宜</td><td>筛选和解读成本上升</td></tr>
+        <tr><td><strong>创意/方向</strong></td><td>互补品</td><td class="price-up">↑ 变贵</td><td>方向感比执行力更值钱</td></tr>
+        <tr><td><strong>信任/关系</strong></td><td>不可替代</td><td class="price-up">↑ 变贵</td><td>人类连接的价值上升</td></tr>
+      </table>
+    </div>
+    <blockquote style="margin-top:0.5rem;">替代品价格下跌，互补品价格必然上涨——这是经济学第一定律在AI时代的应用。</blockquote>
+  </div>
+</div>
+
+<!-- 5: 行业分析 -->
+<div class="slide slide-content" data-index="5">
+  <div class="inner-wrapper">
+    <h2>行业层面的要素价格重构</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">💻</div>
+        <div class="card-title" style="color:var(--accent);">软件开发</div>
+        <div class="card-desc">
+          <span style="color:var(--green);">编程变便宜</span> · <span style="color:var(--red);">需求定义+系统设计变贵</span><br>
+          架构师成为最稀缺角色
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">✍️</div>
+        <div class="card-title" style="color:var(--gold);">内容创作</div>
+        <div class="card-desc">
+          <span style="color:var(--green);">初稿变便宜</span> · <span style="color:var(--red);">编辑+策展变贵</span><br>
+          品味和策展成为新稀缺
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">📊</div>
+        <div class="card-title" style="color:var(--green);">数据分析</div>
+        <div class="card-desc">
+          <span style="color:var(--green);">建模变便宜</span> · <span style="color:var(--red);">业务洞察+决策变贵</span><br>
+          稀缺的是"基于数据做判断"的人
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--accent2);">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title" style="color:var(--accent2);">法律</div>
+        <div class="card-desc">
+          <span style="color:var(--green);">检索变便宜</span> · <span style="color:var(--red);">策略+风险判断变贵</span><br>
+          商业理解+谈判策略最稀缺
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6: 教育 -->
+<div class="slide slide-content" data-index="6">
+  <div class="inner-wrapper">
+    <h2>教育行业：旧均衡 vs 新均衡</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 720 200" style="width:100%;max-width:720px;">
+        <rect x="10" y="10" width="330" height="180" rx="10" fill="rgba(251,113,133,0.06)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="175" y="40" fill="var(--red)" font-size="16" text-anchor="middle" font-weight="bold">旧均衡</text>
+        <text x="175" y="70" fill="var(--text2)" font-size="13" text-anchor="middle">知识传授贵</text>
+        <text x="175" y="90" fill="var(--text2)" font-size="13" text-anchor="middle">个性化辅导便宜</text>
+        <text x="175" y="110" fill="var(--text2)" font-size="13" text-anchor="middle">内容制作贵</text>
+        <text x="175" y="130" fill="var(--text2)" font-size="13" text-anchor="middle">教学互动便宜</text>
+        <text x="175" y="150" fill="var(--text2)" font-size="13" text-anchor="middle">评估贵</text>
+        <text x="175" y="170" fill="var(--text2)" font-size="13" text-anchor="middle">反馈便宜</text>
+
+        <text x="365" y="100" fill="var(--text2)" font-size="28" text-anchor="middle">→</text>
+
+        <rect x="390" y="10" width="320" height="180" rx="10" fill="rgba(52,211,153,0.06)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="550" y="40" fill="var(--green)" font-size="16" text-anchor="middle" font-weight="bold">新均衡</text>
+        <text x="550" y="70" fill="var(--text2)" font-size="13" text-anchor="middle">知识传授 <span style="fill:var(--green);">变便宜</span></text>
+        <text x="550" y="90" fill="var(--gold)" font-size="13" text-anchor="middle" font-weight="bold">个性化引导+激励 变贵</text>
+        <text x="550" y="110" fill="var(--text2)" font-size="13" text-anchor="middle">内容制作 <span style="fill:var(--green);">变便宜</span></text>
+        <text x="550" y="130" fill="var(--gold)" font-size="13" text-anchor="middle" font-weight="bold">教学设计与情感连接 变贵</text>
+        <text x="550" y="150" fill="var(--text2)" font-size="13" text-anchor="middle">评估 <span style="fill:var(--green);">变便宜</span></text>
+        <text x="550" y="170" fill="var(--gold)" font-size="13" text-anchor="middle" font-weight="bold">形成性反馈+成长规划 变贵</text>
+      </svg>
+    </div>
+    <blockquote>AI能教"知识"，但教不了"好奇心"和"毅力"——后者正是教育中最稀缺、最贵的要素。</blockquote>
+  </div>
+</div>
+
+<!-- 7: 四个原则 -->
+<div class="slide slide-content" data-index="7">
+  <div class="inner-wrapper">
+    <h2>四个战略原则</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">🔍</div>
+        <div class="card-title" style="color:var(--accent);">原则一：识别互补品</div>
+        <div class="card-desc">
+          ① AI让什么变免费？→ 自动化<br>
+          ② 它的互补品是什么？→ 提前布局<br>
+          ③ 互补品稀缺吗？→ 现在就入场
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title" style="color:var(--gold);">原则二：不在便宜处竞争</div>
+        <div class="card-desc">
+          变便宜的要素当基础设施，用来构建稀缺能力。就像电力变便宜后，没人靠发电赚钱，而是靠用电来做什么赚钱。
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🛡️</div>
+        <div class="card-title" style="color:var(--green);">原则三：投资不可自动化</div>
+        <div class="card-desc">
+          判断、信任、品味、责任——这些会变贵。提前投资它们，因为AI无法替代。
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--accent2);">
+        <div class="card-icon">🎯</div>
+        <div class="card-title" style="color:var(--accent2);">原则四：站在稀缺端</div>
+        <div class="card-desc">
+          做AI的互补品，持续深耕。做AI做不到的事，加倍投入。把自己放在价格上升的端。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8: 五个陷阱 -->
+<div class="slide slide-content" data-index="8">
+  <div class="inner-wrapper">
+    <h2>批判性审视：五个陷阱</h2>
+    <div class="grid-2">
+      <div class="card"><div class="card-icon">⚠️</div><div class="card-title" style="color:var(--red);">陷阱一：互补品不是自动出现的</div><div class="card-desc">互补品价格上涨的前提是——供给弹性低。如果人人都有"品味"，策展就不会涨价。</div></div>
+      <div class="card"><div class="card-icon">⚠️</div><div class="card-title" style="color:var(--red);">陷阱二：边界会移动</div><div class="card-desc">今天的互补品，明天可能被AI超越。布局的"窗口"可能在3年内关闭。</div></div>
+      <div class="card"><div class="card-icon">⚠️</div><div class="card-title" style="color:var(--red);">陷阱三：方向≠速度</div><div class="card-desc">均衡的方向确定，但速度不确定。布局太早可能耗尽资源，太晚错过窗口。</div></div>
+      <div class="card"><div class="card-icon">⚠️</div><div class="card-title" style="color:var(--red);">陷阱四：静态框架</div><div class="card-desc">AI在创造全新要素类别。只盯现有要素，可能错过新要素的出现。</div></div>
+    </div>
+    <div class="card" style="margin-top:0.4rem;border-color:var(--red);"><div class="card-icon">⚠️</div><div class="card-title" style="color:var(--red);">陷阱五：制度因素</div><div class="card-desc">价格理论假设市场自由流动——但现实不是。劳动力、资本、技术都不能自由流动。价格变了，但资源可能没有重新配置。</div></div>
+  </div>
+</div>
+
+<!-- 9: 多角度 -->
+<div class="slide slide-content" data-index="9">
+  <div class="inner-wrapper">
+    <h2>多角度补充</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">🧠</div>
+        <div class="card-title" style="color:var(--accent);">奥地利学派</div>
+        <div class="card-desc">均衡不是自动实现的，需要"企业家精神"来发现和利用价格信号。比别人更早发现趋势，在别人反应过来之前完成配置调整。</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">🔄</div>
+        <div class="card-title" style="color:var(--gold);">演化经济学</div>
+        <div class="card-desc">互补品不是"被发现的"，而是"被创造出来的"。创造一个新的互补品，比发现一个现有的互补品，回报更高。</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🎲</div>
+        <div class="card-title" style="color:var(--green);">博弈论</div>
+        <div class="card-desc">不要只盯着第一层互补品，要看第二层。真正的稀缺在交叉点上——行业知识+需求定义，比单纯的需求定义稀缺得多。</div>
+      </div>
+      <div class="card" style="border-color:var(--accent2);">
+        <div class="card-icon">📜</div>
+        <div class="card-title" style="color:var(--accent2);">历史视角</div>
+        <div class="card-desc">蒸汽机→体力变便宜，机器操作员变贵。计算机→计算变便宜，系统分析师变贵。AI→认知执行变便宜，认知判断变贵。规律：每一次都在把"执行"压低，把"判断"抬高。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10: 历史规律 -->
+<div class="slide slide-content" data-index="10">
+  <div class="inner-wrapper">
+    <h2>技术变革的补偿效应</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 750 280" style="width:100%;max-width:750px;">
+        <!-- 5 technology eras -->
+        <rect x="10" y="20" width="130" height="90" rx="8" fill="rgba(251,113,133,0.1)" stroke="var(--red)" stroke-width="1.2"/>
+        <text x="75" y="50" fill="var(--red)" font-size="14" text-anchor="middle" font-weight="bold">19世纪</text>
+        <text x="75" y="72" fill="var(--text2)" font-size="11" text-anchor="middle">蒸汽机</text>
+        <text x="75" y="90" fill="var(--text2)" font-size="10" text-anchor="middle">体力↓ 机器操作员↑</text>
+
+        <line x1="140" y1="65" x2="160" y2="65" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="158,62 165,65 158,68" fill="var(--text2)"/>
+
+        <rect x="165" y="20" width="130" height="90" rx="8" fill="rgba(251,191,36,0.1)" stroke="var(--gold)" stroke-width="1.2"/>
+        <text x="230" y="50" fill="var(--gold)" font-size="14" text-anchor="middle" font-weight="bold">20世纪初</text>
+        <text x="230" y="72" fill="var(--text2)" font-size="11" text-anchor="middle">电力</text>
+        <text x="230" y="90" fill="var(--text2)" font-size="10" text-anchor="middle">手工↓ 电气工程师↑</text>
+
+        <line x1="295" y1="65" x2="315" y2="65" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="313,62 320,65 313,68" fill="var(--text2)"/>
+
+        <rect x="320" y="20" width="130" height="90" rx="8" fill="rgba(52,211,153,0.1)" stroke="var(--green)" stroke-width="1.2"/>
+        <text x="385" y="50" fill="var(--green)" font-size="14" text-anchor="middle" font-weight="bold">20世纪中</text>
+        <text x="385" y="72" fill="var(--text2)" font-size="11" text-anchor="middle">计算机</text>
+        <text x="385" y="90" fill="var(--text2)" font-size="10" text-anchor="middle">计算↓ 系统分析师↑</text>
+
+        <line x1="450" y1="65" x2="470" y2="65" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="468,62 475,65 468,68" fill="var(--text2)"/>
+
+        <rect x="475" y="20" width="130" height="90" rx="8" fill="rgba(96,165,250,0.1)" stroke="var(--accent)" stroke-width="1.2"/>
+        <text x="540" y="50" fill="var(--accent)" font-size="14" text-anchor="middle" font-weight="bold">21世纪初</text>
+        <text x="540" y="72" fill="var(--text2)" font-size="11" text-anchor="middle">互联网</text>
+        <text x="540" y="90" fill="var(--text2)" font-size="10" text-anchor="middle">信息获取↓ 信息筛选↑</text>
+
+        <line x1="605" y1="65" x2="625" y2="65" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="623,62 630,65 623,68" fill="var(--text2)"/>
+
+        <rect x="630" y="20" width="110" height="90" rx="8" fill="rgba(251,191,36,0.15)" stroke="var(--gold)" stroke-width="2"/>
+        <text x="685" y="50" fill="var(--gold)" font-size="14" text-anchor="middle" font-weight="bold">2020s</text>
+        <text x="685" y="72" fill="var(--text2)" font-size="11" text-anchor="middle">AI</text>
+        <text x="685" y="90" fill="var(--gold)" font-size="10" text-anchor="middle" font-weight="bold">认知执行↓ 认知判断↑</text>
+
+        <!-- Arrow -->
+        <line x1="20" y1="140" x2="740" y2="140" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+        <!-- Pattern statement -->
+        <rect x="80" y="160" width="600" height="50" rx="12" fill="rgba(96,165,250,0.08)" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="380" y="185" fill="var(--accent)" font-size="16" text-anchor="middle" font-weight="bold">每一次技术变革，都在把"执行"压低，把"判断"抬高</text>
+        <text x="380" y="205" fill="var(--text2)" font-size="12" text-anchor="middle">AI是终极形态——认知执行也被替代，判断成为人类最后的堡垒</text>
+
+        <!-- Caveat -->
+        <text x="380" y="250" fill="var(--text2)" font-size="12" text-anchor="middle" style="font-style:italic;">但AI替代的速度，比历史上任何技术都快——窗口期可能更短</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- 11: 窗口期 -->
+<div class="slide slide-content" data-index="11">
+  <div class="inner-wrapper">
+    <h2>布局窗口期</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 700 260" style="width:100%;max-width:700px;">
+        <!-- Timeline -->
+        <line x1="50" y1="130" x2="650" y2="130" stroke="var(--border)" stroke-width="3"/>
+        <!-- Three zones -->
+        <rect x="50" y="30" width="180" height="200" rx="10" fill="rgba(251,113,133,0.06)" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="140" y="60" fill="var(--red)" font-size="15" text-anchor="middle" font-weight="bold">过早入场</text>
+        <text x="140" y="85" fill="var(--text2)" font-size="12" text-anchor="middle">AI还没真正改变行业</text>
+        <text x="140" y="105" fill="var(--text2)" font-size="12" text-anchor="middle">可能等不到回报期</text>
+        <text x="140" y="130" fill="var(--text2)" font-size="13" text-anchor="middle">❌</text>
+
+        <rect x="250" y="30" width="200" height="200" rx="10" fill="rgba(52,211,153,0.1)" stroke="var(--green)" stroke-width="2.5"/>
+        <text x="350" y="60" fill="var(--green)" font-size="16" text-anchor="middle" font-weight="bold">✅ 黄金窗口</text>
+        <text x="350" y="85" fill="var(--text)" font-size="13" text-anchor="middle">AI替代率超过30%时</text>
+        <text x="350" y="110" fill="var(--gold)" font-size="14" text-anchor="middle" font-weight="bold">入场互补品的最佳时机</text>
+        <text x="350" y="140" fill="var(--text2)" font-size="12" text-anchor="middle">趋势已确认</text>
+        <text x="350" y="160" fill="var(--text2)" font-size="12" text-anchor="middle">竞争尚未白热化</text>
+        <text x="350" y="180" fill="var(--text2)" font-size="12" text-anchor="middle">有足够的时间建立壁垒</text>
+
+        <rect x="470" y="30" width="180" height="200" rx="10" fill="rgba(251,191,36,0.06)" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="560" y="60" fill="var(--gold)" font-size="15" text-anchor="middle" font-weight="bold">太晚入场</text>
+        <text x="560" y="85" fill="var(--text2)" font-size="12" text-anchor="middle">互补品已变贵</text>
+        <text x="560" y="105" fill="var(--text2)" font-size="12" text-anchor="middle">所有人都看到了</text>
+        <text x="560" y="130" fill="var(--text2)" font-size="13" text-anchor="middle">❌</text>
+      </svg>
+    </div>
+    <p style="text-align:center;font-size:clamp(0.85rem,1.2vw,1.2rem);">不要等到"互补品已经变贵了"才入场，但也不要在"AI还没改变行业"时过早进场。<br>中间有一个<strong style="color:var(--green);">窗口期</strong>：当AI替代率超过30%时，就是入场的最佳时机。</p>
+  </div>
+</div>
+
+<!-- 12: Conclusion -->
+<div class="slide slide-conclusion" data-index="12">
+  <div class="deco-line anim-up"></div>
+  <div class="big-quote anim-up anim-delay-1">
+    大多数人在焦虑<br>
+    <span class="highlight">"我的技能会不会被替代"</span><br>
+    — 这是盯着替代品看
+  </div>
+  <div class="deco-line anim-up anim-delay-2"></div>
+  <div class="big-quote anim-up anim-delay-3">
+    你应该问的是<br>
+    <span class="highlight-gold">"AI会让什么变得更贵"</span><br>
+    — 这是盯着互补品看
+  </div>
+  <div class="deco-line anim-up anim-delay-4"></div>
+  <p class="anim-up anim-delay-5">这个视角转换，决定了你是被动应对还是主动布局。</p>
+  <div class="final-q anim-up anim-delay-5">
+    <p>在你的行业里，AI正在让什么变便宜？<br>你在这个链条上，是站在"便宜端"还是"贵端"？</p>
+  </div>
+</div>
+
+<!-- 13: End -->
+<div class="slide slide-conclusion" data-index="13">
+  <div class="ends-title anim-up">谢谢</div>
+  <div class="deco-line anim-up anim-delay-1"></div>
+  <p class="anim-up anim-delay-2" style="font-size:clamp(0.85rem,1.2vw,1.2rem);color:var(--text2);">
+    基于小勇2026年8月1日的深度思考<br>
+    李嘉图一般均衡逻辑 · 价格理论 · 小Ark协助整理
+  </p>
+</div>
+
+</div>
+
+<div class="nav">
+  <button class="nav-btn" onclick="prevSlide()">◀</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="page-num" id="pageNum">1 / 14</span>
+  <button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+
+function initDots() {
+  const dots = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dots.appendChild(dot);
+  }
+}
+
+function update() {
+  slides.forEach((s, i) => s.classList.toggle('active', i === current));
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  document.getElementById('pageNum').textContent = (current + 1) + ' / ' + total;
+}
+
+function goTo(n) { if (n < 0) n = 0; if (n >= total) n = total - 1; current = n; update(); }
+function nextSlide() { goTo(current + 1); }
+function prevSlide() { goTo(current - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+
+initDots(); update();
+</script>
+</body>
+</html>
