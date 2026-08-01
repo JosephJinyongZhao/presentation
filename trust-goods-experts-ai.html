@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任品、专家与AI：权威转移与专业工作者要素的重构</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0b0d17;
+  --bg2: #11142a;
+  --card: #161a35;
+  --border: #2a2f5a;
+  --text: #e8eaf0;
+  --text2: #9ca0b8;
+  --accent: #6c8cff;
+  --accent2: #a78bfa;
+  --accent3: #f472b6;
+  --gold: #fbbf24;
+  --green: #34d399;
+  --red: #fb7185;
+  --radius: 16px;
+}
+html { font-size: clamp(14px, 1.8vw, 28px); }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+}
+.slides { width: 100%; height: 100vh; position: relative; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 5vh 6vw;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s;
+  overflow-y: auto;
+}
+.slide.active { opacity: 1; visibility: visible; z-index: 10; }
+.slide::-webkit-scrollbar { width: 4px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Navigators */
+.nav {
+  position: fixed; bottom: 2.5vh; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 1.2rem;
+  z-index: 100; background: rgba(11,13,23,0.85);
+  padding: 0.6rem 1.8rem; border-radius: 100px;
+  backdrop-filter: blur(12px); border: 1px solid var(--border);
+}
+.nav-btn {
+  background: none; border: none; color: var(--text2);
+  font-size: 1.2rem; cursor: pointer; padding: 0.3rem 0.6rem;
+  transition: color 0.3s; font-family: inherit;
+}
+.nav-btn:hover { color: var(--accent); }
+.nav-dots { display: flex; gap: 0.4rem; }
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: all 0.3s; border: none;
+}
+.nav-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+.page-num { color: var(--text2); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.05em; min-width: 3rem; text-align: center; }
+
+/* Title slide */
+.slide-title { text-align: center; }
+.slide-title h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+  font-weight: 900; line-height: 1.3;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #e8eaf0 0%, #6c8cff 50%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.slide-title .sub {
+  font-size: clamp(1rem, 1.6vw, 1.6rem);
+  color: var(--text2); font-weight: 300;
+  max-width: 70%; margin: 0 auto;
+  line-height: 1.7;
+}
+.slide-title .meta {
+  margin-top: 2.5rem;
+  font-size: 0.8rem; color: var(--text2); letter-spacing: 0.1em;
+}
+.deco-line {
+  width: 80px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  margin: 1.5rem auto; border-radius: 2px;
+}
+
+/* Content slide */
+.slide-content { text-align: left; align-items: flex-start; }
+.slide-content h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.6rem, 3vw, 3rem);
+  font-weight: 700; margin-bottom: 1.2rem;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.slide-content h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  font-weight: 600; margin-bottom: 0.8rem;
+  color: var(--gold);
+}
+.slide-content p, .slide-content li {
+  font-size: clamp(0.85rem, 1.3vw, 1.3rem);
+  line-height: 1.8; color: var(--text);
+  margin-bottom: 0.6rem;
+}
+.slide-content ul, .slide-content ol {
+  padding-left: 1.5rem; width: 100%;
+}
+.slide-content li { margin-bottom: 0.3rem; }
+.slide-content strong { color: #fff; font-weight: 600; }
+.slide-content .highlight { color: var(--accent); }
+.slide-content .highlight-gold { color: var(--gold); }
+.slide-content .highlight-green { color: var(--green); }
+.slide-content .highlight-pink { color: var(--accent3); }
+.slide-content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.8rem 1.2rem; margin: 1rem 0;
+  background: rgba(108,140,255,0.08);
+  border-radius: 0 8px 8px 0;
+  font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+  color: var(--text2); font-style: italic;
+  width: 100%;
+}
+.slide-content .inner-wrapper {
+  width: 100%; max-width: 90vw;
+}
+
+/* Grid cards */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; width: 100%; margin: 0.8rem 0; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; width: 100%; margin: 0.8rem 0; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8rem; width: 100%; margin: 0.8rem 0; }
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.2rem 1rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.card .card-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.card .card-title { font-weight: 600; font-size: clamp(0.9rem, 1.2vw, 1.2rem); margin-bottom: 0.4rem; color: #fff; }
+.card .card-desc { font-size: clamp(0.75rem, 1vw, 1rem); color: var(--text2); line-height: 1.6; }
+
+/* Tables */
+.table-wrap {
+  width: 100%; overflow-x: auto; margin: 0.8rem 0;
+}
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: clamp(0.75rem, 1vw, 1rem);
+}
+th {
+  background: rgba(108,140,255,0.15);
+  color: var(--accent); font-weight: 600;
+  padding: 0.7rem 0.8rem; text-align: left;
+  border-bottom: 2px solid var(--accent);
+}
+td {
+  padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border);
+  color: var(--text); line-height: 1.5;
+}
+tr:hover td { background: rgba(108,140,255,0.04); }
+
+/* SVG Diagrams */
+.diagram { width: 100%; margin: 1rem 0; display: flex; justify-content: center; }
+.diagram svg { max-width: 100%; height: auto; }
+
+/* Conclusion slide */
+.slide-conclusion { text-align: center; }
+.slide-conclusion h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.4rem, 2.5vw, 2.5rem);
+  font-weight: 700; margin-bottom: 1.5rem;
+  color: var(--gold);
+}
+.slide-conclusion .big-quote {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.3rem, 2.2vw, 2.2rem);
+  line-height: 1.5; font-weight: 700;
+  max-width: 80%; margin: 1rem auto;
+  color: #fff;
+}
+.slide-conclusion .big-quote .highlight { color: var(--accent); }
+.slide-conclusion .big-quote .highlight-gold { color: var(--gold); }
+.slide-conclusion p {
+  font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+  color: var(--text2); line-height: 1.8;
+  max-width: 75%; margin: 0.5rem auto;
+}
+
+/* Final question */
+.final-q {
+  background: linear-gradient(135deg, rgba(108,140,255,0.1), rgba(167,139,250,0.1));
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem; margin: 1.5rem auto;
+  max-width: 80%;
+  text-align: center;
+}
+.final-q p {
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
+  color: var(--accent); font-weight: 500;
+  max-width: 100%; margin: 0;
+}
+
+/* Ends */
+.ends-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slide { padding: 3vh 4vw; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .slide-content .inner-wrapper { max-width: 100%; }
+  .slide-title .sub, .slide-conclusion .big-quote,
+  .slide-conclusion p, .final-q { max-width: 100%; }
+}
+
+/* Animations */
+.slide.active .anim-up {
+  animation: up 0.6s ease forwards;
+}
+@keyframes up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.3s; }
+.anim-delay-4 { animation-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+<!-- 0: Title -->
+<div class="slide slide-title active" data-index="0">
+  <div class="deco-line anim-up"></div>
+  <h1 class="anim-up anim-delay-1">信任品、专家与AI</h1>
+  <p class="sub anim-up anim-delay-2">权威转移与专业工作者要素的重构</p>
+  <div class="deco-line anim-up anim-delay-2"></div>
+  <p class="meta anim-up anim-delay-3">2026 · 基于李嘉图-尼尔森-达比卡尼框架 · 小勇与小Ark</p>
+</div>
+
+<!-- 1: 引言 -->
+<div class="slide slide-content" data-index="1">
+  <div class="inner-wrapper">
+    <h2>引言：一个被忽视的底层分类</h2>
+    <div class="grid-3">
+      <div class="card anim-up">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">搜寻品</div>
+        <div class="card-desc">购买前就能判断质量。如衣服的颜色、手机的参数</div>
+      </div>
+      <div class="card anim-up anim-delay-1">
+        <div class="card-icon">🍽️</div>
+        <div class="card-title">经验品</div>
+        <div class="card-desc">使用后才能判断质量。如一顿饭的味道、一部电影</div>
+      </div>
+      <div class="card anim-up anim-delay-2" style="border-color:var(--accent);">
+        <div class="card-icon">🤝</div>
+        <div class="card-title" style="color:var(--accent);">信任品</div>
+        <div class="card-desc">使用后也很难判断质量。如医生的诊断、律师的策略</div>
+      </div>
+    </div>
+    <p style="margin-top:0.8rem;font-size:clamp(0.9rem,1.3vw,1.3rem);" class="anim-up anim-delay-3">
+      <strong>现代社会，越来越成为一个"信任品"的社会。</strong> AI正在从根本上重构"信任"的生产机制——以及承担信任的"专家"这个角色的价值。
+    </p>
+  </div>
+</div>
+
+<!-- 2: 信任品经济的规模 -->
+<div class="slide slide-content" data-index="2">
+  <div class="inner-wrapper">
+    <h2>信任品经济的规模</h2>
+    <p>哪些行业本质上是信任品？</p>
+    <div class="grid-3">
+      <div class="card"><div class="card-icon">🏥</div><div class="card-title">医疗</div><div class="card-desc">你无法判断一个手术是否必要——你只能信任医生</div></div>
+      <div class="card"><div class="card-icon">📚</div><div class="card-title">教育</div><div class="card-desc">你无法判断教学方法是否最优——你只能信任学校和学位</div></div>
+      <div class="card"><div class="card-icon">⚖️</div><div class="card-title">法律</div><div class="card-desc">你无法判断律师策略是否最佳——你只能信任专业判断</div></div>
+      <div class="card"><div class="card-icon">💰</div><div class="card-title">金融</div><div class="card-desc">你无法判断基金经理决策是否合理——你只能信任资质和业绩</div></div>
+      <div class="card"><div class="card-icon">💡</div><div class="card-title">咨询</div><div class="card-desc">你无法判断建议是否有效——你只能信任品牌</div></div>
+      <div class="card"><div class="card-icon">💻</div><div class="card-title">软件</div><div class="card-desc">你无法判断系统架构是否安全——你只能信任团队专业性</div></div>
+    </div>
+    <p style="margin-top:0.6rem;"><strong>19世纪是"制造品"的世纪，20世纪是"服务品"的世纪，21世纪就是"信任品"的世纪。</strong></p>
+  </div>
+</div>
+
+<!-- 3: 信任的演变 -->
+<div class="slide slide-content" data-index="3">
+  <div class="inner-wrapper">
+    <h2>从个人信任到制度信任</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 800 260" style="width:100%;max-width:800px;">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6c8cff"/>
+            <stop offset="50%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#f472b6"/>
+          </linearGradient>
+        </defs>
+        <!-- Arrow -->
+        <line x1="80" y1="130" x2="720" y2="130" stroke="var(--border)" stroke-width="2" stroke-dasharray="6,4"/>
+        <polygon points="720,125 735,130 720,135" fill="var(--border)"/>
+        <!-- Labels -->
+        <text x="120" y="100" fill="var(--text2)" font-size="14" text-anchor="middle">前现代</text>
+        <text x="300" y="100" fill="var(--text2)" font-size="14" text-anchor="middle">工业时代</text>
+        <text x="480" y="100" fill="var(--text2)" font-size="14" text-anchor="middle">信息时代</text>
+        <text x="660" y="100" fill="var(--accent)" font-size="14" text-anchor="middle" font-weight="bold">AI时代</text>
+        <!-- Bubbles -->
+        <circle cx="120" cy="150" r="28" fill="none" stroke="var(--text2)" stroke-width="1.5"/>
+        <text x="120" y="155" fill="var(--text2)" font-size="13" text-anchor="middle">关系</text>
+        <circle cx="300" cy="150" r="28" fill="none" stroke="var(--text2)" stroke-width="1.5"/>
+        <text x="300" y="155" fill="var(--text2)" font-size="13" text-anchor="middle">制度</text>
+        <circle cx="480" cy="150" r="28" fill="none" stroke="var(--text2)" stroke-width="1.5"/>
+        <text x="480" y="155" fill="var(--text2)" font-size="13" text-anchor="middle">声誉</text>
+        <circle cx="660" cy="150" r="28" fill="url(#g1)" stroke="none" opacity="0.8"/>
+        <text x="660" y="155" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">算法+制度</text>
+        <!-- Trust carrier -->
+        <text x="120" y="200" fill="var(--text2)" font-size="12" text-anchor="middle">熟人、家族</text>
+        <text x="300" y="200" fill="var(--text2)" font-size="12" text-anchor="middle">证书、执照</text>
+        <text x="480" y="200" fill="var(--text2)" font-size="12" text-anchor="middle">评价、排名</text>
+        <text x="660" y="200" fill="var(--accent)" font-size="12" text-anchor="middle" font-weight="bold">数据+制度</text>
+        <!-- Expert role -->
+        <text x="120" y="225" fill="var(--text2)" font-size="11" text-anchor="middle">智者、长老</text>
+        <text x="300" y="225" fill="var(--text2)" font-size="11" text-anchor="middle">专业人士</text>
+        <text x="480" y="225" fill="var(--text2)" font-size="11" text-anchor="middle">意见领袖</text>
+        <text x="660" y="225" fill="var(--gold)" font-size="11" text-anchor="middle" font-weight="bold">责任承担者</text>
+      </svg>
+    </div>
+    <p>信任的生产方式，从"关系生产"变成了"制度生产"，再走向"算法+制度"的组合。</p>
+    <blockquote>但无论信任机制如何变化，有一个东西不变：<strong>最后需要有人"负责"。</strong></blockquote>
+  </div>
+</div>
+
+<!-- 4: 专家的三个维度 -->
+<div class="slide slide-content" data-index="4">
+  <div class="inner-wrapper">
+    <h2>替代性决策的三个维度</h2>
+    <p>专家承担的是<strong>替代性决策</strong>——替你做你无法或不值得做的决定。</p>
+    <div class="grid-3" style="margin-top:0.8rem;">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">📖</div>
+        <div class="card-title" style="color:var(--accent);">解释 Interpretation</div>
+        <div class="card-desc">把专业信息翻译成可理解的框架。医生解释你的症状意味着什么</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title" style="color:var(--gold);">判断 Judgment</div>
+        <div class="card-desc">在不确定性中做出选择。律师判断哪种诉讼策略胜算更大</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🛡️</div>
+        <div class="card-title" style="color:var(--green);">担责 Responsibility</div>
+        <div class="card-desc">为决策结果承担后果。会计师为审计报告签字负责</div>
+      </div>
+    </div>
+    <blockquote style="margin-top:0.8rem;">没有担责的解释和判断，只是"建议"——不是"专家服务"。</blockquote>
+  </div>
+</div>
+
+<!-- 5: AI vs 三个维度 -->
+<div class="slide slide-content" data-index="5">
+  <div class="inner-wrapper">
+    <h2>AI如何重构专家的价值</h2>
+    <div class="grid-3">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">📖</div>
+        <div class="card-title" style="color:var(--accent);">解释</div>
+        <div class="card-desc">
+          <strong style="color:var(--green);">AI的强项</strong><br>
+          医学影像、法律检索、财务分析——AI准确率已超过人类平均水平<br>
+          <span style="color:var(--text2);">→ 解释溢价被压缩</span>
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title" style="color:var(--gold);">判断</div>
+        <div class="card-desc">
+          <strong style="color:var(--gold);">AI的辅助</strong><br>
+          计算概率、识别模式、预警风险——但无法权衡不可比较的价值<br>
+          <span style="color:var(--text2);">→ 从"算得准"转向"想得全"</span>
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🛡️</div>
+        <div class="card-title" style="color:var(--green);">担责</div>
+        <div class="card-desc">
+          <strong style="color:var(--red);">AI的绝对盲区</strong><br>
+          AI不能上法庭、不能签字、不能为结果负责——这是社会概念，不是技术概念<br>
+          <span style="color:var(--green);">→ 担责溢价反而上升</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:0.6rem;font-size:clamp(0.85rem,1.2vw,1.2rem);">
+      AI让"解释"和"判断"变得更便宜，但"担责"变得更稀缺——<strong>它成了人类最后的、不可替代的核心价值。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- 6: 权威转移 -->
+<div class="slide slide-content" data-index="6">
+  <div class="inner-wrapper">
+    <h2>权威的转移：从"我知道"到"我负责"</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 700 300" style="width:100%;max-width:700px;">
+        <defs>
+          <linearGradient id="gred" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="var(--red)"/>
+            <stop offset="100%" stop-color="var(--accent3)"/>
+          </linearGradient>
+          <linearGradient id="gblue" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="var(--accent)"/>
+            <stop offset="100%" stop-color="var(--accent2)"/>
+          </linearGradient>
+        </defs>
+        <!-- Title -->
+        <text x="350" y="35" fill="var(--text)" font-size="16" text-anchor="middle" font-weight="bold">传统权威来源</text>
+        <text x="350" y="55" fill="var(--text2)" font-size="12" text-anchor="middle">↓ AI侵蚀</text>
+        <!-- Three pillars -->
+        <rect x="35" y="75" width="190" height="60" rx="8" fill="rgba(251,113,133,0.15)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="130" y="105" fill="var(--red)" font-size="18" text-anchor="middle" font-weight="bold">知识权威</text>
+        <text x="130" y="125" fill="var(--red)" font-size="12" text-anchor="middle">"我知道你不知道的事"</text>
+
+        <rect x="255" y="75" width="190" height="60" rx="8" fill="rgba(251,191,36,0.15)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="350" y="105" fill="var(--gold)" font-size="18" text-anchor="middle" font-weight="bold">判断权威</text>
+        <text x="350" y="125" fill="var(--gold)" font-size="12" text-anchor="middle">"我能做出正确选择"</text>
+
+        <rect x="475" y="75" width="190" height="60" rx="8" fill="rgba(52,211,153,0.15)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="570" y="105" fill="var(--green)" font-size="18" text-anchor="middle" font-weight="bold">责任权威</text>
+        <text x="570" y="125" fill="var(--green)" font-size="12" text-anchor="middle">"我愿为后果负责"</text>
+
+        <!-- Arrow down -->
+        <line x1="350" y1="150" x2="350" y2="180" stroke="var(--text2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <polygon points="345,178 350,188 355,178" fill="var(--text2)"/>
+
+        <!-- New center -->
+        <rect x="175" y="195" width="350" height="70" rx="12" fill="rgba(108,140,255,0.12)" stroke="var(--accent)" stroke-width="2"/>
+        <text x="350" y="225" fill="var(--accent)" font-size="22" text-anchor="middle" font-weight="bold">责任权威 → 核心</text>
+        <text x="350" y="248" fill="var(--text2)" font-size="13" text-anchor="middle">专家不再是"知识的垄断者"，而是"责任的承担者"</text>
+      </svg>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title" style="color:var(--red);">传统专家</div><div class="card-desc">"我知道，所以你要听我的"<br>"我的经验比你的直觉更可靠"</div></div>
+      <div class="card" style="border-color:var(--accent);"><div class="card-title" style="color:var(--accent);">AI时代专家</div><div class="card-desc">"AI也知道，但我会为结果负责"<br>"我比AI更了解你，我会为你的利益做决策"</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 7: 连锁反应 -->
+<div class="slide slide-content" data-index="7">
+  <div class="inner-wrapper">
+    <h2>权威转移的连锁反应</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-icon">🚪</div>
+        <div class="card-title">职业门槛</div>
+        <div class="card-desc">如果"知识"不再是壁垒，那么"担责"的意愿和能力将成为新的壁垒</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💰</div>
+        <div class="card-title">收入结构</div>
+        <div class="card-desc">知识溢价<span style="color:var(--red);">↓</span>下降，责任溢价<span style="color:var(--green);">↑</span>上升</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title">职业风险</div>
+        <div class="card-desc">AI辅助下的决策，责任归属更清晰——但后果也更严重</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏛️</div>
+        <div class="card-title">组织形态</div>
+        <div class="card-desc">从"知识密集型"组织，转向"责任密集型"组织</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8: 五个批判性问题 -->
+<div class="slide slide-content" data-index="8">
+  <div class="inner-wrapper">
+    <h2>批判性审视：五个深层问题</h2>
+    <div style="margin:0.5rem 0;">
+      <p style="margin-bottom:0.8rem;"><strong style="color:var(--red);">①</strong> 担责是真的"不能"被AI替代，还是"暂时不能"？</p>
+      <p style="margin-bottom:0.8rem;padding-left:1.2rem;color:var(--text2);font-size:clamp(0.8rem,1.1vw,1.1rem);">
+        担责是"社会契约问题"，不是技术问题。AI替代"担责"的时间表，是社会制度演进的时间表——这会慢得多。
+      </p>
+      <p style="margin-bottom:0.8rem;"><strong style="color:var(--red);">②</strong> 担责的"价格"会不会被制度压低？</p>
+      <p style="margin-bottom:0.8rem;padding-left:1.2rem;color:var(--text2);font-size:clamp(0.8rem,1.1vw,1.1rem);">
+        监管、标准化、集体化——制度可能分散担责风险，压低担责溢价。
+      </p>
+      <p style="margin-bottom:0.8rem;"><strong style="color:var(--red);">③</strong> AI+专家，谁来承担"最后的责任"？</p>
+      <p style="margin-bottom:0.8rem;padding-left:1.2rem;color:var(--text2);font-size:clamp(0.8rem,1.1vw,1.1rem);">
+        当专家只为AI判断"背书"——"担责"是否变成了"形式上的担责"？
+      </p>
+      <p style="margin-bottom:0.8rem;"><strong style="color:var(--red);">④</strong> 信任品本身会不会被重构？</p>
+      <p style="margin-bottom:0.8rem;padding-left:1.2rem;color:var(--text2);font-size:clamp(0.8rem,1.1vw,1.1rem);">
+        AI让信任品变得更"可验证"——信任品在向经验品转化。
+      </p>
+      <p style="margin-bottom:0.8rem;"><strong style="color:var(--red);">⑤</strong> 稀缺性真的"不会消失"吗？</p>
+      <p style="margin-bottom:0.8rem;padding-left:1.2rem;color:var(--text2);font-size:clamp(0.8rem,1.1vw,1.1rem);">
+        注意力、判断力、情感、责任——这些稀缺性不会消失，只是从"知识"转移到"责任"。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 9: 多角度 -->
+<div class="slide slide-content" data-index="9">
+  <div class="inner-wrapper">
+    <h2>多角度补充</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">📜</div>
+        <div class="card-title" style="color:var(--accent);">历史视角</div>
+        <div class="card-desc">信任"生产"从个人→制度→算法+制度。但最后总需要有人"负责"。</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">🔬</div>
+        <div class="card-title" style="color:var(--gold);">社会学：阿伯特</div>
+        <div class="card-desc">职业的本质是"管辖权"争夺。AI侵蚀解释和判断管辖权，但无法侵蚀责任管辖权。</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🧠</div>
+        <div class="card-title" style="color:var(--green);">哲学：约纳斯</div>
+        <div class="card-desc">责任不是事后追责，是事前预防。专家的最高价值是"愿意为未知的后果承担风险"。</div>
+      </div>
+      <div class="card" style="border-color:var(--accent3);">
+        <div class="card-icon">📊</div>
+        <div class="card-title" style="color:var(--accent3);">经济学</div>
+        <div class="card-desc">信任品总行业收入可能下降，但顶尖专家的收入可能上升——担责溢价更集中了。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10: 稀缺性转移 -->
+<div class="slide slide-content" data-index="10">
+  <div class="inner-wrapper">
+    <h2>稀缺性的转移</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 700 220" style="width:100%;max-width:700px;">
+        <defs>
+          <linearGradient id="gone" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="var(--red)"/>
+            <stop offset="100%" stop-color="var(--gold)"/>
+          </linearGradient>
+          <linearGradient id="gtwo" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="var(--gold)"/>
+            <stop offset="100%" stop-color="var(--green)"/>
+          </linearGradient>
+        </defs>
+        <!-- Three stages -->
+        <rect x="20" y="40" width="200" height="100" rx="10" fill="rgba(251,113,133,0.1)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="120" y="75" fill="var(--red)" font-size="20" text-anchor="middle" font-weight="bold">过去</text>
+        <text x="120" y="105" fill="var(--text)" font-size="16" text-anchor="middle">稀缺的是</text>
+        <text x="120" y="130" fill="var(--red)" font-size="18" text-anchor="middle" font-weight="bold">知识</text>
+
+        <rect x="250" y="40" width="200" height="100" rx="10" fill="rgba(251,191,36,0.1)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="350" y="75" fill="var(--gold)" font-size="20" text-anchor="middle" font-weight="bold">现在</text>
+        <text x="350" y="105" fill="var(--text)" font-size="16" text-anchor="middle">稀缺的是</text>
+        <text x="350" y="130" fill="var(--gold)" font-size="18" text-anchor="middle" font-weight="bold">判断</text>
+
+        <rect x="480" y="40" width="200" height="100" rx="10" fill="rgba(52,211,153,0.1)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="580" y="75" fill="var(--green)" font-size="20" text-anchor="middle" font-weight="bold">未来</text>
+        <text x="580" y="105" fill="var(--text)" font-size="16" text-anchor="middle">稀缺的是</text>
+        <text x="580" y="130" fill="var(--green)" font-size="18" text-anchor="middle" font-weight="bold">责任</text>
+
+        <!-- Arrow connections -->
+        <line x1="220" y1="90" x2="250" y2="90" stroke="var(--text2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <polygon points="248,86 258,90 248,94" fill="var(--text2)"/>
+        <line x1="450" y1="90" x2="480" y2="90" stroke="var(--text2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <polygon points="478,86 488,90 478,94" fill="var(--text2)"/>
+
+        <!-- Subtitle -->
+        <text x="350" y="185" fill="var(--text2)" font-size="14" text-anchor="middle">
+          稀缺性不会消失——它只是从"你知道什么"转移到"你愿意为你的判断承担什么后果"
+        </text>
+      </svg>
+    </div>
+    <div class="grid-2" style="margin-top:0.3rem;">
+      <div class="card">
+        <div class="card-title" style="color:var(--red);">被替代的</div>
+        <div class="card-desc">放射科医生↓、律师助理↓、知识传授型老师↓</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-title" style="color:var(--green);">变稀缺的</div>
+        <div class="card-desc">外科医生↑、出庭律师↑、激励引导型老师↑</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11: Conclusion -->
+<div class="slide slide-conclusion" data-index="11">
+  <div class="deco-line anim-up"></div>
+  <div class="big-quote anim-up anim-delay-1">
+    AI剥夺了<span class="highlight">"我知道"</span>的稀缺性，<br>
+    但创造了<span class="highlight-gold">"我负责"</span>的新稀缺性。
+  </div>
+  <div class="deco-line anim-up anim-delay-2"></div>
+  <p class="anim-up anim-delay-3">
+    稀缺性永远不会消失——它只是从<br>
+    <strong style="color:var(--red);">"你知道什么"</strong>
+    转移到
+    <strong style="color:var(--green);">"你愿意为你的判断承担什么后果"</strong>。
+  </p>
+  <div class="final-q anim-up anim-delay-4">
+    <p>在你的行业里，AI正在替代"解释"和"判断"——<br>但"担责"这个维度，你的价值在哪里？</p>
+  </div>
+</div>
+
+<!-- 12: End -->
+<div class="slide slide-conclusion" data-index="12">
+  <div class="ends-title anim-up">谢谢</div>
+  <div class="deco-line anim-up anim-delay-1"></div>
+  <p class="anim-up anim-delay-2" style="font-size:clamp(0.85rem,1.2vw,1.2rem);color:var(--text2);">
+    基于小勇2026年8月1日的深度思考<br>
+    由小Ark协助整理 · 放置于"技术变革"知识库
+  </p>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" onclick="prevSlide()">◀</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="page-num" id="pageNum">1 / 13</span>
+  <button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+
+function initDots() {
+  const dots = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dots.appendChild(dot);
+  }
+}
+
+function update() {
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === current);
+  });
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+  document.getElementById('pageNum').textContent = (current + 1) + ' / ' + total;
+}
+
+function goTo(n) {
+  if (n < 0) n = 0;
+  if (n >= total) n = total - 1;
+  current = n;
+  update();
+}
+
+function nextSlide() { goTo(current + 1); }
+function prevSlide() { goTo(current - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+});
+
+// Touch
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+
+initDots();
+update();
+</script>
+</body>
+</html>
