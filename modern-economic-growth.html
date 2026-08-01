@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>现代经济增长的起源与扩散</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c18;--bg2:#0c1028;--card:#111638;--border:#1e2450;--text:#e0e4f0;--text2:#8088b0;--accent:#60a5fa;--accent2:#818cf8;--gold:#fbbf24;--green:#34d399;--red:#fb7185;--amber:#f59e0b;--purple:#a78bfa;--radius:16px}
+html{font-size:clamp(14px,1.8vw,28px)}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;width:100vw;height:100vh}
+.slides{width:100%;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:5vh 6vw;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}
+.slide::-webkit-scrollbar{width:4px}
+.slide::-webkit-scrollbar-track{background:transparent}
+.slide::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.nav{position:fixed;bottom:2.5vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1.2rem;z-index:100;background:rgba(8,12,24,.85);padding:.6rem 1.8rem;border-radius:100px;backdrop-filter:blur(12px);border:1px solid var(--border)}
+.nav-btn{background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer;padding:.3rem .6rem;transition:color .3s;font-family:inherit}
+.nav-btn:hover{color:var(--accent)}
+.nav-dots{display:flex;gap:.4rem}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .3s;border:none}
+.nav-dot.active{background:var(--accent);width:24px;border-radius:4px}
+.page-num{color:var(--text2);font-size:.75rem;letter-spacing:.05em;min-width:3rem;text-align:center}
+.slide-title{text-align:center}
+.slide-title h1{font-family:'Noto Serif SC',serif;font-size:clamp(2rem,4.5vw,4.5rem);font-weight:900;line-height:1.3;margin-bottom:1.5rem;background:linear-gradient(135deg,#e0e4f0 0%,#60a5fa 50%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-title .sub{font-size:clamp(1rem,1.6vw,1.6rem);color:var(--text2);font-weight:300;max-width:80%;margin:0 auto;line-height:1.7}
+.slide-title .meta{margin-top:2.5rem;font-size:.8rem;color:var(--text2);letter-spacing:.1em}
+.deco-line{width:80px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin:1.5rem auto;border-radius:2px}
+
+.slide-content{text-align:left;align-items:flex-start}
+.slide-content h2{font-family:'Noto Serif SC',serif;font-size:clamp(1.5rem,3vw,3rem);font-weight:700;margin-bottom:1rem;color:var(--accent)}
+.slide-content h3{font-family:'Noto Serif SC',serif;font-size:clamp(1.1rem,1.8vw,1.8rem);font-weight:600;margin-bottom:.6rem;color:var(--gold)}
+.slide-content p,.slide-content li{font-size:clamp(.85rem,1.3vw,1.3rem);line-height:1.8;color:var(--text);margin-bottom:.5rem}
+.slide-content ul,.slide-content ol{padding-left:1.5rem;width:100%}
+.slide-content li{margin-bottom:.3rem}
+.slide-content strong{color:#fff;font-weight:600}
+.slide-content blockquote{border-left:3px solid var(--accent);padding:.8rem 1.2rem;margin:.8rem 0;background:rgba(96,165,250,.08);border-radius:0 8px 8px 0;font-size:clamp(.85rem,1.2vw,1.2rem);color:var(--text2);font-style:italic;width:100%}
+.slide-content .inner-wrapper{width:100%;max-width:90vw}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%;margin:.6rem 0}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;width:100%;margin:.6rem 0}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.8rem;width:100%;margin:.6rem 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem .9rem;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card .card-icon{font-size:1.5rem;margin-bottom:.3rem}
+.card .card-title{font-weight:600;font-size:clamp(.85rem,1.1vw,1.1rem);margin-bottom:.3rem;color:#fff}
+.card .card-desc{font-size:clamp(.72rem,.95vw,.95rem);color:var(--text2);line-height:1.6}
+.table-wrap{width:100%;overflow-x:auto;margin:.6rem 0}
+table{width:100%;border-collapse:collapse;font-size:clamp(.72rem,1vw,1rem)}
+th{background:rgba(96,165,250,.15);color:var(--accent);font-weight:600;padding:.6rem .7rem;text-align:left;border-bottom:2px solid var(--accent)}
+td{padding:.5rem .7rem;border-bottom:1px solid var(--border);color:var(--text);line-height:1.5}
+tr:hover td{background:rgba(96,165,250,.04)}
+.diagram{width:100%;margin:.8rem 0;display:flex;justify-content:center}
+.diagram svg{max-width:100%;height:auto}
+.slide-conclusion{text-align:center}
+.slide-conclusion h2{font-family:'Noto Serif SC',serif;font-size:clamp(1.4rem,2.5vw,2.5rem);font-weight:700;margin-bottom:1.5rem;color:var(--gold)}
+.slide-conclusion .big-quote{font-family:'Noto Serif SC',serif;font-size:clamp(1.2rem,2.2vw,2.2rem);line-height:1.5;font-weight:700;max-width:85%;margin:1rem auto;color:#fff}
+.slide-conclusion .big-quote .hl{color:var(--accent)}
+.slide-conclusion .big-quote .hlg{color:var(--gold)}
+.slide-conclusion p{font-size:clamp(.85rem,1.2vw,1.2rem);color:var(--text2);line-height:1.8;max-width:80%;margin:.5rem auto}
+.final-q{background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(129,140,248,.1));border:1px solid var(--accent);border-radius:var(--radius);padding:1.5rem 2rem;margin:1.5rem auto;max-width:85%;text-align:center}
+.final-q p{font-size:clamp(1rem,1.5vw,1.5rem);color:var(--accent);font-weight:500;max-width:100%;margin:0}
+.ends-title{font-family:'Noto Serif SC',serif;font-size:clamp(2rem,4vw,4rem);font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+@media(max-width:768px){.slide{padding:3vh 4vw}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.slide-content .inner-wrapper,.slide-title .sub,.slide-conclusion .big-quote,.slide-conclusion p,.final-q{max-width:100%}}
+.slide.active .anim-up{animation:up .6s ease forwards}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.anim-delay-1{animation-delay:.1s}.anim-delay-2{animation-delay:.2s}.anim-delay-3{animation-delay:.3s}.anim-delay-4{animation-delay:.4s}.anim-delay-5{animation-delay:.5s}
+</style>
+</head>
+<body>
+<div class="slides" id="slides">
+
+<!-- 0: Title -->
+<div class="slide slide-title active" data-index="0">
+  <div class="deco-line anim-up"></div>
+  <h1 class="anim-up anim-delay-1">现代经济增长的<br>起源与扩散</h1>
+  <p class="sub anim-up anim-delay-2">制度储备 · 技术革命 · 全球学习进程</p>
+  <div class="deco-line anim-up anim-delay-2"></div>
+  <p class="meta anim-up anim-delay-3">2026.08 · 从荷兰到英国到全球 · 小勇与小Ark</p>
+</div>
+
+<!-- 1: 引言 -->
+<div class="slide slide-content" data-index="1">
+  <div class="inner-wrapper">
+    <h2>一个核心困惑</h2>
+    <blockquote>"现代经济增长需要技术和制度上的一系列储备——产权、专利、议会法、普通法、股份制——然后扩散到全球。但这个过程，是一个或早或晚大家都能学会的过程。"</blockquote>
+    <p>这个感慨触及了经济史最根本的问题：<strong>为什么现代增长首先发生在西欧？为什么它后来扩散到了全球？"学习过程"到底可以学什么，不能学什么？</strong></p>
+    <div class="grid-3" style="margin-top:0.6rem;">
+      <div class="card" style="border-color:var(--accent);"><div class="card-icon">🏛️</div><div class="card-title" style="color:var(--accent);">制度储备</div><div class="card-desc">产权、专利、议会法、普通法、股份制——这些是增长的前提条件</div></div>
+      <div class="card" style="border-color:var(--gold);"><div class="card-icon">⚙️</div><div class="card-title" style="color:var(--gold);">技术革命</div><div class="card-desc">蒸汽机、纺织机、炼钢法——从英国开始的技术爆发</div></div>
+      <div class="card" style="border-color:var(--green);"><div class="card-icon">🌍</div><div class="card-title" style="color:var(--green);">全球扩散</div><div class="card-desc">西欧→殖民地→东亚→中国→东南亚——每一波学得更快</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2: 荷兰 -->
+<div class="slide slide-content" data-index="2">
+  <div class="inner-wrapper">
+    <h2>荷兰：现代增长的"第一推动"</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">📜</div>
+        <div class="card-title" style="color:var(--accent);">产权制度</div>
+        <div class="card-desc">全球最早建立现代产权保护体系，土地市场自由化，资本自由流动</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">🏦</div>
+        <div class="card-title" style="color:var(--gold);">金融创新</div>
+        <div class="card-desc">1602年荷兰东印度公司——第一家股份制公司，第一家证券交易所</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title" style="color:var(--green);">法治传统</div>
+        <div class="card-desc">独立司法体系，保护商人免受王权随意征收</div>
+      </div>
+      <div class="card" style="border-color:var(--purple);">
+        <div class="card-icon">🕊️</div>
+        <div class="card-title" style="color:var(--purple);">宗教宽容</div>
+        <div class="card-desc">吸引欧洲各地商人——犹太商人、胡格诺教徒，人才聚集</div>
+      </div>
+    </div>
+    <blockquote style="margin-top:0.5rem;">荷兰的局限性：繁荣建立在商业和金融上，不是工业制造。规模太小，缺乏工业革命所需的资源禀赋。荷兰为现代增长准备好了"<strong>制度软件</strong>"，但"<strong>技术硬件</strong>"是在英国完成的。</blockquote>
+  </div>
+</div>
+
+<!-- 3: 英国 -->
+<div class="slide slide-content" data-index="3">
+  <div class="inner-wrapper">
+    <h2>英国：制度储备 + 技术爆发</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 720 220" style="width:100%;max-width:720px;">
+        <rect x="10" y="10" width="330" height="200" rx="10" fill="rgba(96,165,250,.06)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="175" y="40" fill="var(--accent)" font-size="16" text-anchor="middle" font-weight="bold">制度储备</text>
+        <text x="175" y="68" fill="var(--text2)" font-size="12" text-anchor="middle">1688 光荣革命：议会主权</text>
+        <text x="175" y="88" fill="var(--text2)" font-size="12" text-anchor="middle">1215→1689 产权保护传统</text>
+        <text x="175" y="108" fill="var(--text2)" font-size="12" text-anchor="middle">1624 专利法：第一部现代专利法</text>
+        <text x="175" y="128" fill="var(--text2)" font-size="12" text-anchor="middle">股份制：有限责任的力量</text>
+        <text x="175" y="148" fill="var(--text2)" font-size="12" text-anchor="middle">普通法：灵活适应商业变化</text>
+        <text x="360" y="110" fill="var(--text2)" font-size="28" text-anchor="middle">→</text>
+        <rect x="390" y="10" width="320" height="200" rx="10" fill="rgba(251,191,36,.06)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="550" y="40" fill="var(--gold)" font-size="16" text-anchor="middle" font-weight="bold">技术爆发</text>
+        <text x="550" y="68" fill="var(--text2)" font-size="12" text-anchor="middle">1765 瓦特改良蒸汽机</text>
+        <text x="550" y="88" fill="var(--text2)" font-size="12" text-anchor="middle">1770s 水力纺纱机</text>
+        <text x="550" y="108" fill="var(--text2)" font-size="12" text-anchor="middle">1804 蒸汽机车</text>
+        <text x="550" y="128" fill="var(--text2)" font-size="12" text-anchor="middle">1856 贝塞麦转炉炼钢</text>
+        <text x="550" y="160" fill="var(--text2)" font-size="11" text-anchor="middle" style="font-style:italic;">为什么是英国？</text>
+        <text x="550" y="180" fill="var(--text2)" font-size="11" text-anchor="middle">诺斯→制度·韦伯→文化</text>
+        <text x="550" y="198" fill="var(--text2)" font-size="11" text-anchor="middle">彭慕兰→煤炭·艾伦→工资</text>
+      </svg>
+    </div>
+    <blockquote style="margin-top:0.4rem;">现代经济增长的起源，是一个"多因一果"的过程——制度、文化、地理、技术、工资共同作用。</blockquote>
+  </div>
+</div>
+
+<!-- 4: 四波扩散 -->
+<div class="slide slide-content" data-index="4">
+  <div class="inner-wrapper">
+    <h2>四波扩散：每一波都学得更快</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 750 320" style="width:100%;max-width:750px;">
+        <!-- Timeline -->
+        <line x1="40" y1="285" x2="730" y2="285" stroke="var(--border)" stroke-width="2"/>
+        <text x="380" y="310" fill="var(--text2)" font-size="13" text-anchor="middle">时间 →</text>
+
+        <!-- Wave 1: West Europe -->
+        <rect x="40" y="10" width="140" height="100" rx="8" fill="rgba(96,165,250,.1)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="110" y="35" fill="var(--accent)" font-size="14" text-anchor="middle" font-weight="bold">第一波</text>
+        <text x="110" y="55" fill="var(--text)" font-size="12" text-anchor="middle">西欧+殖民地</text>
+        <text x="110" y="75" fill="var(--text2)" font-size="10" text-anchor="middle">1760-1900</text>
+        <text x="110" y="95" fill="var(--text2)" font-size="10" text-anchor="middle">~200年（英国）</text>
+
+        <line x1="180" y1="60" x2="200" y2="60" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="198,57 205,60 198,63" fill="var(--text2)"/>
+
+        <!-- Wave 2: East Asia -->
+        <rect x="210" y="30" width="140" height="100" rx="8" fill="rgba(251,191,36,.1)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="280" y="55" fill="var(--gold)" font-size="14" text-anchor="middle" font-weight="bold">第二波</text>
+        <text x="280" y="75" fill="var(--text)" font-size="12" text-anchor="middle">东亚</text>
+        <text x="280" y="95" fill="var(--text2)" font-size="10" text-anchor="middle">1868-1980s</text>
+        <text x="280" y="115" fill="var(--text2)" font-size="10" text-anchor="middle">~70年（日本）</text>
+
+        <line x1="350" y1="80" x2="370" y2="80" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="368,77 375,80 368,83" fill="var(--text2)"/>
+
+        <!-- Wave 3: China -->
+        <rect x="380" y="50" width="140" height="100" rx="8" fill="rgba(52,211,153,.1)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="450" y="75" fill="var(--green)" font-size="14" text-anchor="middle" font-weight="bold">第三波</text>
+        <text x="450" y="95" fill="var(--text)" font-size="12" text-anchor="middle">中国</text>
+        <text x="450" y="115" fill="var(--text2)" font-size="10" text-anchor="middle">1978-</text>
+        <text x="450" y="135" fill="var(--text2)" font-size="10" text-anchor="middle">~30年</text>
+
+        <line x1="520" y1="100" x2="540" y2="100" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>
+        <polygon points="538,97 545,100 538,103" fill="var(--text2)"/>
+
+        <!-- Wave 4: SE Asia -->
+        <rect x="550" y="70" width="140" height="100" rx="8" fill="rgba(167,139,250,.1)" stroke="var(--purple)" stroke-width="1.5"/>
+        <text x="620" y="95" fill="var(--purple)" font-size="14" text-anchor="middle" font-weight="bold">第四波</text>
+        <text x="620" y="115" fill="var(--text)" font-size="12" text-anchor="middle">东南亚+南亚</text>
+        <text x="620" y="135" fill="var(--text2)" font-size="10" text-anchor="middle">1986-</text>
+        <text x="620" y="155" fill="var(--text2)" font-size="10" text-anchor="middle">~20年（越南）</text>
+
+        <!-- Speed arrow -->
+        <rect x="40" y="170" width="680" height="40" rx="8" fill="rgba(96,165,250,.06)" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="380" y="195" fill="var(--accent)" font-size="14" text-anchor="middle" font-weight="bold">学习速度：200年→100年→70年→40年→30年→20年</text>
+
+        <!-- Key insight -->
+        <rect x="40" y="220" width="680" height="45" rx="8" fill="rgba(251,191,36,.08)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="380" y="240" fill="var(--gold)" font-size="13" text-anchor="middle" font-weight="bold">学习的成本远低于创造——但追赶到前沿时，需要从学习切换到创新</text>
+        <text x="380" y="257" fill="var(--text2)" font-size="11" text-anchor="middle">英国200年 → 德国100年 → 日本70年 → 四小龙40年 → 中国30年 → 越南20年</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- 5: 核心理论 -->
+<div class="slide slide-content" data-index="5">
+  <div class="inner-wrapper">
+    <h2>为什么"大家都能学会"</h2>
+    <div class="grid-3">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">📈</div>
+        <div class="card-title" style="color:var(--accent);">格申克龙：后发优势</div>
+        <div class="card-desc">越落后的国家，工业化初期增长越快——可以借用先进国家的技术和制度，不需要自己发明。后发国家只需要复制"关键制度"。</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">🔄</div>
+        <div class="card-title" style="color:var(--gold);">技术扩散</div>
+        <div class="card-desc">贸易、FDI、人才流动、模仿学习、国际组织——没有一种技术能永远封闭。代价和时间在缩短，但方向不变。</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🏛️</div>
+        <div class="card-title" style="color:var(--green);">制度趋同假说</div>
+        <div class="card-desc">核心功能趋同：产权保护、合同执行、法治、有限责任。形式可以不同（中国≠西方），但功能一样。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6: 五个"但是" -->
+<div class="slide slide-content" data-index="6">
+  <div class="inner-wrapper">
+    <h2>批判性审视：五个"但是"</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--red);">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title" style="color:var(--red);">但是一：不是自动学会</div>
+        <div class="card-desc">撒哈拉以南非洲、中东——很多国家几十年"学习"仍未成功。制度锁定、精英俘获、文化障碍——"学会"需要打破路径依赖。</div>
+      </div>
+      <div class="card" style="border-color:var(--red);">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title" style="color:var(--red);">但是二：学习成本在上升</div>
+        <div class="card-desc">后发优势只在早期有效。追赶到前沿时，需要从学习切换到创新——成本高、风险大。中等收入陷阱。</div>
+      </div>
+      <div class="card" style="border-color:var(--red);">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title" style="color:var(--red);">但是三：文化学不会</div>
+        <div class="card-desc">制度可以复制，文化很难复制。韦伯的幽灵：资本主义需要特定的文化态度。儒家→勤奋节俭，但速度慢。</div>
+      </div>
+      <div class="card" style="border-color:var(--red);">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title" style="color:var(--red);">但是四：梯子被抽走</div>
+        <div class="card-desc">李斯特1840年代警告：英国推广自由贸易时自己已完成工业化——"抽梯子"。今天重演：知识产权保护堵住了后发国家的学习路径。</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:.3rem;border-color:var(--red);"><div class="card-icon">⚠️</div><div class="card-title" style="color:var(--red);">但是五：学习进程有终点吗</div><div class="card-desc">如果所有国家都"学会了"，先发优势从技术优势转变为制度优势和文化优势。终点不是趋同，而是新的竞争形式。</div></div>
+  </div>
+</div>
+
+<!-- 7: 多学科视角 -->
+<div class="slide slide-content" data-index="7">
+  <div class="inner-wrapper">
+    <h2>多学科视角的五位学者</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent);">
+        <div class="card-icon">💰</div>
+        <div class="card-title" style="color:var(--accent);">诺斯 vs 阿西莫格鲁</div>
+        <div class="card-desc"><strong>诺斯</strong>：制度是根本，可以学习移植。<br><strong>阿西莫格鲁</strong>：制度是政治博弈的结果，不能简单移植。</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">🌏</div>
+        <div class="card-title" style="color:var(--gold);">彭慕兰：大分流</div>
+        <div class="card-desc">1800年前中国江南和英格兰没有本质差异。欧洲的优势是煤炭+殖民地的偶然性，不是制度差异。直接挑战制度决定论。</div>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🏗️</div>
+        <div class="card-title" style="color:var(--green);">发展型国家</div>
+        <div class="card-desc">日本和四小龙的成功不是自由市场，而是"发展型国家"——国家主导产业政策、精英官僚体系、政企协商机制。</div>
+      </div>
+      <div class="card" style="border-color:var(--purple);">
+        <div class="card-icon">👁️</div>
+        <div class="card-title" style="color:var(--purple);">斯科特：可读性</div>
+        <div class="card-desc">现代增长的前提是"可读性"——国家需要能看到经济才能管理经济。很多后发国家的问题不是制度不好，是国家能力不足。</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:.3rem;border-color:var(--amber);"><div class="card-icon">📖</div><div class="card-title" style="color:var(--amber);">韦伯的幽灵</div><div class="card-desc">资本主义需要特定的文化态度。新教伦理提供个人主义、理性主义、勤奋诚信。东亚模式是儒家+资本主义的结合。文化解释容易变成文化决定论，但完全忽视文化也是一种傲慢。</div></div>
+  </div>
+</div>
+
+<!-- 8: 四层结构 -->
+<div class="slide slide-content" data-index="8">
+  <div class="inner-wrapper">
+    <h2>增长的"四层结构"</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 700 320" style="width:100%;max-width:700px;">
+        <!-- Layer 1: 技术 -->
+        <rect x="80" y="10" width="540" height="55" rx="10" fill="rgba(52,211,153,.1)" stroke="var(--green)" stroke-width="2"/>
+        <text x="120" y="42" fill="var(--green)" font-size="16" font-weight="bold">技术</text>
+        <text x="250" y="42" fill="var(--text2)" font-size="13">机器、设备、工艺</text>
+        <text x="520" y="42" fill="var(--green)" font-size="14" font-weight="bold">容易</text>
+
+        <!-- Layer 2: 制度 -->
+        <rect x="80" y="75" width="540" height="55" rx="10" fill="rgba(251,191,36,.1)" stroke="var(--gold)" stroke-width="2"/>
+        <text x="120" y="107" fill="var(--gold)" font-size="16" font-weight="bold">制度</text>
+        <text x="250" y="107" fill="var(--text2)" font-size="13">产权保护、法治、公司制度</text>
+        <text x="520" y="107" fill="var(--gold)" font-size="14" font-weight="bold">中等</text>
+
+        <!-- Layer 3: 政治 -->
+        <rect x="80" y="140" width="540" height="55" rx="10" fill="rgba(251,113,133,.1)" stroke="var(--red)" stroke-width="2"/>
+        <text x="120" y="172" fill="var(--red)" font-size="16" font-weight="bold">政治</text>
+        <text x="250" y="172" fill="var(--text2)" font-size="13">稳定、问责、国家能力</text>
+        <text x="520" y="172" fill="var(--red)" font-size="14" font-weight="bold">困难</text>
+
+        <!-- Layer 4: 文化 -->
+        <rect x="80" y="205" width="540" height="55" rx="10" fill="rgba(167,139,250,.1)" stroke="var(--purple)" stroke-width="2"/>
+        <text x="120" y="237" fill="var(--purple)" font-size="16" font-weight="bold">文化</text>
+        <text x="250" y="237" fill="var(--text2)" font-size="13">价值观、态度、行为准则</text>
+        <text x="520" y="237" fill="var(--purple)" font-size="14" font-weight="bold">最难</text>
+
+        <!-- Arrow -->
+        <line x1="350" y1="265" x2="350" y2="280" stroke="var(--text2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <polygon points="345,278 350,288 355,278" fill="var(--text2)"/>
+
+        <text x="350" y="305" fill="var(--text2)" font-size="13" text-anchor="middle">从外到内 · 从易到难</text>
+      </svg>
+    </div>
+    <blockquote style="margin-top:0.4rem;">学习不是复制——是理解规律，然后找到自己的方式。</blockquote>
+  </div>
+</div>
+
+<!-- 9: 对个人发展的启示 -->
+<div class="slide slide-content" data-index="9">
+  <div class="inner-wrapper">
+    <h2>对个人发展的启示</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--green);">
+        <div class="card-icon">🛠️</div>
+        <div class="card-title" style="color:var(--green);">技术层面</div>
+        <div class="card-desc">知识、技能、工具——可以学，而且应该快速学。最容易的部分。</div>
+      </div>
+      <div class="card" style="border-color:var(--gold);">
+        <div class="card-icon">📋</div>
+        <div class="card-title" style="color:var(--gold);">制度层面</div>
+        <div class="card-desc">工作方法、时间管理、决策框架——可以学，但需要适配自己的性格和价值观。</div>
+      </div>
+      <div class="card" style="border-color:var(--red);">
+        <div class="card-icon">🤝</div>
+        <div class="card-title" style="color:var(--red);">政治层面</div>
+        <div class="card-desc">个人品牌、社交网络、组织能力——学起来更难，需要实践+反思。</div>
+      </div>
+      <div class="card" style="border-color:var(--purple);">
+        <div class="card-icon">🧭</div>
+        <div class="card-title" style="color:var(--purple);">文化层面</div>
+        <div class="card-desc">价值观、态度、习惯——长期浸润的结果，不可能速成。但决定了你的天花板。</div>
+      </div>
+    </div>
+    <p style="margin-top:.5rem;text-align:center;font-size:clamp(.85rem,1.2vw,1.2rem);">个人发展的"学习"，同样遵循<strong>从外到内、从易到难</strong>的规律。</p>
+  </div>
+</div>
+
+<!-- 10: Conclusion -->
+<div class="slide slide-conclusion" data-index="10">
+  <div class="deco-line anim-up"></div>
+  <div class="big-quote anim-up anim-delay-1">
+    荷兰不需要学英国的工业革命，<br>
+    因为它有<span class="hl">自己的优势</span>。
+  </div>
+  <div class="big-quote anim-up anim-delay-2">
+    日本不需要学英国的议会制度，<br>
+    因为它有<span class="hl">自己的方式</span>。
+  </div>
+  <div class="big-quote anim-up anim-delay-3">
+    中国不需要学西方的民主制度，<br>
+    因为它有<span class="hlg">自己的路径</span>。
+  </div>
+  <div class="deco-line anim-up anim-delay-4"></div>
+  <div class="big-quote anim-up anim-delay-5" style="font-size:clamp(1.3rem,2.2vw,2.2rem);">
+    "学习"不是"复制"——<br>
+    是<span class="hlg">理解规律，然后找到自己的方式</span>。
+  </div>
+</div>
+
+<!-- 11: End -->
+<div class="slide slide-conclusion" data-index="11">
+  <div class="ends-title anim-up">谢谢</div>
+  <div class="deco-line anim-up anim-delay-1"></div>
+  <p class="anim-up anim-delay-2" style="font-size:clamp(.85rem,1.2vw,1.2rem);color:var(--text2);">
+    基于小勇2026年8月1日的深度思考<br>
+    从荷兰到英国到全球 · 小Ark协助整理
+  </p>
+</div>
+
+</div>
+
+<div class="nav">
+  <button class="nav-btn" onclick="prevSlide()">◀</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="page-num" id="pageNum">1 / 12</span>
+  <button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+let current=0;const slides=document.querySelectorAll('.slide');const total=slides.length;
+function initDots(){const d=document.getElementById('dots');for(let i=0;i<total;i++){const o=document.createElement('button');o.className='nav-dot'+(i===0?' active':'');o.onclick=()=>goTo(i);d.appendChild(o)}}
+function update(){slides.forEach((s,i)=>s.classList.toggle('active',i===current));document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===current));document.getElementById('pageNum').textContent=(current+1)+' / '+total}
+function goTo(n){if(n<0)n=0;if(n>=total)n=total-1;current=n;update()}
+function nextSlide(){goTo(current+1)}function prevSlide(){goTo(current-1)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();nextSlide()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prevSlide()}if(e.key==='Home'){e.preventDefault();goTo(0)}if(e.key==='End'){e.preventDefault();goTo(total-1)}});
+let tX=0;document.addEventListener('touchstart',e=>{tX=e.changedTouches[0].screenX});document.addEventListener('touchend',e=>{const d=tX-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?nextSlide():prevSlide()}});
+initDots();update();
+</script>
+</body>
+</html>
