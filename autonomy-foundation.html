@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自主性的底层逻辑 — 跨学科分析</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans SC',system-ui,-apple-system,sans-serif;
+    background:#0a0a0f;
+    color:#e8e6e3;
+    overflow:hidden;
+    height:100vh;width:100vw;
+  }
+  .slide{
+    position:absolute;top:0;left:0;
+    width:100%;height:100%;
+    display:flex;flex-direction:column;
+    justify-content:center;align-items:center;
+    padding:6vh 8vw;
+    opacity:0;visibility:hidden;
+    transition:opacity .6s ease,visibility .6s ease;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;visibility:visible;z-index:10}
+  .slide.exit{opacity:0;visibility:hidden;z-index:5}
+
+  .nav-bar{
+    position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+    z-index:100;
+    display:flex;align-items:center;gap:1.2vw;
+    background:rgba(255,255,255,.06);
+    backdrop-filter:blur(20px);
+    padding:1.2vh 2.5vw;
+    border-radius:60px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+  }
+  .nav-btn{
+    background:none;border:none;
+    color:rgba(255,255,255,.5);
+    font-size:clamp(14px,1.1vw,22px);
+    cursor:pointer;padding:6px 10px;
+    transition:all .3s;
+    font-family:inherit;border-radius:8px;line-height:1;
+  }
+  .nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .nav-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+  .nav-dot{
+    width:6px;height:6px;border-radius:50%;
+    background:rgba(255,255,255,.2);
+    transition:all .4s;
+  }
+  .nav-dot.active{background:#fc5c7d;width:24px;border-radius:3px}
+  .nav-progress{
+    position:fixed;top:0;left:0;height:3px;
+    background:linear-gradient(90deg,#fc5c7d,#f0c27a);
+    z-index:200;transition:width .4s ease;
+  }
+  .nav-arrows{
+    position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);
+    z-index:90;display:flex;gap:4vw;
+  }
+  .nav-arrow{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.6);
+    width:clamp(44px,3.5vw,64px);
+    height:clamp(44px,3.5vw,64px);
+    border-radius:50%;
+    font-size:clamp(18px,1.5vw,28px);
+    cursor:pointer;
+    transition:all .3s;
+    display:flex;align-items:center;justify-content:center;
+    font-family:inherit;
+  }
+  .nav-arrow:hover{background:rgba(252,92,125,.15);border-color:#fc5c7d;color:#fc5c7d}
+  .nav-arrow:disabled{opacity:.2;cursor:default}
+
+  h1{font-size:clamp(36px,4.5vw,72px);font-weight:900;line-height:1.2;margin-bottom:1.5vh}
+  h2{font-size:clamp(28px,3vw,52px);font-weight:700;line-height:1.3;margin-bottom:2vh;color:#fc5c7d}
+  h3{font-size:clamp(22px,2.2vw,38px);font-weight:500;line-height:1.4;margin-bottom:1.5vh;color:#e8d5b0}
+  h4{font-size:clamp(18px,1.6vw,28px);font-weight:500;margin-bottom:1vh;color:#fc5c7d}
+  p{font-size:clamp(16px,1.5vw,28px);line-height:1.7;margin-bottom:1.2vh;font-weight:300}
+  .subtitle{
+    font-size:clamp(18px,1.8vw,32px);
+    font-weight:300;
+    color:rgba(255,255,255,.6);
+    margin-bottom:3vh;
+    line-height:1.6;
+  }
+  .highlight{color:#fc5c7d;font-weight:500}
+  .accent{color:#f0c27a;font-weight:500}
+  .dim{color:rgba(255,255,255,.4);font-size:clamp(14px,1.2vw,22px)}
+
+  .cover{
+    background:radial-gradient(ellipse at 30% 50%, rgba(252,92,125,.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(240,194,122,.06) 0%, transparent 60%),
+                #0a0a0f;
+  }
+  .cover h1{font-size:clamp(40px,5.5vw,88px)}
+  .cover .tagline{
+    font-size:clamp(20px,2vw,36px);
+    color:rgba(255,255,255,.5);
+    font-weight:300;
+    margin-top:2vh;
+    letter-spacing:4px;
+  }
+  .cover .divider{
+    width:80px;height:2px;
+    background:linear-gradient(90deg,#fc5c7d,#f0c27a);
+    margin:3vh auto;
+    border-radius:2px;
+  }
+  .cover .date{color:rgba(255,255,255,.3);font-size:clamp(14px,1.1vw,20px);margin-top:4vh}
+
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,360px),1fr));
+    gap:clamp(12px,1.5vw,24px);
+    width:100%;max-width:1200px;
+    margin:2vh auto;
+  }
+  .card{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:clamp(16px,2vw,32px);
+    transition:all .3s;
+  }
+  .card:hover{background:rgba(255,255,255,.07);border-color:rgba(252,92,125,.3);transform:translateY(-2px)}
+  .card .num{
+    font-size:clamp(24px,2.5vw,42px);
+    font-weight:900;
+    background:linear-gradient(135deg,#fc5c7d,#f0c27a);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:1vh;
+  }
+  .card h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:0.8vh}
+  .card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0}
+
+  .concept-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(16px,2vw,36px);
+    width:100%;max-width:1100px;
+    margin:2vh auto;
+  }
+  .concept-box{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;
+    padding:clamp(16px,2vw,32px);
+    text-align:center;
+  }
+  .concept-box .icon{font-size:clamp(32px,3vw,52px);margin-bottom:1vh}
+  .concept-box h4{font-size:clamp(18px,1.5vw,26px)}
+  .concept-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.5);margin:0}
+
+  .compare-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;gap:0;
+    width:100%;max-width:1000px;
+    margin:2vh auto;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;overflow:hidden;
+  }
+  .compare-a,.compare-b{padding:clamp(14px,1.6vw,28px)}
+  .compare-a{background:rgba(240,194,122,.06);border-right:1px solid rgba(255,255,255,.06)}
+  .compare-b{background:rgba(252,92,125,.04)}
+  .compare-a h4,.compare-b h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:1.2vh}
+  .compare-a h4{color:#f0c27a}.compare-b h4{color:#fc5c7d}
+  .compare-a p,.compare-b p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.8vh 0}
+
+  .flow-diagram{
+    display:flex;align-items:center;justify-content:center;
+    gap:clamp(8px,1vw,16px);
+    width:100%;max-width:1000px;
+    margin:2vh auto;flex-wrap:wrap;
+  }
+  .flow-step{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    padding:clamp(10px,1.2vw,20px) clamp(14px,1.6vw,28px);
+    text-align:center;
+    min-width:clamp(80px,10vw,160px);
+  }
+  .flow-step .label{font-size:clamp(12px,1vw,18px);color:rgba(255,255,255,.5);margin-bottom:4px}
+  .flow-step .value{font-size:clamp(14px,1.3vw,22px);font-weight:500}
+  .flow-arrow{font-size:clamp(18px,1.8vw,30px);color:rgba(252,92,125,.4)}
+
+  .quote-block{
+    max-width:900px;text-align:center;margin:2vh auto;
+    padding:clamp(20px,2.5vw,40px);
+    border-left:3px solid #fc5c7d;
+    background:rgba(252,92,125,.04);
+    border-radius:0 16px 16px 0;
+  }
+  .quote-block p{
+    font-size:clamp(18px,1.8vw,32px);
+    font-weight:300;font-style:italic;
+    color:#e8d5b0;margin:0;
+  }
+  .quote-block .author{
+    font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.4);
+    margin-top:1.5vh;font-style:normal;
+  }
+
+  ul{list-style:none;padding:0;margin:1.5vh 0;width:100%;max-width:900px}
+  ul li{
+    font-size:clamp(15px,1.4vw,24px);line-height:1.6;
+    padding:0.8vh 0;padding-left:2vw;
+    position:relative;font-weight:300;
+    color:rgba(255,255,255,.75);
+  }
+  ul li::before{
+    content:'→';position:absolute;left:0;
+    color:#fc5c7d;font-weight:400;
+  }
+  ul li strong{color:#e8e6e3;font-weight:500}
+
+  .big-num{
+    font-size:clamp(48px,8vw,120px);
+    font-weight:900;
+    background:linear-gradient(135deg,#fc5c7d,#f0c27a);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:1;margin-bottom:1vh;
+  }
+  .section-label{
+    font-size:clamp(12px,1vw,16px);
+    letter-spacing:6px;text-transform:uppercase;
+    color:rgba(252,92,125,.4);margin-bottom:1vh;font-weight:400;
+  }
+  .full-table{
+    width:100%;max-width:1100px;margin:2vh auto;
+    border-collapse:collapse;
+    font-size:clamp(13px,1.1vw,18px);
+  }
+  .full-table th,.full-table td{
+    border:1px solid rgba(255,255,255,.08);
+    padding:clamp(8px,1vw,16px) clamp(10px,1.2vw,20px);
+    text-align:left;font-weight:300;
+  }
+  .full-table th{
+    background:rgba(252,92,125,.08);
+    color:#fc5c7d;font-weight:500;
+  }
+  .full-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:2vw;width:100%;max-width:1100px;margin:2vh auto}
+  .col-box{background:rgba(255,255,255,.03);border-radius:16px;padding:clamp(16px,2vw,32px);border:1px solid rgba(255,255,255,.06)}
+  .col-box h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:1vh}
+  .col-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.6vh 0}
+  .col-box .num{font-size:clamp(20px,2vw,34px);font-weight:900;background:linear-gradient(135deg,#fc5c7d,#f0c27a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+  @media(max-width:768px){
+    .slide{padding:5vh 6vw}
+    .concept-grid,.two-col{grid-template-columns:1fr}
+    .compare-grid{grid-template-columns:1fr}
+    .compare-a{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}
+    .flow-diagram{flex-direction:column}
+    .flow-arrow{transform:rotate(90deg)}
+    .nav-bar{gap:8px;padding:10px 16px}
+    .nav-dot{width:5px;height:5px}
+    .nav-dot.active{width:16px}
+  }
+  .slide::-webkit-scrollbar{width:4px}
+  .slide::-webkit-scrollbar-track{background:transparent}
+  .slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="nav-progress" id="progress"></div>
+
+<!-- ════════ COVER ════════ -->
+<div class="slide cover active" data-index="0">
+  <div class="section-label">2026 · 08 · 02</div>
+  <h1>自主性的底层逻辑</h1>
+  <div class="divider"></div>
+  <p class="subtitle">从个体发展到社会效率的跨学科分析</p>
+  <div class="tagline">认 知 · 神 经 · 心 理 · 经 济 · 社 会</div>
+  <div class="date">自主性不是一种"特权"，而是一种"基础设施"</div>
+</div>
+
+<!-- ════════ INTRO ════════ -->
+<div class="slide" data-index="1">
+  <div class="section-label">问题的提出</div>
+  <h2>一个跨领域的共同命题</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(240,194,122,.3)">
+      <div class="num">🎓</div>
+      <h4>教育场景</h4>
+      <p>被过度管控的孩子 → 失去探索欲、内驱力、责任感<br>有自主空间的孩子 → 在试错中发展认知和情感能力</p>
+    </div>
+    <div class="card" style="border-color:rgba(252,92,125,.3)">
+      <div class="num">💼</div>
+      <h4>职场场景</h4>
+      <p>被层层问责的员工 → 陷入"应付检查"的被动状态<br>有自主权的团队 → 展现创造力、责任感和解决问题的能力</p>
+    </div>
+    <div class="card" style="border-color:rgba(240,194,122,.3)">
+      <div class="num">🏛️</div>
+      <h4>社会场景</h4>
+      <p>自上而下的目标考核体系 → "上面穷于问责，下面忙于应付"<br>系统空转，价值创造停滞</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>自主性不是一种"奢侈品"，<br>而是人类认知发展、能力培养和价值创造的<span class="highlight">前提条件</span>。</p>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 1: COGNITION ════════ -->
+<div class="slide" data-index="2">
+  <div class="section-label">第一章 · 认知维度</div>
+  <h2>自主性是认知发展的必要条件</h2>
+  <div class="concept-grid">
+    <div class="concept-box">
+      <div class="icon">🧩</div>
+      <h4>认知地图理论</h4>
+      <p>皮亚杰：认知结构不是被动接收的，而是在主动探索中建构的。每一次"自己动手"都在构建大脑中的"认知地图"</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">🎯</div>
+      <h4>自我决定理论</h4>
+      <p>Deci & Ryan：自主性、胜任感、归属感——三个基本心理需求。其中<span class="highlight">自主性是核心</span>，没有它，其他二者难以真正建立</p>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:1vh">
+    <div class="col-box">
+      <div class="num">主动探索</div>
+      <h4>信息寻求模式</h4>
+      <p>大脑处于"主动寻求"状态，神经元连接被强化；编码深度高，知识迁移能力强</p>
+    </div>
+    <div class="col-box">
+      <div class="num">被动接收</div>
+      <h4>信息接受模式</h4>
+      <p>大脑处于"接受"状态，编码深度有限；学习效果差，知识难以迁移</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">没有自主，就没有真正的试错；没有试错，就没有真正的学习</p>
+</div>
+
+<!-- 创造力 -->
+<div class="slide" data-index="3">
+  <div class="section-label">01 · 认知实证</div>
+  <h2>自主性提升认知效能的证据</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">内在动机</div>
+      <h4>深度加工</h4>
+      <p>自主性支持下的内在动机，学习效果远优于外在奖惩驱动。内在动机驱动的学习，信息加工深度更高，知识迁移能力更强</p>
+    </div>
+    <div class="card">
+      <div class="num">创造性思维</div>
+      <h4>发散思维</h4>
+      <p>自主条件下，创造性任务表现显著优于被控制条件。创造力需要"发散思维"——自由联想、尝试非标准路径——这正是被控制所压抑的能力</p>
+    </div>
+    <div class="card">
+      <div class="num">问题解决</div>
+      <h4>真实情境</h4>
+      <p>有自主权的个体面对真实问题时，能够调用的认知资源更多，解决问题的策略更灵活、更有效</p>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>创造力 = 发散思维 × 自主空间<br>没有自主，就没有真正的创新——只有"既定框架内的优化"</p>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 2: NEUROSCIENCE ════════ -->
+<div class="slide" data-index="4">
+  <div class="section-label">第二章 · 神经科学维度</div>
+  <h2>自主性在大脑中的"硬件基础"</h2>
+  <p class="subtitle" style="text-align:center">三个核心神经机制，解释"为什么被控制会损害认知"</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">🧠</div>
+      <h4>前额叶皮层</h4>
+      <p>自主决策的神经中枢。它需要"在自主决策中"被激活和训练。过度管控让前额叶被"绕过去"——行为由外部指令驱动，长期如此发展受到抑制</p>
+    </div>
+    <div class="card">
+      <div class="num">⚡</div>
+      <h4>多巴胺系统</h4>
+      <p>有控制权时多巴胺释放增加，增强动机和专注力；被控制时多巴胺活跃度下降，严重时产生"习得性无助"</p>
+    </div>
+    <div class="card">
+      <div class="num">📈</div>
+      <h4>HPA轴（压力系统）</h4>
+      <p>缺乏自主性是慢性压力源。HPA轴持续激活 → 皮质醇升高 → 海马体抑制 → 前额叶受损 → 杏仁核过度活跃</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">结果是：认知下降 · 创造力减弱 · 情绪调节能力受损</p>
+</div>
+
+<!-- 神经机制详解 -->
+<div class="slide" data-index="5">
+  <div class="section-label">02 · 用进废退</div>
+  <h2>"用进废退"的神经原则</h2>
+  <div class="two-col">
+    <div class="col-box" style="border-color:rgba(240,194,122,.3)">
+      <div class="num">✅ 自主决策训练</div>
+      <h4>前额叶在成长</h4>
+      <p>孩子被允许做决定——穿什么衣服、玩什么玩具、怎么安排时间——每一次都在训练前额叶的功能。决策回路越用越强</p>
+    </div>
+    <div class="col-box" style="border-color:rgba(252,92,125,.3)">
+      <div class="num">❌ 过度管控代价</div>
+      <h4>前额叶被"绕过去"</h4>
+      <p>外部指令替代内在决策，前额叶不被激活。神经回路退化为"指令-执行"模式。长期如此，自主决策能力萎缩</p>
+    </div>
+  </div>
+  <div class="flow-diagram" style="margin-top:1.5vh">
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">自主决策</div>
+      <div class="value" style="color:#f0c27a">前额叶激活</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">多巴胺释放</div>
+      <div class="value" style="color:#f0c27a">动机增强</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">认知能力</div>
+      <div class="value" style="color:#f0c27a">持续提升</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(252,92,125,.4)">↕</div>
+    <div class="flow-step" style="border-color:rgba(252,92,125,.3)">
+      <div class="label" style="color:#fc5c7d">外部控制</div>
+      <div class="value" style="color:#fc5c7d">皮质醇升高</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(252,92,125,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(252,92,125,.3)">
+      <div class="label" style="color:#fc5c7d">动机下降</div>
+      <div class="value" style="color:#fc5c7d">习得性无助</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(252,92,125,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(252,92,125,.3)">
+      <div class="label" style="color:#fc5c7d">认知能力</div>
+      <div class="value" style="color:#fc5c7d">逐渐萎缩</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 3: PSYCHOLOGY ════════ -->
+<div class="slide" data-index="6">
+  <div class="section-label">第三章 · 心理维度</div>
+  <h2>自主性如何塑造人格和能力</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">意义感</div>
+      <h4>选择成就意义</h4>
+      <p>Frankl：意义不是被给予的，而是在选择中创造的。被控制的人没有选择，就没有意义感——"这不是我选的，我只是执行命令"</p>
+    </div>
+    <div class="card">
+      <div class="num">责任感</div>
+      <h4>信任催生责任</h4>
+      <p>不可能通过"要求一个人负责任"来培养责任感。责任感是在"被信任去承担"的过程中自然生长的</p>
+    </div>
+    <div class="card">
+      <div class="num">非认知能力</div>
+      <h4>在做中发展</h4>
+      <p>情感调节、社交技能、领导力、韧性——不能通过"教"获得，只能通过"做"发展。前提是：有自主空间</p>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:1vh">
+    <div class="col-box">
+      <div class="num">孩子被允许管理时间</div>
+      <p>→ 发展出时间管理能力 → 对自己负责</p>
+    </div>
+    <div class="col-box">
+      <div class="num">员工被授权做决策</div>
+      <p>→ 发展出判断力 → 对结果负责</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 4: ECONOMIC ════════ -->
+<div class="slide" data-index="7">
+  <div class="section-label">第四章 · 经济维度</div>
+  <h2>自主性与价值创造</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>🌊 温州 = 自主性释放</h4>
+      <p>几十万温州人自主决策、自主承担风险、自主寻找市场——"自主性的规模化"创造了经济奇迹</p>
+      <p style="color:#f0c27a;font-weight:500">创新 = 试错 × 自主性</p>
+      <p>内在动机驱动，做"对事"而非"对人"</p>
+    </div>
+    <div class="compare-b">
+      <h4>🏔️ 陕西 = 自主性压缩</h4>
+      <p>拥有丰富资源，但缺乏自主决策空间。资源被锁在"体制内"，无法流动、无法重组、无法创造价值</p>
+      <p style="color:#fc5c7d;font-weight:500">只有"既定框架内的优化"</p>
+      <p>精力花在"让上级满意"而非"解决问题"</p>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">不是要素的问题，是<span class="highlight">"谁来做决定"</span>的问题</p>
+</div>
+
+<!-- 组织空转 -->
+<div class="slide" data-index="8">
+  <div class="section-label">04 · 组织效率</div>
+  <h2>"上面穷于问责，下面忙于应付"</h2>
+  <p class="subtitle" style="text-align:center">自主性缺失的典型组织症状</p>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(252,92,125,.3)">
+      <div class="label" style="color:#fc5c7d">问责文化</div>
+      <div class="value" style="color:#fc5c7d">指标与价值脱节</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(252,92,125,.3)">
+      <div class="label" style="color:#fc5c7d">应付文化</div>
+      <div class="value" style="color:#fc5c7d">对上负责而非对事</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(252,92,125,.3)">
+      <div class="label" style="color:#fc5c7d">价值真空</div>
+      <div class="value" style="color:#fc5c7d">系统在转，价值在减</div>
+    </div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card">
+      <div class="num">问责文化</div>
+      <p>上级设定指标，下级为满足指标而行动。但"指标"和"真实价值"之间存在鸿沟</p>
+    </div>
+    <div class="card">
+      <div class="num">应付文化</div>
+      <p>下级主要精力花在"如何让上级满意"而非"如何解决问题"。信息被扭曲——好消息放大，坏消息隐藏</p>
+    </div>
+    <div class="card">
+      <div class="num">价值真空</div>
+      <p>所有人的注意力在"对上负责"而非"对事负责"，真实问题被搁置，真实创新被扼杀</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 5: SOCIETY ════════ -->
+<div class="slide" data-index="9">
+  <div class="section-label">第五章 · 社会维度</div>
+  <h2>自主性缺位的系统后果</h2>
+  <div class="concept-grid">
+    <div class="concept-box">
+      <div class="icon">📋</div>
+      <h4>可读性陷阱</h4>
+      <p>斯科特《国家的视角》：国家试图把复杂的、多元的、地方性的社会现实，简化为可测量的、标准化的指标。这个"简化"过程本身就在消灭自主性</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">🔄</div>
+      <h4>信任循环</h4>
+      <p>良性：放权 → 责任感 → 好决策 → 更多信任<br>恶性：不放手 → 无责任感 → 差决策 → 更严控制</p>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:1vh">
+    <div class="col-box" style="border-color:rgba(240,194,122,.3)">
+      <div class="num" style="background:linear-gradient(135deg,#f0c27a,#fc5c7d);-webkit-background-clip:text;-webkit-text-fill-color:transparent">良性循环</div>
+      <p>给予自主权 → 被信任者产生责任感 → 做出好的决策 → 进一步获得信任 → 更多自主权</p>
+    </div>
+    <div class="col-box" style="border-color:rgba(252,92,125,.3)">
+      <div class="num">恶性循环</div>
+      <p>不敢给自主权 → 被控制者缺乏责任感 → 做出差的决策 → 进一步失去信任 → 更严的控制</p>
+    </div>
+  </div>
+</div>
+
+<!-- 系统性空转 -->
+<div class="slide" data-index="10">
+  <div class="section-label">05 · 系统空转</div>
+  <h2>缺乏自主性的"系统性空转"</h2>
+  <div class="quote-block">
+    <p>系统在运转，但价值在减少。</p>
+  </div>
+  <div style="width:100%;max-width:900px;margin:2vh auto">
+    <ul>
+      <li><strong>每个人都在做"被要求做的事"</strong>—— 没有人"在意结果"</li>
+      <li><strong>每个环节都在"通过检查"</strong>—— 但整体效率在下降</li>
+      <li><strong>发现问题的人</strong>没有权力解决问题</li>
+      <li><strong>有权力解决问题的人</strong>看不到问题</li>
+    </ul>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>不是人的问题，是制度设计的问题。</p>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 6: DESIGN ════════ -->
+<div class="slide" data-index="11">
+  <div class="section-label">第六章 · 制度反思</div>
+  <h2>如何设计"自主性友好"的系统</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(240,194,122,.3)">
+      <div class="num">🎓 教育</div>
+      <h4>从管控到支持</h4>
+      <p>设边界而非微观管理 · 给选择而非指令 · 容忍试错 · 培养内驱力</p>
+    </div>
+    <div class="card" style="border-color:rgba(252,92,125,.3)">
+      <div class="num">💼 组织</div>
+      <h4>从问责到赋能</h4>
+      <p>目标导向而非过程控制 · 减少层级 · 容忍"有价值的失败" · 建立信任文化</p>
+    </div>
+    <div class="card" style="border-color:rgba(240,194,122,.3)">
+      <div class="num">🏛️ 社会</div>
+      <h4>从简化到冗余</h4>
+      <p>承认不可测量的价值 · 保留地方自主空间 · 降低试错成本 · 逆向问责</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>逆向问责：不仅下级对上级负责，<br>上级也要对"是否给予了下级足够的自主空间"负责。</p>
+  </div>
+</div>
+
+<!-- ════════ SUMMARY TABLE ════════ -->
+<div class="slide" data-index="12">
+  <div class="section-label">总结 · 有与无</div>
+  <h2>自主性的统一链条</h2>
+  <table class="full-table">
+    <thead>
+      <tr><th>层面</th><th style="color:#f0c27a">✅ 有自主性</th><th style="color:#fc5c7d">❌ 无自主性</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>认知</strong></td><td>主动探索，深度学习</td><td style="color:rgba(252,92,125,.7)">被动接收，浅层学习</td></tr>
+      <tr><td><strong>神经</strong></td><td>前额叶激活，多巴胺驱动</td><td style="color:rgba(252,92,125,.7)">HPA轴激活，皮质醇升高</td></tr>
+      <tr><td><strong>心理</strong></td><td>有意义感，有责任感</td><td style="color:rgba(252,92,125,.7)">无意义感，无责任感</td></tr>
+      <tr><td><strong>经济</strong></td><td>创造价值，创新驱动</td><td style="color:rgba(252,92,125,.7)">应付指标，价值空转</td></tr>
+      <tr><td><strong>社会</strong></td><td>信任循环，自下而上</td><td style="color:rgba(252,92,125,.7)">问责循环，自上而下</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════ CONNECTION TO TRILOGY ════════ -->
+<div class="slide" data-index="13">
+  <div class="section-label">四部曲 · 统一</div>
+  <h2>一条完整的认知体系</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">01 认知</div>
+      <div class="value" style="color:#f0c27a">过程优于结果</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">02 发展</div>
+      <div class="value" style="color:#f0c27a">试错优于规划</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">03 制度</div>
+      <div class="value" style="color:#f0c27a">市场优于计划</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:#fc5c7d">
+      <div class="label" style="color:#fc5c7d">04 前提</div>
+      <div class="value" style="color:#fc5c7d">自主性是一切的前提</div>
+    </div>
+  </div>
+  <div class="card-grid" style="margin-top:2vh">
+    <div class="card"><div class="num">为何</div><h4>认知本质</h4><p>过程优于结果——在过程中生成，在笔尖下思考</p></div>
+    <div class="card"><div class="num">如何</div><h4>发展源泉</h4><p>试错优于规划——社会化试错能力是增长的引擎</p></div>
+    <div class="card"><div class="num">什么条件下</div><h4>制度边界</h4><p>市场优于计划——分散决策权最大化试错效率</p></div>
+    <div class="card" style="border-color:rgba(252,92,125,.3)">
+      <div class="num" style="background:linear-gradient(135deg,#fc5c7d,#f0c27a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">为什么</div>
+      <h4>根本前提</h4>
+      <p>自主性是一切的前提——没有自主，过程、试错、市场都无从谈起</p>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="slide" data-index="14">
+  <div class="section-label">终章</div>
+  <h2>自主性：被忽视的"基础设施"</h2>
+  <div class="quote-block">
+    <p>就像道路、电力、网络是经济发展的基础设施一样，<br>自主性是认知发展、能力培养、价值创造的<br><span class="highlight">"心理基础设施"</span>。</p>
+  </div>
+  <div style="width:100%;max-width:800px;margin:3vh auto;text-align:center">
+    <div class="big-num">自 主</div>
+    <p style="font-size:clamp(18px,1.6vw,28px);color:rgba(255,255,255,.5)">
+      没有它，一切都无从谈起。
+    </p>
+  </div>
+  <div style="text-align:center;margin-top:2vh">
+    <p class="dim">2026年8月2日 · 研究思考知识库</p>
+    <p class="dim" style="margin-top:0.5vh">自主性的底层逻辑：从个体发展到社会效率的跨学科分析</p>
+  </div>
+</div>
+
+<!-- ════════ NAVIGATION ════════ -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevArrow">‹</button>
+  <button class="nav-arrow" id="nextArrow">›</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = 15;
+let current = 0;
+
+const dotsContainer = document.getElementById('dots');
+for(let i = 0; i < total; i++){
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.dataset.index = i;
+  dot.style.cursor = 'pointer';
+  dot.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(dot);
+}
+
+function goTo(index){
+  if(index < 0) index = 0;
+  if(index >= total) index = total - 1;
+  if(index === current) return;
+  slides[current].classList.remove('active');
+  slides[current].classList.add('exit');
+  setTimeout(() => slides[current].classList.remove('exit'), 600);
+  current = index;
+  slides[current].classList.add('active');
+  document.querySelectorAll('.nav-dot').forEach((d,i) => d.classList.toggle('active', i === current));
+  document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+  document.querySelectorAll('.nav-arrow,.nav-btn').forEach(b => {
+    if(b.id === 'prevBtn' || b.id === 'prevArrow') b.disabled = current === 0;
+    if(b.id === 'nextBtn' || b.id === 'nextArrow') b.disabled = current === total - 1;
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') goTo(current + 1);
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if(Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+});
+
+let wheelTimeout;
+document.addEventListener('wheel', e => {
+  clearTimeout(wheelTimeout);
+  wheelTimeout = setTimeout(() => {
+    if(e.deltaY > 0) goTo(current + 1);
+    else goTo(current - 1);
+  }, 100);
+}, {passive:true});
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+document.getElementById('prevArrow').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextArrow').addEventListener('click', () => goTo(current + 1));
+
+goTo(0);
+</script>
+</body>
+</html>
