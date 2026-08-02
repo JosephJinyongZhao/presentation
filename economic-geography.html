@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>经济增长与空间结构重塑 — 理论框架</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans SC',system-ui,-apple-system,sans-serif;
+    background:#0a0a0f;color:#e8e6e3;
+    overflow:hidden;height:100vh;width:100vw;
+  }
+  .slide{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:6vh 8vw;
+    opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;visibility:visible;z-index:10}
+  .slide.exit{opacity:0;visibility:hidden;z-index:5}
+
+  .nav-bar{
+    position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+    z-index:100;display:flex;align-items:center;gap:1.2vw;
+    background:rgba(255,255,255,.06);backdrop-filter:blur(20px);
+    padding:1.2vh 2.5vw;border-radius:60px;
+    border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 32px rgba(0,0,0,.5);
+  }
+  .nav-btn{
+    background:none;border:none;color:rgba(255,255,255,.5);
+    font-size:clamp(14px,1.1vw,22px);cursor:pointer;padding:6px 10px;
+    transition:all .3s;font-family:inherit;border-radius:8px;line-height:1;
+  }
+  .nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .nav-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+  .nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .4s}
+  .nav-dot.active{background:#0984e3;width:24px;border-radius:3px}
+  .nav-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#0984e3,#00b894);z-index:200;transition:width .4s ease}
+  .nav-arrows{position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);z-index:90;display:flex;gap:4vw}
+  .nav-arrow{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.6);width:clamp(44px,3.5vw,64px);height:clamp(44px,3.5vw,64px);
+    border-radius:50%;font-size:clamp(18px,1.5vw,28px);cursor:pointer;
+    transition:all .3s;display:flex;align-items:center;justify-content:center;font-family:inherit;
+  }
+  .nav-arrow:hover{background:rgba(9,132,227,.15);border-color:#0984e3;color:#0984e3}
+  .nav-arrow:disabled{opacity:.2;cursor:default}
+
+  h1{font-size:clamp(36px,4.5vw,72px);font-weight:900;line-height:1.2;margin-bottom:1.5vh}
+  h2{font-size:clamp(28px,3vw,52px);font-weight:700;line-height:1.3;margin-bottom:2vh;color:#0984e3}
+  h3{font-size:clamp(22px,2.2vw,38px);font-weight:500;line-height:1.4;margin-bottom:1.5vh;color:#e8d5b0}
+  h4{font-size:clamp(18px,1.6vw,28px);font-weight:500;margin-bottom:1vh;color:#0984e3}
+  p{font-size:clamp(16px,1.5vw,28px);line-height:1.7;margin-bottom:1.2vh;font-weight:300}
+  .subtitle{font-size:clamp(18px,1.8vw,32px);font-weight:300;color:rgba(255,255,255,.6);margin-bottom:3vh;line-height:1.6}
+  .highlight{color:#0984e3;font-weight:500}
+  .accent{color:#00b894;font-weight:500}
+  .dim{color:rgba(255,255,255,.4);font-size:clamp(14px,1.2vw,22px)}
+
+  .cover{
+    background:radial-gradient(ellipse at 30% 50%, rgba(9,132,227,.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(0,184,148,.06) 0%, transparent 60%),
+                #0a0a0f;
+  }
+  .cover h1{font-size:clamp(40px,5.5vw,88px)}
+  .cover .tagline{font-size:clamp(20px,2vw,36px);color:rgba(255,255,255,.5);font-weight:300;margin-top:2vh;letter-spacing:4px}
+  .cover .divider{width:80px;height:2px;background:linear-gradient(90deg,#0984e3,#00b894);margin:3vh auto;border-radius:2px}
+  .cover .date{color:rgba(255,255,255,.3);font-size:clamp(14px,1.1vw,20px);margin-top:4vh}
+
+  .card-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,360px),1fr));
+    gap:clamp(12px,1.5vw,24px);width:100%;max-width:1200px;margin:2vh auto;
+  }
+  .card{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;padding:clamp(16px,2vw,32px);transition:all .3s;
+  }
+  .card:hover{background:rgba(255,255,255,.07);border-color:rgba(9,132,227,.3);transform:translateY(-2px)}
+  .card .num{
+    font-size:clamp(24px,2.5vw,42px);font-weight:900;
+    background:linear-gradient(135deg,#0984e3,#00b894);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1vh;
+  }
+  .card h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:0.8vh}
+  .card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0}
+
+  .concept-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,36px);
+    width:100%;max-width:1100px;margin:2vh auto;
+  }
+  .concept-box{
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;padding:clamp(16px,2vw,32px);text-align:center;
+  }
+  .concept-box .icon{font-size:clamp(32px,3vw,52px);margin-bottom:1vh}
+  .concept-box h4{font-size:clamp(18px,1.5vw,26px)}
+  .concept-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.5);margin:0}
+
+  .compare-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    width:100%;max-width:1000px;margin:2vh auto;
+    border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;
+  }
+  .compare-a,.compare-b{padding:clamp(14px,1.6vw,28px)}
+  .compare-a{background:rgba(0,184,148,.06);border-right:1px solid rgba(255,255,255,.06)}
+  .compare-b{background:rgba(9,132,227,.04)}
+  .compare-a h4,.compare-b h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:1.2vh}
+  .compare-a h4{color:#00b894}.compare-b h4{color:#0984e3}
+  .compare-a p,.compare-b p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.8vh 0}
+
+  .flow-diagram{
+    display:flex;align-items:center;justify-content:center;
+    gap:clamp(8px,1vw,16px);width:100%;max-width:1000px;margin:2vh auto;flex-wrap:wrap;
+  }
+  .flow-step{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:clamp(10px,1.2vw,20px) clamp(14px,1.6vw,28px);
+    text-align:center;min-width:clamp(80px,10vw,160px);
+  }
+  .flow-step .label{font-size:clamp(12px,1vw,18px);color:rgba(255,255,255,.5);margin-bottom:4px}
+  .flow-step .value{font-size:clamp(14px,1.3vw,22px);font-weight:500}
+  .flow-arrow{font-size:clamp(18px,1.8vw,30px);color:rgba(9,132,227,.4)}
+
+  .quote-block{
+    max-width:900px;text-align:center;margin:2vh auto;
+    padding:clamp(20px,2.5vw,40px);
+    border-left:3px solid #0984e3;
+    background:rgba(9,132,227,.04);border-radius:0 16px 16px 0;
+  }
+  .quote-block p{
+    font-size:clamp(18px,1.8vw,32px);font-weight:300;font-style:italic;color:#e8d5b0;margin:0;
+  }
+  .quote-block .author{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.4);margin-top:1.5vh;font-style:normal}
+
+  .big-num{
+    font-size:clamp(48px,8vw,120px);font-weight:900;
+    background:linear-gradient(135deg,#0984e3,#00b894);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:1vh;
+  }
+  .section-label{font-size:clamp(12px,1vw,16px);letter-spacing:6px;text-transform:uppercase;color:rgba(9,132,227,.4);margin-bottom:1vh;font-weight:400}
+
+  .full-table{
+    width:100%;max-width:1100px;margin:2vh auto;border-collapse:collapse;
+    font-size:clamp(13px,1.1vw,18px);
+  }
+  .full-table th,.full-table td{
+    border:1px solid rgba(255,255,255,.08);
+    padding:clamp(8px,1vw,16px) clamp(10px,1.2vw,20px);
+    text-align:left;font-weight:300;
+  }
+  .full-table th{background:rgba(9,132,227,.08);color:#0984e3;font-weight:500}
+  .full-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+  .three-grid{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:1vw;
+    width:100%;max-width:1200px;margin:2vh auto;
+  }
+  @media(max-width:768px){
+    .slide{padding:5vh 6vw}
+    .concept-grid,.three-grid{grid-template-columns:1fr}
+    .compare-grid{grid-template-columns:1fr}
+    .compare-a{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}
+    .flow-diagram{flex-direction:column}
+    .flow-arrow{transform:rotate(90deg)}
+    .nav-bar{gap:8px;padding:10px 16px}
+    .nav-dot{width:5px;height:5px}
+    .nav-dot.active{width:16px}
+  }
+  .slide::-webkit-scrollbar{width:4px}
+  .slide::-webkit-scrollbar-track{background:transparent}
+  .slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="nav-progress" id="progress"></div>
+
+<!-- COVER -->
+<div class="slide cover active" data-index="0">
+  <div class="section-label">2026 · 08 · 02</div>
+  <h1>经济增长与空间结构重塑</h1>
+  <div class="divider"></div>
+  <p class="subtitle">产业结构变迁 → 空间格局变化 → 理论解释</p>
+  <div class="tagline">新经济地理学 · 空间均衡 · 区位理论 · 特征价格模型</div>
+  <div class="date">增长不是均匀的春雨，而是有选择的空间重组</div>
+</div>
+
+<!-- INTRO -->
+<div class="slide" data-index="1">
+  <div class="section-label">引言</div>
+  <h2>经济增长的空间不均匀性</h2>
+  <p class="subtitle" style="text-align:center">经济活动总是发生在<span class="highlight">某些地方</span>，而不是所有地方</p>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">🏭 工业时代</div>
+      <p>经济活动向港口、矿区、铁路枢纽集聚</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">🌐 信息时代</div>
+      <p>经济活动向城市中心、科技园区、平台节点集聚</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">🌍 全球化时代</div>
+      <p>生产活动向沿海集聚，形成"沿海-内陆"分化格局</p>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">空间上的不均匀性，不是市场失灵，而是<span class="highlight">经济规律的内在要求</span></p>
+</div>
+
+<!-- FRAMEWORK -->
+<div class="slide" data-index="2">
+  <div class="section-label">三位一体框架</div>
+  <h2>经济增长 → 产业结构 → 空间结构</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3)"><div class="label" style="color:#00b894">经济增长</div><div class="value" style="color:#00b894">收入提升</div></div>
+    <div class="flow-arrow" style="color:rgba(0,184,148,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3)"><div class="label" style="color:#00b894">需求结构</div><div class="value" style="color:#00b894">从农产品到服务</div></div>
+    <div class="flow-arrow" style="color:rgba(0,184,148,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3)"><div class="label" style="color:#0984e3">产业结构</div><div class="value" style="color:#0984e3">农业→工业→服务</div></div>
+    <div class="flow-arrow" style="color:rgba(9,132,227,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3)"><div class="label" style="color:#0984e3">要素重置</div><div class="value" style="color:#0984e3">劳动/资本/土地</div></div>
+    <div class="flow-arrow" style="color:rgba(9,132,227,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(108,92,231,.3)"><div class="label" style="color:#6c5ce7">空间结构</div><div class="value" style="color:#6c5ce7">城市/区域格局</div></div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card"><div class="num">产业的"空间印记"</div><p>农业→平原河流；轻工→沿海港口；重工→矿区能源；高技术→大学科技园；金融→CBD；数字→科技中心</p></div>
+    <div class="card"><div class="num">空间结构的"路径依赖"</div><p>基础设施一旦建成，持续吸引经济活动；人口集聚形成劳动力池，进一步吸引企业</p></div>
+  </div>
+</div>
+
+<!-- NEG -->
+<div class="slide" data-index="3">
+  <div class="section-label">核心理论一</div>
+  <h2>新经济地理学（NEG）</h2>
+  <div class="quote-block">
+    <p>为什么经济活动会在空间上集聚，<br>尽管所有地区在初始时可能是对称的？</p>
+    <p class="author" style="color:#0984e3">保罗·克鲁格曼 · 2008年诺贝尔经济学奖</p>
+  </div>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">集聚力</div>
+      <p>市场规模效应 · 生活成本效应 · 劳动力市场池效应</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">分散力</div>
+      <p>市场竞争效应 · 不可流动要素 · 通勤成本上升</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">临界点</div>
+      <p>运输成本高→分散<br>运输成本低→<span class="highlight">核心-边缘格局</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- COASTAL -->
+<div class="slide" data-index="4">
+  <div class="section-label">NEG · 沿海集聚</div>
+  <h2>"核心-边缘模型"的空间解释</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3)"><div class="label" style="color:#00b894">国际贸易</div><div class="value" style="color:#00b894">沿海=大市场入口</div></div>
+    <div class="flow-arrow" style="color:rgba(0,184,148,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3)"><div class="label" style="color:#00b894">先发优势</div><div class="value" style="color:#00b894">沿海率先发展</div></div>
+    <div class="flow-arrow" style="color:rgba(0,184,148,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3)"><div class="label" style="color:#0984e3">市场规模</div><div class="value" style="color:#0984e3">吸引更多企业</div></div>
+    <div class="flow-arrow" style="color:rgba(9,132,227,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3)"><div class="label" style="color:#0984e3">累积因果</div><div class="value" style="color:#0984e3">自我强化</div></div>
+  </div>
+  <div class="compare-grid" style="margin-top:1.5vh">
+    <div class="compare-a">
+      <h4>🌊 沿海地区</h4>
+      <p>靠近出口市场 → 运输成本低 → 企业集聚 → 就业增长 → 人口流入 → 市场规模扩大</p>
+    </div>
+    <div class="compare-b">
+      <h4>⛰️ 内陆地区</h4>
+      <p>远离出口市场 → 运输成本高 → 市场准入劣势 → 劳动力流出 → 市场规模萎缩</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">运输成本下降是推动空间集聚的<span class="highlight">核心驱动力</span></p>
+</div>
+
+<!-- SPATIAL EQUILIBRIUM -->
+<div class="slide" data-index="5">
+  <div class="section-label">核心理论二</div>
+  <h2>空间均衡理论</h2>
+  <div class="quote-block">
+    <p>在自由流动的条件下，<br>不同地区的效用水平最终会趋于一致。</p>
+    <p class="author" style="color:#0984e3">Rosen（1979）· Roback（1982）</p>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-box">
+      <div class="icon">⚖️</div>
+      <h4>均衡条件</h4>
+      <p>地区A的效用 = 地区B的效用 = 地区C的效用</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">📊</div>
+      <h4>效用三要素</h4>
+      <p>实际工资（名义工资×价格水平）<br>+ 地方特征（气候/环境/文化）<br>+ 住房成本</p>
+    </div>
+  </div>
+  <div class="card-grid" style="margin-top:1vh">
+    <div class="card"><div class="num">均衡机制</div><p>A地效用高→劳动力流入→工资下降+房价上升→效用回落→均衡</p></div>
+    <div class="card"><div class="num">实证含义</div><p>高工资≠高福利，是房价和地方特征的补偿</p></div>
+  </div>
+</div>
+
+<!-- LOCATION THEORY -->
+<div class="slide" data-index="6">
+  <div class="section-label">核心理论三</div>
+  <h2>区位理论</h2>
+  <p class="subtitle" style="text-align:center">从杜能到克里斯塔勒，200年的思想演进</p>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">🌾 杜能（1826）</div>
+      <h4>农业区位论</h4>
+      <p>围绕市场中心形成同心圆——高运输成本活动靠近市场，低运输成本远离</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">🏭 韦伯（1909）</div>
+      <h4>工业区位论</h4>
+      <p>企业最小化三种成本：运输成本+劳动力成本+集聚成本</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">🏛️ 克里斯塔勒（1933）</div>
+      <h4>中心地理论</h4>
+      <p>城市体系层级结构——大城市→中等城市→小城镇，六边形空间分布</p>
+    </div>
+  </div>
+</div>
+
+<!-- HEDONIC -->
+<div class="slide" data-index="7">
+  <div class="section-label">核心理论四</div>
+  <h2>特征价格模型（Hedonic Model）</h2>
+  <div class="quote-block">
+    <p>商品的价格，是其各种特征隐含价格之和。</p>
+    <p class="author" style="color:#0984e3">Griliches（1971）· Rosen（1974）</p>
+  </div>
+  <div class="card-grid">
+    <div class="card"><div class="num">🏠</div><h4>房价 = 特征之和</h4><p>房屋特征 + 邻里特征 + 区位特征 + 环境特征</p></div>
+    <div class="card"><div class="num">💰</div><h4>资本化效应</h4><p>房价差异 = 地区特征差异的资本化——靠近海边的房价包含了"海景"的价格</p></div>
+    <div class="card"><div class="num">🌊</div><h4>三种溢价</h4><p>海岸线溢价 · 城市中心溢价 · 环境溢价</p></div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">人们在用"脚"投票，选择愿意支付更高价格的地方</p>
+</div>
+
+<!-- FOUR THEORIES -->
+<div class="slide" data-index="8">
+  <div class="section-label">四大理论整合</div>
+  <h2>每个理论回答了不同层次的问题</h2>
+  <table class="full-table">
+    <thead>
+      <tr><th>理论</th><th>回答的问题</th><th>核心机制</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong style="color:#00b894">新经济地理学</strong></td><td>为什么经济活动在空间上集聚？</td><td>规模经济+运输成本+劳动力流动</td></tr>
+      <tr><td><strong style="color:#0984e3">空间均衡理论</strong></td><td>为什么不同地区生活水平趋于一致？</td><td>劳动力迁移+房价调整</td></tr>
+      <tr><td><strong style="color:#6c5ce7">区位理论</strong></td><td>企业和家庭如何选择区位？</td><td>运输成本最小化+市场范围</td></tr>
+      <tr><td><strong style="color:#fd79a8">特征价格模型</strong></td><td>房价差异反映了什么？</td><td>地区特征的资本化</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- DYNAMIC PROCESS -->
+<div class="slide" data-index="9">
+  <div class="section-label">产业结构的空间印记</div>
+  <h2>四个阶段的动态过程</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3);min-width:clamp(100px,12vw,180px)">
+      <div class="label" style="color:#00b894">第一阶段</div>
+      <div class="value" style="color:#00b894;font-size:clamp(12px,1.1vw,18px)">工业化初期</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(0,184,148,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3);min-width:clamp(100px,12vw,180px)">
+      <div class="label" style="color:#00b894">第二阶段</div>
+      <div class="value" style="color:#00b894;font-size:clamp(12px,1.1vw,18px)">工业化深化</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(9,132,227,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3);min-width:clamp(100px,12vw,180px)">
+      <div class="label" style="color:#0984e3">第三阶段</div>
+      <div class="value" style="color:#0984e3;font-size:clamp(12px,1.1vw,18px)">后工业化</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(108,92,231,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(108,92,231,.3);min-width:clamp(100px,12vw,180px)">
+      <div class="label" style="color:#6c5ce7">第四阶段</div>
+      <div class="value" style="color:#6c5ce7;font-size:clamp(12px,1.1vw,18px)">数字经济</div>
+    </div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card"><div class="num">① 工业化初期</div><p>工业向原材料产地和交通枢纽集聚 → 离散的工业点</p></div>
+    <div class="card"><div class="num">② 工业化深化</div><p>制造业向沿海集聚 → 沿海工业带 + 内陆资源区</p></div>
+    <div class="card"><div class="num">③ 后工业化</div><p>服务业向大城市中心集聚 → 大都市区 + 专业化中小城市</p></div>
+    <div class="card"><div class="num">④ 数字经济</div><p>数字产业向科技中心集聚 → 科技中心 + 分散化数字工作者</p></div>
+  </div>
+</div>
+
+<!-- CHINA CASE -->
+<div class="slide" data-index="10">
+  <div class="section-label">中国案例</div>
+  <h2>沿海集聚的经济地理解释</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">🌊</div>
+      <h4>新经济地理学</h4>
+      <p>国际贸易驱动 + 规模经济效应 + 累积因果机制</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">⚖️</div>
+      <h4>空间均衡视角</h4>
+      <p>沿海高工资伴随高房价，内陆低工资伴随低房价——实际效用趋向均衡</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">📍</div>
+      <h4>区位理论视角</h4>
+      <p>企业选择沿海降低进出口运输成本，工人选择沿海获得更高工资</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,121,168,.3)">
+      <div class="num">🏠</div>
+      <h4>特征价格模型</h4>
+      <p>沿海房价反映了"靠近国际市场"的资本化价值</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">珠三角+长三角+环渤海 = GDP 60%以上</p>
+</div>
+
+<!-- AI IMPACT -->
+<div class="slide" data-index="11">
+  <div class="section-label">AI时代的空间结构</div>
+  <h2>AI会改变空间格局吗？</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>📈 集聚力增强</h4>
+      <p>AI产业本身倾向于集聚——人才、资本、数据集中在少数科技中心</p>
+      <p>知识溢出效应：面对面交流仍然重要</p>
+    </div>
+    <div class="compare-b">
+      <h4>📉 分散力增强</h4>
+      <p>远程工作可能降低"地理接近"的重要性</p>
+      <p>自动化生产可能减少对劳动力集聚的依赖</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>目前来看，AI可能加剧而不是减少空间集聚。</p>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">知识密集型产业的"面对面交流"和"知识溢出"需求，可能抵消远程工作的分散效应</p>
+</div>
+
+<!-- POLICY -->
+<div class="slide" data-index="12">
+  <div class="section-label">政策启示</div>
+  <h2>对区域政策的三个洞见</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">❌</div>
+      <h4>不要试图"均匀发展"</h4>
+      <p>空间集聚是经济规律，逆势而为只会导致效率损失</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">🔗</div>
+      <h4>关注"连接"而非"均衡"</h4>
+      <p>让内陆地区更好地连接沿海市场，比直接在内陆投资工业更有效</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">🛤️</div>
+      <h4>基础设施的投资回报</h4>
+      <p>运输成本下降是推动空间结构变化的关键变量——投资交通基础设施可以改变区域的"市场准入"</p>
+    </div>
+  </div>
+</div>
+
+<!-- SEVEN DOCUMENTS -->
+<div class="slide" data-index="13">
+  <div class="section-label">七部曲 · 统一</div>
+  <h2>今天七篇文档的完整认知体系</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)"><div class="label" style="color:#f0c27a">01 认知</div><div class="value" style="color:#f0c27a;font-size:clamp(12px,1.1vw,18px)">过程优于结果</div></div>
+    <div class="flow-arrow" style="color:rgba(240,194,122,.3)">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)"><div class="label" style="color:#f0c27a">02 发展</div><div class="value" style="color:#f0c27a;font-size:clamp(12px,1.1vw,18px)">试错优于规划</div></div>
+    <div class="flow-arrow" style="color:rgba(240,194,122,.3)">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)"><div class="label" style="color:#f0c27a">03 制度</div><div class="value" style="color:#f0c27a;font-size:clamp(12px,1.1vw,18px)">市场优于计划</div></div>
+    <div class="flow-arrow" style="color:rgba(240,194,122,.3)">↓</div>
+    <div class="flow-step" style="border-color:#fc5c7d"><div class="label" style="color:#fc5c7d">04 前提</div><div class="value" style="color:#fc5c7d;font-size:clamp(12px,1.1vw,18px)">自主性是一切前提</div></div>
+    <div class="flow-arrow" style="color:#fc5c7d">↓</div>
+    <div class="flow-step" style="border-color:#6c5ce7"><div class="label" style="color:#6c5ce7">05 资源</div><div class="value" style="color:#6c5ce7;font-size:clamp(12px,1.1vw,18px)">可信的决策权</div></div>
+    <div class="flow-arrow" style="color:#6c5ce7">↓</div>
+    <div class="flow-step" style="border-color:#0984e3"><div class="label" style="color:#0984e3">06 空间</div><div class="value" style="color:#0984e3;font-size:clamp(12px,1.1vw,18px)">集聚是规律</div></div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:2vh">七篇递进：认知 → 发展 → 制度 → 前提 → 资源 → 空间</p>
+</div>
+
+<!-- CLOSING -->
+<div class="slide" data-index="14">
+  <div class="section-label">终章</div>
+  <h2>理解空间的"地理密码"</h2>
+  <div class="big-num">集聚</div>
+  <div class="quote-block">
+    <p>增长不是均匀的春雨，<br>而是有选择的、有方向的、<br>有规律的空间重组。</p>
+  </div>
+  <div style="text-align:center;margin-top:2vh">
+    <p class="dim">2026年8月2日 · 研究思考知识库</p>
+    <p class="dim" style="margin-top:0.3vh">新经济地理学 · 空间均衡 · 区位理论 · 特征价格模型</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevArrow">‹</button>
+  <button class="nav-arrow" id="nextArrow">›</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide'); const total = 15; let current = 0;
+const dotsContainer = document.getElementById('dots');
+for(let i = 0; i < total; i++){const dot = document.createElement('span');dot.className = 'nav-dot' + (i === 0 ? ' active' : '');dot.dataset.index = i;dot.style.cursor = 'pointer';dot.addEventListener('click', () => goTo(i));dotsContainer.appendChild(dot);}
+function goTo(index){if(index < 0) index = 0;if(index >= total) index = total - 1;if(index === current) return;slides[current].classList.remove('active');slides[current].classList.add('exit');setTimeout(() => slides[current].classList.remove('exit'), 600);current = index;slides[current].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i) => d.classList.toggle('active', i === current));document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';document.querySelectorAll('.nav-arrow,.nav-btn').forEach(b => {if(b.id === 'prevBtn' || b.id === 'prevArrow') b.disabled = current === 0;if(b.id === 'nextBtn' || b.id === 'nextArrow') b.disabled = current === total - 1;});}
+document.addEventListener('keydown', e => {if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') goTo(current + 1);if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);});
+let touchStartX = 0;document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);document.addEventListener('touchend', e => {const diff = touchStartX - e.changedTouches[0].screenX;if(Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));});
+let wheelTimeout;document.addEventListener('wheel', e => {clearTimeout(wheelTimeout);wheelTimeout = setTimeout(() => {if(e.deltaY > 0) goTo(current + 1);else goTo(current - 1);}, 100);}, {passive:true});
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));document.getElementById('prevArrow').addEventListener('click', () => goTo(current - 1));document.getElementById('nextArrow').addEventListener('click', () => goTo(current + 1));
+goTo(0);
+</script>
+</body>
+</html>
