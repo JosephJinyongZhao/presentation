@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时代核心资源的演进逻辑 — 三层结构模型</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans SC',system-ui,-apple-system,sans-serif;
+    background:#0a0a0f;
+    color:#e8e6e3;
+    overflow:hidden;height:100vh;width:100vw;
+  }
+  .slide{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:6vh 8vw;
+    opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;visibility:visible;z-index:10}
+  .slide.exit{opacity:0;visibility:hidden;z-index:5}
+
+  .nav-bar{
+    position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+    z-index:100;display:flex;align-items:center;gap:1.2vw;
+    background:rgba(255,255,255,.06);backdrop-filter:blur(20px);
+    padding:1.2vh 2.5vw;border-radius:60px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+  }
+  .nav-btn{
+    background:none;border:none;color:rgba(255,255,255,.5);
+    font-size:clamp(14px,1.1vw,22px);cursor:pointer;padding:6px 10px;
+    transition:all .3s;font-family:inherit;border-radius:8px;line-height:1;
+  }
+  .nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .nav-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+  .nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .4s}
+  .nav-dot.active{background:#6c5ce7;width:24px;border-radius:3px}
+  .nav-progress{
+    position:fixed;top:0;left:0;height:3px;
+    background:linear-gradient(90deg,#6c5ce7,#00cec9);
+    z-index:200;transition:width .4s ease;
+  }
+  .nav-arrows{
+    position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);
+    z-index:90;display:flex;gap:4vw;
+  }
+  .nav-arrow{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.6);width:clamp(44px,3.5vw,64px);
+    height:clamp(44px,3.5vw,64px);border-radius:50%;
+    font-size:clamp(18px,1.5vw,28px);cursor:pointer;
+    transition:all .3s;display:flex;align-items:center;justify-content:center;font-family:inherit;
+  }
+  .nav-arrow:hover{background:rgba(108,92,231,.15);border-color:#6c5ce7;color:#6c5ce7}
+  .nav-arrow:disabled{opacity:.2;cursor:default}
+
+  h1{font-size:clamp(36px,4.5vw,72px);font-weight:900;line-height:1.2;margin-bottom:1.5vh}
+  h2{font-size:clamp(28px,3vw,52px);font-weight:700;line-height:1.3;margin-bottom:2vh;color:#6c5ce7}
+  h3{font-size:clamp(22px,2.2vw,38px);font-weight:500;line-height:1.4;margin-bottom:1.5vh;color:#e8d5b0}
+  h4{font-size:clamp(18px,1.6vw,28px);font-weight:500;margin-bottom:1vh;color:#6c5ce7}
+  p{font-size:clamp(16px,1.5vw,28px);line-height:1.7;margin-bottom:1.2vh;font-weight:300}
+  .subtitle{font-size:clamp(18px,1.8vw,32px);font-weight:300;color:rgba(255,255,255,.6);margin-bottom:3vh;line-height:1.6}
+  .highlight{color:#6c5ce7;font-weight:500}
+  .accent{color:#00cec9;font-weight:500}
+  .dim{color:rgba(255,255,255,.4);font-size:clamp(14px,1.2vw,22px)}
+
+  .cover{
+    background:radial-gradient(ellipse at 30% 50%, rgba(108,92,231,.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(0,206,201,.06) 0%, transparent 60%),
+                #0a0a0f;
+  }
+  .cover h1{font-size:clamp(40px,5.5vw,88px)}
+  .cover .tagline{font-size:clamp(20px,2vw,36px);color:rgba(255,255,255,.5);font-weight:300;margin-top:2vh;letter-spacing:4px}
+  .cover .divider{width:80px;height:2px;background:linear-gradient(90deg,#6c5ce7,#00cec9);margin:3vh auto;border-radius:2px}
+  .cover .date{color:rgba(255,255,255,.3);font-size:clamp(14px,1.1vw,20px);margin-top:4vh}
+
+  .card-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,360px),1fr));
+    gap:clamp(12px,1.5vw,24px);width:100%;max-width:1200px;margin:2vh auto;
+  }
+  .card{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;padding:clamp(16px,2vw,32px);transition:all .3s;
+  }
+  .card:hover{background:rgba(255,255,255,.07);border-color:rgba(108,92,231,.3);transform:translateY(-2px)}
+  .card .num{
+    font-size:clamp(24px,2.5vw,42px);font-weight:900;
+    background:linear-gradient(135deg,#6c5ce7,#00cec9);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1vh;
+  }
+  .card h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:0.8vh}
+  .card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0}
+
+  .concept-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,36px);
+    width:100%;max-width:1100px;margin:2vh auto;
+  }
+  .concept-box{
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;padding:clamp(16px,2vw,32px);text-align:center;
+  }
+  .concept-box .icon{font-size:clamp(32px,3vw,52px);margin-bottom:1vh}
+  .concept-box h4{font-size:clamp(18px,1.5vw,26px)}
+  .concept-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.5);margin:0}
+
+  .compare-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    width:100%;max-width:1000px;margin:2vh auto;
+    border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;
+  }
+  .compare-a,.compare-b{padding:clamp(14px,1.6vw,28px)}
+  .compare-a{background:rgba(0,206,201,.06);border-right:1px solid rgba(255,255,255,.06)}
+  .compare-b{background:rgba(108,92,231,.04)}
+  .compare-a h4,.compare-b h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:1.2vh}
+  .compare-a h4{color:#00cec9}.compare-b h4{color:#6c5ce7}
+  .compare-a p,.compare-b p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.8vh 0}
+
+  .flow-diagram{
+    display:flex;align-items:center;justify-content:center;
+    gap:clamp(8px,1vw,16px);width:100%;max-width:1000px;margin:2vh auto;flex-wrap:wrap;
+  }
+  .flow-step{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:clamp(10px,1.2vw,20px) clamp(14px,1.6vw,28px);
+    text-align:center;min-width:clamp(80px,10vw,160px);
+  }
+  .flow-step .label{font-size:clamp(12px,1vw,18px);color:rgba(255,255,255,.5);margin-bottom:4px}
+  .flow-step .value{font-size:clamp(14px,1.3vw,22px);font-weight:500}
+  .flow-arrow{font-size:clamp(18px,1.8vw,30px);color:rgba(108,92,231,.4)}
+
+  .quote-block{
+    max-width:900px;text-align:center;margin:2vh auto;
+    padding:clamp(20px,2.5vw,40px);
+    border-left:3px solid #6c5ce7;
+    background:rgba(108,92,231,.04);border-radius:0 16px 16px 0;
+  }
+  .quote-block p{
+    font-size:clamp(18px,1.8vw,32px);font-weight:300;font-style:italic;color:#e8d5b0;margin:0;
+  }
+  .quote-block .author{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.4);margin-top:1.5vh;font-style:normal}
+
+  .big-num{
+    font-size:clamp(48px,8vw,120px);font-weight:900;
+    background:linear-gradient(135deg,#6c5ce7,#00cec9);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:1vh;
+  }
+  .section-label{font-size:clamp(12px,1vw,16px);letter-spacing:6px;text-transform:uppercase;color:rgba(108,92,231,.4);margin-bottom:1vh;font-weight:400}
+
+  .full-table{
+    width:100%;max-width:1100px;margin:2vh auto;border-collapse:collapse;
+    font-size:clamp(13px,1.1vw,18px);
+  }
+  .full-table th,.full-table td{
+    border:1px solid rgba(255,255,255,.08);
+    padding:clamp(8px,1vw,16px) clamp(10px,1.2vw,20px);
+    text-align:left;font-weight:300;
+  }
+  .full-table th{background:rgba(108,92,231,.08);color:#6c5ce7;font-weight:500}
+  .full-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+  .era-grid{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:1vw;
+    width:100%;max-width:1200px;margin:2vh auto;
+  }
+  .era-card{
+    border-radius:16px;padding:clamp(14px,1.5vw,28px);text-align:center;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .era-card h3{font-size:clamp(18px,1.6vw,28px);margin-bottom:1vh}
+  .era-card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.6vh 0}
+  .e1{background:rgba(0,206,201,.06);border-color:rgba(0,206,201,.2)}
+  .e1 h3{color:#00cec9}
+  .e2{background:rgba(108,92,231,.06);border-color:rgba(108,92,231,.2)}
+  .e2 h3{color:#6c5ce7}
+  .e3{background:rgba(253,121,168,.06);border-color:rgba(253,121,168,.2)}
+  .e3 h3{color:#fd79a8}
+
+  @media(max-width:768px){
+    .slide{padding:5vh 6vw}
+    .concept-grid,.era-grid{grid-template-columns:1fr}
+    .compare-grid{grid-template-columns:1fr}
+    .compare-a{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}
+    .flow-diagram{flex-direction:column}
+    .flow-arrow{transform:rotate(90deg)}
+    .nav-bar{gap:8px;padding:10px 16px}
+    .nav-dot{width:5px;height:5px}
+    .nav-dot.active{width:16px}
+  }
+  .slide::-webkit-scrollbar{width:4px}
+  .slide::-webkit-scrollbar-track{background:transparent}
+  .slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="nav-progress" id="progress"></div>
+
+<!-- COVER -->
+<div class="slide cover active" data-index="0">
+  <div class="section-label">2026 · 08 · 02</div>
+  <h1>时代核心资源的演进逻辑</h1>
+  <div class="divider"></div>
+  <p class="subtitle">从工业到AI的价值链卡点分析</p>
+  <div class="tagline">基础设施层 · 匹配连接层 · 稀缺能力层</div>
+  <div class="date">当AI可以生成一切，什么变得稀缺？</div>
+</div>
+
+<!-- FRAMEWORK OVERVIEW -->
+<div class="slide" data-index="1">
+  <div class="section-label">分析框架</div>
+  <h2>时代核心资源的"三层结构"</h2>
+  <p class="subtitle" style="text-align:center">每个时代都有三个层次，<span class="highlight">稀缺能力层</span>才是真正的价值制高点</p>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(255,255,255,.15);min-width:clamp(120px,14vw,220px)">
+      <div class="label" style="color:rgba(255,255,255,.4)">基础设施层</div>
+      <div class="value" style="color:rgba(255,255,255,.7)">物理/数字底座</div>
+    </div>
+    <div class="flow-arrow">↑</div>
+    <div class="flow-step" style="border-color:rgba(255,255,255,.15);min-width:clamp(120px,14vw,220px)">
+      <div class="label" style="color:rgba(255,255,255,.4)">匹配连接层</div>
+      <div class="value" style="color:rgba(255,255,255,.7)">供需连接中介</div>
+    </div>
+    <div class="flow-arrow">↑</div>
+    <div class="flow-step" style="border-color:#6c5ce7;min-width:clamp(120px,14vw,220px)">
+      <div class="label" style="color:#6c5ce7">稀缺能力层</div>
+      <div class="value" style="color:#6c5ce7">★ 真正的价值制高点</div>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">规律：<span class="accent">当一个层次变得丰裕，瓶颈就转移到下一个层次</span></p>
+</div>
+
+<!-- THREE ERAS -->
+<div class="slide" data-index="2">
+  <div class="section-label">三大时代 · 总览</div>
+  <h2>从"拥有"到"连接"到"被信任"</h2>
+  <div class="era-grid">
+    <div class="era-card e1">
+      <div style="font-size:clamp(28px,2.5vw,42px);margin-bottom:1vh">🏭</div>
+      <h3>工业时代</h3>
+      <p>核心资源：港口/钢厂/电厂</p>
+      <p>卡点：生产能力不足</p>
+      <p style="color:#00cec9;font-weight:500;margin-top:0.8vh">"拥有"</p>
+    </div>
+    <div class="era-card e2">
+      <div style="font-size:clamp(28px,2.5vw,42px);margin-bottom:1vh">🌐</div>
+      <h3>信息时代</h3>
+      <p>核心资源：云服务/分发节点</p>
+      <p>卡点：匹配效率不足</p>
+      <p style="color:#6c5ce7;font-weight:500;margin-top:0.8vh">"连接"</p>
+    </div>
+    <div class="era-card e3">
+      <div style="font-size:clamp(28px,2.5vw,42px);margin-bottom:1vh">🤖</div>
+      <h3>AI时代</h3>
+      <p>核心资源：<span class="highlight">可信的决策权</span></p>
+      <p>卡点：判断力不足</p>
+      <p style="color:#fd79a8;font-weight:500;margin-top:0.8vh">"被信任"</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">每一代技术都在"外包"上一代的能力，同时"暴露"下一代的核心稀缺</p>
+</div>
+
+<!-- INDUSTRIAL AGE -->
+<div class="slide" data-index="3">
+  <div class="section-label">工业时代</div>
+  <h2>物理生产能力的瓶颈</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,206,201,.3)">
+      <div class="num">🏭</div>
+      <h4>港口</h4>
+      <p>国际贸易的枢纽，连接原材料产地与消费市场</p>
+    </div>
+    <div class="card" style="border-color:rgba(0,206,201,.3)">
+      <div class="num">⚙️</div>
+      <h4>钢厂</h4>
+      <p>工业化的"粮食"，钢铁产量是国力的标志</p>
+    </div>
+    <div class="card" style="border-color:rgba(0,206,201,.3)">
+      <div class="num">⚡</div>
+      <h4>电厂</h4>
+      <p>能源供应，工业生产的基础</p>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>工业时代的核心逻辑是"规模效应"——固定成本极高，边际成本递减。</p>
+    <p class="author" style="color:rgba(0,206,201,.5)">越大越强 · 先发优势 · 垂直整合</p>
+  </div>
+</div>
+
+<!-- INFO AGE -->
+<div class="slide" data-index="4">
+  <div class="section-label">信息时代</div>
+  <h2>注意力与匹配效率的瓶颈</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">☁️</div>
+      <h4>云服务</h4>
+      <p>计算和存储的"水电煤"——信息时代的"电厂"</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">🔍</div>
+      <h4>分发匹配节点</h4>
+      <p>搜索引擎、社交平台、电商平台——连接信息与用户、供给与需求</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">📱</div>
+      <h4>用户关系</h4>
+      <p>谁拥有用户关系，谁就拥有定价权</p>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>信息时代的核心逻辑是"网络效应"——用户越多，平台价值越大。</p>
+    <p class="author" style="color:rgba(108,92,231,.5)">赢家通吃 · 平台型垄断</p>
+  </div>
+</div>
+
+<!-- COMPARISON -->
+<div class="slide" data-index="5">
+  <div class="section-label">工业 vs 信息</div>
+  <h2>两代核心逻辑的对比</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>🏭 工业时代</h4>
+      <p>核心稀缺：生产能力</p>
+      <p>核心资源：物理设施</p>
+      <p>竞争逻辑：规模经济</p>
+      <p>价值来源：生产产品</p>
+      <p>寡头形态：垂直整合巨头</p>
+    </div>
+    <div class="compare-b">
+      <h4>🌐 信息时代</h4>
+      <p>核心稀缺：注意力</p>
+      <p>核心资源：平台/数据</p>
+      <p>竞争逻辑：网络效应</p>
+      <p>价值来源：匹配供需</p>
+      <p>寡头形态：平台型垄断</p>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">从"拥有"到"连接"——控制方式从资本转向平台</p>
+</div>
+
+<!-- AI AGE CANDIDATES -->
+<div class="slide" data-index="6">
+  <div class="section-label">AI时代 · 候选资源</div>
+  <h2>算力、数据、能源、人才？</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">💻 算力</div>
+      <p>AI的"石油"——但正在快速商品化，价格持续下降，长期不是稀缺资源</p>
+    </div>
+    <div class="card">
+      <div class="num">📊 数据</div>
+      <p>公开数据正在耗尽，合成数据兴起。垂直领域的数据壁垒可能更有价值</p>
+    </div>
+    <div class="card">
+      <div class="num">🔋 能源</div>
+      <p>AI计算消耗巨大——但这是基础设施层问题，不是稀缺能力层问题</p>
+    </div>
+    <div class="card">
+      <div class="num">🧑‍💻 人才</div>
+      <p>顶尖AI人才稀缺——但AI时代需要的"人"和以前有什么不同？</p>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">这些都不是最终的答案——<span class="highlight">它们都可以被商品化或替代</span></p>
+</div>
+
+<!-- AI CORE INSIGHT -->
+<div class="slide" data-index="7">
+  <div class="section-label">AI时代 · 核心命题</div>
+  <h2>当内容创造变得丰裕</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(0,206,201,.3)">
+      <div class="label" style="color:#00cec9">工业时代</div>
+      <div class="value" style="color:#00cec9">产品匮乏→丰裕</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(0,206,201,.4)">↓ 卡点转移</div>
+    <div class="flow-step" style="border-color:rgba(108,92,231,.3)">
+      <div class="label" style="color:#6c5ce7">信息时代</div>
+      <div class="value" style="color:#6c5ce7">信息匮乏→泛滥</div>
+    </div>
+    <div class="flow-arrow" style="color:rgba(108,92,231,.4)">↓ 卡点转移</div>
+    <div class="flow-step" style="border-color:#fd79a8">
+      <div class="label" style="color:#fd79a8">AI时代</div>
+      <div class="value" style="color:#fd79a8">创造稀缺→丰裕</div>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:2vh;border-color:#fd79a8;background:rgba(253,121,168,.04)">
+    <p>当AI可以生成任何内容——<br>人类的<span class="highlight">判断力</span>成为最稀缺的资源。</p>
+  </div>
+</div>
+
+<!-- WHY JUDGMENT -->
+<div class="slide" data-index="8">
+  <div class="section-label">AI时代 · 不可替代性</div>
+  <h2>AI的三个根本性不对称</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(253,121,168,.3)">
+      <div class="num">🎭</div>
+      <h4>AI可以生成，但无法负责</h4>
+      <p>AI对自己的生成结果不承担任何责任——它没有"承担后果"的概念</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,121,168,.3)">
+      <div class="num">🧮</div>
+      <h4>AI可以推理，但无法承担后果</h4>
+      <p>AI可以分析概率、计算收益，但不会因错误决策而受惩罚</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,121,168,.3)">
+      <div class="num">⚖️</div>
+      <h4>AI可以建议，但无法替代人类决策</h4>
+      <p>决策需要承担风险和责任——这是AI永远无法替代的</p>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">核心命题：<span class="highlight">"可信的决策权"</span>是AI时代最稀缺的资源</p>
+</div>
+
+<!-- THREE DIMENSIONS OF JUDGMENT -->
+<div class="slide" data-index="9">
+  <div class="section-label">AI时代 · 判断力三维</div>
+  <h2>判断力的三个维度</h2>
+  <div class="concept-grid">
+    <div class="concept-box" style="border-color:rgba(0,206,201,.3)">
+      <div class="icon">🔍</div>
+      <h4 style="color:#00cec9">事实判断</h4>
+      <p>什么是真的？验证信息真实性——来源追溯、交叉验证、专业知识</p>
+    </div>
+    <div class="concept-box" style="border-color:rgba(108,92,231,.3)">
+      <div class="icon">⚖️</div>
+      <h4 style="color:#6c5ce7">价值判断</h4>
+      <p>什么是对的？选择符合伦理、目标和价值观的选项——领域知识+价值观框架</p>
+    </div>
+  </div>
+  <div class="concept-grid" style="margin-top:1vh">
+    <div class="concept-box" style="border-color:rgba(253,121,168,.3);grid-column:1/-1;max-width:550px;margin:0 auto">
+      <div class="icon">🎲</div>
+      <h4 style="color:#fd79a8">风险判断</h4>
+      <p>决定是否承担风险——需要承担决策后果的勇气和责任</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">在AI生成的众多选项中，选择正确的路径——这是人的不可替代价值</p>
+</div>
+
+<!-- TRUST -->
+<div class="slide" data-index="10">
+  <div class="section-label">AI时代 · 信任</div>
+  <h2>信任的不可替代性</h2>
+  <div class="quote-block" style="border-color:#fd79a8;background:rgba(253,121,168,.04)">
+    <p>AI可以模拟信任，但不能真正"被信任"——<br>因为信任的前提是"承担后果的能力"。</p>
+  </div>
+  <div style="width:100%;max-width:900px;margin:2vh auto">
+    <ul>
+      <li><strong>你信任医生</strong>——因为他对诊断结果负责</li>
+      <li><strong>你信任律师</strong>——因为他对法律建议负责</li>
+      <li><strong>你信任朋友</strong>——因为他对建议的后果与你共担</li>
+    </ul>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">在需要"承担责任"的决策中，<br><span class="highlight">人类永远是最终决策者</span></p>
+</div>
+
+<!-- SITUATIONAL KNOWLEDGE -->
+<div class="slide" data-index="11">
+  <div class="section-label">AI时代 · 情境化知识</div>
+  <h2>AI的盲区：情境化知识</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">AI</div>
+      <h4>通用知识丰富</h4>
+      <p>海量的通用知识，但缺乏"关于你、你的团队、你的客户"的具体知识</p>
+    </div>
+    <div class="card">
+      <div class="num">人</div>
+      <h4>情境化知识独特</h4>
+      <p>无法被AI自动获取（涉及隐私、信任、关系），需要在长期互动中积累</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>谁拥有最丰富的情境化知识，<br>谁就能做出最合适的决策。</p>
+  </div>
+</div>
+
+<!-- IMPLICATIONS -->
+<div class="slide" data-index="12">
+  <div class="section-label">启示</div>
+  <h2>个人、组织、社会</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,206,201,.3)">
+      <div class="num">🧑 个人</div>
+      <h4>判断力是最值得投资的能力</h4>
+      <p>深度领域知识 · 批判性思维 · 决策能力 · 信任积累</p>
+    </div>
+    <div class="card" style="border-color:rgba(108,92,231,.3)">
+      <div class="num">🏢 组织</div>
+      <h4>从"执行效率"到"决策质量"</h4>
+      <p>扁平化决策 · 判断力培养 · AI辅助而非替代 · 容忍"好的失败"</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,121,168,.3)">
+      <div class="num">🏛️ 社会</div>
+      <h4>制度设计保护"判断力"</h4>
+      <p>教育转型 · 专业认证重构 · 问责机制设计</p>
+    </div>
+  </div>
+</div>
+
+<!-- UNIFIED FRAMEWORK -->
+<div class="slide" data-index="13">
+  <div class="section-label">统一框架</div>
+  <h2>从"物"到"人"的演进</h2>
+  <table class="full-table">
+    <thead>
+      <tr><th>时代</th><th>核心资源</th><th>卡点</th><th>控制方式</th><th>人的角色</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong style="color:#00cec9">工业</strong></td><td>港口/钢厂/电厂</td><td>生产能力不足</td><td>拥有资本</td><td>劳动者</td></tr>
+      <tr><td><strong style="color:#6c5ce7">信息</strong></td><td>云服务/分发节点</td><td>匹配效率不足</td><td>拥有平台</td><td>用户/创作者</td></tr>
+      <tr><td><strong style="color:#fd79a8">AI</strong></td><td>可信的决策权</td><td>判断力不足</td><td>拥有信任</td><td><span class="highlight">决策者</span></td></tr>
+    </tbody>
+  </table>
+  <div class="flow-diagram" style="margin-top:2vh">
+    <div class="flow-step" style="border-color:rgba(0,206,201,.3)"><div class="label" style="color:#00cec9">工业</div><div class="value" style="color:#00cec9">外包体力</div></div>
+    <div class="flow-arrow" style="color:rgba(0,206,201,.3)">→</div>
+    <div class="flow-step" style="border-color:rgba(108,92,231,.3)"><div class="label" style="color:#6c5ce7">信息</div><div class="value" style="color:#6c5ce7">外包信息处理</div></div>
+    <div class="flow-arrow" style="color:rgba(108,92,231,.3)">→</div>
+    <div class="flow-step" style="border-color:#fd79a8"><div class="label" style="color:#fd79a8">AI</div><div class="value" style="color:#fd79a8">外包内容生成</div></div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">每一次外包，都让人更接近"纯粹的人"——不是作为工具，而是作为决策者</p>
+</div>
+
+<!-- CONNECTION TO TODAY -->
+<div class="slide" data-index="14">
+  <div class="section-label">六部曲 · 统一</div>
+  <h2>今天六篇文档的底层连接</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">01 认知</div>
+      <div class="value" style="color:#f0c27a">过程优于结果</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">02 发展</div>
+      <div class="value" style="color:#f0c27a">试错优于规划</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label" style="color:#f0c27a">03 制度</div>
+      <div class="value" style="color:#f0c27a">市场优于计划</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:#fc5c7d">
+      <div class="label" style="color:#fc5c7d">04 前提</div>
+      <div class="value" style="color:#fc5c7d">自主性是一切的前提</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:#6c5ce7">
+      <div class="label" style="color:#6c5ce7">05 资源</div>
+      <div class="value" style="color:#6c5ce7">可信的决策权</div>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:2vh">六篇递进：认知 → 发展 → 制度 → 前提 → 资源</p>
+</div>
+
+<!-- CLOSING -->
+<div class="slide" data-index="15">
+  <div class="section-label">终章</div>
+  <h2>AI时代最稀缺的资源</h2>
+  <div class="big-num">可信的决策权</div>
+  <div class="quote-block" style="border-color:#fd79a8;background:rgba(253,121,168,.04)">
+    <p>如果AI可以替你完成所有工作——<br>你还能做什么？<br><br>你还能判断什么是对的，<br>并被信任去做这个判断。</p>
+  </div>
+  <div style="text-align:center;margin-top:2vh">
+    <p class="dim" style="font-size:clamp(14px,1.2vw,20px)">工业时代：拥有</p>
+    <p class="dim" style="font-size:clamp(14px,1.2vw,20px);margin-top:0.3vh">信息时代：连接</p>
+    <p class="highlight" style="font-size:clamp(18px,1.5vw,26px);margin-top:0.5vh">AI时代：被信任</p>
+  </div>
+  <div style="text-align:center;margin-top:2vh">
+    <p class="dim">2026年8月2日 · 研究思考知识库</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevArrow">‹</button>
+  <button class="nav-arrow" id="nextArrow">›</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = 16; let current = 0;
+const dotsContainer = document.getElementById('dots');
+for(let i = 0; i < total; i++){
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.dataset.index = i; dot.style.cursor = 'pointer';
+  dot.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(dot);
+}
+function goTo(index){
+  if(index < 0) index = 0; if(index >= total) index = total - 1; if(index === current) return;
+  slides[current].classList.remove('active'); slides[current].classList.add('exit');
+  setTimeout(() => slides[current].classList.remove('exit'), 600);
+  current = index; slides[current].classList.add('active');
+  document.querySelectorAll('.nav-dot').forEach((d,i) => d.classList.toggle('active', i === current));
+  document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+  document.querySelectorAll('.nav-arrow,.nav-btn').forEach(b => {
+    if(b.id === 'prevBtn' || b.id === 'prevArrow') b.disabled = current === 0;
+    if(b.id === 'nextBtn' || b.id === 'nextArrow') b.disabled = current === total - 1;
+  });
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') goTo(current + 1);
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+let touchStartX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.addEventListener('touchend', e => {const diff = touchStartX - e.changedTouches[0].screenX; if(Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));});
+let wheelTimeout;
+document.addEventListener('wheel', e => {clearTimeout(wheelTimeout); wheelTimeout = setTimeout(() => {if(e.deltaY > 0) goTo(current + 1); else goTo(current - 1);}, 100);}, {passive:true});
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+document.getElementById('prevArrow').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextArrow').addEventListener('click', () => goTo(current + 1));
+goTo(0);
+</script>
+</body>
+</html>
