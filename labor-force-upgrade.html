@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>劳动力结构变迁与产业升级 — 系统挑战</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#e8e6e3;overflow:hidden;height:100vh;width:100vw}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6vh 8vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible;z-index:10}.slide.exit{opacity:0;visibility:hidden;z-index:5}
+.nav-bar{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:1.2vw;background:rgba(255,255,255,.06);backdrop-filter:blur(20px);padding:1.2vh 2.5vw;border-radius:60px;border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:clamp(14px,1.1vw,22px);cursor:pointer;padding:6px 10px;transition:all .3s;font-family:inherit;border-radius:8px;line-height:1}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}.nav-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .4s}
+.nav-dot.active{background:#00b894;width:24px;border-radius:3px}
+.nav-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#00b894,#0984e3);z-index:200;transition:width .4s ease}
+.nav-arrows{position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);z-index:90;display:flex;gap:4vw}
+.nav-arrow{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);width:clamp(44px,3.5vw,64px);height:clamp(44px,3.5vw,64px);border-radius:50%;font-size:clamp(18px,1.5vw,28px);cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.nav-arrow:hover{background:rgba(0,184,148,.15);border-color:#00b894;color:#00b894}.nav-arrow:disabled{opacity:.2;cursor:default}
+h1{font-size:clamp(36px,4.5vw,72px);font-weight:900;line-height:1.2;margin-bottom:1.5vh}
+h2{font-size:clamp(28px,3vw,52px);font-weight:700;line-height:1.3;margin-bottom:2vh;color:#00b894}
+h3{font-size:clamp(22px,2.2vw,38px);font-weight:500;line-height:1.4;margin-bottom:1.5vh;color:#e8d5b0}
+h4{font-size:clamp(18px,1.6vw,28px);font-weight:500;margin-bottom:1vh;color:#00b894}
+p{font-size:clamp(16px,1.5vw,28px);line-height:1.7;margin-bottom:1.2vh;font-weight:300}
+.subtitle{font-size:clamp(18px,1.8vw,32px);font-weight:300;color:rgba(255,255,255,.6);margin-bottom:3vh;line-height:1.6}
+.highlight{color:#00b894;font-weight:500}.accent{color:#0984e3;font-weight:500}.dim{color:rgba(255,255,255,.4);font-size:clamp(14px,1.2vw,22px)}
+.cover{background:radial-gradient(ellipse at 30% 50%, rgba(0,184,148,.1) 0%, transparent 60%),radial-gradient(ellipse at 70% 50%, rgba(9,132,227,.06) 0%, transparent 60%),#0a0a0f}
+.cover h1{font-size:clamp(40px,5.5vw,88px)}.cover .tagline{font-size:clamp(20px,2vw,36px);color:rgba(255,255,255,.5);font-weight:300;margin-top:2vh;letter-spacing:4px}
+.cover .divider{width:80px;height:2px;background:linear-gradient(90deg,#00b894,#0984e3);margin:3vh auto;border-radius:2px}
+.cover .date{color:rgba(255,255,255,.3);font-size:clamp(14px,1.1vw,20px);margin-top:4vh}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,360px),1fr));gap:clamp(12px,1.5vw,24px);width:100%;max-width:1200px;margin:2vh auto}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:clamp(16px,2vw,32px);transition:all .3s}
+.card:hover{background:rgba(255,255,255,.07);border-color:rgba(0,184,148,.3);transform:translateY(-2px)}
+.card .num{font-size:clamp(24px,2.5vw,42px);font-weight:900;background:linear-gradient(135deg,#00b894,#0984e3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1vh}
+.card h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:0.8vh}.card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,36px);width:100%;max-width:1100px;margin:2vh auto}
+.concept-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:clamp(16px,2vw,32px);text-align:center}
+.concept-box .icon{font-size:clamp(32px,3vw,52px);margin-bottom:1vh}.concept-box h4{font-size:clamp(18px,1.5vw,26px)}.concept-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.5);margin:0}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;max-width:1000px;margin:2vh auto;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}
+.compare-a,.compare-b{padding:clamp(14px,1.6vw,28px)}.compare-a{background:rgba(0,184,148,.06);border-right:1px solid rgba(255,255,255,.06)}.compare-b{background:rgba(9,132,227,.04)}
+.compare-a h4,.compare-b h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:1.2vh}.compare-a h4{color:#00b894}.compare-b h4{color:#0984e3}
+.compare-a p,.compare-b p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.8vh 0}
+.flow-diagram{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1vw,16px);width:100%;max-width:1000px;margin:2vh auto;flex-wrap:wrap}
+.flow-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:clamp(10px,1.2vw,20px) clamp(14px,1.6vw,28px);text-align:center;min-width:clamp(80px,10vw,160px)}
+.flow-step .label{font-size:clamp(12px,1vw,18px);color:rgba(255,255,255,.5);margin-bottom:4px}.flow-step .value{font-size:clamp(14px,1.3vw,22px);font-weight:500}
+.flow-arrow{font-size:clamp(18px,1.8vw,30px);color:rgba(0,184,148,.4)}
+.quote-block{max-width:900px;text-align:center;margin:2vh auto;padding:clamp(20px,2.5vw,40px);border-left:3px solid #00b894;background:rgba(0,184,148,.04);border-radius:0 16px 16px 0}
+.quote-block p{font-size:clamp(18px,1.8vw,32px);font-weight:300;font-style:italic;color:#e8d5b0;margin:0}
+.quote-block .author{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.4);margin-top:1.5vh;font-style:normal}
+.section-label{font-size:clamp(12px,1vw,16px);letter-spacing:6px;text-transform:uppercase;color:rgba(0,184,148,.4);margin-bottom:1vh;font-weight:400}
+.full-table{width:100%;max-width:1100px;margin:2vh auto;border-collapse:collapse;font-size:clamp(13px,1.1vw,18px)}
+.full-table th,.full-table td{border:1px solid rgba(255,255,255,.08);padding:clamp(8px,1vw,16px) clamp(10px,1.2vw,20px);text-align:left;font-weight:300}
+.full-table th{background:rgba(0,184,148,.08);color:#00b894;font-weight:500}.full-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+@media(max-width:768px){.slide{padding:5vh 6vw}.concept-grid{grid-template-columns:1fr}.compare-grid{grid-template-columns:1fr}.compare-a{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.flow-diagram{flex-direction:column}.flow-arrow{transform:rotate(90deg)}.nav-bar{gap:8px;padding:10px 16px}.nav-dot{width:5px;height:5px}.nav-dot.active{width:16px}}
+.slide::-webkit-scrollbar{width:4px}.slide::-webkit-scrollbar-track{background:transparent}.slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="nav-progress" id="progress"></div>
+
+<!-- COVER -->
+<div class="slide cover active" data-index="0">
+  <div class="section-label">2026 · 08 · 02</div>
+  <h1>高等教育扩张与产业升级</h1>
+  <div class="divider"></div>
+  <p class="subtitle">2.5亿高素质劳动力的历史性命题</p>
+  <div class="tagline">百里挑一 → 70%+ · 60后 → 10后 · 4亿劳动力</div>
+  <div class="date">人类历史上从未有过的"人力资源红利"</div>
+</div>
+
+<!-- DATA -->
+<div class="slide" data-index="1">
+  <div class="section-label">数据全景</div>
+  <h2>中国劳动力素质的"断崖式跃迁"</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">60s-80s</div><p>大学比例约<span class="highlight">1%</span>，百里挑一</p></div>
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">90s</div><p>大学入学率约<span class="highlight">25%</span></p></div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)"><div class="num">2000后</div><p>大学入学率约<span class="highlight">50%</span></p></div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)"><div class="num">2014后</div><p>大学入学率超过<span class="highlight">70%</span></p></div>
+  </div>
+  <div class="quote-block">
+    <p>未来30年，4亿劳动力，其中2.5亿高素质劳动力。</p>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">中国在人均GDP约$10,000时达到50%大学入学率<br>美国达到时人均GDP约$25,000</p>
+</div>
+
+<!-- COMPARISON -->
+<div class="slide" data-index="2">
+  <div class="section-label">国际比较</div>
+  <h2>中国高等教育扩张的"加速度"</h2>
+  <table class="full-table">
+    <thead><tr><th>国家</th><th>50%入学率所需时间</th><th>达到时人均GDP</th></tr></thead>
+    <tbody>
+      <tr><td>美国</td><td>约50年（1940-1990）</td><td>约$25,000</td></tr>
+      <tr><td>英国</td><td>约40年（1960-2000）</td><td>约$22,000</td></tr>
+      <tr><td>日本</td><td>约35年（1960-1995）</td><td>约$28,000</td></tr>
+      <tr><td>韩国</td><td>约25年（1980-2005）</td><td>约$18,000</td></tr>
+      <tr><td><strong style="color:#00b894">中国</strong></td><td><strong style="color:#00b894">约20年（1999-2019）</strong></td><td><strong style="color:#00b894">约$10,000</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">产业升级压力更大——高素质劳动力无法被低附加值产业充分吸收</p>
+</div>
+
+<!-- GENERATIONAL SHIFT -->
+<div class="slide" data-index="3">
+  <div class="section-label">代际结构</div>
+  <h2>60后到10后的"断崖效应"</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">60后 2.4亿</div><p>大学比例 <span style="color:#e17055;font-weight:700">~1%</span></p></div>
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">70后 2.2亿</div><p>大学比例 ~5-8%</p></div>
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">80后 2.3亿</div><p>大学比例 ~15-20%</p></div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)"><div class="num">90后 1.9亿</div><p>大学比例 ~25-30%</p></div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)"><div class="num">00后 1.6亿</div><p>大学比例 <span style="color:#00b894;font-weight:700">~50%+</span></p></div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)"><div class="num">10后 1.4亿</div><p>大学比例 <span style="color:#00b894;font-weight:700">~70%+</span></p></div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">"低学历高年龄"和"高学历低年龄"两个群体并存 → 代际错配</p>
+</div>
+
+<!-- INDUSTRIAL UPGRADE -->
+<div class="slide" data-index="4">
+  <div class="section-label">产业升级四阶段</div>
+  <h2>高素质劳动力需要什么样的产业？</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3)"><div class="label" style="color:#00b894">第一阶段</div><div class="value" style="color:#00b894;font-size:clamp(12px,1.1vw,18px)">劳动密集型</div></div>
+    <div class="flow-arrow" style="color:rgba(0,184,148,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(0,184,148,.3)"><div class="label" style="color:#00b894">第二阶段</div><div class="value" style="color:#00b894;font-size:clamp(12px,1.1vw,18px)">资本密集型</div></div>
+    <div class="flow-arrow" style="color:rgba(9,132,227,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3)"><div class="label" style="color:#0984e3">第三阶段</div><div class="value" style="color:#0984e3;font-size:clamp(12px,1.1vw,18px)">技术密集型</div></div>
+    <div class="flow-arrow" style="color:rgba(9,132,227,.4)">→</div>
+    <div class="flow-step" style="border-color:rgba(9,132,227,.3)"><div class="label" style="color:#0984e3">第四阶段</div><div class="value" style="color:#0984e3;font-size:clamp(12px,1.1vw,18px)">知识密集型</div></div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">⚠️ 双缺口困境</div>
+      <h4>高端产业供给不足</h4>
+      <p>2.5亿高素质劳动力，高端产业目前只能容纳约5000-8000万</p>
+    </div>
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">⚠️ 低端劳动力短缺</div>
+      <h4>低端产业用工荒</h4>
+      <p>60后退出，低端制造业面临劳动力短缺，但高素质劳动力不愿降级</p>
+    </div>
+  </div>
+</div>
+
+<!-- MATCHING -->
+<div class="slide" data-index="5">
+  <div class="section-label">匹配挑战</div>
+  <h2>劳动力市场匹配的三个维度</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">📊 数量匹配</div>
+      <p>经济增长能否创造足够的就业岗位？产业升级速度能否跟上劳动力素质提升速度？</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">🔧 结构匹配</div>
+      <p>专业设置与市场需求匹配度？学历之外的实际工作能力？劳动力流动的空间障碍？</p>
+    </div>
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">💰 价格匹配</div>
+      <p>薪酬预期与市场实际的差距。要么"高学历低薪"，要么"高学历失业"</p>
+    </div>
+  </div>
+  <div class="concept-grid" style="margin-top:1vh">
+    <div class="concept-box">
+      <div class="icon">🚫</div>
+      <h4>制度障碍</h4>
+      <p>户籍制度限制空间流动 · 社保跨地区转移障碍 · 教育与市场脱节</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">📱</div>
+      <h4>灵活就业的兴起</h4>
+      <p>平台经济缓解就业压力，但社保缺失、职业路径不清晰、收入不稳定</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONSUMPTION -->
+<div class="slide" data-index="6">
+  <div class="section-label">消费机遇</div>
+  <h2>2.5亿高素质劳动力的消费潜力</h2>
+  <table class="full-table">
+    <thead><tr><th>消费类别</th><th style="color:rgba(225,112,85,.7)">低学历群体</th><th style="color:#00b894">高学历群体</th></tr></thead>
+    <tbody>
+      <tr><td>食品</td><td style="color:rgba(225,112,85,.7)">高比例</td><td>低比例，追求品质</td></tr>
+      <tr><td>教育</td><td style="color:rgba(225,112,85,.7)">低比例</td><td><span class="highlight">高比例</span>—自我投资+子女教育</td></tr>
+      <tr><td>文化娱乐</td><td style="color:rgba(225,112,85,.7)">低比例</td><td><span class="highlight">高比例</span>—知识付费/旅游/演出</td></tr>
+      <tr><td>健康</td><td style="color:rgba(225,112,85,.7)">基本医疗</td><td>预防性健康管理+高端医疗</td></tr>
+      <tr><td>数字消费</td><td style="color:rgba(225,112,85,.7)">基础应用</td><td>深度应用（知识付费/在线课程）</td></tr>
+    </tbody>
+  </table>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">教育、文化、健康、数字服务 → 结构性消费机遇</p>
+</div>
+
+<!-- POLICY -->
+<div class="slide" data-index="7">
+  <div class="section-label">政策建议</div>
+  <h2>产业、教育与就业的系统协同</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">🏭 产业政策</div>
+      <p>加速高端产业扩张——半导体、生物医药、高端装备、新材料；推动知识密集型服务业发展</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">📚 教育政策</div>
+      <p>从"学历导向"到"能力导向"——调整专业设置、职业教育升级、终身学习体系</p>
+    </div>
+    <div class="card" style="border-color:rgba(0,184,148,.3)">
+      <div class="num">🔄 劳动力市场改革</div>
+      <p>户籍改革、社保全国统筹、灵活就业保障、职业信息服务</p>
+    </div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)">
+      <div class="num">💼 就业促进</div>
+      <p>创业支持、AI人岗匹配、区域协调发展</p>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="slide" data-index="8">
+  <div class="section-label">总结</div>
+  <h2>2.5亿高素质劳动力的"历史性命题"</h2>
+  <div class="quote-block">
+    <p>这是人类历史上从未有过的"人力资源红利"——<br>但这份红利能否兑现，取决于<span class="highlight">产业升级的速度</span>、<br><span class="highlight">劳动力市场的灵活性</span>和<span class="highlight">制度改革的深度</span>。</p>
+  </div>
+  <div class="card-grid" style="margin-top:2vh">
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">❓</div><h4>产业天花板</h4><p>高端产业能否在10-20年内扩张到容纳2.5亿高素质劳动力？</p></div>
+    <div class="card" style="border-color:rgba(9,132,227,.3)"><div class="num">❓</div><h4>匹配效率</h4><p>劳动力市场能否避免大规模的结构性失业？</p></div>
+    <div class="card" style="border-color:rgba(0,184,148,.3)"><div class="num">❓</div><h4>消费释放</h4><p>高素质劳动力的消费潜力能否成为增长新引擎？</p></div>
+  </div>
+  <div style="text-align:center;margin-top:2vh">
+    <p class="dim">2026年8月2日 · 研究思考知识库</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevArrow">‹</button>
+  <button class="nav-arrow" id="nextArrow">›</button>
+</div>
+<script>
+const slides=document.querySelectorAll('.slide');const total=9;let current=0;
+const dotsContainer=document.getElementById('dots');
+for(let i=0;i<total;i++){const dot=document.createElement('span');dot.className='nav-dot'+(i===0?' active':'');dot.dataset.index=i;dot.style.cursor='pointer';dot.addEventListener('click',()=>goTo(i));dotsContainer.appendChild(dot);}
+function goTo(index){if(index<0)index=0;if(index>=total)index=total-1;if(index===current)return;slides[current].classList.remove('active');slides[current].classList.add('exit');setTimeout(()=>slides[current].classList.remove('exit'),600);current=index;slides[current].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===current));document.getElementById('progress').style.width=((current+1)/total*100)+'%';document.querySelectorAll('.nav-arrow,.nav-btn').forEach(b=>{if(b.id==='prevBtn'||b.id==='prevArrow')b.disabled=current===0;if(b.id==='nextBtn'||b.id==='nextArrow')b.disabled=current===total-1;});}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown')goTo(current+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);});
+let touchStartX=0;document.addEventListener('touchstart',e=>touchStartX=e.changedTouches[0].screenX);document.addEventListener('touchend',e=>{const diff=touchStartX-e.changedTouches[0].screenX;if(Math.abs(diff)>50)goTo(current+(diff>0?1:-1));});
+let wheelTimeout;document.addEventListener('wheel',e=>{clearTimeout(wheelTimeout);wheelTimeout=setTimeout(()=>{if(e.deltaY>0)goTo(current+1);else goTo(current-1);},100);},{passive:true});
+document.getElementById('prevBtn').addEventListener('click',()=>goTo(current-1));document.getElementById('nextBtn').addEventListener('click',()=>goTo(current+1));document.getElementById('prevArrow').addEventListener('click',()=>goTo(current-1));document.getElementById('nextArrow').addEventListener('click',()=>goTo(current+1));
+goTo(0);
+</script>
+</body>
+</html>
