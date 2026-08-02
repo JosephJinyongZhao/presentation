@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>需求洞察与技术驱动 — 不可偏废</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+  body{font-family:'Noto Sans SC',system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#e8e6e3;overflow:hidden;height:100vh;width:100vw}
+  .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6vh 8vw;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;overflow-y:auto}
+  .slide.active{opacity:1;visibility:visible;z-index:10}.slide.exit{opacity:0;visibility:hidden;z-index:5}
+  .nav-bar{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:1.2vw;background:rgba(255,255,255,.06);backdrop-filter:blur(20px);padding:1.2vh 2.5vw;border-radius:60px;border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+  .nav-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:clamp(14px,1.1vw,22px);cursor:pointer;padding:6px 10px;transition:all .3s;font-family:inherit;border-radius:8px;line-height:1}
+  .nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}.nav-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+  .nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .4s}
+  .nav-dot.active{background:#e17055;width:24px;border-radius:3px}
+  .nav-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#e17055,#fdcb6e);z-index:200;transition:width .4s ease}
+  .nav-arrows{position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);z-index:90;display:flex;gap:4vw}
+  .nav-arrow{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);width:clamp(44px,3.5vw,64px);height:clamp(44px,3.5vw,64px);border-radius:50%;font-size:clamp(18px,1.5vw,28px);cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;font-family:inherit}
+  .nav-arrow:hover{background:rgba(225,112,85,.15);border-color:#e17055;color:#e17055}.nav-arrow:disabled{opacity:.2;cursor:default}
+  h1{font-size:clamp(36px,4.5vw,72px);font-weight:900;line-height:1.2;margin-bottom:1.5vh}
+  h2{font-size:clamp(28px,3vw,52px);font-weight:700;line-height:1.3;margin-bottom:2vh;color:#e17055}
+  h3{font-size:clamp(22px,2.2vw,38px);font-weight:500;line-height:1.4;margin-bottom:1.5vh;color:#e8d5b0}
+  h4{font-size:clamp(18px,1.6vw,28px);font-weight:500;margin-bottom:1vh;color:#e17055}
+  p{font-size:clamp(16px,1.5vw,28px);line-height:1.7;margin-bottom:1.2vh;font-weight:300}
+  .subtitle{font-size:clamp(18px,1.8vw,32px);font-weight:300;color:rgba(255,255,255,.6);margin-bottom:3vh;line-height:1.6}
+  .highlight{color:#e17055;font-weight:500}.accent{color:#fdcb6e;font-weight:500}.dim{color:rgba(255,255,255,.4);font-size:clamp(14px,1.2vw,22px)}
+  .cover{background:radial-gradient(ellipse at 30% 50%, rgba(225,112,85,.1) 0%, transparent 60%),radial-gradient(ellipse at 70% 50%, rgba(253,203,110,.06) 0%, transparent 60%),#0a0a0f}
+  .cover h1{font-size:clamp(40px,5.5vw,88px)}.cover .tagline{font-size:clamp(20px,2vw,36px);color:rgba(255,255,255,.5);font-weight:300;margin-top:2vh;letter-spacing:4px}
+  .cover .divider{width:80px;height:2px;background:linear-gradient(90deg,#e17055,#fdcb6e);margin:3vh auto;border-radius:2px}
+  .cover .date{color:rgba(255,255,255,.3);font-size:clamp(14px,1.1vw,20px);margin-top:4vh}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,360px),1fr));gap:clamp(12px,1.5vw,24px);width:100%;max-width:1200px;margin:2vh auto}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:clamp(16px,2vw,32px);transition:all .3s}
+  .card:hover{background:rgba(255,255,255,.07);border-color:rgba(225,112,85,.3);transform:translateY(-2px)}
+  .card .num{font-size:clamp(24px,2.5vw,42px);font-weight:900;background:linear-gradient(135deg,#e17055,#fdcb6e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1vh}
+  .card h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:0.8vh}.card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0}
+  .concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,36px);width:100%;max-width:1100px;margin:2vh auto}
+  .concept-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:clamp(16px,2vw,32px);text-align:center}
+  .concept-box .icon{font-size:clamp(32px,3vw,52px);margin-bottom:1vh}.concept-box h4{font-size:clamp(18px,1.5vw,26px)}.concept-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.5);margin:0}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;max-width:1000px;margin:2vh auto;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}
+  .compare-a,.compare-b{padding:clamp(14px,1.6vw,28px)}.compare-a{background:rgba(253,203,110,.06);border-right:1px solid rgba(255,255,255,.06)}.compare-b{background:rgba(225,112,85,.04)}
+  .compare-a h4,.compare-b h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:1.2vh}.compare-a h4{color:#fdcb6e}.compare-b h4{color:#e17055}
+  .compare-a p,.compare-b p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0 0 0.8vh 0}
+  .flow-diagram{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1vw,16px);width:100%;max-width:1000px;margin:2vh auto;flex-wrap:wrap}
+  .flow-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:clamp(10px,1.2vw,20px) clamp(14px,1.6vw,28px);text-align:center;min-width:clamp(80px,10vw,160px)}
+  .flow-step .label{font-size:clamp(12px,1vw,18px);color:rgba(255,255,255,.5);margin-bottom:4px}.flow-step .value{font-size:clamp(14px,1.3vw,22px);font-weight:500}
+  .flow-arrow{font-size:clamp(18px,1.8vw,30px);color:rgba(225,112,85,.4)}
+  .quote-block{max-width:900px;text-align:center;margin:2vh auto;padding:clamp(20px,2.5vw,40px);border-left:3px solid #e17055;background:rgba(225,112,85,.04);border-radius:0 16px 16px 0}
+  .quote-block p{font-size:clamp(18px,1.8vw,32px);font-weight:300;font-style:italic;color:#e8d5b0;margin:0}
+  .quote-block .author{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.4);margin-top:1.5vh;font-style:normal}
+  .big-num{font-size:clamp(48px,8vw,120px);font-weight:900;background:linear-gradient(135deg,#e17055,#fdcb6e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:1vh}
+  .section-label{font-size:clamp(12px,1vw,16px);letter-spacing:6px;text-transform:uppercase;color:rgba(225,112,85,.4);margin-bottom:1vh;font-weight:400}
+  .full-table{width:100%;max-width:1100px;margin:2vh auto;border-collapse:collapse;font-size:clamp(13px,1.1vw,18px)}
+  .full-table th,.full-table td{border:1px solid rgba(255,255,255,.08);padding:clamp(8px,1vw,16px) clamp(10px,1.2vw,20px);text-align:left;font-weight:300}
+  .full-table th{background:rgba(225,112,85,.08);color:#e17055;font-weight:500}.full-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+  @media(max-width:768px){.slide{padding:5vh 6vw}.concept-grid{grid-template-columns:1fr}.compare-grid{grid-template-columns:1fr}.compare-a{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.flow-diagram{flex-direction:column}.flow-arrow{transform:rotate(90deg)}.nav-bar{gap:8px;padding:10px 16px}.nav-dot{width:5px;height:5px}.nav-dot.active{width:16px}}
+  .slide::-webkit-scrollbar{width:4px}.slide::-webkit-scrollbar-track{background:transparent}.slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="nav-progress" id="progress"></div>
+
+<!-- COVER -->
+<div class="slide cover active" data-index="0">
+  <div class="section-label">2026 · 08 · 02</div>
+  <h1>需求洞察与技术驱动</h1>
+  <div class="divider"></div>
+  <p class="subtitle">一个不可偏废的认知框架</p>
+  <div class="tagline">技术是答案 · 需求是问题 · 产品是连接</div>
+  <div class="date">在中国当前和西安，尤其要注意需求的洞察</div>
+</div>
+
+<!-- INTRO -->
+<div class="slide" data-index="1">
+  <div class="section-label">引言</div>
+  <h2>技术决定论的陷阱</h2>
+  <p class="subtitle" style="text-align:center">高铁、航天、5G的成功，让很多人以为<br>"只要技术足够先进，就能创造需求"</p>
+  <div class="quote-block">
+    <p>这些成功案例，都是"需求明确"的技术创新。<br>真正困难的事情是：<span class="highlight">当需求不明确时，如何找到它？</span></p>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">西安的困境</div>
+      <p>拥有强大的技术能力，但缺乏"发现需求"的能力</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,203,110,.3)">
+      <div class="num">深圳/长三角的成功</div>
+      <p>不是因为技术更先进，而是因为<span class="highlight">需求洞察能力更强</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- TWO PATHS -->
+<div class="slide" data-index="2">
+  <div class="section-label">两种创新路径</div>
+  <h2>技术驱动 vs 需求洞察驱动</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>🔧 技术驱动</h4>
+      <p>起点：技术能力</p>
+      <p>核心问题："这个技术能做什么？"</p>
+      <p>风险：技术很好，但没人需要</p>
+      <p>典型：高铁、航天、5G</p>
+    </div>
+    <div class="compare-b">
+      <h4>🎯 需求洞察驱动</h4>
+      <p>起点：用户痛点</p>
+      <p>核心问题："用户需要什么？"</p>
+      <p>风险：需求判断错误</p>
+      <p>典型：微信、抖音、拼多多</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">两种路径没有好坏之分，适用于不同的场景</p>
+</div>
+
+<!-- WHY TECH-HEAVY -->
+<div class="slide" data-index="3">
+  <div class="section-label">"重技术、轻需求"的根源</div>
+  <h2>历史路径依赖</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(225,112,85,.3)"><div class="label" style="color:#e17055">计划经济</div><div class="value" style="color:#e17055;font-size:clamp(12px,1.1vw,18px)">需求是"被给定的"</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(225,112,85,.3)"><div class="label" style="color:#e17055">工业化初期</div><div class="value" style="color:#e17055;font-size:clamp(12px,1.1vw,18px)">需求明确，模式有效</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(225,112,85,.3)"><div class="label" style="color:#e17055">过剩时代</div><div class="value" style="color:#e17055;font-size:clamp(12px,1.1vw,18px)">需求不明确，模式失灵</div></div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">西安"强技术、弱需求"</div>
+      <p>✅ 交大、西工大、西电<br>✅ 航天、军工、电子科研体系<br>❌ 缺乏对消费市场的理解<br>❌ 缺乏产品化思维和设计能力</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,203,110,.3)">
+      <div class="num">深圳"需求→技术"正循环</div>
+      <p>发现需求 → 满足需求 → 积累技术能力 → 更好满足需求 → 更多技术</p>
+    </div>
+  </div>
+</div>
+
+<!-- CORE CAPABILITIES -->
+<div class="slide" data-index="4">
+  <div class="section-label">需求洞察的核心能力</div>
+  <h2>普遍性、规模、产品设计</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(253,203,110,.3)">
+      <div class="num">📊 普遍性</div>
+      <h4>不是所有需求都值得做</h4>
+      <p>真正有价值的需求，是跨越年龄、性别、地域的"普遍需求"——意味着大规模市场、规模经济、竞争优势</p>
+    </div>
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">📈 规模</div>
+      <h4>规模决定价值</h4>
+      <p>目标人群多大？频率多高？强度多大？深圳/长三角的强项是快速识别"可规模化"的需求</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,203,110,.3)">
+      <div class="num">🎨 产品设计思维</div>
+      <h4>发现需求 ≠ 满足需求</h4>
+      <p>用户视角 · 简洁性 · 迭代能力 · 体验设计。西安的弱项：产品经理少、设计能力弱、不习惯快速迭代</p>
+    </div>
+  </div>
+</div>
+
+<!-- MINDSET SHIFT -->
+<div class="slide" data-index="5">
+  <div class="section-label">认知转变</div>
+  <h2>从"技术找需求"到"需求引技术"</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>❌ "技术找需求"</h4>
+      <p>技术有惯性：研发投入已花，倾向于找"支持它的需求"</p>
+      <p>技术有盲区：懂技术的人往往不懂市场</p>
+      <p>技术有路径依赖：擅长什么就继续做什么</p>
+    </div>
+    <div class="compare-b">
+      <h4>✅ "需求引技术"</h4>
+      <p>需求是"锚"：用户愿意付费的需求才是真实需求</p>
+      <p>技术是"手段"：选择最合适的技术，不执着于某一种</p>
+      <p>迭代是"方向"：用户反馈告诉你下一步做什么</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>技术可以引进，但需求洞察只能自己培养。</p>
+  </div>
+</div>
+
+<!-- BAY AREA MODEL -->
+<div class="slide" data-index="6">
+  <div class="section-label">向湾区学习</div>
+  <h2>"湾区模式"的需求洞察方法论</h2>
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(253,203,110,.3)">
+      <div class="num">👣</div>
+      <h4>深入一线</h4>
+      <p>创始人、产品经理泡在市场里，直接和用户交流</p>
+    </div>
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">⚡</div>
+      <h4>快速试错</h4>
+      <p>不追求"完美产品"，快速推出MVP，用市场反馈修正方向</p>
+    </div>
+    <div class="card" style="border-color:rgba(253,203,110,.3)">
+      <div class="num">📊</div>
+      <h4>数据驱动</h4>
+      <p>用数据验证需求，而不是用直觉判断</p>
+    </div>
+    <div class="card" style="border-color:rgba(225,112,85,.3)">
+      <div class="num">🤝</div>
+      <h4>用户共创</h4>
+      <p>让用户参与产品设计，在互动中理解需求</p>
+    </div>
+  </div>
+</div>
+
+<!-- THREE DIMENSIONS -->
+<div class="slide" data-index="7">
+  <div class="section-label">分析框架</div>
+  <h2>需求-技术-产品三维模型</h2>
+  <table class="full-table">
+    <thead>
+      <tr><th>维度</th><th>内涵</th><th>关键问题</th><th>谁负责</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong style="color:#fdcb6e">需求洞察</strong></td><td>发现真实的、普遍的、有规模的需求</td><td>"用户真正需要什么？"</td><td>产品经理/市场人员</td></tr>
+      <tr><td><strong style="color:#e17055">技术能力</strong></td><td>开发满足需求的技术方案</td><td>"用什么技术实现？"</td><td>技术团队</td></tr>
+      <tr><td><strong style="color:#fdcb6e">产品设计</strong></td><td>把技术转化为用户可用的产品</td><td>"这个产品用户会用吗？"</td><td>设计师/产品经理</td></tr>
+    </tbody>
+  </table>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card" style="border-color:rgba(225,112,85,.3)"><div class="num">强技术·弱需求</div><p>做出"技术很好但没人要"的产品</p></div>
+    <div class="card" style="border-color:rgba(253,203,110,.3)"><div class="num">强需求·弱技术</div><p>发现了好需求但无法实现</p></div>
+    <div class="card" style="border-color:rgba(225,112,85,.3)"><div class="num">强技术·强需求·弱设计</div><p>功能实现了但用户不会用、不想用</p></div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1vh">当前阶段，<span class="highlight">需求洞察能力比技术能力更稀缺</span>——技术正在商品化，但需求洞察无法商品化</p>
+</div>
+
+<!-- CONNECTION -->
+<div class="slide" data-index="8">
+  <div class="section-label">八部曲 · 统一</div>
+  <h2>今天八篇文档的完整体系</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)"><div class="label" style="color:#f0c27a;font-size:clamp(10px,0.8vw,14px)">01 认知</div><div class="value" style="color:#f0c27a;font-size:clamp(10px,0.9vw,16px)">过程优于结果</div></div>
+    <div class="flow-arrow" style="color:rgba(240,194,122,.3);font-size:clamp(12px,1vw,18px)">→</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)"><div class="label" style="color:#f0c27a;font-size:clamp(10px,0.8vw,14px)">02 发展</div><div class="value" style="color:#f0c27a;font-size:clamp(10px,0.9vw,16px)">试错优于规划</div></div>
+    <div class="flow-arrow" style="color:rgba(240,194,122,.3);font-size:clamp(12px,1vw,18px)">→</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)"><div class="label" style="color:#f0c27a;font-size:clamp(10px,0.8vw,14px)">03 制度</div><div class="value" style="color:#f0c27a;font-size:clamp(10px,0.9vw,16px)">市场优于计划</div></div>
+    <div class="flow-arrow" style="color:rgba(240,194,122,.3);font-size:clamp(12px,1vw,18px)">→</div>
+    <div class="flow-step" style="border-color:#fc5c7d"><div class="label" style="color:#fc5c7d;font-size:clamp(10px,0.8vw,14px)">04 前提</div><div class="value" style="color:#fc5c7d;font-size:clamp(10px,0.9vw,16px)">自主性是一切前提</div></div>
+    <div class="flow-arrow" style="color:#fc5c7d;font-size:clamp(12px,1vw,18px)">→</div>
+    <div class="flow-step" style="border-color:#6c5ce7"><div class="label" style="color:#6c5ce7;font-size:clamp(10px,0.8vw,14px)">05 资源</div><div class="value" style="color:#6c5ce7;font-size:clamp(10px,0.9vw,16px)">可信的决策权</div></div>
+    <div class="flow-arrow" style="color:#6c5ce7;font-size:clamp(12px,1vw,18px)">→</div>
+    <div class="flow-step" style="border-color:#0984e3"><div class="label" style="color:#0984e3;font-size:clamp(10px,0.8vw,14px)">06 空间</div><div class="value" style="color:#0984e3;font-size:clamp(10px,0.9vw,16px)">集聚是规律</div></div>
+    <div class="flow-arrow" style="color:#0984e3;font-size:clamp(12px,1vw,18px)">→</div>
+    <div class="flow-step" style="border-color:#e17055"><div class="label" style="color:#e17055;font-size:clamp(10px,0.8vw,14px)">07 洞察</div><div class="value" style="color:#e17055;font-size:clamp(10px,0.9vw,16px)">需求引技术</div></div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:2vh">八篇递进：认知 → 发展 → 制度 → 前提 → 资源 → 空间 → 洞察</p>
+</div>
+
+<!-- CLOSING -->
+<div class="slide" data-index="9">
+  <div class="section-label">终章</div>
+  <h2>技术可以引进，洞察只能自己培养</h2>
+  <div class="quote-block">
+    <p>找到正确的问题，<br>比给出正确的答案更重要。</p>
+  </div>
+  <div style="text-align:center;margin-top:3vh">
+    <p class="dim">技术是"答案"</p>
+    <p class="highlight" style="font-size:clamp(18px,1.5vw,26px);margin-top:0.5vh">需求是"问题"</p>
+    <p class="accent" style="font-size:clamp(18px,1.5vw,26px);margin-top:0.5vh">产品是"连接"</p>
+  </div>
+  <div style="text-align:center;margin-top:3vh">
+    <p class="dim">2026年8月2日 · 技术变革知识库</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevArrow">‹</button>
+  <button class="nav-arrow" id="nextArrow">›</button>
+</div>
+<script>
+const slides=document.querySelectorAll('.slide');const total=10;let current=0;
+const dotsContainer=document.getElementById('dots');
+for(let i=0;i<total;i++){const dot=document.createElement('span');dot.className='nav-dot'+(i===0?' active':'');dot.dataset.index=i;dot.style.cursor='pointer';dot.addEventListener('click',()=>goTo(i));dotsContainer.appendChild(dot);}
+function goTo(index){if(index<0)index=0;if(index>=total)index=total-1;if(index===current)return;slides[current].classList.remove('active');slides[current].classList.add('exit');setTimeout(()=>slides[current].classList.remove('exit'),600);current=index;slides[current].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===current));document.getElementById('progress').style.width=((current+1)/total*100)+'%';document.querySelectorAll('.nav-arrow,.nav-btn').forEach(b=>{if(b.id==='prevBtn'||b.id==='prevArrow')b.disabled=current===0;if(b.id==='nextBtn'||b.id==='nextArrow')b.disabled=current===total-1;});}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown')goTo(current+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);});
+let touchStartX=0;document.addEventListener('touchstart',e=>touchStartX=e.changedTouches[0].screenX);document.addEventListener('touchend',e=>{const diff=touchStartX-e.changedTouches[0].screenX;if(Math.abs(diff)>50)goTo(current+(diff>0?1:-1));});
+let wheelTimeout;document.addEventListener('wheel',e=>{clearTimeout(wheelTimeout);wheelTimeout=setTimeout(()=>{if(e.deltaY>0)goTo(current+1);else goTo(current-1);},100);},{passive:true});
+document.getElementById('prevBtn').addEventListener('click',()=>goTo(current-1));document.getElementById('nextBtn').addEventListener('click',()=>goTo(current+1));document.getElementById('prevArrow').addEventListener('click',()=>goTo(current-1));document.getElementById('nextArrow').addEventListener('click',()=>goTo(current+1));
+goTo(0);
+</script>
+</body>
+</html>
