@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认知·发展·制度 — 三部曲</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans SC',system-ui,-apple-system,sans-serif;
+    background:#0a0a0f;
+    color:#e8e6e3;
+    overflow:hidden;
+    height:100vh;
+    width:100vw;
+  }
+  .slide{
+    position:absolute;
+    top:0;left:0;
+    width:100%;height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:6vh 8vw;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .6s ease,visibility .6s ease;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;visibility:visible;z-index:10}
+  .slide.exit{opacity:0;visibility:hidden;z-index:5}
+
+  /* ─── Navigation ─── */
+  .nav-bar{
+    position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+    z-index:100;
+    display:flex;align-items:center;gap:1.2vw;
+    background:rgba(255,255,255,.06);
+    backdrop-filter:blur(20px);
+    padding:1.2vh 2.5vw;
+    border-radius:60px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+  }
+  .nav-btn{
+    background:none;border:none;
+    color:rgba(255,255,255,.5);
+    font-size:clamp(14px,1.1vw,22px);
+    cursor:pointer;padding:6px 10px;
+    transition:all .3s;
+    font-family:inherit;
+    border-radius:8px;
+    line-height:1;
+  }
+  .nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .nav-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+  .nav-dot{
+    width:6px;height:6px;border-radius:50%;
+    background:rgba(255,255,255,.2);
+    transition:all .4s;
+  }
+  .nav-dot.active{background:#f0c27a;width:24px;border-radius:3px}
+  .nav-progress{
+    position:fixed;top:0;left:0;height:3px;
+    background:linear-gradient(90deg,#f0c27a,#fc5c7d);
+    z-index:200;
+    transition:width .4s ease;
+  }
+  .nav-arrows{
+    position:fixed;bottom:12vh;left:50%;transform:translateX(-50%);
+    z-index:90;
+    display:flex;gap:4vw;
+  }
+  .nav-arrow{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.6);
+    width:clamp(44px,3.5vw,64px);
+    height:clamp(44px,3.5vw,64px);
+    border-radius:50%;
+    font-size:clamp(18px,1.5vw,28px);
+    cursor:pointer;
+    transition:all .3s;
+    display:flex;align-items:center;justify-content:center;
+    font-family:inherit;
+  }
+  .nav-arrow:hover{background:rgba(240,194,122,.15);border-color:#f0c27a;color:#f0c27a}
+  .nav-arrow:disabled{opacity:.2;cursor:default}
+
+  /* ─── Typography ─── */
+  h1{font-size:clamp(36px,4.5vw,72px);font-weight:900;line-height:1.2;margin-bottom:1.5vh}
+  h2{font-size:clamp(28px,3vw,52px);font-weight:700;line-height:1.3;margin-bottom:2vh;color:#f0c27a}
+  h3{font-size:clamp(22px,2.2vw,38px);font-weight:500;line-height:1.4;margin-bottom:1.5vh;color:#e8d5b0}
+  h4{font-size:clamp(18px,1.6vw,28px);font-weight:500;margin-bottom:1vh;color:#f0c27a}
+  p{font-size:clamp(16px,1.5vw,28px);line-height:1.7;margin-bottom:1.2vh;font-weight:300}
+  .subtitle{
+    font-size:clamp(18px,1.8vw,32px);
+    font-weight:300;
+    color:rgba(255,255,255,.6);
+    margin-bottom:3vh;
+    line-height:1.6;
+  }
+  .highlight{color:#f0c27a;font-weight:500}
+  .accent{color:#fc5c7d;font-weight:500}
+  .dim{color:rgba(255,255,255,.4);font-size:clamp(14px,1.2vw,22px)}
+
+  /* ─── Cover ─── */
+  .cover{
+    background:radial-gradient(ellipse at 30% 50%, rgba(240,194,122,.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(252,92,125,.06) 0%, transparent 60%),
+                #0a0a0f;
+  }
+  .cover h1{font-size:clamp(40px,5.5vw,88px)}
+  .cover .tagline{
+    font-size:clamp(20px,2vw,36px);
+    color:rgba(255,255,255,.5);
+    font-weight:300;
+    margin-top:2vh;
+    letter-spacing:4px;
+  }
+  .cover .divider{
+    width:80px;height:2px;
+    background:linear-gradient(90deg,#f0c27a,#fc5c7d);
+    margin:3vh auto;
+    border-radius:2px;
+  }
+  .cover .date{color:rgba(255,255,255,.3);font-size:clamp(14px,1.1vw,20px);margin-top:4vh}
+
+  /* ─── Cards ─── */
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,360px),1fr));
+    gap:clamp(12px,1.5vw,24px);
+    width:100%;
+    max-width:1200px;
+    margin:2vh auto;
+  }
+  .card{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:clamp(16px,2vw,32px);
+    transition:all .3s;
+  }
+  .card:hover{background:rgba(255,255,255,.07);border-color:rgba(240,194,122,.3);transform:translateY(-2px)}
+  .card .num{
+    font-size:clamp(24px,2.5vw,42px);
+    font-weight:900;
+    background:linear-gradient(135deg,#f0c27a,#fc5c7d);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:1vh;
+  }
+  .card h4{font-size:clamp(16px,1.4vw,24px);margin-bottom:0.8vh}
+  .card p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.6);margin:0}
+
+  /* ─── Concept Grid ─── */
+  .concept-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(16px,2vw,36px);
+    width:100%;
+    max-width:1100px;
+    margin:2vh auto;
+  }
+  .concept-box{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;
+    padding:clamp(16px,2vw,32px);
+    text-align:center;
+  }
+  .concept-box .icon{font-size:clamp(32px,3vw,52px);margin-bottom:1vh}
+  .concept-box h4{font-size:clamp(18px,1.5vw,26px)}
+  .concept-box p{font-size:clamp(13px,1.1vw,18px);color:rgba(255,255,255,.5);margin:0}
+
+  /* ─── Comparison Table ─── */
+  .compare-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    width:100%;
+    max-width:1000px;
+    margin:2vh auto;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .compare-a,.compare-b{
+    padding:clamp(14px,1.6vw,28px);
+  }
+  .compare-a{
+    background:rgba(240,194,122,.06);
+    border-right:1px solid rgba(255,255,255,.06);
+  }
+  .compare-b{background:rgba(252,92,125,.04)}
+  .compare-a h4,.compare-b h4{
+    font-size:clamp(16px,1.4vw,24px);
+    margin-bottom:1.2vh;
+  }
+  .compare-a h4{color:#f0c27a}
+  .compare-b h4{color:#fc5c7d}
+  .compare-a p,.compare-b p{
+    font-size:clamp(13px,1.1vw,18px);
+    color:rgba(255,255,255,.6);
+    margin:0 0 0.8vh 0;
+  }
+
+  /* ─── Flow Diagram ─── */
+  .flow-diagram{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(8px,1vw,16px);
+    width:100%;
+    max-width:1000px;
+    margin:2vh auto;
+    flex-wrap:wrap;
+  }
+  .flow-step{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    padding:clamp(10px,1.2vw,20px) clamp(14px,1.6vw,28px);
+    text-align:center;
+    min-width:clamp(80px,10vw,160px);
+  }
+  .flow-step .label{
+    font-size:clamp(12px,1vw,18px);
+    color:rgba(255,255,255,.5);
+    margin-bottom:4px;
+  }
+  .flow-step .value{
+    font-size:clamp(14px,1.3vw,22px);
+    font-weight:500;
+  }
+  .flow-arrow{
+    font-size:clamp(18px,1.8vw,30px);
+    color:rgba(240,194,122,.4);
+  }
+  .flow-feedback{
+    font-size:clamp(12px,1vw,18px);
+    color:rgba(252,92,125,.5);
+    text-align:center;
+    width:100%;
+    margin-top:1vh;
+  }
+
+  /* ─── Quote Block ─── */
+  .quote-block{
+    max-width:900px;
+    text-align:center;
+    margin:2vh auto;
+    padding:clamp(20px,2.5vw,40px);
+    border-left:3px solid #f0c27a;
+    background:rgba(240,194,122,.04);
+    border-radius:0 16px 16px 0;
+  }
+  .quote-block p{
+    font-size:clamp(18px,1.8vw,32px);
+    font-weight:300;
+    font-style:italic;
+    color:#e8d5b0;
+    margin:0;
+  }
+  .quote-block .author{
+    font-size:clamp(13px,1.1vw,18px);
+    color:rgba(255,255,255,.4);
+    margin-top:1.5vh;
+    font-style:normal;
+  }
+
+  /* ─── List Styling ─── */
+  ul{list-style:none;padding:0;margin:1.5vh 0;width:100%;max-width:900px}
+  ul li{
+    font-size:clamp(15px,1.4vw,24px);
+    line-height:1.6;
+    padding:0.8vh 0;
+    padding-left:2vw;
+    position:relative;
+    font-weight:300;
+    color:rgba(255,255,255,.75);
+  }
+  ul li::before{
+    content:'→';
+    position:absolute;left:0;
+    color:#f0c27a;
+    font-weight:400;
+  }
+  ul li strong{color:#e8e6e3;font-weight:500}
+
+  /* ─── Numbered large ─── */
+  .big-num{
+    font-size:clamp(48px,8vw,120px);
+    font-weight:900;
+    background:linear-gradient(135deg,#f0c27a,#fc5c7d);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:1;
+    margin-bottom:1vh;
+  }
+
+  /* ─── Section divider ─── */
+  .section-label{
+    font-size:clamp(12px,1vw,16px);
+    letter-spacing:6px;
+    text-transform:uppercase;
+    color:rgba(240,194,122,.4);
+    margin-bottom:1vh;
+    font-weight:400;
+  }
+
+  /* ─── Responsive ─── */
+  @media(max-width:768px){
+    .slide{padding:5vh 6vw}
+    .concept-grid{grid-template-columns:1fr}
+    .compare-grid{grid-template-columns:1fr}
+    .compare-a{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}
+    .flow-diagram{flex-direction:column}
+    .flow-arrow{transform:rotate(90deg)}
+    .nav-bar{gap:8px;padding:10px 16px}
+    .nav-dot{width:5px;height:5px}
+    .nav-dot.active{width:16px}
+  }
+
+  /* ─── Scrollbar ─── */
+  .slide::-webkit-scrollbar{width:4px}
+  .slide::-webkit-scrollbar-track{background:transparent}
+  .slide::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="nav-progress" id="progress"></div>
+
+<!-- ════════ COVER ════════ -->
+<div class="slide cover active" data-index="0">
+  <div class="section-label">2026 · 08 · 02</div>
+  <h1>认知 · 发展 · 制度</h1>
+  <div class="divider"></div>
+  <p class="subtitle">一个从个体认知到经济制度的<br>三层递进框架</p>
+  <div class="tagline">过 程 · 试 错 · 市 场</div>
+  <div class="date">三篇深度思考 · 一次完整的认知旅程</div>
+</div>
+
+<!-- ════════ OVERVIEW ════════ -->
+<div class="slide" data-index="1">
+  <div class="section-label">三部曲 · 总览</div>
+  <h2>一条底层逻辑的三种面向</h2>
+  <p class="subtitle">三篇文档共享同一个核心命题：<span class="highlight">真正有价值的东西，不是你拥有什么，而是你如何组织、如何生成、如何创造。</span></p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">01</div>
+      <h4>认知维度</h4>
+      <p>过程即认知——板书、笔记与学习体验中"过程优先"的深层机制。认知不是发生在"看结果"时，而是发生在"经历过程"中。</p>
+    </div>
+    <div class="card">
+      <div class="num">02</div>
+      <h4>发展维度</h4>
+      <p>温州vs陕西——"无中生有"与"有中生无"的深层追问。要素不是答案，组织能力才是发展的核心引擎。</p>
+    </div>
+    <div class="card">
+      <div class="num">03</div>
+      <h4>制度维度</h4>
+      <p>分散知识与集中压力——经济发展内在张力的深层结构。社会化的试错能力，是一切增长的最终源泉。</p>
+    </div>
+  </div>
+  <p class="dim" style="margin-top:2vh;text-align:center">三篇递进：个体认知 → 区域发展 → 经济制度</p>
+</div>
+
+<!-- ════════ CHAPTER 1: COGNITION ════════ -->
+<div class="slide" data-index="2">
+  <div class="section-label">第一部 · 认知</div>
+  <h2>过程即认知</h2>
+  <p class="subtitle">板书、笔记与学习体验中"过程优先"的深层机制</p>
+  <div class="quote-block">
+    <p>认知不是发生在"看结果"的时刻，<br>而是发生在"经历过程"的过程中。</p>
+  </div>
+  <p style="text-align:center;max-width:800px;margin:1vh auto">从"讲课需要写板书"这个朴素启发，延伸到写笔记、学习、思考的底层逻辑——<span class="highlight">思考不是在脑子里完成的，是在笔尖完成的。</span></p>
+</div>
+
+<!-- 板书 vs PPT -->
+<div class="slide" data-index="3">
+  <div class="section-label">01 · 板书 vs PPT</div>
+  <h2>两种认知路径的本质差异</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>✏️ 板书</h4>
+      <p>同步建构——思维过程和书写过程同时发生，学生看到的是"正在生成的思考"</p>
+      <p>🧠 镜像神经元激活——观看写板书相当于在神经层面"模拟"了书写过程</p>
+      <p>🔄 可逆纠错——写错了擦掉重写，传递"思考本身就是试错"</p>
+    </div>
+    <div class="compare-b">
+      <h4>📊 PPT</h4>
+      <p>预成呈现——内容在课前已完成，课堂上呈现的是"已经完成的思考"</p>
+      <p>👁️ 视觉语义加工——被动阅读模式，缺少身体参与</p>
+      <p>🎯 虚假完美感——每页精心设计，暗示"知识是确定的"</p>
+    </div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card"><div class="num">①</div><h4>注意力锚定</h4><p>板书引导目光跟随，PPT需在屏幕和讲解间切换</p></div>
+    <div class="card"><div class="num">②</div><h4>节奏调控</h4><p>板书20-30字/分钟天然提供消化时间窗口</p></div>
+    <div class="card"><div class="num">③</div><h4>留白空间</h4><p>板书间隙、擦除、停顿，恰恰是消化和追问的时机</p></div>
+  </div>
+</div>
+
+<!-- 笔记 -->
+<div class="slide" data-index="4">
+  <div class="section-label">02 · 写笔记即思考</div>
+  <h2>外化认知的神经机制</h2>
+  <div class="concept-grid">
+    <div class="concept-box">
+      <div class="icon">🧠</div>
+      <h4>认知卸载</h4>
+      <p>工作记忆容量约4±1个组块。写笔记把中间结果外部化，释放空间用于深层处理</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">✍️</div>
+      <h4>生成效应</h4>
+      <p>自己生成的信息记得更牢——手写激活运动皮层+视觉皮层+语言皮层，多模态编码</p>
+    </div>
+  </div>
+  <div style="width:100%;max-width:900px;margin:2vh auto">
+    <h4 style="text-align:center;margin-bottom:1.5vh">笔记三层次</h4>
+    <div class="flow-diagram">
+      <div class="flow-step"><div class="label">第一层</div><div class="value">抄写转录</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">第二层</div><div class="value">用自己的话重述</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label" style="color:#f0c27a">第三层</div><div class="value" style="color:#f0c27a">连接、质疑、重构</div></div>
+    </div>
+    <p class="dim" style="text-align:center;margin-top:1.5vh">真正有价值的笔记，不是"记下来了"，而是"在记的过程中想清楚了"</p>
+  </div>
+</div>
+
+<!-- 学习体验 -->
+<div class="slide" data-index="5">
+  <div class="section-label">03 · 体验机制</div>
+  <h2>为什么"过程"比"结果"影响更深</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="num">认知负荷</div>
+      <h4>时间窗口</h4>
+      <p>板书降低外在认知负荷，笔记通过认知卸载释放相关认知负荷——为深度加工留出空间</p>
+    </div>
+    <div class="card">
+      <div class="num">心流</div>
+      <h4>过程即奖励</h4>
+      <p>最佳体验不是"得到了结果"，而是"沉浸在过程中"——清晰的即时反馈、挑战与技能的动态平衡</p>
+    </div>
+    <div class="card">
+      <div class="num">具身认知</div>
+      <h4>身体参与</h4>
+      <p>认知不是纯粹的"大脑活动"——手臂运动轨迹与思维同步，身体在"画"思维</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:2vh">
+    <p>AI越强大，"人如何思考"这件事就越珍贵。<br>板书和笔记，恰恰是保护人类认知独立性的最后防线。</p>
+  </div>
+</div>
+
+<!-- ════════ CHAPTER 2: DEVELOPMENT ════════ -->
+<div class="slide" data-index="6">
+  <div class="section-label">第二部 · 发展</div>
+  <h2>"无中生有"与"有中生无"</h2>
+  <p class="subtitle">温州为什么能，陕西为什么不能？</p>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>🌊 温州</h4>
+      <p>七山二水一分田，没有生产要素优势</p>
+      <p style="color:#f0c27a;font-weight:500">→ 世界轻工贸易中心</p>
+      <p>正泰、德力西、奥康……"小商品，大市场"</p>
+    </div>
+    <div class="compare-b">
+      <h4>🏔️ 陕西</h4>
+      <p>交大、西工大、西电，航天军工电子能源</p>
+      <p style="color:#fc5c7d;font-weight:500">→ 40年未形成匹配的市场经济活力</p>
+      <p>人均GDP长期低于全国平均水平</p>
+    </div>
+  </div>
+  <p class="dim" style="text-align:center;margin-top:1.5vh">这个问题的答案，不是"温州人勤劳、陕西人懒惰"能解释的。</p>
+</div>
+
+<!-- 核心概念 -->
+<div class="slide" data-index="7">
+  <div class="section-label">02 · 核心概念</div>
+  <h2>要素悖论与组织能力</h2>
+  <div class="concept-grid">
+    <div class="concept-box">
+      <div class="icon">🔑</div>
+      <h4>要素悖论</h4>
+      <p>拥有更多要素不一定发展更快，缺乏要素反而可能被迫创新</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">⚙️</div>
+      <h4>组织能力</h4>
+      <p>把分散的生产要素有效组合起来创造价值的能力——要素的"乘法器"</p>
+    </div>
+  </div>
+  <div style="width:100%;max-width:900px;margin:2vh auto">
+    <h4 style="text-align:center;margin-bottom:1.5vh">两种发展模式</h4>
+    <div class="compare-grid">
+      <div class="compare-a">
+        <h4>温州 · 需求驱动</h4>
+        <p>起点：市场信息</p>
+        <p>核心能力：发现需求、组织供给</p>
+        <p>适应性：高度灵活，快速响应</p>
+      </div>
+      <div class="compare-b">
+        <h4>陕西 · 供给驱动</h4>
+        <p>起点：生产能力</p>
+        <p>核心能力：技术研发、规模生产</p>
+        <p>适应性：惯性大，转型慢</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 历史路径 -->
+<div class="slide" data-index="8">
+  <div class="section-label">03 · 历史路径</div>
+  <h2>双轨制的不同起点</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>🌱 温州：体制外生长</h4>
+      <p>改革前几乎没有国有经济</p>
+      <p>✅ 机会成本为零</p>
+      <p>✅ 从家庭作坊开始，完全依靠市场</p>
+      <p>✅ "被迫"成为优势——没有退路，必须成功</p>
+    </div>
+    <div class="compare-b">
+      <h4>🔗 陕西：体制内锁定</h4>
+      <p>改革前拥有大量国有经济和国防工业</p>
+      <p>⚠️ 改革机会成本极高</p>
+      <p>⚠️ 路径依赖锁死——计划惯性强大</p>
+      <p>⚠️ 体制内成为陷阱——不需走出去找市场</p>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>从"无"到"有"的路径，比从"有"到"有"的路径更清晰。</p>
+    <p class="author">"穷小子"的优势：什么都没有，所以什么都敢试</p>
+  </div>
+</div>
+
+<!-- 本质 -->
+<div class="slide" data-index="9">
+  <div class="section-label">04 · 本质追问</div>
+  <h2>计划经济的"遗产效应"</h2>
+  <div class="concept-grid">
+    <div class="concept-box">
+      <div class="icon">🏛️</div>
+      <h4>陕西 = 富二代困境</h4>
+      <p>继承的越多，越难从零开始创业。计划经济时期投入大量资源，形成庞大的国有体系，市场化转型成本极高</p>
+    </div>
+    <div class="concept-box">
+      <div class="icon">🚀</div>
+      <h4>温州 = 穷小子优势</h4>
+      <p>没有被纳入计划经济体系，没有路径依赖，市场化转型阻力最小。从"分配"到"创造"的模式转换成本为零</p>
+    </div>
+  </div>
+  <div class="flow-diagram" style="margin-top:2vh">
+    <div class="flow-step"><div class="label">计划经济</div><div class="value">分配逻辑</div></div>
+    <div class="flow-arrow">← →</div>
+    <div class="flow-step"><div class="label" style="color:#f0c27a">市场经济</div><div class="value" style="color:#f0c27a">创造逻辑</div></div>
+  </div>
+  <p style="text-align:center;margin-top:2vh">陕西擅长"我有资源，我分配资源"<br>温州擅长"我不知道哪里有资源，但我知道哪里有机会"</p>
+</div>
+
+<!-- ════════ CHAPTER 3: INSTITUTION ════════ -->
+<div class="slide" data-index="10">
+  <div class="section-label">第三部 · 制度</div>
+  <h2>分散知识与集中压力</h2>
+  <p class="subtitle">经济发展内在张力的深层结构</p>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>📡 朝向市场</h4>
+      <p>分散知识的发现和利用机制——无数个体在各自信息条件下做出决策，通过价格信号协调行动</p>
+    </div>
+    <div class="compare-b">
+      <h4>📋 朝向计划</h4>
+      <p>外部压力（战争、地缘竞争、危机）为集中决策提供理由——"非常时期需要非常手段"</p>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">两种力量不是"好"与"坏"的对立，而是经济发展中<span class="highlight">内在的、结构性的张力</span></p>
+</div>
+
+<!-- 哈耶克 -->
+<div class="slide" data-index="11">
+  <div class="section-label">01 · 知识问题</div>
+  <h2>哈耶克的洞见</h2>
+  <div class="quote-block">
+    <p>任何一个中央计划者，都不可能掌握经济运行所需要的全部知识。</p>
+    <p class="author">弗里德里希·哈耶克，《知识在社会中的运用》</p>
+  </div>
+  <div class="card-grid">
+    <div class="card"><div class="num">📡</div><h4>分散的</h4><p>存在于每个个体的头脑中，没人能完整掌握</p></div>
+    <div class="card"><div class="num">📍</div><h4>情境化的</h4><p>与具体时间、地点、条件相关，无法被抽象</p></div>
+    <div class="card"><div class="num">🤫</div><h4>默会的</h4><p>"知道的比能说出来的多"，无法被编码</p></div>
+    <div class="card"><div class="num">🔄</div><h4>动态的</h4><p>知识在不断变化，今天的信息明天可能过时</p></div>
+  </div>
+  <p style="text-align:center;margin-top:1.5vh">价格信号 = 把无数分散、情境化、动态的知识浓缩为一个数字</p>
+</div>
+
+<!-- 外部压力 -->
+<div class="slide" data-index="12">
+  <div class="section-label">02 · 集中压力</div>
+  <h2>外部压力与集中决策的循环</h2>
+  <div class="flow-diagram">
+    <div class="flow-step"><div class="label">压力</div><div class="value">⚡</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="label">需要统一行动</div><div class="value">🤝</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="label">集中决策</div><div class="value">📋</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="label">权力集中</div><div class="value">🔒</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="label">难以归还</div><div class="value">⚠️</div></div>
+    <div class="flow-feedback">↻ 自我强化：集中 → 效率下降 → 更多压力 → 更集中</div>
+  </div>
+  <div class="card-grid" style="margin-top:1.5vh">
+    <div class="card">
+      <div class="num">效率幻觉</div>
+      <h4>短期高效，长期陷阱</h4>
+      <p>集中决策在短期表现高效，但前提是"决策者掌握的信息正确"——这个前提在复杂系统中几乎不成立</p>
+    </div>
+    <div class="card">
+      <div class="num">利益固化</div>
+      <h4>权力一旦集中</h4>
+      <p>受益者会形成利益集团，维护体制；"外部压力"可以被战略性地维持或夸大</p>
+    </div>
+  </div>
+</div>
+
+<!-- 试错 -->
+<div class="slide" data-index="13">
+  <div class="section-label">03 · 核心动力</div>
+  <h2>经济发展的发动机：试错</h2>
+  <div class="big-num">试错</div>
+  <p class="subtitle" style="text-align:center">不是资本积累，不是技术进步——<br>是<span class="highlight">社会化的试错能力</span></p>
+  <div class="card-grid">
+    <div class="card"><div class="num">📊</div><h4>数量</h4><p>参与试错的人越多，发现"正确答案"的概率越大</p></div>
+    <div class="card"><div class="num">🎨</div><h4>多样性</h4><p>差异越大，发现"意想不到的答案"的可能性越高</p></div>
+    <div class="card"><div class="num">💰</div><h4>低成本</h4><p>试错成本越低，越多人愿意尝试</p></div>
+    <div class="card"><div class="num">⚡</div><h4>快反馈</h4><p>失败越早被发现，浪费越少</p></div>
+    <div class="card"><div class="num">📚</div><h4>可学习</h4><p>成功经验能否被快速传播和复制</p></div>
+  </div>
+</div>
+
+<!-- 市场与计划对比 -->
+<div class="slide" data-index="14">
+  <div class="section-label">04 · 制度对比</div>
+  <h2>市场 vs 计划：试错效率</h2>
+  <div class="compare-grid">
+    <div class="compare-a">
+      <h4>✅ 市场</h4>
+      <p>价格信号 → 即时反馈</p>
+      <p>利润 → 试错激励</p>
+      <p>破产 → 退出机制</p>
+      <p>自由进入 → 多样性</p>
+    </div>
+    <div class="compare-b">
+      <h4>❌ 计划</h4>
+      <p>价格扭曲 → 反馈迟缓</p>
+      <p>行政指令 → 激励不足</p>
+      <p>补贴兜底 → 无退出机制</p>
+      <p>统一决策 → 多样性低</p>
+    </div>
+  </div>
+  <div class="quote-block" style="margin-top:1.5vh">
+    <p>计划经济的问题，不是"计划者不聪明"，<br>而是计划体制天然地压缩了试错的空间。</p>
+  </div>
+</div>
+
+<!-- THREE PARTS CONNECTION -->
+<div class="slide" data-index="15">
+  <div class="section-label">三部曲 · 统一</div>
+  <h2>一条完整的认知链条</h2>
+  <div class="flow-diagram">
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label">01 认知</div>
+      <div class="value" style="color:#f0c27a">过程优于结果</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label">02 发展</div>
+      <div class="value" style="color:#f0c27a">试错优于规划</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color:rgba(240,194,122,.3)">
+      <div class="label">03 制度</div>
+      <div class="value" style="color:#f0c27a">市场优于计划</div>
+    </div>
+  </div>
+  <div class="card-grid" style="margin-top:2vh">
+    <div class="card">
+      <div class="num">为何</div>
+      <h4>认知的本质</h4>
+      <p>"在过程中生成"而不是"在结果中获取"——板书、笔记、手写强制认知参与</p>
+    </div>
+    <div class="card">
+      <div class="num">如何</div>
+      <h4>发展的源泉</h4>
+      <p>社会化的试错能力——温州模式是试错逻辑的胜利，陕西困境是试错空间被压缩的后果</p>
+    </div>
+    <div class="card">
+      <div class="num">什么条件下</div>
+      <h4>制度的边界</h4>
+      <p>市场最大化试错效率，集中决策压缩试错空间——外部压力下保持"可逆性"是关键</p>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="slide" data-index="16">
+  <div class="section-label">终章</div>
+  <h2>真正的价值</h2>
+  <div class="quote-block">
+    <p>真正有价值的东西，不是你拥有什么，<br>而是你如何组织、如何生成、如何创造。</p>
+  </div>
+  <div style="width:100%;max-width:800px;margin:3vh auto">
+    <p style="text-align:center;font-size:clamp(16px,1.4vw,24px);color:rgba(255,255,255,.6)">
+      个体层面，在过程中思考，在笔尖下认知。<br>
+      区域层面，用组织能力超越要素禀赋。<br>
+      制度层面，保护试错空间，警惕集中陷阱。
+    </p>
+  </div>
+  <div style="text-align:center;margin-top:3vh">
+    <p class="dim">2026年8月2日 · 三篇飞书文档同步完成</p>
+    <p class="dim" style="margin-top:0.5vh">过程即认知 · 温州vs陕西 · 分散知识与集中压力</p>
+  </div>
+</div>
+
+<!-- ════════ NAVIGATION ════════ -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevArrow">‹</button>
+  <button class="nav-arrow" id="nextArrow">›</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+// Build dots
+const dotsContainer = document.getElementById('dots');
+for(let i = 0; i < total; i++){
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.dataset.index = i;
+  dot.style.cursor = 'pointer';
+  dot.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(dot);
+}
+
+function goTo(index){
+  if(index < 0) index = 0;
+  if(index >= total) index = total - 1;
+  if(index === current) return;
+  
+  slides[current].classList.remove('active');
+  slides[current].classList.add('exit');
+  setTimeout(() => slides[current].classList.remove('exit'), 600);
+  
+  current = index;
+  slides[current].classList.add('active');
+  
+  // Update dots
+  document.querySelectorAll('.nav-dot').forEach((d,i) => {
+    d.classList.toggle('active', i === current);
+  });
+  
+  // Update progress
+  document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+  
+  // Update buttons
+  document.querySelectorAll('.nav-arrow,.nav-btn').forEach(b => {
+    if(b.id === 'prevBtn' || b.id === 'prevArrow') b.disabled = current === 0;
+    if(b.id === 'nextBtn' || b.id === 'nextArrow') b.disabled = current === total - 1;
+  });
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') goTo(current + 1);
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+
+// Touch/swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if(Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+});
+
+// Mouse wheel
+let wheelTimeout;
+document.addEventListener('wheel', e => {
+  clearTimeout(wheelTimeout);
+  wheelTimeout = setTimeout(() => {
+    if(e.deltaY > 0) goTo(current + 1);
+    else goTo(current - 1);
+  }, 100);
+}, {passive:true});
+
+// Click to navigate
+document.querySelector('.slide').addEventListener('click', e => {
+  if(e.target.closest('.nav-bar,.nav-arrow')) return;
+  const rect = document.querySelector('.slide.active').getBoundingClientRect();
+  if(e.clientX > rect.width * 0.7) goTo(current + 1);
+  else if(e.clientX < rect.width * 0.3) goTo(current - 1);
+});
+
+// Button listeners
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+document.getElementById('prevArrow').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextArrow').addEventListener('click', () => goTo(current + 1));
+
+// Init
+goTo(0);
+</script>
+</body>
+</html>
