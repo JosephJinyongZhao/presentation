@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工具理性与单向度的人</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #0a0a0f;
+    color: #e8e8f0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slide-container {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100vh;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5vh 8vw;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .slide-number {
+    position: fixed;
+    bottom: 2.5vh;
+    right: 3vw;
+    font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+    color: rgba(255,255,255,0.25);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    z-index: 100;
+  }
+
+  .nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(40px, 4vw, 60px);
+    height: clamp(40px, 4vw, 60px);
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.4);
+    font-size: clamp(1.2rem, 1.8vw, 2rem);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .nav-arrow:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.3);
+  }
+  .nav-prev { left: 1.5vw; }
+  .nav-next { right: 1.5vw; }
+
+  .nav-dots {
+    position: fixed;
+    bottom: 2.5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+  .nav-dot.active {
+    background: #7c8aff;
+    box-shadow: 0 0 12px rgba(124,138,255,0.5);
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  h1 { font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 900; line-height: 1.2; letter-spacing: -0.02em; }
+  h2 { font-size: clamp(1.8rem, 3.2vw, 3.2rem); font-weight: 700; line-height: 1.3; margin-bottom: 0.5em; }
+  h3 { font-size: clamp(1.3rem, 2.2vw, 2.2rem); font-weight: 500; line-height: 1.4; margin-bottom: 0.6em; }
+  p, li { font-size: clamp(1rem, 1.6vw, 1.6rem); line-height: 1.8; font-weight: 300; }
+  li { margin-bottom: 0.3em; }
+
+  .subtitle { font-size: clamp(1.1rem, 1.8vw, 1.8rem); color: rgba(255,255,255,0.6); font-weight: 300; line-height: 1.6; margin-top: 0.5em; }
+
+  .highlight { color: #7c8aff; font-weight: 500; }
+  .highlight-green { color: #5cdb9e; }
+  .highlight-orange { color: #f0a050; }
+  .highlight-red { color: #ff6b6b; }
+  .highlight-purple { color: #b388ff; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin-top: 1.5em;
+  }
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: 1.5em;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: clamp(1.2rem, 2.5vw, 2.5rem);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .card-title { font-size: clamp(1.1rem, 1.8vw, 1.8rem); font-weight: 700; margin-bottom: 0.8em; }
+  .card-item { padding: 0.5em 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: clamp(0.9rem, 1.4vw, 1.4rem); }
+  .card-item:last-child { border-bottom: none; }
+  .card-item .label { color: rgba(255,255,255,0.4); font-size: 0.8em; }
+  .card-item .value { color: #e8e8f0; }
+
+  .quote-block {
+    border-left: 3px solid #7c8aff;
+    padding: 1.5em 2em;
+    margin: 1.5em 0;
+    background: rgba(124,138,255,0.06);
+    border-radius: 0 12px 12px 0;
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+    font-style: italic;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.2em 0.8em;
+    border-radius: 20px;
+    font-size: 0.7em;
+    font-weight: 500;
+    margin-right: 0.5em;
+  }
+  .tag-blue { background: rgba(124,138,255,0.15); color: #7c8aff; }
+  .tag-green { background: rgba(92,219,158,0.15); color: #5cdb9e; }
+  .tag-orange { background: rgba(240,160,80,0.15); color: #f0a050; }
+  .tag-red { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+  .tag-purple { background: rgba(179,136,255,0.15); color: #b388ff; }
+
+  .callout {
+    background: rgba(124,138,255,0.08);
+    border: 1px solid rgba(124,138,255,0.15);
+    border-radius: 16px;
+    padding: clamp(1.2rem, 2.5vw, 2.5rem);
+    margin: 1.5em 0;
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    line-height: 1.8;
+  }
+  .callout-warning { background: rgba(240,160,80,0.08); border-color: rgba(240,160,80,0.2); }
+  .callout-danger { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); }
+  .callout-success { background: rgba(92,219,158,0.08); border-color: rgba(92,219,158,0.2); }
+
+  .paradox-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1.5em 0;
+  }
+  .paradox-item {
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    padding: clamp(1.2rem, 2vw, 2rem);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .paradox-item .p-title { font-size: clamp(1rem, 1.5vw, 1.5rem); font-weight: 500; margin-bottom: 0.5em; }
+  .paradox-item .p-desc { font-size: clamp(0.85rem, 1.3vw, 1.3rem); color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+  .table-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.5em 0;
+  }
+  .table-compare > div {
+    background: rgba(0,0,0,0.3);
+    padding: clamp(0.8rem, 1.5vw, 1.5rem);
+  }
+  .table-compare .th {
+    background: rgba(124,138,255,0.15);
+    font-weight: 700;
+    font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+  }
+  .table-compare .td {
+    font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+    line-height: 1.5;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .art-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.5em 0;
+  }
+  .art-grid > div {
+    background: rgba(0,0,0,0.3);
+    padding: clamp(0.8rem, 1.5vw, 1.5rem);
+  }
+  .art-grid .th { background: rgba(179,136,255,0.15); font-weight: 700; font-size: clamp(0.85rem, 1.2vw, 1.2rem); }
+  .art-grid .td { font-size: clamp(0.75rem, 1vw, 1rem); line-height: 1.5; color: rgba(255,255,255,0.75); }
+
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1vw, 1rem);
+    margin: 2em 0;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    background: rgba(124,138,255,0.1);
+    border: 1px solid rgba(124,138,255,0.2);
+    border-radius: 12px;
+    padding: clamp(0.6rem, 1.2vw, 1.2rem) clamp(1rem, 2vw, 2rem);
+    text-align: center;
+    font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+    font-weight: 500;
+    min-width: 100px;
+  }
+  .flow-arrow {
+    color: rgba(124,138,255,0.5);
+    font-size: clamp(1rem, 1.8vw, 1.8rem);
+    font-weight: 300;
+  }
+
+  .alienation-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(0.8rem, 1.5vw, 1.5rem);
+    margin: 1.5em 0;
+  }
+  .alienation-card {
+    border-radius: 16px;
+    padding: clamp(1rem, 2vw, 2rem);
+    border: 1px solid;
+  }
+  .alienation-card h4 { font-size: clamp(1rem, 1.5vw, 1.5rem); font-weight: 700; margin-bottom: 0.8em; }
+  .alienation-card ul { list-style: none; }
+  .alienation-card li {
+    font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+    padding: 0.4em 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    line-height: 1.5;
+  }
+  .alienation-card li:last-child { border-bottom: none; }
+  .alienation-card li::before { content: "▸ "; opacity: 0.5; }
+  .ac-work { background: rgba(255,107,107,0.06); border-color: rgba(255,107,107,0.15); }
+  .ac-work h4 { color: #ff6b6b; }
+  .ac-emotion { background: rgba(240,160,80,0.06); border-color: rgba(240,160,80,0.15); }
+  .ac-emotion h4 { color: #f0a050; }
+  .ac-body { background: rgba(92,219,158,0.06); border-color: rgba(92,219,158,0.15); }
+  .ac-body h4 { color: #5cdb9e; }
+  .ac-spirit { background: rgba(124,138,255,0.06); border-color: rgba(124,138,255,0.15); }
+  .ac-spirit h4 { color: #7c8aff; }
+
+  .principle-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5em 0;
+  }
+  .principle-item {
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: clamp(1rem, 1.8vw, 1.8rem);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .principle-item .num {
+    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    font-weight: 900;
+    color: rgba(124,138,255,0.3);
+    margin-bottom: 0.2em;
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 6vw; }
+    .grid-2, .principle-list { grid-template-columns: 1fr; }
+    .grid-4, .alienation-4, .art-grid, .table-compare { grid-template-columns: 1fr 1fr; }
+    .paradox-box { grid-template-columns: 1fr; }
+    .nav-arrow { width: 36px; height: 36px; font-size: 1rem; }
+    .nav-prev { left: 2vw; }
+    .nav-next { right: 2vw; }
+    .flow-diagram { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+
+  @media (max-width: 480px) {
+    .alienation-4 { grid-template-columns: 1fr; }
+    .grid-4, .art-grid, .table-compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="slides">
+  <!-- SLIDE 1: 封面 -->
+  <div class="slide" style="text-align:center;">
+    <div style="margin-bottom:2em;">
+      <span class="tag tag-blue">认知工具</span>
+      <span class="tag tag-purple">自我觉察</span>
+    </div>
+    <h1 style="margin-bottom:0.3em;">工具理性与<br>单向度的人</h1>
+    <p class="subtitle" style="max-width:70%;margin:0 auto 1.5em;">职业经理人的自我异化与艺术救赎</p>
+    <div style="width:60px;height:3px;background:#7c8aff;margin:1em auto;border-radius:2px;"></div>
+    <p style="font-size:clamp(0.9rem,1.2vw,1.2rem);color:rgba(255,255,255,0.35);margin-top:1.5em;">2026.08.04 · 骑行与老雷的对话</p>
+  </div>
+
+  <!-- SLIDE 2: 引子 -->
+  <div class="slide">
+    <h2>引子：骑行途中与老雷的对话</h2>
+    <div class="callout">
+      <strong>老雷忽然问起睡眠怎么样，话题滑向了"压力觉察"。</strong> 作为职业经理人，我们太擅长"自我异化"了——追求效率、追求财富、把工具理性发挥到极致，结果让人生变得扁平化、单向度。而这一代人，艺术训练又普遍缺失，找不到释放压力的通道，反而积累出各种不良的生活结果。
+    </div>
+    <div class="quote-block">
+      为什么最"成功"的一群人，反而活得最"不完整"？
+    </div>
+  </div>
+
+  <!-- SLIDE 3: 工具理性 vs 价值理性 -->
+  <div class="slide">
+    <h2>工具理性 vs 价值理性</h2>
+    <div class="grid-2">
+      <div class="card" style="border-color:rgba(255,107,107,0.15);">
+        <div class="card-title" style="color:#ff6b6b;">工具理性</div>
+        <p>关注"怎么最有效地达到目标"</p>
+        <ul style="margin-top:0.8em;list-style:none;">
+          <li>效率优先、成本最低、收益最大</li>
+          <li>不问"这个目标是否值得"</li>
+          <li style="color:rgba(255,255,255,0.4);font-size:0.85em;">代表人物：马克斯·韦伯</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(92,219,158,0.15);">
+        <div class="card-title" style="color:#5cdb9e;">价值理性</div>
+        <p>关注"这个目标本身是否有价值"</p>
+        <ul style="margin-top:0.8em;list-style:none;">
+          <li>道德优先、意义驱动、目的导向</li>
+          <li>不问"效率如何"，问"是否值得做"</li>
+          <li style="color:rgba(255,255,255,0.4);font-size:0.85em;">代表人物：赫伯特·马尔库塞</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-warning">
+      <strong>韦伯的警告：</strong> 现代社会正在经历"理性化"的进程，工具理性逐渐压倒价值理性。这带来了巨大的效率提升，但也带来了一个"铁笼"——人被锁定在效率至上的系统里，逐渐丧失了对意义的感知。
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 单向度的人 -->
+  <div class="slide">
+    <h2>马尔库塞的"单向度的人"</h2>
+    <div class="callout">
+      <strong>核心判断：</strong> 发达工业社会创造了巨大的物质繁荣，但也通过"技术理性"消除了人的否定性思维。人不再有能力想象"另一种可能的生活方式"，只能在现有的框架内追求更高效、更富有、更成功。
+    </div>
+    <div class="table-compare">
+      <div class="th">维度</div><div class="th">正常状态</div><div class="th">单向度状态</div><div class="th">差异</div>
+      <div class="td">思维方式</div><div class="td">既能肯定也能否定</div><div class="td">只能肯定</div><div class="td" style="color:#ff6b6b;">⇩</div>
+      <div class="td">生活目标</div><div class="td">多元（财富+意义+美）</div><div class="td">一元（财富+效率）</div><div class="td" style="color:#ff6b6b;">⇩</div>
+      <div class="td">情感体验</div><div class="td">丰富（喜悦+悲伤+宁静）</div><div class="td">单一（焦虑+疲劳+短暂满足）</div><div class="td" style="color:#ff6b6b;">⇩</div>
+      <div class="td">审美能力</div><div class="td">感受和创造美</div><div class="td">只看功能性</div><div class="td" style="color:#ff6b6b;">⇩</div>
+      <div class="td">人际关系</div><div class="td">深度连接+情感交流</div><div class="td">功能性连接+工具性交换</div><div class="td" style="color:#ff6b6b;">⇩</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 四重异化 -->
+  <div class="slide">
+    <h2>职业经理人的四重异化</h2>
+    <p style="font-size:clamp(0.9rem,1.3vw,1.3rem);color:rgba(255,255,255,0.5);margin-bottom:1em;">不是被工厂异化，而是被"效率"和"成功"的标准异化</p>
+    <div class="alienation-4">
+      <div class="alienation-card ac-work">
+        <h4>工作效率异化</h4>
+        <ul>
+          <li>用KPI衡量一切</li>
+          <li>时间被切割成效率单元</li>
+          <li>人际关系变成资源</li>
+        </ul>
+      </div>
+      <div class="alienation-card ac-emotion">
+        <h4>情感异化</h4>
+        <ul>
+          <li>情绪被压抑</li>
+          <li>脆弱被隐藏</li>
+          <li>真实感受被替换为职业化表达</li>
+        </ul>
+      </div>
+      <div class="alienation-card ac-body">
+        <h4>身体异化</h4>
+        <ul>
+          <li>身体被当成执行工具</li>
+          <li>健康信号被忽视</li>
+          <li>运动变成业绩而非享受</li>
+        </ul>
+      </div>
+      <div class="alienation-card ac-spirit">
+        <h4>精神异化</h4>
+        <ul>
+          <li>意义被压缩为升职加薪</li>
+          <li>审美体验被效率替代</li>
+          <li>内心世界日益贫瘠</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flow-diagram">
+      <div class="flow-node" style="border-color:rgba(255,107,107,0.3);">效率异化</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(240,160,80,0.3);">情感异化</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(92,219,158,0.3);">身体异化</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(124,138,255,0.3);">精神异化</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 自我异化的运作机制 -->
+  <div class="slide">
+    <h2>自我异化的运作机制</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#ff6b6b;">竞争压力</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">市场需要"高效能的人"，不高效就被淘汰</p>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);color:rgba(255,255,255,0.5);margin-top:0.5em;">→ 持续优化自我，直到失去自我</p>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#f0a050;">评价体系</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">KPI、OKR、绩效评估——人的价值被量化</p>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);color:rgba(255,255,255,0.5);margin-top:0.5em;">→ 只做"被评价的事"，不做"有意义的事"</p>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#5cdb9e;">身份认同</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">"我是一个经理人" = "我的价值是创造价值"</p>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);color:rgba(255,255,255,0.5);margin-top:0.5em;">→ 个人价值与职业身份无法分离</p>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#7c8aff;">同辈压力</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">身边的人都这样，不这样就是"不上进"</p>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);color:rgba(255,255,255,0.5);margin-top:0.5em;">→ 失去对"另一种可能"的想象力</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 工具理性的悖论 -->
+  <div class="slide">
+    <h2>工具理性的悖论</h2>
+    <div class="paradox-box">
+      <div class="paradox-item">
+        <div class="p-title" style="color:#ff6b6b;">效率的悖论</div>
+        <div class="p-desc">用效率追求幸福，效率本身反而成了幸福的敌人。为了"更好的生活"拼命工作，但拼命工作恰恰让"生活"消失了。</div>
+      </div>
+      <div class="paradox-item">
+        <div class="p-title" style="color:#f0a050;">理性的悖论</div>
+        <div class="p-desc">用理性管理情绪，理性本身反而成了情绪的囚笼。为了"专业形象"压抑情绪，但压抑让情绪在内部积累成更严重的问题。</div>
+      </div>
+    </div>
+    <div class="callout callout-danger">
+      <strong>工具理性的悖论：</strong> 当你把工具理性发挥到极致，你确实获得了更高的效率、更多的财富、更大的成就。但与此同时，你把自己变成了一个"工具"——一个高效运转、但失去完整性的"工具"。
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 艺术教育缺失 -->
+  <div class="slide">
+    <h2>艺术训练缺失：一代人的结构性短板</h2>
+    <div class="callout callout-warning">
+      <strong>这不是个人选择的问题，而是教育制度的结构性问题。</strong> 这一代人（70后、80后）成长于应试教育的巅峰期——分数是唯一标准，艺体课是"副科"。
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#f0a050;">根源</div>
+        <div class="card-item"><span class="label">应试教育导向</span><br><span class="value">艺体课被边缘化，"学好数理化走遍天下"</span></div>
+        <div class="card-item"><span class="label">功利主义价值观</span><br><span class="value">"学艺术有什么用？能当饭吃吗？"</span></div>
+        <div class="card-item"><span class="label">家庭观念保守</span><br><span class="value">"正经工作"才是正途，艺术是"玩物丧志"</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#ff6b6b;">不良替代通道</div>
+        <div class="card-item"><span class="tag tag-red">1</span> 酒精/吸烟</div>
+        <div class="card-item"><span class="tag tag-orange">2</span> 暴饮暴食/饮食失调</div>
+        <div class="card-item"><span class="tag tag-red">3</span> 过度工作——用"更忙"来逃避"停下来后的空虚"</div>
+        <div class="card-item"><span class="tag tag-orange">4</span> 沉迷短视频/游戏——被动的感官刺激</div>
+        <div class="card-item"><span class="tag tag-red">5</span> 焦虑/抑郁——压力积累到病理水平</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 压力释放机制 -->
+  <div class="slide">
+    <h2>艺术/体育的压力释放机制</h2>
+    <div class="flow-diagram">
+      <div class="flow-node">艺术/音乐/舞蹈/体育</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(92,219,158,0.3);">非语言表达</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(92,219,158,0.3);">释放被压抑的情感</div>
+    </div>
+    <div class="flow-diagram" style="margin-top:0.5em;">
+      <div class="flow-node" style="border-color:rgba(124,138,255,0.3);">身体参与</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(124,138,255,0.3);">打破"身体工具化"</div>
+    </div>
+    <div class="flow-diagram" style="margin-top:0.5em;">
+      <div class="flow-node" style="border-color:rgba(240,160,80,0.3);">专注当下</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node" style="border-color:rgba(240,160,80,0.3);">暂停"效率思维"</div>
+    </div>
+    <div class="art-grid">
+      <div class="th">活动类型</div><div class="th">释放机制</div><div class="th">为什么特别需要</div><div class="th">效果</div>
+      <div class="td">音乐/舞蹈</div><div class="td">节奏激活非语言情感通道</div><div class="td">日常用语言和逻辑工作</div><div class="td" style="color:#7c8aff;">恢复感受力</div>
+      <div class="td">体育/运动</div><div class="td">身体疲劳释放精神压力</div><div class="td">久坐+高压工作</div><div class="td" style="color:#5cdb9e;">重置身心</div>
+      <div class="td">艺术创作</div><div class="td">创造非功利性的美</div><div class="td">一切都要"有用"</div><div class="td" style="color:#b388ff;">无用之用</div>
+      <div class="td">戏剧/表演</div><div class="td">扮演他人释放被压抑的自我</div><div class="td">需要"角色扮演"</div><div class="td" style="color:#f0a050;">转换体验</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: 你的核心意图 -->
+  <div class="slide">
+    <h2>你的核心意图与本质问题</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;margin:1.5em 0;">
+      <div style="background:rgba(0,0,0,0.3);padding:clamp(1rem,1.8vw,1.8rem);">
+        <div style="font-size:clamp(0.8rem,1.1vw,1.1rem);color:rgba(255,255,255,0.3);margin-bottom:0.5em;">表面问题</div>
+        <div style="font-size:clamp(1rem,1.5vw,1.5rem);font-weight:500;">"工具理性为什么让人生变得扁平化？"</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:clamp(1rem,1.8vw,1.8rem);">
+        <div style="font-size:clamp(0.8rem,1.1vw,1.1rem);color:rgba(255,255,255,0.3);margin-bottom:0.5em;">操作问题</div>
+        <div style="font-size:clamp(1rem,1.5vw,1.5rem);font-weight:500;">"怎么在职业经理人生活中增加艺术训练？"</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:clamp(1rem,1.8vw,1.8rem);border:1px solid rgba(124,138,255,0.3);">
+        <div style="font-size:clamp(0.8rem,1.1vw,1.1rem);color:#7c8aff;margin-bottom:0.5em;">本质问题</div>
+        <div style="font-size:clamp(1rem,1.5vw,1.5rem);font-weight:700;color:#7c8aff;">"如何在职业成功的前提下，活成一个完整的人？"</div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>四个可能的潜台词：</strong><br>
+      • "我是不是活得太'工具'了？" — 这是觉醒，不是焦虑<br>
+      • "在效率驱动的生存模式后，还能变回完整的人吗？"<br>
+      • "我怎么让小鱼（下一代）避免这个陷阱？"<br>
+      • "干眼症和工具理性有关吗？" — 身体在用它的方式说话
+    </div>
+  </div>
+
+  <!-- SLIDE 11: 批判性视角 -->
+  <div class="slide">
+    <h2>批判性审视</h2>
+    <div class="principle-list">
+      <div class="principle-item">
+        <div class="num">01</div>
+        <div style="font-weight:700;margin-bottom:0.3em;color:#ff6b6b;">工具理性不是"坏"的</div>
+        <p style="font-size:clamp(0.8rem,1.2vw,1.2rem);color:rgba(255,255,255,0.6);">没有工具理性，就没有现代医学、工程、科技、经济体系。"唯一"才是问题。</p>
+      </div>
+      <div class="principle-item">
+        <div class="num">02</div>
+        <div style="font-weight:700;margin-bottom:0.3em;color:#f0a050;">非工具化 ≠ 反效率</div>
+        <p style="font-size:clamp(0.8rem,1.2vw,1.2rem);color:rgba(255,255,255,0.6);">正确的问题是在不同场景切换两种模式，而不是否定工具理性。</p>
+      </div>
+      <div class="principle-item">
+        <div class="num">03</div>
+        <div style="font-weight:700;margin-bottom:0.3em;color:#b388ff;">艺术不能解决所有问题</div>
+        <p style="font-size:clamp(0.8rem,1.2vw,1.2rem);color:rgba(255,255,255,0.6);">如果艺术也变成"工具"——"学画画是为了释放压力"——艺术本身也被工具化了。</p>
+      </div>
+      <div class="principle-item">
+        <div class="num">04</div>
+        <div style="font-weight:700;margin-bottom:0.3em;color:#5cdb9e;">结构性困境 vs 个人选择</div>
+        <p style="font-size:clamp(0.8rem,1.2vw,1.2rem);color:rgba(255,255,255,0.6);">过分强调个人调节，可能是在回避结构性问题。组织如何改变？教育如何改革？</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: 落地路径 -->
+  <div class="slide">
+    <h2>落地路径：从"单向度"到"双向度"</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#7c8aff;">个人层面</div>
+        <div class="card-item"><span class="tag tag-blue">1</span> 恢复"非功利性体验"的习惯</div>
+        <div class="card-item" style="font-size:clamp(0.75rem,1vw,1rem);color:rgba(255,255,255,0.5);padding-left:2.5em;">每周至少留出一段完全不被"效率"评价的时间</div>
+        <div class="card-item"><span class="tag tag-blue">2</span> 重新学习"非语言的表达"</div>
+        <div class="card-item" style="font-size:clamp(0.75rem,1vw,1rem);color:rgba(255,255,255,0.5);padding-left:2.5em;">舞蹈、瑜伽、唱歌、绘画——用身体和声音表达</div>
+        <div class="card-item"><span class="tag tag-blue">3</span> 日程中留出"空白格"</div>
+        <div class="card-item" style="font-size:clamp(0.75rem,1vw,1rem);color:rgba(255,255,255,0.5);padding-left:2.5em;">不被任何目标填充的时间，只为"体验存在本身"</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#5cdb9e;">家庭层面</div>
+        <div class="card-item"><span class="tag tag-green">1</span> 艺术教育不是"副科"</div>
+        <div class="card-item" style="font-size:clamp(0.75rem,1vw,1rem);color:rgba(255,255,255,0.5);padding-left:2.5em;">培养感受力，不培养特长</div>
+        <div class="card-item"><span class="tag tag-green">2</span> 不把爱好变成"竞赛"</div>
+        <div class="card-item" style="font-size:clamp(0.75rem,1vw,1rem);color:rgba(255,255,255,0.5);padding-left:2.5em;">保持"非功利性热爱"的能力</div>
+        <div class="card-item"><span class="tag tag-green">3</span> 情感教育先行</div>
+        <div class="card-item" style="font-size:clamp(0.75rem,1vw,1rem);color:rgba(255,255,255,0.5);padding-left:2.5em;">教孩子识别和表达情绪，比解决问题更重要</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: 核心判断 -->
+  <div class="slide">
+    <h2>四个核心判断</h2>
+    <div class="principle-list">
+      <div class="principle-item" style="border-color:rgba(255,107,107,0.15);">
+        <div class="num" style="color:rgba(255,107,107,0.3);">01</div>
+        <div style="font-weight:700;margin-bottom:0.5em;color:#ff6b6b;">工具理性不是问题</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">"唯一性"才是问题。<br>单一标准导致单向度。</p>
+      </div>
+      <div class="principle-item" style="border-color:rgba(240,160,80,0.15);">
+        <div class="num" style="color:rgba(240,160,80,0.3);">02</div>
+        <div style="font-weight:700;margin-bottom:0.5em;color:#f0a050;">自我异化不是个人失败</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">是结构性压力下的适应性反应。<br>不需要为此自责，但需要意识到。</p>
+      </div>
+      <div class="principle-item" style="border-color:rgba(92,219,158,0.15);">
+        <div class="num" style="color:rgba(92,219,158,0.3);">03</div>
+        <div style="font-weight:700;margin-bottom:0.5em;color:#5cdb9e;">艺术/体育不是"加分项"</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">是恢复"完整的人"体验的"必需品"。</p>
+      </div>
+      <div class="principle-item" style="border-color:rgba(124,138,255,0.15);">
+        <div class="num" style="color:rgba(124,138,255,0.3);">04</div>
+        <div style="font-weight:700;margin-bottom:0.5em;color:#7c8aff;">对小鱼最大的保护</div>
+        <p style="font-size:clamp(0.85rem,1.3vw,1.3rem);">不是帮他"更成功"，<br>而是帮他保持"完整的人"的能力。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: 结尾 -->
+  <div class="slide" style="text-align:center;">
+    <div style="width:60px;height:3px;background:#7c8aff;margin:0 auto 1.5em;border-radius:2px;"></div>
+    <h2 style="margin-bottom:0.5em;">工具理性是工具<br>不是人生的全部</h2>
+    <div class="quote-block" style="max-width:80%;margin:1.5em auto;text-align:left;">
+      老雷的那句"你睡眠怎么样"，不仅是在问睡眠，也是在问：<br>
+      <strong style="color:#7c8aff;">你还在"活着"吗？还是只是在"高效运转"？</strong>
+    </div>
+    <p style="font-size:clamp(0.9rem,1.3vw,1.3rem);color:rgba(255,255,255,0.4);margin-top:2em;">
+      用户已经在做正确的事：记录时间日志、觉察感受、和朋友深度对话、用文字整理思考——<br>
+      <span style="color:#7c8aff;font-weight:500;">这些就是"打破单向度"的行动。</span> 继续。
+    </p>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-arrow nav-prev" id="prevBtn" onclick="navigate(-1)">‹</div>
+<div class="nav-arrow nav-next" id="nextBtn" onclick="navigate(1)">›</div>
+<div class="nav-dots" id="dots"></div>
+<div class="slide-number" id="slideNum">1 / 14</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= total) idx = total - 1;
+    current = idx;
+    document.getElementById('slides').style.transform = 'translateX(-' + (current * 100) + 'vw)';
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    document.getElementById('slideNum').textContent = (current + 1) + ' / ' + total;
+  }
+
+  function navigate(dir) {
+    goTo(current + dir);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); navigate(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); navigate(-1); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
