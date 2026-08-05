@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>身体能量管理系统 — 从边界崩溃到动态均衡</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #08070e;
+    --bg2: #111018;
+    --bg3: #1c1a2a;
+    --text: #eae6f0;
+    --text-dim: #8a88a0;
+    --accent: #fbbf24;
+    --accent2: #34d399;
+    --accent3: #f472b6;
+    --accent4: #60a5fa;
+    --line: #2a2840;
+    --glow: rgba(251, 191, 36, 0.1);
+  }
+
+  html { font-size: clamp(14px, 1.2vw + 4px, 26px); }
+  body {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slides { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 3.5rem 5rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s ease;
+    overflow-y: auto; scrollbar-width: none;
+  }
+  .slide::-webkit-scrollbar { display: none; }
+  .slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
+  .slide-inner { max-width: 1200px; width: 100%; margin: auto; }
+
+  h1 { font-size: 3.2rem; font-weight: 900; line-height: 1.2; letter-spacing: -0.02em; }
+  h1 .a1 { color: var(--accent); }
+  h1 .a2 { color: var(--accent2); }
+  h1 .a3 { color: var(--accent3); }
+
+  h2 {
+    font-size: 2.2rem; font-weight: 700; line-height: 1.3;
+    margin-bottom: 1.4rem; padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent); display: inline-block;
+  }
+  h2 .num { color: var(--accent); font-weight: 900; margin-right: 0.5rem; }
+  h3 { font-size: 1.3rem; font-weight: 500; color: var(--accent2); margin-bottom: 0.6rem; }
+
+  p, li { font-size: 1.05rem; line-height: 1.7; color: var(--text-dim); }
+  .slide p { margin-bottom: 0.6rem; }
+  .highlight { color: var(--text); font-weight: 500; }
+  .hl-accent { color: var(--accent); font-weight: 600; }
+  .hl-green { color: var(--accent2); font-weight: 600; }
+
+  .meta { font-size: 0.9rem; color: var(--text-dim); margin-top: 2rem; letter-spacing: 0.05em; }
+  .meta .tag {
+    display: inline-block; background: var(--bg3); padding: 0.2rem 0.8rem;
+    border-radius: 999px; font-size: 0.8rem; color: var(--accent);
+    border: 1px solid rgba(251,191,36,0.2); margin-right: 0.5rem;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 1rem;
+    padding: 1.2rem 1rem; transition: all 0.3s ease;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--glow); transform: translateY(-2px); }
+  .card .icon { font-size: 1.8rem; margin-bottom: 0.4rem; display: block; }
+  .card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+  .card p { font-size: 0.85rem; margin-bottom: 0; }
+  .card .badge {
+    display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem;
+    border-radius: 999px; margin-top: 0.3rem; font-weight: 600;
+  }
+  .badge.yellow { background: rgba(251,191,36,0.15); color: var(--accent); }
+  .badge.green { background: rgba(52,211,153,0.15); color: var(--accent2); }
+  .badge.pink { background: rgba(244,114,182,0.15); color: var(--accent3); }
+  .badge.blue { background: rgba(96,165,250,0.15); color: var(--accent4); }
+
+  table {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    font-size: 0.9rem; margin: 0.8rem 0;
+  }
+  th, td { padding: 0.6rem 0.9rem; text-align: left; border-bottom: 1px solid var(--line); }
+  th {
+    background: var(--bg3); color: var(--accent); font-weight: 600;
+    font-size: 0.8rem; letter-spacing: 0.05em;
+  }
+  th:first-child { border-radius: 0.6rem 0 0 0; }
+  th:last-child { border-radius: 0 0.6rem 0 0; }
+  td { color: var(--text-dim); font-size: 0.85rem; }
+  tr:hover td { background: rgba(251,191,36,0.03); }
+
+  blockquote {
+    border-left: 3px solid var(--accent); padding: 0.8rem 1.2rem;
+    margin: 1rem 0; background: rgba(251,191,36,0.05);
+    border-radius: 0 0.8rem 0.8rem 0; font-size: 1.1rem;
+    line-height: 1.6; color: var(--text);
+  }
+
+  /* ── Energy Battery Visual ── */
+  .battery-row { display: flex; gap: 1rem; justify-content: center; margin: 1.2rem 0; flex-wrap: wrap; }
+  .battery {
+    text-align: center; padding: 0.8rem; border-radius: 1rem; min-width: 140px;
+    background: var(--bg2); border: 1px solid var(--line);
+  }
+  .battery .bar {
+    width: 60px; height: 8px; border-radius: 4px; margin: 0.5rem auto;
+    background: var(--line); overflow: hidden;
+  }
+  .battery .bar-fill { height: 100%; border-radius: 4px; }
+  .battery .lbl { font-size: 0.8rem; color: var(--text-dim); }
+  .battery .val { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+
+  /* ── Recovery cards ── */
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  .rec-card {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 1rem;
+    padding: 1rem; text-align: center;
+  }
+  .rec-card .time { font-size: 1.8rem; font-weight: 900; color: var(--accent); }
+  .rec-card .label { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+  .rec-card p { font-size: 0.8rem; }
+
+  /* ── Pyramid ── */
+  .pyramid { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; margin: 1rem 0; }
+  .py-level {
+    padding: 0.6rem 1.5rem; border-radius: 0.5rem; font-size: 0.9rem;
+    font-weight: 500; color: var(--text); text-align: center;
+    transition: all 0.3s;
+  }
+  .py-level:hover { transform: scale(1.03); }
+  .py-l1 { background: linear-gradient(135deg, #fbbf2433, #fbbf2411); border: 1px solid rgba(251,191,36,0.3); width: 90%; }
+  .py-l2 { background: linear-gradient(135deg, #34d39933, #34d39911); border: 1px solid rgba(52,211,153,0.3); width: 75%; }
+  .py-l3 { background: linear-gradient(135deg, #f472b633, #f472b611); border: 1px solid rgba(244,114,182,0.3); width: 60%; }
+
+  /* ── Principle cards ── */
+  .principle {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 1rem;
+    padding: 1.2rem; margin-bottom: 0.8rem;
+  }
+  .principle .p-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    color: var(--bg); font-weight: 900; font-size: 0.9rem; margin-right: 0.6rem;
+  }
+  .principle h3 { display: inline; font-size: 1.2rem; color: var(--text); }
+  .principle p { font-size: 0.95rem; margin-top: 0.4rem; }
+
+  .checklist { list-style: none; margin: 0.8rem 0; }
+  .checklist li {
+    padding: 0.4rem 0; padding-left: 1.8rem; position: relative; font-size: 0.95rem;
+  }
+  .checklist li::before {
+    content: '⚡'; position: absolute; left: 0; font-size: 0.9rem;
+  }
+
+  .flow-3 {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    margin: 1.2rem 0; flex-wrap: wrap;
+  }
+  .flow-step {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 0.8rem;
+    padding: 0.6rem 1rem; font-size: 0.85rem; color: var(--text);
+    font-weight: 500; text-align: center; min-width: 90px;
+  }
+  .flow-arrow { font-size: 1.3rem; color: var(--accent); opacity: 0.6; }
+
+  .nav {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1rem; z-index: 100;
+    background: rgba(8,7,14,0.8); backdrop-filter: blur(12px);
+    padding: 0.6rem 1.2rem; border-radius: 999px; border: 1px solid var(--line);
+  }
+  .nav button {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 1.2rem; cursor: pointer; padding: 0 0.5rem; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .nav button:hover { color: var(--text); }
+  .nav .page-num { color: var(--text-dim); font-size: 0.85rem; min-width: 3.5rem; text-align: center; }
+  .nav .page-num .cur { color: var(--accent); font-weight: 700; }
+  .nav .progress { width: 120px; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .nav .progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  .kbd-hint {
+    position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%);
+    color: var(--text-dim); font-size: 0.7rem; opacity: 0.25; z-index: 50;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide.active .slide-inner > * { animation: fadeUp 0.5s ease both; }
+  .slide.active .slide-inner > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active .slide-inner > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .slide-inner > *:nth-child(3) { animation-delay: 0.15s; }
+  .slide.active .slide-inner > *:nth-child(4) { animation-delay: 0.2s; }
+  .slide.active .slide-inner > *:nth-child(5) { animation-delay: 0.25s; }
+  .slide.active .slide-inner > *:nth-child(6) { animation-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 2rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .grid-2, .grid-3, .grid-4, .rec-grid { grid-template-columns: 1fr; }
+  }
+
+  .end-q {
+    font-size: 1.5rem; line-height: 1.7; text-align: center;
+    max-width: 800px; color: var(--text);
+  }
+  .end-q em { color: var(--accent); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ═══ SLIDE 1: Cover ═══ -->
+  <div class="slide active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--accent);letter-spacing:0.2em;font-weight:500;">ENERGY MANAGEMENT SYSTEM</div>
+      <h1 style="margin-bottom:1rem;">
+        身体<span class="a1">能量</span>管理系统
+      </h1>
+      <p style="font-size:1.4rem;color:var(--text-dim);margin-bottom:1.5rem;">
+        从<span class="highlight">边界崩溃</span>到<span class="hl-green">动态均衡</span>的可持续方案
+      </p>
+      <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+        <span class="meta"><span class="tag">⚡ 预警系统</span></span>
+        <span class="meta"><span class="tag">🔋 干预系统</span></span>
+        <span class="meta"><span class="tag">🏃 提升系统</span></span>
+        <span class="meta"><span class="tag">📋 最小启动</span></span>
+      </div>
+      <div class="meta" style="margin-top:3rem;"><span>2026.08.05</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2: 身体是一个系统 ═══ -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2><span class="num">01</span>重新理解"身体是一个系统"</h2>
+      <p style="margin-bottom:0.8rem;">能量管理的四个维度，缺一不可</p>
+      <div class="grid-2">
+        <div class="card">
+          <span class="icon">🍽️</span>
+          <h4>摄入端</h4>
+          <p>饮食质量与节奏 · 睡眠深度与时长<br>水分与电解质 · 呼吸质量</p>
+          <span class="badge yellow">输入端</span>
+        </div>
+        <div class="card">
+          <span class="icon">🔥</span>
+          <h4>消耗端</h4>
+          <p>脑力认知负荷 · 情绪波动消耗<br>体力支出 · 社交隐形消耗</p>
+          <span class="badge pink">输出端</span>
+        </div>
+        <div class="card">
+          <span class="icon">🔋</span>
+          <h4>储备端</h4>
+          <p>线粒体功能 · 有氧基础<br>肌肉量 · 神经可塑性</p>
+          <span class="badge green">容量端</span>
+        </div>
+        <div class="card">
+          <span class="icon">⚖️</span>
+          <h4>调节端</h4>
+          <p>压力激素昼夜节律 · 自主神经平衡<br>炎症水平控制 · 能量分配</p>
+          <span class="badge blue">平衡端</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: 边界崩溃分析 ═══ -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2><span class="num">02</span>边界崩溃——多维度同时告警</h2>
+      <p>这不是"突然"发生的，是"累积"达到临界点</p>
+      <div class="battery-row">
+        <div class="battery">
+          <div class="lbl">精力</div>
+          <div class="bar"><div class="bar-fill" style="width:15%;background:var(--accent3);"></div></div>
+          <div class="val">边界崩溃感</div>
+        </div>
+        <div class="battery">
+          <div class="lbl">感觉</div>
+          <div class="bar"><div class="bar-fill" style="width:25%;background:var(--accent3);"></div></div>
+          <div class="val">头疼</div>
+        </div>
+        <div class="battery">
+          <div class="lbl">体能</div>
+          <div class="bar"><div class="bar-fill" style="width:20%;background:var(--accent3);"></div></div>
+          <div class="val">节能模式</div>
+        </div>
+        <div class="battery">
+          <div class="lbl">情绪</div>
+          <div class="bar"><div class="bar-fill" style="width:30%;background:var(--accent3);"></div></div>
+          <div class="val">易烦躁</div>
+        </div>
+      </div>
+      <table>
+        <tr><th>维度</th><th>告警信号</th><th>可能原因</th></tr>
+        <tr><td>精力</td><td>边界崩溃感</td><td>连续多日高认知负荷，无充分恢复</td></tr>
+        <tr><td>感觉</td><td>头疼</td><td>脱水 + 长时间屏幕 + 睡眠不足</td></tr>
+        <tr><td>体能</td><td>身体不适</td><td>能量储备耗尽，进入节能模式</td></tr>
+        <tr><td>情绪</td><td>易烦躁</td><td>低血糖 + 疲劳，调节能力下降</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: 知道但做不到 ═══ -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2><span class="num">03</span>知道但做不到——认知与行动的鸿沟</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="icon">🔄</div>
+          <h4>缺乏即时反馈</h4>
+          <p>身体不会在透支第一天就报警，等到报警已晚</p>
+          <span class="badge yellow">根源：反馈滞后</span>
+        </div>
+        <div class="card">
+          <div class="icon">🎯</div>
+          <h4>优先级错觉</h4>
+          <p>"做完这件事再休息"——但总有下一件事</p>
+          <span class="badge yellow">根源：任务优先</span>
+        </div>
+        <div class="card">
+          <div class="icon">👻</div>
+          <h4>恢复的隐形价值</h4>
+          <p>休息的收益看不见，工作的产出看得见</p>
+          <span class="badge yellow">根源：可见偏差</span>
+        </div>
+        <div class="card">
+          <div class="icon">🏗️</div>
+          <h4>系统缺失</h4>
+          <p>没有预警机制，只有事后补救</p>
+          <span class="badge yellow">根源：应急管理</span>
+        </div>
+      </div>
+      <blockquote>
+        你需要的不是"更自律"，而是"让健康行为变成不需要决策的默认选项"
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: 三层系统 ═══ -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2><span class="num">04</span>三层系统框架</h2>
+      <div class="pyramid">
+        <div class="py-level py-l1"><span class="hl-accent">预警系统</span> — 在崩溃前收到信号</div>
+        <div class="py-level py-l2"><span class="hl-green">干预系统</span> — 在耗尽前补充能量</div>
+        <div class="py-level py-l3"><span class="hl-accent" style="color:var(--accent3);">提升系统</span> — 从够用到更充沛</div>
+      </div>
+      <p style="text-align:center;font-size:0.9rem;">三层螺旋上升，而不是一次性全部建立</p>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: 预警系统 ═══ -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2><span class="num">05</span>预警系统——在崩溃前收到信号</h2>
+      <p>不要等到"头疼"才意识到问题，要到"能量降到60%"时就收到提醒</p>
+      <table>
+        <tr><th>指标</th><th>如何监测</th><th>预警阈值</th></tr>
+        <tr><td><span class="hl-accent">晨起能量</span></td><td>醒来后打能量分（1-10）</td><td>连续3天低于6分 → 主动调整</td></tr>
+        <tr><td><span class="hl-accent">午后困倦</span></td><td>饭后是否必须闭眼</td><td>连续3天需午睡 → 调整睡眠或饮食</td></tr>
+        <tr><td><span class="hl-accent">眼睛状态</span></td><td>是否干涩酸胀</td><td>早上起来就干涩 → 屏幕或睡眠问题</td></tr>
+        <tr><td><span class="hl-accent">情绪稳定性</span></td><td>是否容易烦躁</td><td>对家人耐心下降 → 能量储备不足</td></tr>
+      </table>
+      <blockquote>
+        💡 把"晨起能量分"加入时间日志系统。每天醒来记录一个数字，连续3天低于6分自动触发提醒
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: 干预系统 ═══ -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2><span class="num">06</span>干预系统——四级恢复体系</h2>
+      <p>不是等空了再充，而是在还剩40%时就开始补充</p>
+      <div class="rec-grid">
+        <div class="rec-card">
+          <div class="time">5min</div>
+          <div class="label">微恢复</div>
+          <p>离开屏幕 · 闭眼深呼吸<br>走动 · 喝水</p>
+          <span class="badge yellow">注意力下降时</span>
+        </div>
+        <div class="rec-card">
+          <div class="time">30min</div>
+          <div class="label">中恢复</div>
+          <p>午间小睡 · 散步<br>听音乐放松</p>
+          <span class="badge green">午餐后 / 下午3点</span>
+        </div>
+        <div class="rec-card">
+          <div class="time">2h</div>
+          <div class="label">大恢复</div>
+          <p>运动 · 深度放松<br>高质量社交</p>
+          <span class="badge pink">工作后 / 周末</span>
+        </div>
+        <div class="rec-card" style="border-color:var(--accent);">
+          <div class="time">8h</div>
+          <div class="label" style="color:var(--accent);font-weight:700;">超级恢复 ⭐</div>
+          <p style="color:var(--text);font-weight:500;">充足的夜间睡眠<br><span style="color:var(--accent3);">没有替代品</span></p>
+          <span class="badge" style="background:rgba(251,191,36,0.2);color:var(--accent);">每天 · 最重要</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: 提升系统 ═══ -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2><span class="num">07</span>提升系统——从够用到更充沛</h2>
+      <p>不是修复短板，而是提升整体容量</p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon">🏃</div>
+          <h4>有氧能力</h4>
+          <p>骑行升级为固定频率，每周3次，每次到"微微出汗、说话略喘"</p>
+          <span class="badge green">性价比最高的提升</span>
+        </div>
+        <div class="card">
+          <div class="icon">🔬</div>
+          <h4>线粒体功能</h4>
+          <p>间歇性断食12-14h · 洗澡最后30秒冷水 · 每天深绿色蔬菜</p>
+          <span class="badge blue">日常习惯优化</span>
+        </div>
+        <div class="card">
+          <div class="icon">🥗</div>
+          <h4>代谢灵活性</h4>
+          <p>每餐蛋白质≥20% · 减少精制碳水 · 做"食物-反应"记录</p>
+          <span class="badge yellow">稳定血糖 = 稳定能量</span>
+        </div>
+      </div>
+      <blockquote>
+        "增加线粒体、代谢能力、有氧能力"——方向完全正确，关键是找到适合你生活节奏的方式
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: 日常执行 ═══ -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <h2><span class="num">08</span>从系统设计到日常执行</h2>
+      <div class="grid-3">
+        <div class="card" style="border-left:3px solid var(--accent);">
+          <h4 style="color:var(--accent);">🌅 晨间仪式 · 5分钟</h4>
+          <p>醒来后先做三件事再碰手机：</p>
+          <ul style="font-size:0.85rem;color:var(--text-dim);margin-top:0.3rem;padding-left:1rem;">
+            <li>感受身体——闭眼扫描</li>
+            <li>打能量分——记录到日志</li>
+            <li>设定边界——三件事就停</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent2);">
+          <h4 style="color:var(--accent2);">⏰ 工作间隙 · 每45分钟</h4>
+          <ul style="font-size:0.85rem;color:var(--text-dim);margin-top:0.3rem;padding-left:1rem;">
+            <li>站起来，离开座位</li>
+            <li>喝水，眨眼，深呼吸</li>
+            <li>问自己"感觉怎么样"</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <h4 style="color:var(--accent3);">🌙 晚间仪式 · 10分钟</h4>
+          <ul style="font-size:0.85rem;color:var(--text-dim);margin-top:0.3rem;padding-left:1rem;">
+            <li>回顾能量曲线</li>
+            <li>记录一个改进点</li>
+            <li>设定明天的能量目标</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 10: 每周能量复盘 ═══ -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <h2><span class="num">09</span>每周能量复盘</h2>
+      <p>四个问题，5分钟，每周一次</p>
+      <div class="grid-2">
+        <div class="card" style="border-left:3px solid var(--accent2);">
+          <h4 style="color:var(--accent2);">🌞 精力充沛的天数</h4>
+          <p>这些天你做了什么不一样的事？<br><span style="color:var(--accent);">可以复制吗？</span></p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <h4 style="color:var(--accent3);">🌑 精力耗尽的天数</h4>
+          <p>这些天消耗特别大的是什么？<br><span style="color:var(--accent);">可以避免吗？</span></p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent);">
+          <h4 style="color:var(--accent);">🏃 运动次数</h4>
+          <p>没达到目标的原因是什么？<br><span style="color:var(--accent);">时间？精力？动力？</span></p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent4);">
+          <h4 style="color:var(--accent4);">😴 睡眠质量</h4>
+          <p>有没有睡不着或睡不够？<br><span style="color:var(--accent);">原因是什么？</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 11: 警惕陷阱 ═══ -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <h2><span class="num">10</span>批判性审视：四个陷阱</h2>
+      <div class="grid-2">
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <div class="icon">📊</div>
+          <h4>过度量化</h4>
+          <p>每天打分复盘可能变成新任务</p>
+          <span class="badge pink">够用就好</span>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <div class="icon">😴</div>
+          <h4>系统疲劳</h4>
+          <p>一周后懒得执行</p>
+          <span class="badge pink">从最小动作开始</span>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <div class="icon">🏥</div>
+          <h4>忽视医疗因素</h4>
+          <p>有些问题不能靠系统解决</p>
+          <span class="badge pink">持续不适则体检</span>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <div class="icon">🧬</div>
+          <h4>个体差异</h4>
+          <p>每个人的基线不同</p>
+          <span class="badge pink">在实践中找到节奏</span>
+        </div>
+      </div>
+      <blockquote>
+        ⚠️ 最大的陷阱不是"做不到"，是"把管理身体变成另一个消耗精力的项目"
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 12: 最小启动方案 ═══ -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <h2><span class="num">11</span>最小启动方案</h2>
+      <p>只做三件事，从最简单的开始</p>
+      <div class="grid-3">
+        <div class="card" style="text-align:center;border-color:var(--accent);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--accent);">1</div>
+          <h4>晨起能量分</h4>
+          <p>每天醒来后打1-10分并记录</p>
+          <span class="badge yellow">每天 · ⭐</span>
+        </div>
+        <div class="card" style="text-align:center;border-color:var(--accent2);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--accent2);">2</div>
+          <h4>45分钟定时</h4>
+          <p>每45分钟站起来离开屏幕3分钟</p>
+          <span class="badge green">工作日 · ⭐⭐</span>
+        </div>
+        <div class="card" style="text-align:center;border-color:var(--accent3);">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--accent3);">3</div>
+          <h4>每周3次运动</h4>
+          <p>骑行20分钟，微微出汗</p>
+          <span class="badge pink">固定时间 · ⭐⭐⭐</span>
+        </div>
+      </div>
+      <div class="flow-3" style="margin-top:1rem;">
+        <div class="flow-step">先做1</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">做到不忘记</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">加入2</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">成为习惯</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">加入3</div>
+      </div>
+      <p style="text-align:center;margin-top:0.8rem;font-size:1rem;color:var(--accent);font-weight:600;">
+        可持续比完美重要一万倍
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 13: End ═══ -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--accent2);letter-spacing:0.15em;font-weight:500;">FINAL THOUGHT</div>
+      <div class="end-q">
+        "身体是一个综合的系统，能量和损耗有它必然的规律。<br>
+        保持<em>动态均衡</em>，防范于未然。"
+      </div>
+      <p style="margin-top:2rem;font-size:1rem;color:var(--text-dim);">
+        你不是"不知道"，是"知道但没做到"<br>
+        而"没做到"的原因，是没把这个知道嵌入到日常系统中
+      </p>
+      <p style="margin-top:1.5rem;font-size:1.1rem;color:var(--accent);font-weight:700;">
+        明天早上醒来，先打一个"能量分"
+      </p>
+      <div class="meta" style="margin-top:2.5rem;">
+        <span class="tag">📚 家庭成长 · 知识库</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="nav" id="nav">
+  <button onclick="goSlide(-1)">◀</button>
+  <div class="page-num"><span class="cur" id="currentPage">1</span> / <span id="totalPages">13</span></div>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <button onclick="goSlide(1)">▶</button>
+</nav>
+<div class="kbd-hint">← → 或 PgUp / PgDown</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  document.getElementById('totalPages').textContent = total;
+
+  function goSlide(dir) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, current + dir));
+    slides[current].classList.add('active');
+    document.getElementById('currentPage').textContent = current + 1;
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goSlide(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); goSlide(-1); }
+    if (e.key === 'Home') { e.preventDefault(); while (current > 0) goSlide(-1); }
+    if (e.key === 'End') { e.preventDefault(); while (current < total - 1) goSlide(1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goSlide(diff > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
