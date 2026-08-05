@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To C 产品定义与交付 — 从零跑踩坑到知识服务产品化</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a28;
+    --text: #e8e6f0;
+    --text-dim: #8888a0;
+    --accent: #6ee7b7;
+    --accent2: #60a5fa;
+    --accent3: #f59e0b;
+    --accent4: #f472b6;
+    --line: #2a2a40;
+    --glow: rgba(110, 231, 183, 0.15);
+  }
+
+  html { font-size: clamp(14px, 1.2vw + 4px, 26px); }
+  body {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── Slide System ── */
+  .slides {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 6rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .slide::-webkit-scrollbar { display: none; }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+  }
+
+  .slide-inner {
+    max-width: 1200px;
+    width: 100%;
+    margin: auto;
+  }
+
+  /* ── Typography ── */
+  h1 { font-size: 3.4rem; font-weight: 900; line-height: 1.2; letter-spacing: -0.02em; }
+  h1 .accent { color: var(--accent); }
+  h1 .accent2 { color: var(--accent2); }
+  h1 .accent3 { color: var(--accent3); }
+
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  h2 .num { color: var(--accent); font-weight: 900; margin-right: 0.5rem; }
+
+  h3 {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--accent2);
+    margin-bottom: 0.8rem;
+  }
+
+  p, li { font-size: 1.1rem; line-height: 1.7; color: var(--text-dim); }
+  .slide p { margin-bottom: 0.8rem; }
+  .highlight { color: var(--text); font-weight: 500; }
+
+  /* ── Subtitle / Meta ── */
+  .meta {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-top: 2rem;
+    letter-spacing: 0.05em;
+  }
+  .meta span { display: inline-block; margin-right: 1.5rem; }
+  .meta .tag {
+    background: var(--bg3);
+    padding: 0.2rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    border: 1px solid rgba(110,231,183,0.2);
+  }
+
+  /* ── Grid / Cards ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    padding: 1.4rem 1.2rem;
+    transition: all 0.3s ease;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--glow); transform: translateY(-2px); }
+  .card .icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+  .card h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+  .card p { font-size: 0.9rem; margin-bottom: 0; }
+  .card.num { counter-increment: card; }
+  .card .num-label {
+    display: inline-block;
+    width: 1.8rem; height: 1.8rem;
+    line-height: 1.8rem;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Tables ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    background: var(--bg3);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  th:first-child { border-radius: 0.6rem 0 0 0; }
+  th:last-child { border-radius: 0 0.6rem 0 0; }
+  td { color: var(--text-dim); font-size: 0.9rem; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(110,231,183,0.03); }
+
+  /* ── Blockquote ── */
+  blockquote {
+    border-left: 3px solid var(--accent3);
+    padding: 1rem 1.5rem;
+    margin: 1.2rem 0;
+    background: rgba(245,158,11,0.06);
+    border-radius: 0 0.8rem 0.8rem 0;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  blockquote cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-style: normal;
+  }
+
+  /* ── Triangle visualization ── */
+  .tri-vis {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+  .tri-svg { width: 400px; height: 320px; }
+
+  /* ── Process flow ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+  .flow-step {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 0.8rem;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+  .flow-feedback {
+    width: 100%;
+    text-align: center;
+    color: var(--accent3);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Layer diagram ── */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 1.2rem 0;
+  }
+  .layer {
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.6rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .layer.l4 { background: linear-gradient(135deg, #f59e0b33, #f59e0b11); border-left: 3px solid #f59e0b; }
+  .layer.l3 { background: linear-gradient(135deg, #f472b633, #f472b611); border-left: 3px solid #f472b6; }
+  .layer.l2 { background: linear-gradient(135deg, #60a5fa33, #60a5fa11); border-left: 3px solid #60a5fa; }
+  .layer.l1 { background: linear-gradient(135deg, #6ee7b733, #6ee7b711); border-left: 3px solid #6ee7b7; }
+  .layer .l-label { font-size: 0.8rem; color: var(--text-dim); }
+
+  /* ── Principle cards ── */
+  .principle {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    counter-increment: princ;
+  }
+  .principle .p-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem; height: 2.2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg);
+    font-weight: 900;
+    font-size: 1rem;
+    margin-right: 0.8rem;
+  }
+  .principle h3 { display: inline; font-size: 1.3rem; color: var(--text); }
+  .principle p { font-size: 1rem; margin-top: 0.6rem; }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; margin: 1rem 0; }
+  .checklist li {
+    padding: 0.5rem 0;
+    padding-left: 2rem;
+    position: relative;
+    font-size: 1rem;
+  }
+  .checklist li::before {
+    content: '□';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+  .checklist .phase { color: var(--accent2); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; margin-top: 0.8rem; }
+  .checklist .phase::before { content: '▸'; margin-right: 0.4rem; }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .nav button:hover { color: var(--text); }
+  .nav .page-num {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    min-width: 3.5rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .nav .page-num .current-page { color: var(--accent); font-weight: 700; }
+  .nav .progress {
+    width: 120px;
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .nav .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Keyboard ── */
+  .kbd-hint {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    opacity: 0.3;
+    z-index: 50;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide.active .slide-inner > * {
+    animation: fadeUp 0.5s ease both;
+  }
+  .slide.active .slide-inner > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active .slide-inner > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .slide-inner > *:nth-child(3) { animation-delay: 0.15s; }
+  .slide.active .slide-inner > *:nth-child(4) { animation-delay: 0.2s; }
+  .slide.active .slide-inner > *:nth-child(5) { animation-delay: 0.25s; }
+  .slide.active .slide-inner > *:nth-child(6) { animation-delay: 0.3s; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .slide { padding: 2rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+
+  /* ── End slide ── */
+  .end-q {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.6rem;
+    line-height: 1.7;
+    text-align: center;
+    max-width: 800px;
+    color: var(--text);
+  }
+  .end-q em { color: var(--accent); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 1: Cover -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="margin-bottom:1rem;font-size:0.9rem;color:var(--accent);letter-spacing:0.2em;font-weight:500;">FROM ZERO RUN TO KNOWLEDGE PRODUCT</div>
+      <h1 style="margin-bottom:1rem;">
+        To C <span class="accent">产品定义</span>与<span class="accent2">交付</span>
+      </h1>
+      <p style="font-size:1.4rem;color:var(--text-dim);margin-bottom:1.5rem;max-width:700px;margin-left:auto;margin-right:auto;">
+        从零跑踩坑到知识服务产品化的<br><span class="highlight">系统框架</span>
+      </p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+        <span class="meta"><span class="tag">📖 零跑案例</span></span>
+        <span class="meta"><span class="tag">🧠 可迁移框架</span></span>
+        <span class="meta"><span class="tag">🎯 五项原则</span></span>
+        <span class="meta"><span class="tag">📋 行动清单</span></span>
+      </div>
+      <div class="meta" style="margin-top:3rem;">
+        <span>灵感来源：朱全明 × 罗永浩访谈</span>
+        <span>2026.08.05</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 2: 零跑踩了什么坑 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2><span class="num">01</span>零跑踩了什么坑</h2>
+      <p style="font-size:1.2rem;margin-bottom:1.2rem;">第一个产品 S01 犯了典型的初创企业错误</p>
+      <div class="grid-3">
+        <div class="card">
+          <span class="icon">🎯</span>
+          <h4>产品定义过于理想化</h4>
+          <p>以技术团队的理解定义产品，而非以市场需求为导向</p>
+        </div>
+        <div class="card">
+          <span class="icon">👤</span>
+          <h4>To C 认知不足</h4>
+          <p>从技术驱动转向消费者驱动，缺乏对用户真实需求的洞察</p>
+        </div>
+        <div class="card">
+          <span class="icon">⚙️</span>
+          <h4>生产节奏与需求脱节</h4>
+          <p>硬件一旦启动生产，节奏难以调整，市场需求却在动态变化</p>
+        </div>
+      </div>
+      <blockquote>
+        生产节奏的刚性 vs. 市场需求的动态波动
+        <cite>——制造业 To C 最难跨越的坎</cite>
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 3: 转折点与核心矛盾 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2><span class="num">02</span>痛定思痛后的转变</h2>
+      <div class="grid-3" style="margin-bottom:1.5rem;">
+        <div class="card">
+          <div class="num-label">1</div>
+          <h4>重新定义产品</h4>
+          <p>从"我们有什么技术"转向"市场需要什么产品"</p>
+        </div>
+        <div class="card">
+          <div class="num-label">2</div>
+          <h4>建立系统规划</h4>
+          <p>把产品定义作为一个系统工程，而非创意或灵感</p>
+        </div>
+        <div class="card">
+          <div class="num-label">3</div>
+          <h4>接受踩坑是必要的</h4>
+          <p>越早犯错成本越低，后期再犯代价更大</p>
+        </div>
+      </div>
+      <h3>核心矛盾</h3>
+      <div style="display:flex;gap:2rem;justify-content:center;align-items:center;padding:1.5rem;background:var(--bg2);border-radius:1rem;border:1px solid var(--line);">
+        <div style="text-align:center;">
+          <div style="font-size:1.8rem;color:var(--accent3);font-weight:900;">⛓️</div>
+          <div style="font-size:1.1rem;color:var(--text);font-weight:500;">生产节奏刚性</div>
+          <div style="font-size:0.85rem;color:var(--text-dim);">一旦启动难以调整</div>
+        </div>
+        <div style="font-size:2rem;color:var(--text-dim);">⟷</div>
+        <div style="text-align:center;">
+          <div style="font-size:1.8rem;color:var(--accent2);font-weight:900;">🌊</div>
+          <div style="font-size:1.1rem;color:var(--text);font-weight:500;">市场需求动态波动</div>
+          <div style="font-size:0.85rem;color:var(--text-dim);">你永远猜不到曲线的走向</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 4: 产品定义核心三角 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2><span class="num">03</span>产品定义的核心三角</h2>
+      <p>三个维度必须同时对齐</p>
+      <div class="tri-vis">
+        <svg class="tri-svg" viewBox="0 0 400 300">
+          <polygon points="200,20 30,280 370,280" fill="none" stroke="var(--line)" stroke-width="2"/>
+          <polygon points="200,80 100,240 300,240" fill="rgba(110,231,183,0.06)" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <circle cx="200" cy="50" r="28" fill="var(--bg3)" stroke="var(--accent3)" stroke-width="2"/>
+          <text x="200" y="56" text-anchor="middle" fill="var(--accent3)" font-size="14" font-weight="700">Why</text>
+          <text x="200" y="72" text-anchor="middle" fill="var(--accent3)" font-size="11" opacity="0.7">市场需求</text>
+          <circle cx="70" cy="250" r="28" fill="var(--bg3)" stroke="var(--accent2)" stroke-width="2"/>
+          <text x="70" y="256" text-anchor="middle" fill="var(--accent2)" font-size="14" font-weight="700">What</text>
+          <text x="70" y="272" text-anchor="middle" fill="var(--accent2)" font-size="11" opacity="0.7">技术能力</text>
+          <circle cx="330" cy="250" r="28" fill="var(--bg3)" stroke="var(--accent)" stroke-width="2"/>
+          <text x="330" y="256" text-anchor="middle" fill="var(--accent)" font-size="14" font-weight="700">How</text>
+          <text x="330" y="272" text-anchor="middle" fill="var(--accent)" font-size="11" opacity="0.7">交付能力</text>
+        </svg>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>维度</th><th>硬件产品（零跑）</th><th>知识服务（AI培训/社群）</th></tr>
+          <tr><td>市场需求</td><td>消费者需要什么车</td><td>用户需要什么能力/认知升级</td></tr>
+          <tr><td>技术能力</td><td>电池、电机、智驾</td><td>AI工具、课程设计、引导能力</td></tr>
+          <tr><td>交付能力</td><td>生产制造、供应链</td><td>内容生产、运营节奏</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 5: 需求到交付的完整链条 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2><span class="num">04</span>需求到交付的完整链条</h2>
+      <div class="flow">
+        <div class="flow-step">需求发现</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">产品定义</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">原型设计</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">小规模验证</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">标准化交付</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">规模扩展</div>
+        <div class="flow-feedback">↻ 反馈循环贯穿始终</div>
+      </div>
+      <div class="grid-4" style="margin-top:1rem;">
+        <div class="card">
+          <h4>🔍 需求发现</h4>
+          <p>不要问用户想要什么，观察用户<strong style="color:var(--text);">已经在哪花时间/花钱</strong></p>
+        </div>
+        <div class="card">
+          <h4>🎨 产品定义</h4>
+          <p>定义的不是功能，是<strong style="color:var(--text);">体验</strong>——用户花钱买的是什么感受</p>
+        </div>
+        <div class="card">
+          <h4>🧪 小规模验证</h4>
+          <p>先做一期小班，感受交付节奏，<strong style="color:var(--text);">再迭代</strong></p>
+        </div>
+        <div class="card">
+          <h4>📋 标准化交付</h4>
+          <p>核心流程标准化，<strong style="color:var(--text);">品质可控</strong>，温度不减</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 6: 踩坑的哲学 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2><span class="num">05</span>踩坑的哲学</h2>
+      <p>为什么必须踩，如何踩得聪明</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>维度</th><th>❌ 错误方式</th><th>✅ 聪明方式</th></tr>
+          <tr><td>时机</td><td>第一次就全力投入</td><td><strong style="color:var(--accent);">用最小成本验证假设</strong></td></tr>
+          <tr><td>态度</td><td>回避失败，死不认错</td><td><strong style="color:var(--accent);">设定期望，接受试错是成本</strong></td></tr>
+          <tr><td>复盘</td><td>踩了就忘，再次踩同样的坑</td><td><strong style="color:var(--accent);">复盘检查清单，建立知识库</strong></td></tr>
+          <tr><td>规模</td><td>小错不踩，大错踩一次</td><td><strong style="color:var(--accent);">小错可以踩，大错必须预防</strong></td></tr>
+        </table>
+      </div>
+      <blockquote>
+        踩坑是必要的，但必须有<strong style="color:var(--accent3);">踩坑预算</strong>——提前设定每个阶段可承受的试错金额和时间，超出即重启策略
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 7: 硬件 vs 知识服务 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2><span class="num">06</span>硬件 vs 知识服务</h2>
+      <p>形态不同，底层逻辑一致</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>维度</th><th>🔩 硬件产品</th><th>📚 知识服务产品</th></tr>
+          <tr><td>交付形式</td><td>实物</td><td>体验 + 认知 + 关系</td></tr>
+          <tr><td>生产周期</td><td>长（数月到数年）</td><td>短（数周到数月）</td></tr>
+          <tr><td>库存成本</td><td>高</td><td>低（内容可复用）</td></tr>
+          <tr><td>边际成本</td><td>递减慢</td><td>递减快（趋零）</td></tr>
+          <tr><td>品质标准</td><td>客观可测</td><td>主观感知</td></tr>
+          <tr><td>失败成本</td><td>高（模具、供应链）</td><td>低（一期课程不满意）</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;gap:1rem;margin-top:0.5rem;">
+        <div class="card" style="flex:1;">
+          <h4>✅ 优势</h4>
+          <p>知识服务有更灵活的产品迭代空间，不像硬件那样"开弓没有回头箭"</p>
+        </div>
+        <div class="card" style="flex:1;">
+          <h4>⚠️ 挑战</h4>
+          <p>知识服务的品质难以标准化，口碑传递高度依赖人际信任</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 8: AI培训隐性需求 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2><span class="num">07</span>AI培训的隐性需求</h2>
+      <p style="margin-bottom:1rem;">用户购买的不是知识，是<strong style="color:var(--text);">感受</strong></p>
+      <div class="grid-4">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem;">😰</div>
+          <h4>焦虑缓解</h4>
+          <p>AI发展太快，怕被时代抛弃</p>
+          <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent3);">→ 需要"安全感"</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem;">🔧</div>
+          <h4>能力提升</h4>
+          <p>想用AI提高工作效率</p>
+          <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent3);">→ 需要"实用技能"</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem;">💬</div>
+          <h4>社交资本</h4>
+          <p>别人都在学，我也要学</p>
+          <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent3);">→ 需要"谈资"</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem;">💰</div>
+          <h4>商业机会</h4>
+          <p>看到AI赚钱的可能，想入局</p>
+          <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent3);">→ 需要"路径"</div>
+        </div>
+      </div>
+      <blockquote style="margin-top:1rem;">
+        不要卖"AI知识"，要卖"用户想要的感受"——<strong style="color:var(--accent);">安全感、实用性、社交价值、商业可能</strong>
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 9: 用户分层与产品形态 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <h2><span class="num">08</span>用户分层 → 产品形态</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>用户画像</th><th>核心需求</th><th>产品形态</th><th>定价</th></tr>
+          <tr>
+            <td><strong style="color:var(--accent3);">焦虑入门者</strong></td>
+            <td>消除焦虑，知道AI能做什么</td>
+            <td>体验课 / 公开课</td>
+            <td>低价引流</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--accent2);">职场实用者</strong></td>
+            <td>提高工作效率，学会工具</td>
+            <td>实操训练营</td>
+            <td>中端定价</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--accent4);">商业践行者</strong></td>
+            <td>找到AI商业机会</td>
+            <td>深度工作坊 / 社群</td>
+            <td>高客单价</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--accent);">企业决策者</strong></td>
+            <td>理解AI对行业的影响</td>
+            <td>定制课程 / 咨询</td>
+            <td>项目制定价</td>
+          </tr>
+        </table>
+      </div>
+      <div style="display:flex;gap:1rem;margin-top:0.5rem;">
+        <div class="card" style="flex:1;">
+          <h4>🎯 节奏设计先于内容设计</h4>
+          <p>确定好每周交付节奏（课程、作业、答疑、社群活动），再往里填充内容</p>
+        </div>
+        <div class="card" style="flex:1;">
+          <h4>🔄 预留调整空间</h4>
+          <p>前几期刻意留出30%弹性，快速感知用户反馈后再调整</p>
+        </div>
+        <div class="card" style="flex:1;">
+          <h4>⚖️ 标准化核心 + 个性化周边</h4>
+          <p>核心内容标准化保证品质，互动环节个性化保持温度</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 10: 社群产品四层结构 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <h2><span class="num">09</span>社群产品四层结构</h2>
+      <p>社群既是产品，也是交付渠道</p>
+      <div class="layers">
+        <div class="layer l4">
+          <span>商业价值层</span>
+          <span class="l-label">变现 · 引荐 · 商业合作</span>
+        </div>
+        <div class="layer l3">
+          <span>关系价值层</span>
+          <span class="l-label">连接 · 归属 · 社交</span>
+        </div>
+        <div class="layer l2">
+          <span>内容价值层</span>
+          <span class="l-label">知识 · 信息 · 方法论</span>
+        </div>
+        <div class="layer l1">
+          <span>运营价值层</span>
+          <span class="l-label">活动 · 话题 · 互动</span>
+        </div>
+      </div>
+      <div class="grid-3" style="margin-top:0.8rem;">
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <h4 style="color:var(--accent3);">⚠️ 铺得太满</h4>
+          <p>用户被信息轰炸 → 渐进式激活，先核心后外围</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent4);">
+          <h4 style="color:var(--accent4);">⚠️ 内容太重，社交太轻</h4>
+          <p>用户变成"听课机器" → 内容与社交并重</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent2);">
+          <h4 style="color:var(--accent2);">⚠️ 标准化过度</h4>
+          <p>失去温度 → 核心流程标准化，互动个性化</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 11: 五项原则 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <h2><span class="num">10</span>五项可迁移原则</h2>
+      <div class="principle">
+        <span class="p-num">1</span><h3>需求定义先于产品设计</h3>
+        <p>零跑的第一款车是"工程师想造的车"，不是"用户想买的车"——不要先设计课程大纲，先做用户访谈</p>
+      </div>
+      <div class="principle">
+        <span class="p-num">2</span><h3>小规模验证先于规模扩张</h3>
+        <p>先做一期"试水班"（10-20人），用最低成本验证产品定义和交付节奏，再迭代</p>
+      </div>
+      <div class="principle">
+        <span class="p-num">3</span><h3>节奏设计先于内容填充</h3>
+        <p>社群运营节奏一旦形成，用户会自动适应，变成"习惯"而非"打扰"</p>
+      </div>
+      <div class="principle">
+        <span class="p-num">4</span><h3>踩坑预算先于完美主义</h3>
+        <p>设定可接受的亏损金额、用户流失率、迭代周期上限，超过即重新评估</p>
+      </div>
+      <div class="principle">
+        <span class="p-num">5</span><h3>信任积累先于商业变现</h3>
+        <p>你先给出价值，用户自然愿意付费——知识服务有更低的信任修复成本</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 12: 行动清单 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner">
+      <h2><span class="num">11</span>行动清单</h2>
+      <ul class="checklist">
+        <li class="phase">📌 短期（本周内）</li>
+        <li>列一份"用户需求假设清单"——你认为用户真正想要什么？</li>
+        <li>设计一份用户访谈提纲（5个问题）</li>
+        <li>找3-5个潜在用户做访谈验证</li>
+        <li class="phase">📌 中期（本月内）</li>
+        <li>完成第一期AI培训/社群的产品定义文档</li>
+        <li>设计交付节奏表（按周为单位）</li>
+        <li>设定"踩坑预算"——投入多少时间、精力、资金</li>
+        <li>准备MVP方案，启动小规模测试</li>
+        <li class="phase">📌 长期（1-3个月）</li>
+        <li>完成第一期测试，收集用户反馈</li>
+        <li>进行第一次产品迭代（基于反馈）</li>
+        <li>建立复盘检查清单，固化迭代流程</li>
+        <li>评估扩展可能性</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 13: 案例总结 -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="12">
+    <div class="slide-inner">
+      <h2><span class="num">12</span>零跑案例系统总结</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>阶段</th><th>做法</th><th>后果</th><th>教训</th></tr>
+          <tr>
+            <td>第一款产品</td>
+            <td>技术驱动，定义脱离市场</td>
+            <td style="color:var(--accent3);">销量不佳，踩坑</td>
+            <td><strong style="color:var(--accent);">需求定义先于产品设计</strong></td>
+          </tr>
+          <tr>
+            <td>反思期</td>
+            <td>痛定思痛，重新定义产品</td>
+            <td style="color:var(--accent2);">团队共识，方向明确</td>
+            <td><strong style="color:var(--accent);">踩坑不可怕，可怕的是不反思</strong></td>
+          </tr>
+          <tr>
+            <td>后续产品</td>
+            <td>以市场为导向，精准定义</td>
+            <td style="color:var(--accent);">获得成功，规模扩大</td>
+            <td><strong style="color:var(--accent);">To C 必须做，必须做好</strong></td>
+          </tr>
+          <tr>
+            <td>常态化</td>
+            <td>节奏与需求匹配</td>
+            <td style="color:var(--accent);">持续增长</td>
+            <td><strong style="color:var(--accent);">节奏管理比内容管理更难</strong></td>
+          </tr>
+        </table>
+      </div>
+      <div style="margin-top:1rem;padding:1rem;background:var(--bg2);border-radius:0.8rem;border:1px solid var(--line);display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <span style="font-size:2rem;">💡</span>
+        <span style="font-size:1rem;color:var(--text-dim);">To C 产品成功的公式不是"找到一个好点子"，而是</span>
+        <span style="font-size:1.1rem;color:var(--accent);font-weight:700;">建立一套能持续发现、验证、迭代、交付的系统</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SLIDE 14: End -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="slide" data-index="13">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="margin-bottom:1rem;font-size:0.9rem;color:var(--accent);letter-spacing:0.15em;font-weight:500;">FINAL THOUGHT</div>
+      <div class="end-q">
+        "用户不是买你的产品，<br>
+        而是买你帮他们实现的<em>改变</em>"
+      </div>
+      <p style="margin-top:2rem;font-size:1rem;color:var(--text-dim);">只要抓住这个本质，所有的踩坑都是值得的学费</p>
+      <div class="meta" style="margin-top:3rem;">
+        <span class="tag">📚 事业发展 · 知识库</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Navigation ── -->
+<nav class="nav" id="nav">
+  <button onclick="goSlide(-1)">◀</button>
+  <div class="page-num"><span class="current-page" id="currentPage">1</span> / <span id="totalPages">14</span></div>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <button onclick="goSlide(1)">▶</button>
+</nav>
+<div class="kbd-hint">←  →  或  PgUp / PgDown</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  document.getElementById('totalPages').textContent = total;
+
+  function goSlide(dir) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, current + dir));
+    slides[current].classList.add('active');
+    document.getElementById('currentPage').textContent = current + 1;
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goSlide(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); goSlide(-1); }
+    if (e.key === 'Home') { e.preventDefault(); while (current > 0) goSlide(-1); }
+    if (e.key === 'End') { e.preventDefault(); while (current < total - 1) goSlide(1); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goSlide(diff > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
