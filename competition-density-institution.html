@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竞争强度、经济密度与制度质量 — 从杭州与西安的公共服务差异说起</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #07070e;
+    --bg2: #0f0f1c;
+    --bg3: #1a1a30;
+    --text: #e6e2f0;
+    --text-dim: #8080a0;
+    --accent: #f59e0b;
+    --accent2: #60a5fa;
+    --accent3: #34d399;
+    --accent4: #f472b6;
+    --line: #282848;
+    --glow: rgba(245,158,11,0.12);
+  }
+
+  html { font-size: clamp(14px, 1.2vw + 4px, 26px); }
+  body {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    overflow: hidden; height: 100vh; width: 100vw;
+  }
+
+  .slides { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 3.5rem 5rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s ease;
+    overflow-y: auto; scrollbar-width: none;
+  }
+  .slide::-webkit-scrollbar { display: none; }
+  .slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
+  .slide-inner { max-width: 1200px; width: 100%; margin: auto; }
+
+  h1 { font-size: 3.2rem; font-weight: 900; line-height: 1.2; letter-spacing: -0.02em; }
+  h1 .a1 { color: var(--accent); }
+  h1 .a2 { color: var(--accent2); }
+  h1 .a3 { color: var(--accent3); }
+
+  h2 {
+    font-size: 2.2rem; font-weight: 700; line-height: 1.3;
+    margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent); display: inline-block;
+  }
+  h2 .num { color: var(--accent); font-weight: 900; margin-right: 0.5rem; }
+  h3 { font-size: 1.3rem; font-weight: 500; color: var(--accent2); margin-bottom: 0.6rem; }
+
+  p, li { font-size: 1.05rem; line-height: 1.7; color: var(--text-dim); }
+  .slide p { margin-bottom: 0.6rem; }
+  .highlight { color: var(--text); font-weight: 500; }
+  .hl-accent { color: var(--accent); font-weight: 600; }
+  .hl-blue { color: var(--accent2); font-weight: 600; }
+  .hl-green { color: var(--accent3); font-weight: 600; }
+
+  .meta { font-size: 0.9rem; color: var(--text-dim); margin-top: 2rem; letter-spacing: 0.05em; }
+  .meta .tag {
+    display: inline-block; background: var(--bg3); padding: 0.2rem 0.8rem;
+    border-radius: 999px; font-size: 0.8rem; color: var(--accent);
+    border: 1px solid rgba(245,158,11,0.2); margin-right: 0.5rem;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 1rem;
+    padding: 1.2rem 1rem; transition: all 0.3s ease;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--glow); transform: translateY(-2px); }
+  .card .icon { font-size: 1.8rem; margin-bottom: 0.4rem; display: block; }
+  .card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+  .card p { font-size: 0.85rem; margin-bottom: 0; }
+  .card .badge {
+    display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem;
+    border-radius: 999px; margin-top: 0.3rem; font-weight: 600;
+  }
+  .badge.yellow { background: rgba(245,158,11,0.15); color: var(--accent); }
+  .badge.blue { background: rgba(96,165,250,0.15); color: var(--accent2); }
+  .badge.green { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .badge.pink { background: rgba(244,114,182,0.15); color: var(--accent4); }
+
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9rem; margin: 0.8rem 0; }
+  th, td { padding: 0.6rem 0.9rem; text-align: left; border-bottom: 1px solid var(--line); }
+  th {
+    background: var(--bg3); color: var(--accent); font-weight: 600;
+    font-size: 0.8rem; letter-spacing: 0.05em;
+  }
+  th:first-child { border-radius: 0.6rem 0 0 0; }
+  th:last-child { border-radius: 0 0.6rem 0 0; }
+  td { color: var(--text-dim); font-size: 0.85rem; }
+  tr:hover td { background: rgba(245,158,11,0.03); }
+
+  blockquote {
+    border-left: 3px solid var(--accent); padding: 0.8rem 1.2rem;
+    margin: 1rem 0; background: rgba(245,158,11,0.05);
+    border-radius: 0 0.8rem 0.8rem 0; font-size: 1.1rem;
+    line-height: 1.6; color: var(--text);
+  }
+
+  /* ── Causal chain visual ── */
+  .chain { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; margin: 1.2rem 0; }
+  .chain-link {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 0.8rem;
+    padding: 0.6rem 1.5rem; font-size: 0.95rem; color: var(--text);
+    font-weight: 500; text-align: center; min-width: 200px;
+  }
+  .chain-arrow { color: var(--accent); font-size: 1.2rem; opacity: 0.7; }
+  .chain-loop { color: var(--accent3); font-size: 0.8rem; margin-top: 0.2rem; letter-spacing: 0.05em; }
+
+  /* ── City comparison ── */
+  .city-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+  .city-card {
+    border-radius: 1rem; padding: 1.2rem; border: 1px solid var(--line);
+  }
+  .city-card.hz { background: linear-gradient(135deg, rgba(96,165,250,0.08), rgba(96,165,250,0.02)); border-color: rgba(96,165,250,0.3); }
+  .city-card.xa { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02)); border-color: rgba(245,158,11,0.3); }
+  .city-card .city-name { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.5rem; }
+  .city-card.hz .city-name { color: var(--accent2); }
+  .city-card.xa .city-name { color: var(--accent); }
+  .city-card ul { list-style: none; padding: 0; }
+  .city-card li { padding: 0.3rem 0; padding-left: 1.2rem; position: relative; font-size: 0.9rem; }
+  .city-card li::before { position: absolute; left: 0; }
+  .city-card.hz li::before { content: '✅'; }
+  .city-card.xa li::before { content: '⚠️'; }
+
+  /* ── Mechanism steps ── */
+  .mech { display: flex; flex-direction: column; gap: 0.8rem; margin: 0.8rem 0; }
+  .mech-step {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 0.8rem;
+    padding: 1rem; border-left: 3px solid var(--accent2);
+  }
+  .mech-step .step-num {
+    display: inline-block; font-size: 0.75rem; padding: 0.1rem 0.5rem;
+    border-radius: 999px; background: rgba(96,165,250,0.15); color: var(--accent2);
+    font-weight: 600; margin-bottom: 0.3rem;
+  }
+  .mech-step h4 { font-size: 1rem; color: var(--text); margin-bottom: 0.2rem; }
+  .mech-step p { font-size: 0.85rem; }
+
+  /* ── Multiplier grid ── */
+  .mult-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 0.8rem 0; }
+  .mult-item {
+    display: flex; align-items: center; gap: 0.8rem;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 0.8rem;
+    padding: 0.8rem 1rem;
+  }
+  .mult-item .dim { font-size: 0.9rem; font-weight: 600; color: var(--text); min-width: 80px; }
+  .mult-item .high { font-size: 0.8rem; color: var(--accent2); }
+  .mult-item .low { font-size: 0.8rem; color: var(--text-dim); }
+  .mult-item .vs { color: var(--line); margin: 0 0.3rem; }
+
+  .nav {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1rem; z-index: 100;
+    background: rgba(7,7,14,0.8); backdrop-filter: blur(12px);
+    padding: 0.6rem 1.2rem; border-radius: 999px; border: 1px solid var(--line);
+  }
+  .nav button {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 1.2rem; cursor: pointer; padding: 0 0.5rem; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .nav button:hover { color: var(--text); }
+  .nav .page-num { color: var(--text-dim); font-size: 0.85rem; min-width: 3.5rem; text-align: center; }
+  .nav .page-num .cur { color: var(--accent); font-weight: 700; }
+  .nav .progress { width: 120px; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .nav .progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  .kbd-hint { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%); color: var(--text-dim); font-size: 0.7rem; opacity: 0.25; z-index: 50; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.active .slide-inner > * { animation: fadeUp 0.5s ease both; }
+  .slide.active .slide-inner > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active .slide-inner > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .slide-inner > *:nth-child(3) { animation-delay: 0.15s; }
+  .slide.active .slide-inner > *:nth-child(4) { animation-delay: 0.2s; }
+  .slide.active .slide-inner > *:nth-child(5) { animation-delay: 0.25s; }
+  .slide.active .slide-inner > *:nth-child(6) { animation-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 2rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .grid-2, .grid-3, .grid-4, .city-grid, .mult-grid { grid-template-columns: 1fr; }
+  }
+
+  .end-q { font-size: 1.5rem; line-height: 1.7; text-align: center; max-width: 800px; color: var(--text); }
+  .end-q em { color: var(--accent); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ═══ SLIDE 1: Cover ═══ -->
+  <div class="slide active" data-index="0">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--accent);letter-spacing:0.2em;font-weight:500;">INSTITUTIONAL ECONOMICS</div>
+      <h1 style="margin-bottom:1rem;">
+        竞争强度·<span class="a1">经济密度</span>·<span class="a2">制度质量</span>
+      </h1>
+      <p style="font-size:1.3rem;color:var(--text-dim);margin-bottom:0.5rem;">
+        从杭州与西安的公共服务差异说起
+      </p>
+      <p style="font-size:1rem;color:var(--text-dim);max-width:700px;margin:0 auto 1.5rem;">
+        亚当·斯密在250年前揭示的洞见，<br>在今天两个中国城市的日常中得到了最生动的验证
+      </p>
+      <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+        <span class="meta"><span class="tag">🏛️ 竞争强度</span></span>
+        <span class="meta"><span class="tag">📈 经济密度</span></span>
+        <span class="meta"><span class="tag">🤝 信誉机制</span></span>
+        <span class="meta"><span class="tag">📊 制度演化</span></span>
+      </div>
+      <div class="meta" style="margin-top:3rem;"><span>2026.08.05 · 味北道讨论后整理</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2: 问题 ═══ -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <h2><span class="num">01</span>为什么杭州和西安的公共服务差距这么大？</h2>
+      <div class="city-grid">
+        <div class="city-card hz">
+          <div class="city-name">杭州</div>
+          <ul>
+            <li>对投诉高度重视，甚至"过度敏感"</li>
+            <li>主动前置预防投诉发生</li>
+            <li>每个人都非常高效和主动地服务</li>
+          </ul>
+          <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--accent2);font-weight:600;">结果：高水平的公共服务</div>
+        </div>
+        <div class="city-card xa">
+          <div class="city-name">西安</div>
+          <ul>
+            <li>对投诉反应相对迟钝</li>
+            <li>事后补救多于事前预防</li>
+            <li>服务态度参差不齐</li>
+          </ul>
+          <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--accent);font-weight:600;">结果：有提升空间</div>
+        </div>
+      </div>
+      <h3>常见的错误解释</h3>
+      <table>
+        <tr><th>常见解释</th><th>为什么不够</th><th>真相</th></tr>
+        <tr><td>"杭州人素质更高"</td><td>同一群人换环境行为会变</td><td>素质是结果，不是原因</td></tr>
+        <tr><td>"杭州政府更先进"</td><td>政府行为是对经济环境的回应</td><td>政府是变量，不是常量</td></tr>
+        <tr><td>"文化差异"</td><td>文化是长期演化的结果</td><td>文化是制度的内生变量</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: 因果链条 ═══ -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <h2><span class="num">02</span>核心因果链条</h2>
+      <div class="chain">
+        <div class="chain-link">经济密度与交流频率</div>
+        <div class="chain-arrow">↓</div>
+        <div class="chain-link" style="border-color:var(--accent);">更高的竞争强度</div>
+        <div class="chain-arrow">↓</div>
+        <div class="chain-link">更有效的激励机制</div>
+        <div class="chain-arrow">↓</div>
+        <div class="chain-link" style="border-color:var(--accent2);">更好的公共服务与信誉</div>
+        <div class="chain-arrow">↓</div>
+        <div class="chain-link">进一步吸引更多经济活动</div>
+        <div class="chain-loop">↻ 正向循环：经济密度继续提升</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: 三个机制 ═══ -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <h2><span class="num">03</span>每个环节的机制</h2>
+      <div class="mech">
+        <div class="mech-step" style="border-left-color:var(--accent2);">
+          <div class="step-num">环节一</div>
+          <h4>经济密度 → 竞争强度</h4>
+          <p>经济密度决定了<strong style="color:var(--text);">可选替代方案的丰富度</strong>。在杭州，一家餐厅服务不好，顾客可以步行200米换另一家；在西安某些区域，可能没有更好的选择。当可选方案足够多时，<span class="hl-accent">竞争自动发生</span>，不需要任何人"推动"。</p>
+        </div>
+        <div class="mech-step" style="border-left-color:var(--accent);">
+          <div class="step-num">环节二</div>
+          <h4>竞争强度 → 激励结构</h4>
+          <p>在强竞争环境下，服务好是<span class="hl-green">生存的必要条件</span>，不是"道德高尚"；在弱竞争环境下，服务差也不会损失客户。激励结构的差异，比任何道德教化都更有效。</p>
+        </div>
+        <div class="mech-step" style="border-left-color:var(--accent3);">
+          <div class="step-num">环节三</div>
+          <h4>激励 → 行为</h4>
+          <p>杭州的公务员更主动，因为投诉真的影响考核和晋升。不是<span class="hl-accent">"好人"和"坏人"</span>的区别，是<span class="hl-accent">"好制度"和"坏制度"</span>的区别。</p>
+        </div>
+      </div>
+      <blockquote>
+        杭州的高效服务不是出于"杭州人更愿意服务他人"，而是出于"每个人自私但很有效的竞争机制"——亚当·斯密《国富论》
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: 竞争与制度质量 ═══ -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <h2><span class="num">04</span>竞争与制度质量的关系</h2>
+      <table>
+        <tr><th>竞争程度</th><th>制度特征</th><th>典型地区</th></tr>
+        <tr><td><span class="hl-green">高竞争</span></td><td>制度质量高，信誉机制强，交易成本低</td><td>杭州、深圳、上海</td></tr>
+        <tr><td><span class="hl-accent">中竞争</span></td><td>制度在改善中，信誉机制正在形成</td><td>成都、武汉、西安</td></tr>
+        <tr><td><span class="hl-accent" style="color:var(--text-dim);">低竞争</span></td><td>制度质量低，关系替代契约，交易成本高</td><td>部分欠发达地区</td></tr>
+      </table>
+      <h3 style="margin-top:1rem;">信誉是"竞争的压力计"</h3>
+      <div class="grid-2">
+        <div class="card">
+          <div class="icon">🏦</div>
+          <h4>强竞争环境</h4>
+          <p>信誉是<span class="hl-green">资产</span>——失去信誉意味着失去客户</p>
+        </div>
+        <div class="card">
+          <div class="icon">🏚️</div>
+          <h4>弱竞争环境</h4>
+          <p>信誉是<span class="hl-accent">奢侈品</span>——没有信誉也不会损失什么</p>
+        </div>
+      </div>
+      <blockquote>
+        竞争 → 客户有选择权 → 企业维护声誉 → 声誉成为竞争壁垒 → 进一步强化竞争
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: 交易成本与制度演化 ═══ -->
+  <div class="slide" data-index="5">
+    <div class="slide-inner">
+      <h2><span class="num">05</span>交易成本与制度演化</h2>
+      <div class="grid-3">
+        <div class="card" style="text-align:center;border-color:var(--accent2);">
+          <div style="font-size:2rem;margin-bottom:0.3rem;">🔍</div>
+          <h4>降低发现问题成本</h4>
+          <p>投诉机制让问题可见</p>
+        </div>
+        <div class="card" style="text-align:center;border-color:var(--accent);">
+          <div style="font-size:2rem;margin-bottom:0.3rem;">⚡</div>
+          <h4>降低解决问题成本</h4>
+          <p>高效反馈，快速响应</p>
+        </div>
+        <div class="card" style="text-align:center;border-color:var(--accent3);">
+          <div style="font-size:2rem;margin-bottom:0.3rem;">🛡️</div>
+          <h4>降低问题发生成本</h4>
+          <p>前置预防，防患未然</p>
+        </div>
+      </div>
+      <blockquote>
+        这些不是"设计"出来的，是竞争压力下"演化"出来的。<br>
+        竞争 → 企业寻找降低交易成本的方法 → 成功的方法被复制 → 形成制度 → 制度降低更多交易成本 → 进一步促进竞争
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: 经济密度的乘数效应 ═══ -->
+  <div class="slide" data-index="6">
+    <div class="slide-inner">
+      <h2><span class="num">06</span>经济密度的乘数效应</h2>
+      <div class="mult-grid">
+        <div class="mult-item">
+          <div class="dim">劳动力市场</div>
+          <div class="high">更多就业机会</div>
+          <div class="vs">vs</div>
+          <div class="low">选择有限</div>
+        </div>
+        <div class="mult-item">
+          <div class="dim">知识溢出</div>
+          <div class="high">创新加速</div>
+          <div class="vs">vs</div>
+          <div class="low">创新滞后</div>
+        </div>
+        <div class="mult-item">
+          <div class="dim">公共服务</div>
+          <div class="high">竞争驱动</div>
+          <div class="vs">vs</div>
+          <div class="low">垄断低效</div>
+        </div>
+        <div class="mult-item">
+          <div class="dim">信誉机制</div>
+          <div class="high">失信成本高</div>
+          <div class="vs">vs</div>
+          <div class="low">失信成本低</div>
+        </div>
+        <div class="mult-item">
+          <div class="dim">制度创新</div>
+          <div class="high">迭代速度快</div>
+          <div class="vs">vs</div>
+          <div class="low">制度僵化</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:0.9rem;margin-top:0.5rem;color:var(--text-dim);">高密度地区 <span style="color:var(--accent2);">→</span> 正向循环 <span style="color:var(--accent2);">→</span> 越来越好</p>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: 与你之前的框架呼应 ═══ -->
+  <div class="slide" data-index="7">
+    <div class="slide-inner">
+      <h2><span class="num">07</span>与你之前讨论的框架呼应</h2>
+      <div class="grid-3">
+        <div class="card" style="border-top:3px solid var(--accent2);">
+          <div class="icon">🚗</div>
+          <h4>零跑To C市场</h4>
+          <p>To C本质上是"高竞争强度"市场，消费者有无数选择，企业必须持续改进。需求是竞争压力的传导。</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent);">
+          <div class="icon">🏗️</div>
+          <h4>系统层面的工作</h4>
+          <p>经济密度→竞争强度→制度质量，是一个"系统"。不是靠单点努力能改变的，需要系统性条件。</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent3);">
+          <div class="icon">🔗</div>
+          <h4>社群拓扑结构</h4>
+          <p>社群中的核心点、连接点、掮客也是竞争环境下的自然演化。社群活跃度是"经济密度"在社交领域的映射。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: 批判性审视 ═══ -->
+  <div class="slide" data-index="8">
+    <div class="slide-inner">
+      <h2><span class="num">08</span>批判性审视：四个局限</h2>
+      <table>
+        <tr><th>局限</th><th>表现</th><th>回应</th></tr>
+        <tr><td><span class="hl-accent">过度简化</span></td><td>将复杂制度差异归因于单一因素</td><td>竞争强度是必要条件，非充分条件</td></tr>
+        <tr><td><span class="hl-accent">忽略历史路径</span></td><td>杭州和西安有深厚历史根源</td><td>起点不同，但机制相同</td></tr>
+        <tr><td><span class="hl-accent">因果方向模糊</span></td><td>好制度促竞争？还是竞争促好制度？</td><td>双向强化，互为因果</td></tr>
+        <tr><td><span class="hl-accent">公共品特殊性</span></td><td>政府服务不是完全竞争市场</td><td>"用脚投票"仍创造竞争压力</td></tr>
+      </table>
+      <blockquote>
+        ⚠️ 最大的陷阱：以为"只要竞争够强，一切都会自动变好"。<br>
+        竞争需要制度基础——法治、产权保护、信息透明——才能发挥正面作用
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 10: 三个可迁移工具 ═══ -->
+  <div class="slide" data-index="9">
+    <div class="slide-inner">
+      <h2><span class="num">09</span>三个可迁移的分析工具</h2>
+      <div class="grid-3">
+        <div class="card" style="border-left:3px solid var(--accent2);">
+          <div style="font-size:2rem;font-weight:900;color:var(--accent2);margin-bottom:0.3rem;">①</div>
+          <h4>竞争强度分析</h4>
+          <p>做任何项目前，先问：这个市场的竞争强度如何？用户有没有替代选择？</p>
+          <span class="badge blue">如果竞争弱，先别急着做产品</span>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent);">
+          <div style="font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:0.3rem;">②</div>
+          <h4>制度演化视角</h4>
+          <p>不要问"怎么让员工更努力"，问"怎么让竞争机制驱动他们更努力"。</p>
+          <span class="badge yellow">激励设计比道德教化有效一万倍</span>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent3);">
+          <div style="font-size:2rem;font-weight:900;color:var(--accent3);margin-bottom:0.3rem;">③</div>
+          <h4>密度思维</h4>
+          <p>不要问"怎么让社群活跃"，问"怎么提高社群的交流密度"。</p>
+          <span class="badge green">密度是竞争的前提，竞争是质量的引擎</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 11: AI培训项目连接 ═══ -->
+  <div class="slide" data-index="10">
+    <div class="slide-inner">
+      <h2><span class="num">10</span>与AI培训项目的连接</h2>
+      <table>
+        <tr><th>项目层面</th><th>应用</th><th>为什么重要</th></tr>
+        <tr>
+          <td><span class="hl-blue">产品设计</span></td>
+          <td>让学员之间有比较、有反馈、有展示</td>
+          <td>没有竞争的学习社群，很快就变"死群"</td>
+        </tr>
+        <tr>
+          <td><span class="hl-accent">社群运营</span></td>
+          <td>提高"交流密度"——设计高频互动机制</td>
+          <td>密度决定活力，活力决定留存</td>
+        </tr>
+        <tr>
+          <td><span class="hl-green">信任建设</span></td>
+          <td>让信誉"可流通"——建立可展示的评价机制</td>
+          <td>信誉是社群经济的核心货币</td>
+        </tr>
+      </table>
+      <blockquote>
+        你正在做的AI培训、社群、知识服务，本质上就是在创造"经济密度"——把一群人聚在一起，提高交流频率，竞争自然会发生，制度自然会演化，信誉自然会形成
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 12: End ═══ -->
+  <div class="slide" data-index="11">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--accent2);letter-spacing:0.15em;font-weight:500;">ADAM SMITH'S INSIGHT, 250 YEARS LATER</div>
+      <div class="end-q">
+        "我们之所以能吃到晚餐，<br>不是出于屠夫、酿酒师或面包师的<em>仁慈</em>，<br>而是出于他们对自己<em>利益</em>的关心。"
+      </div>
+      <p style="margin-top:2rem;font-size:1rem;color:var(--text-dim);">
+        不需要你"设计"一切，只需要你创造<br><span style="color:var(--accent);font-weight:600;">"让好制度自然发生的条件"</span>
+      </p>
+      <div class="meta" style="margin-top:2.5rem;">
+        <span class="tag">📚 事业发展 · 知识库</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="nav" id="nav">
+  <button onclick="goSlide(-1)">◀</button>
+  <div class="page-num"><span class="cur" id="currentPage">1</span> / <span id="totalPages">12</span></div>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <button onclick="goSlide(1)">▶</button>
+</nav>
+<div class="kbd-hint">← → 或 PgUp / PgDown</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  document.getElementById('totalPages').textContent = total;
+
+  function goSlide(dir) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, current + dir));
+    slides[current].classList.add('active');
+    document.getElementById('currentPage').textContent = current + 1;
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goSlide(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); goSlide(-1); }
+    if (e.key === 'Home') { e.preventDefault(); while (current > 0) goSlide(-1); }
+    if (e.key === 'End') { e.preventDefault(); while (current < total - 1) goSlide(1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goSlide(diff > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
