@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI培训商业模式深度分析</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a28;
+    --accent: #60a5fa;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --border: #2a2a3a;
+    --glow: rgba(96, 165, 250, 0.15);
+  }
+  
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  .slide-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 6vh 8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+  }
+  
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  
+  /* Typography */
+  h1 { font-size: clamp(2.4rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.2; margin-bottom: 0.5em; }
+  h2 { font-size: clamp(1.6rem, 3.2vw, 3rem); font-weight: 700; line-height: 1.3; margin-bottom: 0.6em; }
+  h3 { font-size: clamp(1.2rem, 2.2vw, 2rem); font-weight: 500; line-height: 1.4; margin-bottom: 0.5em; }
+  h4 { font-size: clamp(1rem, 1.6vw, 1.4rem); font-weight: 500; margin-bottom: 0.4em; }
+  p, li { font-size: clamp(1rem, 1.6vw, 1.5rem); line-height: 1.7; margin-bottom: 0.4em; }
+  .small { font-size: clamp(0.8rem, 1.2vw, 1.1rem); color: var(--text2); }
+  .tiny { font-size: clamp(0.65rem, 0.9vw, 0.85rem); color: var(--text2); }
+  
+  /* Layout helpers */
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .flex-1 { flex: 1; }
+  .gap-sm { gap: 0.5rem; }
+  .gap-md { gap: 1rem; }
+  .gap-lg { gap: 2rem; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .justify-between { justify-content: space-between; }
+  .text-center { text-align: center; }
+  .mt-auto { margin-top: auto; }
+  .mb-auto { margin-bottom: auto; }
+  .w-full { width: 100%; }
+  
+  /* Colors */
+  .accent { color: var(--accent); }
+  .accent2 { color: var(--accent2); }
+  .accent3 { color: var(--accent3); }
+  .accent4 { color: var(--accent4); }
+  .accent5 { color: var(--accent5); }
+  .text2 { color: var(--text2); }
+  
+  /* Cards */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+  }
+  
+  .card-accent {
+    border-left: 4px solid var(--accent);
+  }
+  .card-accent2 { border-left-color: var(--accent2); }
+  .card-accent3 { border-left-color: var(--accent3); }
+  .card-accent4 { border-left-color: var(--accent4); }
+  .card-accent5 { border-left-color: var(--accent5); }
+  
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+  
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 5vh;
+    min-height: 40px;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 100;
+    padding: 0 2rem;
+  }
+  
+  .nav-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  
+  .page-indicator {
+    color: var(--text2);
+    font-size: 0.85rem;
+    min-width: 6rem;
+    text-align: center;
+  }
+  
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--border);
+    z-index: 100;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+  
+  /* Cover */
+  .cover { text-align: center; }
+  .cover .subtitle { font-size: clamp(1rem, 1.8vw, 1.6rem); color: var(--text2); max-width: 70%; margin: 0 auto 2rem; }
+  .cover .meta { color: var(--text2); font-size: clamp(0.7rem, 1vw, 0.95rem); }
+  .cover .tagline { font-size: clamp(1.2rem, 2vw, 1.8rem); color: var(--accent); margin-top: 1rem; }
+  
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    font-size: clamp(0.65rem, 0.9vw, 0.85rem);
+    font-weight: 500;
+  }
+  .badge-red { background: rgba(239,68,68,0.2); color: var(--accent5); }
+  .badge-blue { background: rgba(96,165,250,0.2); color: var(--accent); }
+  .badge-green { background: rgba(52,211,153,0.2); color: var(--accent3); }
+  .badge-yellow { background: rgba(245,158,11,0.2); color: var(--accent4); }
+  .badge-purple { background: rgba(167,139,250,0.2); color: var(--accent2); }
+  
+  /* Layer diagram */
+  .layer-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-width: 70%;
+    margin: 0 auto;
+  }
+  .layer-item {
+    padding: 1.2rem 2rem;
+    border-radius: 10px;
+    text-align: center;
+    font-size: clamp(0.9rem, 1.4vw, 1.3rem);
+    font-weight: 500;
+    position: relative;
+    border: 1px solid;
+  }
+  .layer-l1 { background: rgba(96,165,250,0.12); border-color: rgba(96,165,250,0.3); color: var(--accent); }
+  .layer-l2 { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.3); color: var(--accent2); }
+  .layer-l3 { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3); color: var(--accent3); }
+  .layer-label { position: absolute; left: -3rem; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--text2); font-weight: 700; }
+  
+  /* Arrow connector */
+  .arrow-down { text-align: center; color: var(--text2); font-size: 1.5rem; line-height: 0.5; }
+  
+  /* Timeline / Curves */
+  .curve-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .curve-num {
+    width: 2.5rem; height: 2.5rem;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .curve-num.c1 { background: rgba(96,165,250,0.2); color: var(--accent); }
+  .curve-num.c2 { background: rgba(167,139,250,0.2); color: var(--accent2); }
+  .curve-num.c3 { background: rgba(52,211,153,0.2); color: var(--accent3); }
+  .curve-content { flex: 1; }
+  .curve-content h4 { margin-bottom: 0.2rem; }
+  
+  /* Risk cards */
+  .risk-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    border-left: 4px solid var(--accent5);
+  }
+  .risk-card .risk-num {
+    font-size: 0.75rem; color: var(--accent5); font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .risk-card h4 { font-size: clamp(0.9rem, 1.3vw, 1.2rem); margin-bottom: 0.3rem; }
+  .risk-card p { font-size: clamp(0.75rem, 1vw, 0.95rem); line-height: 1.5; }
+  
+  /* Assumption table */
+  .assumption-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.7rem, 1vw, 0.95rem);
+  }
+  .assumption-table th {
+    text-align: left;
+    padding: 0.6rem 1rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .assumption-table td {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .assumption-table tr:hover td { background: rgba(96,165,250,0.04); }
+  
+  /* Checklist */
+  .checklist li {
+    list-style: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before { content: "?"; margin-right: 0.8rem; color: var(--accent4); font-weight: 700; }
+  
+  /* SVG decorations */
+  .deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.05;
+    pointer-events: none;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 4vh 5vw; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .layer-stack { max-width: 100%; }
+    .layer-label { position: static; display: block; text-align: center; margin-bottom: 0.3rem; transform: none; }
+    .cover .subtitle { max-width: 100%; }
+  }
+  
+  @media (min-width: 1600px) {
+    .slide { padding: 6vh 10vw; }
+  }
+  
+  /* Key highlight */
+  .highlight { color: var(--accent4); font-weight: 700; }
+  .danger { color: var(--accent5); font-weight: 700; }
+  .success { color: var(--accent3); font-weight: 700; }
+  
+  /* Divider */
+  .divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    margin: 1rem 0;
+    border-radius: 2px;
+  }
+  .divider-center { margin: 1rem auto; }
+  
+  /* S-Curve SVG */
+  .s-curve-svg { width: 100%; max-width: 500px; height: auto; margin: 0 auto; display: block; }
+  
+  /* Tag group */
+  .tag-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+  .tag {
+    padding: 0.2rem 0.8rem;
+    border-radius: 6px;
+    font-size: clamp(0.65rem, 0.9vw, 0.85rem);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+  .tag-red { border-color: rgba(239,68,68,0.3); color: var(--accent5); }
+  .tag-green { border-color: rgba(52,211,153,0.3); color: var(--accent3); }
+  .tag-blue { border-color: rgba(96,165,250,0.3); color: var(--accent); }
+  
+  /* Two-column overlay */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    flex: 1;
+  }
+  .col { display: flex; flex-direction: column; gap: 0.8rem; }
+  .col h3 { margin-bottom: 0.3rem; }
+  
+  .glow-text { text-shadow: 0 0 40px var(--glow); }
+  .mt-2 { margin-top: 0.8rem; }
+  .mt-3 { margin-top: 1.5rem; }
+  .mb-2 { margin-bottom: 0.8rem; }
+  .mb-3 { margin-bottom: 1.5rem; }
+  .px-2 { padding-left: 1rem; padding-right: 1rem; }
+  .py-1 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  
+  /* Scrollable slide content */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+  .scroll-content::-webkit-scrollbar { width: 3px; }
+  .scroll-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+<!-- ===== SLIDE 1: COVER ===== -->
+<div class="slide active cover" data-index="0">
+  <div class="deco-circle" style="width:50vh;height:50vh;background:var(--accent);top:-20vh;right:-10vh;"></div>
+  <div class="deco-circle" style="width:30vh;height:30vh;background:var(--accent2);bottom:-10vh;left:-5vh;"></div>
+  <div class="mb-auto"></div>
+  <div style="position:relative;z-index:1;">
+    <div class="tag-group justify-center"><span class="tag tag-blue">商业模式</span><span class="tag tag-red">批判性审视</span><span class="tag tag-green">AI培训</span></div>
+    <h1 class="glow-text" style="margin-top:1rem;">AI培训商业模式<br>深度分析</h1>
+    <div class="divider divider-center"></div>
+    <p class="subtitle">三层收入结构 × 三个增长阶段 × 六条致命假设<br>系统性可行性分析、忽略因素与最大失败风险</p>
+    <p class="meta">基于2026年8月5日团队讨论 · 赵锦勇 / 吕雁斌 / 赵婉婷</p>
+    <p class="tagline">用反向思考，杀死你的商业计划</p>
+  </div>
+  <div class="mt-auto text-center" style="position:relative;z-index:1;">
+    <p class="tiny">按 → 键或点击翻页 · 共19页</p>
+  </div>
+</div>
+
+<!-- ===== SLIDE 2: MODEL OVERVIEW ===== -->
+<div class="slide" data-index="1">
+  <h2>三层收入结构</h2>
+  <div class="divider"></div>
+  <div class="flex-1 flex items-center justify-center">
+    <div class="layer-stack">
+      <div class="layer-item layer-l3">
+        <span class="layer-label">L3</span>
+        <div><strong>数据 + 孵化</strong></div>
+        <div class="small">数据增值 · 投资回报 · 风投退出</div>
+      </div>
+      <div class="arrow-down">?</div>
+      <div class="layer-item layer-l2">
+        <span class="layer-label">L2</span>
+        <div><strong>算力批发</strong></div>
+        <div class="small">算力差价 · 服务费 · 云分销</div>
+      </div>
+      <div class="arrow-down">?</div>
+      <div class="layer-item layer-l1">
+        <span class="layer-label">L1</span>
+        <div><strong>AI培训 / 教育</strong></div>
+        <div class="small">学员学费 · 持续高额度交费 · 半金字塔结构</div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center small mt-2">
+    <span class="badge badge-red">基础假设</span> AI持续扩展，愿意学的人越来越多
+  </div>
+</div>
+
+<!-- ===== SLIDE 3: THREE CURVES ===== -->
+<div class="slide" data-index="2">
+  <h2>三个增长阶段</h2>
+  <div class="divider"></div>
+  <div class="flex-1 flex-col justify-center" style="gap:1.5rem;">
+    <div class="curve-row">
+      <div class="curve-num c1">1</div>
+      <div class="curve-content">
+        <h4>学AI <span class="badge badge-blue">规模驱动</span></h4>
+        <p class="small">类比电脑普及期学电脑，信息差红利驱动，现金流业务</p>
+      </div>
+    </div>
+    <div class="curve-row">
+      <div class="curve-num c2">2</div>
+      <div class="curve-content">
+        <h4>数据 + 数字化 <span class="badge badge-purple">纵深发展</span></h4>
+        <p class="small">积累数据 → 数字化往纵深走 → 算力需求爆发</p>
+      </div>
+    </div>
+    <div class="curve-row">
+      <div class="curve-num c3">3</div>
+      <div class="curve-content">
+        <h4>孵化企业 <span class="badge badge-green">风投退出</span></h4>
+        <p class="small">孵化有价值的企业，参与共同成长，获取投资回报</p>
+      </div>
+    </div>
+<div class="card card-accent5 mt-2" style="margin-top:1rem;">
+  <h4 class="accent5">? 核心陷阱</h4>
+  <p class="small"><strong>三个阶段的资源需求是叠加的，不是递进的</strong> — 不是做完第一阶段自动进入第二阶段，而是需要同时投入三种不同的能力</p>
+</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: XI'AN ADVANTAGE ===== -->
+<div class="slide" data-index="3">
+  <h2>西安优势主张</h2>
+  <div class="divider"></div>
+  <div class="two-col flex-1">
+    <div class="col">
+      <div class="card card-accent" style="flex:1;">
+        <h3 class="accent">双师模式</h3>
+        <p class="small">名师线上授课 + 本地助教线下辅导</p>
+        <div class="divider" style="margin:0.5rem 0;"></div>
+        <p class="small">? 看似简单，运营极复杂：<br>名师稀缺，助教质量参差不齐<br>人员流动率30-50%</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-accent2" style="flex:1;">
+        <h3 class="accent2">人力成本洼地</h3>
+        <p class="small">西安人力资源成本低，可对外输出</p>
+        <div class="divider" style="margin:0.5rem 0;"></div>
+        <p class="small">? 低成本≠低质量，<br>好的人才大概率外流到北上广深<br>可复制性存疑</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5: L1 FEASIBILITY ===== -->
+<div class="slide" data-index="4">
+  <h2>L1 培训收入 <span class="badge badge-blue">最可行，但天花板明显</span></h2>
+  <div class="divider"></div>
+  <div class="two-col flex-1">
+    <div class="col">
+      <h3 class="accent3">? 支持因素</h3>
+      <div class="card card-accent3">
+        <ul style="list-style:none;">
+          <li class="small py-1">? AI焦虑是2024-2026年最强烈的职业焦虑之一</li>
+          <li class="small py-1">? 半金字塔结构在教培行业有成熟先例</li>
+          <li class="small py-1">? 培训是现金流业务，启动快</li>
+          <li class="small py-1">? 西安人力成本洼地确实存在</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <h3 class="accent5">? 制约因素</h3>
+      <div class="card card-accent5">
+        <ul style="list-style:none;">
+          <li class="small py-1">? AI培训已是红海——大厂免费课、KOL低价课</li>
+          <li class="small py-1">? 好学员≠好讲师，需要额外培养体系</li>
+          <li class="small py-1">? 金字塔前提：持续有新学员进入</li>
+          <li class="small py-1">? 一旦市场增速放缓，瞬间崩塌</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 6: L2 FEASIBILITY ===== -->
+<div class="slide" data-index="5">
+  <h2>L2 算力批发 <span class="badge badge-yellow">利润空间存疑</span></h2>
+  <div class="divider"></div>
+  <div class="two-col flex-1">
+    <div class="col">
+      <h3 class="accent3">? 支持因素</h3>
+      <div class="card card-accent3">
+        <p class="small">AI应用确实需要算力，企业有长期需求</p>
+        <p class="small">云计算分销模式有成熟先例</p>
+      </div>
+    </div>
+    <div class="col">
+      <h3 class="accent5">? 制约因素</h3>
+      <div class="card card-accent5">
+        <p class="small"><strong>算力是高度标准化商品，毛利率极低</strong></p>
+        <p class="small">大厂直销团队直接覆盖客户，中间商空间被挤压</p>
+        <p class="small">鸡生蛋问题：没规模→没批发价→没竞争力→没客户</p>
+        <p class="small">大厂随时调整分销政策，中间商无议价能力</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 7: L3 FEASIBILITY ===== -->
+<div class="slide" data-index="6">
+  <h2>L3 数据 + 孵化 <span class="badge badge-red">最性感但最脆弱</span></h2>
+  <div class="divider"></div>
+  <div class="two-col flex-1">
+    <div class="col">
+      <h3 class="accent3">? 支持因素</h3>
+      <div class="card card-accent3">
+        <p class="small">数字化纵深价值巨大，客户数据是真正的资产</p>
+        <p class="small">孵化企业风投回报是金融杠杆的最高形式</p>
+      </div>
+    </div>
+    <div class="col">
+      <h3 class="accent5">? 制约因素</h3>
+      <div class="card card-accent5">
+        <p class="small">数据积累需要长期、稳定、规模化的客户基础</p>
+        <p class="small">数字化转型服务本身是红海</p>
+        <p class="small">孵化企业：<strong>存活率&le;10% + 深度参与需要 + 退出周期5-10年</strong></p>
+        <p class="small">L1和L2的利润空间可能不足以支撑L3的投入</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 8: RISK 1-2 ===== -->
+<div class="slide" data-index="7">
+  <h2>最大失败风险 <span class="badge badge-red">致命等级</span></h2>
+  <div class="divider"></div>
+  <div class="flex-1" style="display:flex;flex-direction:column;gap:1rem;">
+    <div class="risk-card">
+      <div class="risk-num">风险 #1 · 最致命</div>
+      <h4 class="accent5">金字塔前提——市场持续扩张——可能不成立</h4>
+      <p>AI培训热潮本质是<strong>信息差红利</strong>，当普及率提高，红利会快速消失。<br>类比电脑培训：2000年火爆，2010年基本消失，因为电脑变成了"基础技能"。<br>? <strong>关键判断</strong>：AI培训红利期可能只有2-3年。</p>
+    </div>
+    <div class="risk-card">
+      <div class="risk-num">风险 #2</div>
+      <h4 class="accent4">双师模式的人力资源管理难度被低估</h4>
+      <p>名师稀缺 + 助教质量参差不齐 + 学员反哺需额外培养成本 + 行业流动率30-50%<br>培养出来的讲师可能很快被竞争对手挖走。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 9: RISK 3-5 ===== -->
+<div class="slide" data-index="8">
+  <h2>最大失败风险 <span class="badge badge-yellow">高等级</span></h2>
+  <div class="divider"></div>
+  <div class="flex-1" style="display:flex;flex-direction:column;gap:1rem;">
+    <div class="risk-card">
+      <div class="risk-num">风险 #3</div>
+      <h4 class="accent4">算力批发——中间商被挤压</h4>
+      <p>毛利率5-15%，需垫资。AI模型在变小、推理成本持续下降，算力需求增长可能不如预期。</p>
+    </div>
+    <div class="risk-card">
+      <div class="risk-num">风险 #4</div>
+      <h4 class="accent4">三阶段增长曲线的时间错配</h4>
+      <p>三个阶段的资源需求是叠加的，不是递进的。第一阶段利润有限，第二阶段需要深度服务能力，第三阶段需要大量资金。</p>
+    </div>
+    <div class="risk-card">
+      <div class="risk-num">风险 #5</div>
+      <h4>团队能力配置与商业模式不匹配</h4>
+      <p>需要三种能力：<span class="tag tag-blue">教育运营</span> <span class="tag tag-purple">技术平台</span> <span class="tag tag-red">投资判断</span><br>目前团队缺：教育产品标准化设计、算力商务谈判、企业孵化运营</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 10: OVERLOOKED ===== -->
+<div class="slide" data-index="9">
+  <h2>你忽略的五个因素</h2>
+  <div class="divider"></div>
+  <div class="flex-1 scroll-content">
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+      <div class="card card-accent5">
+        <h4 class="accent5">1. 产品标准化问题</h4>
+        <p class="small">规模化需要标准化，高价值需要个性化。双师模式下助教水平波动直接影响口碑。</p>
+      </div>
+      <div class="card card-accent4">
+        <h4 class="accent4">2. 激励设计缺失</h4>
+        <p class="small">学员为什么"反哺"为讲师？利益分配机制是什么？好学员通常有更好的职业选择。</p>
+      </div>
+      <div class="card card-accent4">
+        <h4 class="accent4">3. 客户生命周期短</h4>
+        <p class="small">C端3-6个月学完，B端难续费。"持续高额度交费"需要产品体系支撑。</p>
+      </div>
+      <div class="card card-accent5">
+        <h4 class="accent5">4. 数据积累障碍</h4>
+        <p class="small">培训行为数据价值有限，远不如企业实际业务数据。隐私和权属问题未解决。</p>
+      </div>
+    </div>
+    <div class="card card-accent5 mt-2">
+      <h4 class="accent5">5. 西安人力资源的可持续性</h4>
+      <p class="small">好的人才外流到北上广深，低成本往往意味着高流失率和高培训成本。跨城市可复制性存疑。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 11: CORE ASSUMPTIONS ===== -->
+<div class="slide" data-index="10">
+  <h2>核心假设 <span class="badge badge-red">任何一条不成立，模型失效</span></h2>
+  <div class="divider"></div>
+  <div class="flex-1 scroll-content">
+    <table class="assumption-table">
+      <thead>
+        <tr><th style="width:8%;">假设</th><th style="width:38%;">内容</th><th style="width:28%;">验证方法</th><th style="width:26%;">若失效的后果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="accent5">H1</td><td>AI培训市场持续增长2-3年以上</td><td class="small">跟踪AI普及率曲线、竞品数据</td><td class="accent5">金字塔底部枯竭</td></tr>
+        <tr><td class="accent5">H2</td><td>学员愿意为"深度培训"持续付费</td><td class="small">MVP测试、付费意愿调研</td><td class="accent5">L1收入不可持续</td></tr>
+        <tr><td class="accent5">H3</td><td>学员愿意且有能力反哺为讲师</td><td class="small">试点测试转化率</td><td class="accent5">金字塔无法形成</td></tr>
+        <tr><td class="accent4">H4</td><td>算力批发有足够利润空间</td><td class="small">谈判多家云厂商比价</td><td class="accent5">L2收入为零</td></tr>
+        <tr><td class="accent4">H5</td><td>西安"双师人力资源"可规模化复制</td><td class="small">调研西安人才市场</td><td class="accent5">规模扩张受阻</td></tr>
+        <tr><td class="accent5">H6</td><td>第一阶段利润能支撑第二、三阶段投入</td><td class="small">财务模型测算</td><td class="accent5">现金流断裂</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== SLIDE 12: SUPP ASSUMPTIONS ===== -->
+<div class="slide" data-index="11">
+  <h2>辅助假设与风险等级</h2>
+  <div class="divider"></div>
+  <div class="flex-1 flex-col justify-center" style="gap:1rem;">
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+      <div class="card card-accent4">
+        <div class="flex justify-between" style="align-items:center;">
+          <h4 class="accent4">H7</h4>
+          <span class="badge badge-yellow">中风险</span>
+        </div>
+        <p class="small">AI培训的同质化竞争不会在短期内压垮价格</p>
+      </div>
+      <div class="card card-accent5">
+        <div class="flex justify-between" style="align-items:center;">
+          <h4 class="accent5">H8</h4>
+          <span class="badge badge-red">高风险</span>
+        </div>
+        <p class="small">大厂不会自己下场做AI培训或大幅压低算力价格</p>
+      </div>
+      <div class="card card-accent4">
+        <div class="flex justify-between" style="align-items:center;">
+          <h4 class="accent4">H9</h4>
+          <span class="badge badge-yellow">中风险</span>
+        </div>
+        <p class="small">培训过程中积累的数据有足够的商业价值</p>
+      </div>
+      <div class="card card-accent5">
+        <div class="flex justify-between" style="align-items:center;">
+          <h4 class="accent5">H10</h4>
+          <span class="badge badge-red">高风险</span>
+        </div>
+        <p class="small">孵化出的企业有足够高的存活率和回报率</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 13: REVERSE 1 ===== -->
+<div class="slide" data-index="12">
+  <h2>反向思考 ? 这是"培训版直销"吗？</h2>
+  <div class="divider"></div>
+  <div class="flex-1 flex-col justify-center" style="gap:1.2rem;">
+    <div class="card card-accent5">
+      <p class="small">"半金字塔结构"在形式上非常接近<strong>多层次直销（MLM）</strong>：</p>
+      <div class="tag-group" style="margin-top:0.5rem;">
+        <span class="tag tag-red">学员交费</span>
+        <span class="tag tag-red">? 成为讲师</span>
+        <span class="tag tag-red">? 推荐新学员</span>
+        <span class="tag tag-red">? 新学员交费</span>
+      </div>
+    </div>
+    <div class="grid-3" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="card card-accent5">
+        <h4 class="accent5">质量螺旋下降</h4>
+        <p class="small">随着层级增加，培训质量逐级衰减，最终损害品牌</p>
+      </div>
+      <div class="card card-accent4">
+        <h4 class="accent4">利益冲突</h4>
+        <p class="small">"你是在教我，还是在赚我的钱？"</p>
+      </div>
+      <div class="card card-accent5">
+        <h4 class="accent5">监管风险</h4>
+        <p class="small">多层次直销在中国有严格监管，容易触碰红线</p>
+      </div>
+    </div>
+    <div class="text-center small">? <strong>关键问题</strong>：如果你做的就是"培训版直销"，你愿意公开承认吗？学员知道会怎么想？</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 14: REVERSE 2 ===== -->
+<div class="slide" data-index="13">
+  <h2>反向思考 ? 历史教训</h2>
+  <div class="divider"></div>
+  <div class="flex-1 flex-col justify-center" style="gap:1.2rem;">
+    <div class="card card-accent5">
+      <h4 class="accent5">培训机构为什么做不成"数据平台"？</h4>
+    </div>
+    <div class="grid-3" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="card">
+        <h4 class="accent4">新东方</h4>
+        <p class="small">新东方在线拆分上市，表现平平</p>
+      </div>
+      <div class="card">
+        <h4 class="accent4">好未来</h4>
+        <p class="small">学而思网校转型在线教育，未成"数据公司"</p>
+      </div>
+      <div class="card">
+        <h4 class="accent4">达内科技</h4>
+        <p class="small">IT培训→人才服务，效果不佳</p>
+      </div>
+    </div>
+    <div class="card card-accent" style="text-align:center;">
+      <h4 class="accent">? 核心原因</h4>
+      <p class="small">培训机构和客户之间是<strong>"交易型"关系</strong>，不是"深度服务型"关系。<br>客户学完就走，不会把核心数据交给培训机构。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 15: REVERSE 3-4 ===== -->
+<div class="slide" data-index="14">
+  <h2>反向思考 ? 两个陷阱</h2>
+  <div class="divider"></div>
+  <div class="two-col flex-1">
+    <div class="col">
+      <div class="card card-accent5" style="flex:1;">
+        <h3 class="accent5">? 中间商困境</h3>
+        <div class="divider" style="margin:0.5rem 0;"></div>
+        <p class="small">算力价格快速下降，利润空间持续压缩</p>
+        <p class="small">头部公司不会通过中间商采购</p>
+        <p class="small">中小企业需求碎片化，服务成本高</p>
+        <p class="small"><strong>AI模型在变小</strong>，未来不需要"大量算力"</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-accent5" style="flex:1;">
+        <h3 class="accent5">? S曲线陷阱</h3>
+        <div class="divider" style="margin:0.5rem 0;"></div>
+        <p class="small">每个阶段需要不同的核心能力</p>
+        <p class="small">第二阶段资源投入可能拖垮第一阶段现金流</p>
+        <p class="small">第三阶段回报周期太长，大部分公司撑不住</p>
+        <p class="small">? 先做减法，不要想三阶段</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 16: RECOMMENDATIONS ===== -->
+<div class="slide" data-index="15">
+  <h2>批判性建议</h2>
+  <div class="divider"></div>
+  <div class="flex-1 scroll-content">
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+      <div class="card card-accent">
+        <h4 class="accent">1. 先做减法</h4>
+        <p class="small">聚焦L1层，6个月验证：<br>? 10-20个付费种子用户<br>? 学员→讲师转化率&ge;10%<br>? 续费率&ge;30%<br>? 西安人力成本可控</p>
+      </div>
+      <div class="card card-accent4">
+        <h4 class="accent4">2. 直面算力批发</h4>
+        <p class="small">联系2-3家云厂商问分销政策<br>算一笔账：多少客户才能产生有意义的算力收入？</p>
+      </div>
+      <div class="card card-accent2">
+        <h4 class="accent2">3. 认清数据定位</h4>
+        <p class="small">"积累数据"是副产品，不是商业模式<br>如果数据值钱，培训阶段就设计收集机制</p>
+      </div>
+      <div class="card card-accent5">
+        <h4 class="accent5">4. 警惕越做越重</h4>
+        <p class="small">培训→算力→数据→孵化：越来越重<br>能不做哪些？有没有更轻的版本？</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 17: KEY QUESTIONS ===== -->
+<div class="slide" data-index="16">
+  <h2>关键问题清单 <span class="badge badge-red">对话前质问自己</span></h2>
+  <div class="divider"></div>
+  <div class="flex-1 scroll-content">
+    <ul class="checklist">
+      <li class="small">你有多少启动资金？能撑多久？</li>
+      <li class="small">你的第一个AI培训产品是什么？具体到课程大纲、课时安排、收费标准</li>
+      <li class="small">你的第一个客户是谁？你能为他创造什么价值？</li>
+      <li class="small">如果AI培训市场在2年内饱和，你还有B计划吗？</li>
+      <li class="small">你和吕雁斌、赵婉婷的分工是什么？谁是CEO？谁是产品负责人？谁是销售？</li>
+      <li class="small">你的竞争壁垒是什么？为什么大厂不会抄你？</li>
+      <li class="small">"持续高额度交费"——具体是多少？学员愿意付多少钱？为什么？</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SLIDE 18: SUMMARY ===== -->
+<div class="slide" data-index="17">
+  <h2>总结</h2>
+  <div class="divider"></div>
+  <div class="two-col flex-1">
+    <div class="col">
+      <h3 class="accent3">? 值得探索</h3>
+      <div class="card card-accent3">
+        <p class="small">? AI培训市场真实存在</p>
+        <p class="small">? 西安有成本优势</p>
+        <p class="small">? 三人互补性不错</p>
+        <p class="small">? 你对教育行业理解有深度</p>
+      </div>
+    </div>
+    <div class="col">
+      <h3 class="accent5">? 需要警惕</h3>
+      <div class="card card-accent5">
+        <p class="small">? 模型跨越教育、云计算、风投三个行业</p>
+        <p class="small">? 核心假设都需要验证</p>
+        <p class="small">? 团队能力不足</p>
+        <p class="small">? 算力商务和孵化投资是盲区</p>
+      </div>
+    </div>
+  </div>
+  <div class="card card-accent mt-2" style="text-align:center;">
+    <h3 class="accent">底线建议</h3>
+    <p class="small">① 先做MVP：找10人验证付费意愿<br>
+    ② 不要想三阶段：先活下来，活得久<br>
+    ③ 算力批发先放一放：等有1000个付费客户再说<br>
+    ④ 孵化忘掉：那是5年后的事</p>
+  </div>
+</div>
+
+<!-- ===== SLIDE 19: END ===== -->
+<div class="slide cover" data-index="18">
+  <div class="deco-circle" style="width:50vh;height:50vh;background:var(--accent2);top:-15vh;right:-10vh;"></div>
+  <div class="deco-circle" style="width:30vh;height:30vh;background:var(--accent);bottom:-5vh;left:-5vh;"></div>
+  <div class="mb-auto"></div>
+  <div style="position:relative;z-index:1;">
+    <h1 class="glow-text">保持好奇，<br>保持怀疑</h1>
+    <div class="divider divider-center"></div>
+    <p class="subtitle">商业计划的最大价值不是被证明，而是被杀死<br>——然后找到更好的那个</p>
+    <div class="tag-group justify-center" style="margin-top:2rem;">
+      <span class="tag tag-blue">三层结构</span>
+      <span class="tag tag-red">六个假设</span>
+      <span class="tag tag-green">五条建议</span>
+    </div>
+  </div>
+  <div class="mt-auto" style="position:relative;z-index:1;">
+    <p class="tiny">赵锦勇 · 吕雁斌 · 赵婉婷 · 小Ark | 2026年8月</p>
+  </div>
+</div>
+
+</div><!-- /slide-container -->
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← 上一页</button>
+  <span class="page-indicator" id="pageIndicator">1 / 19</span>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">下一页 →</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const progressFill = document.getElementById('progressFill');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function showSlide(idx) {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === idx);
+    });
+    current = idx;
+    progressFill.style.width = ((idx + 1) / total * 100) + '%';
+    pageIndicator.textContent = (idx + 1) + ' / ' + total;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function nextSlide() {
+    if (current < total - 1) showSlide(current + 1);
+  }
+  function prevSlide() {
+    if (current > 0) showSlide(current - 1);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      prevSlide();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      showSlide(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      showSlide(total - 1);
+    }
+  });
+
+  // Touch/swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  });
+
+  // Mouse wheel
+  document.addEventListener('wheel', (e) => {
+    if (e.deltaY > 0) nextSlide();
+    else prevSlide();
+  }, { passive: true });
+
+  showSlide(0);
+</script>
+
+</body>
+</html>
