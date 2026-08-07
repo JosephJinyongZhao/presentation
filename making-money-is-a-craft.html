@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赚钱是技术活</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #06080d;
+    --bg2: #0c1018;
+    --bg3: #121a26;
+    --gold: #c8a24a;
+    --gold-light: #e0c878;
+    --gold-dim: rgba(200,162,74,0.14);
+    --steel: #5a7a9a;
+    --steel-light: #8aaac8;
+    --text: #d5dae3;
+    --text-dim: #7d8698;
+    --text-bright: #eef1f6;
+    --red: #c05a5a;
+    --green: #4a9a6a;
+    --blue: #4a7acc;
+    --grad: linear-gradient(135deg, var(--gold), var(--steel));
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans SC', sans-serif; overflow: hidden; user-select: none; }
+
+  .slide-container { width: 100vw; height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; }
+  .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5vh 7vw; opacity: 0; transform: scale(0.96); transition: opacity 0.5s ease, transform 0.5s ease; pointer-events: none; }
+  .slide.active { opacity: 1; transform: scale(1); pointer-events: auto; }
+
+  h1 { font-family:'Noto Serif SC',serif; font-size: clamp(2.6rem,5.2vw,4.8rem); font-weight:900; color:var(--text-bright); letter-spacing:.06em; line-height:1.3; }
+  h2 { font-family:'Noto Serif SC',serif; font-size: clamp(1.7rem,3vw,3rem); font-weight:700; color:var(--gold); letter-spacing:.04em; margin-bottom:.5em; }
+  h2.steel { color: var(--steel-light); }
+  h3 { font-family:'Noto Serif SC',serif; font-size: clamp(1.1rem,1.7vw,1.7rem); font-weight:600; color:var(--steel-light); margin-bottom:.3em; }
+  .subtitle { font-size: clamp(.95rem,1.5vw,1.5rem); color:var(--text-dim); font-weight:300; letter-spacing:.1em; margin-top:.6em; }
+  p, li { font-size: clamp(.95rem,1.35vw,1.4rem); line-height:1.75; color:var(--text); }
+  .gold { color:var(--gold); font-weight:500; } .gold-light { color:var(--gold-light); }
+  .steel { color:var(--steel-light); } .red { color:var(--red); } .green { color:var(--green); } .blue { color:var(--blue); }
+  .dim { color:var(--text-dim); }
+  .content { width:100%; max-width:1150px; }
+  .text-center { text-align:center; }
+
+  .divider { height:2px; width:80px; background:var(--grad); margin:.6em 0 1em; border-radius:2px; }
+  .divider.center { margin:.6em auto 1em; }
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.6vw; margin-top:1em; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.4vw; margin-top:1em; }
+  .grid-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1.2vw; margin-top:1em; }
+
+  .card { background:var(--bg2); border:1px solid rgba(90,122,154,.15); border-radius:14px; padding:1.4em 1.5em; position:relative; overflow:hidden; }
+  .card.gold-border { border-color:rgba(200,162,74,.35); }
+  .card.red-border { border-color:rgba(192,90,90,.3); }
+  .card-title { font-family:'Noto Serif SC',serif; font-size:clamp(1rem,1.5vw,1.5rem); font-weight:700; color:var(--gold); margin-bottom:.5em; }
+  .card-title.steel { color:var(--steel-light); }
+
+  .callout { border-left:4px solid var(--gold); background:rgba(200,162,74,.07); padding:1.1em 1.4em; border-radius:0 10px 10px 0; margin:1em 0; font-size:clamp(1rem,1.5vw,1.5rem); line-height:1.7; }
+  .callout.steel { border-left-color:var(--steel); background:rgba(90,122,154,.07); }
+
+  .badge { display:inline-block; padding:.2em 1em; border-radius:20px; font-size:clamp(.8rem,1.1vw,1.1rem); font-weight:500; letter-spacing:.1em; margin-bottom:1em; }
+  .badge.gold { background:var(--gold-dim); color:var(--gold-light); border:1px solid rgba(200,162,74,.4); }
+  .badge.steel { background:rgba(90,122,154,.12); color:var(--steel-light); border:1px solid rgba(90,122,154,.4); }
+
+  .step { display:flex; align-items:flex-start; gap:1em; margin-bottom:1em; }
+  .step-num { flex-shrink:0; width:2.4em; height:2.4em; border-radius:50%; background:var(--grad); color:#0a0a0a; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:clamp(1rem,1.4vw,1.4rem); }
+
+  .flow { display:flex; align-items:center; justify-content:center; gap:.8vw; flex-wrap:wrap; margin-top:1.2em; }
+  .flow-node { background:var(--bg2); border:1px solid rgba(200,162,74,.35); border-radius:12px; padding:.8em 1.2em; text-align:center; min-width:150px; }
+  .flow-node .big { font-family:'Noto Serif SC',serif; font-size:clamp(1rem,1.5vw,1.5rem); font-weight:700; color:var(--gold-light); }
+  .flow-node .small { font-size:clamp(.75rem,1vw,1rem); color:var(--text-dim); margin-top:.2em; }
+  .flow-arrow { color:var(--gold); font-size:clamp(1rem,1.6vw,1.6rem); font-weight:700; }
+
+  .big-num { font-family:'Noto Serif SC',serif; font-size:clamp(2.4rem,5vw,5rem); font-weight:900; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; line-height:1.1; }
+  .list-clean { list-style:none; }
+  .list-clean li { padding-left:1.4em; position:relative; margin-bottom:.7em; }
+  .list-clean li::before { content:"◆"; position:absolute; left:0; color:var(--gold); font-size:.8em; top:.2em; }
+
+  .nav-bar { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:12px; background:rgba(6,8,13,.7); border:1px solid rgba(90,122,154,.25); padding:6px 14px; border-radius:30px; backdrop-filter:blur(8px); z-index:100; }
+  .nav-btn { background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer; padding:0 8px; line-height:1; transition:color .2s; }
+  .nav-btn:hover { color:var(--gold); }
+  .nav-page { color:var(--text-dim); font-size:.85rem; letter-spacing:.1em; }
+  .nav-page span { color:var(--gold); font-weight:700; }
+
+  .progress { position:fixed; top:0; left:0; height:3px; background:var(--grad); width:0; transition:width .4s; z-index:101; }
+
+  .slide.active .fade-in { animation:fadeIn .6s ease forwards; }
+  .slide.active .fade-up { animation:fadeUp .6s ease forwards; }
+  .fade-in { opacity:0; } .fade-up { opacity:0; transform:translateY(18px); }
+  .d1{animation-delay:.1s !important}.d2{animation-delay:.2s !important}.d3{animation-delay:.3s !important}.d4{animation-delay:.4s !important}.d5{animation-delay:.5s !important}.d6{animation-delay:.6s !important}.d7{animation-delay:.7s !important}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:820px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr} .flow{flex-direction:column} .flow-arrow{transform:rotate(90deg)} }
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<!-- ═══ Slide 1: 封面 ═══ -->
+<div class="slide active" data-index="0">
+  <div class="content text-center">
+    <div class="badge gold fade-in d1">孟祺的投资总监感悟 · 事业认知</div>
+    <h1 class="fade-up d2">赚钱是<span class="gold-light">技术活</span><br>不是认知活</h1>
+    <div class="divider center fade-up d3"></div>
+    <p class="subtitle fade-up d4" style="max-width:680px;margin:0 auto;">跟曾经赚过钱、长期保住钱的人做<br>才能挣到钱，或学会挣钱——而不是自己想当然</p>
+    <p class="fade-up d5" style="margin-top:2.5em;color:var(--text-dim);font-size:clamp(.75rem,.9vw,.9rem);letter-spacing:.1em;">2026.08.07 · 源于与孟祺的交流</p>
+  </div>
+</div>
+
+<!-- ═══ Slide 2: 缘起 ═══ -->
+<div class="slide" data-index="1">
+  <div class="content">
+    <h2 class="fade-in d1">缘起 · 孟祺的投资总监之路</h2>
+    <div class="divider fade-up d2"></div>
+    <div class="callout fade-up d3">
+      <strong>职业生涯的转折</strong>——读 MBA 的过程中遇到一些朋友，最后来到<strong class="gold">石羊集团做投资总监</strong>。
+    </div>
+    <div class="grid-2 fade-up d4">
+      <div class="card">
+        <div class="card-title steel">他想过创业</div>
+        <p>有过创业的冲动，也曾想当然地认为自己能行</p>
+      </div>
+      <div class="card">
+        <div class="card-title">看到了失败</div>
+        <p>身边太多人创业失败，尤其是和他条件相近的同学</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Slide 3: 核心命题 ═══ -->
+<div class="slide" data-index="2">
+  <div class="content text-center">
+    <h2 class="fade-in d1">核心命题</h2>
+    <div class="big-num fade-up d2">赚钱是技术活</div>
+    <div class="subtitle fade-up d3" style="margin:.5em 0 1.5em;">不只是认知的活 —— 需要师傅带的手艺</div>
+    <div class="grid-2 fade-up d4">
+      <div class="card red-border">
+        <div class="card-title red">认知决定论</div>
+        <p class="dim">"想通了就能赚到钱"<br>→ 停留在空想，缺乏执行与手艺</p>
+      </div>
+      <div class="card red-border">
+        <div class="card-title red">机会主义</div>
+        <p class="dim">"抓住风口就能暴富"<br>→ 赚了守不住，或根本抓不住</p>
+      </div>
+    </div>
+    <div class="callout steel fade-up d5" style="margin-top:1.4em;">真正的路：<strong class="gold">以认知为起点，以手艺为内核，以师傅为加速器</strong></div>
+  </div>
+</div>
+
+<!-- ═══ Slide 4: 可言说知识以外的能力 ═══ -->
+<div class="slide" data-index="3">
+  <div class="content">
+    <h2 class="fade-in d1">可言说知识以外的三种能力</h2>
+    <div class="divider fade-up d2"></div>
+    <p class="fade-up d3 dim" style="margin-bottom:1em;">真正赚到钱的人，具备书本上学不到、只能跟人学的手艺</p>
+    <div class="grid-3 fade-up d4">
+      <div class="card gold-border">
+        <div class="card-title">隐性判断力</div>
+        <p>什么项目能成、谁靠谱、何时收手<br><span class="dim">无法写成公式</span></p>
+      </div>
+      <div class="card gold-border">
+        <div class="card-title">风险嗅觉</div>
+        <p>知道风险在哪、多大、如何对冲<br><span class="dim">踩坑留下的身体记忆</span></p>
+      </div>
+      <div class="card gold-border">
+        <div class="card-title">周期的体感</div>
+        <p>经历过完整周期，才知道当下繁荣的真假与长短<br><span class="dim">时间累积的直觉</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Slide 5: 为什么必须跟着赚过钱的人学 ═══ -->
+<div class="slide" data-index="4">
+  <div class="content">
+    <h2 class="fade-in d1">为什么必须跟着赚过钱的人学</h2>
+    <div class="divider fade-up d2"></div>
+    <div class="callout fade-up d3">
+      关键筛选条件：不看<strong class="dim">谁在喊赚钱</strong>，而看<strong class="gold">谁真的赚到了，并且长期保住了钱</strong>
+    </div>
+    <div class="grid-2 fade-up d4">
+      <div class="card">
+        <div class="card-title steel">幸存者的可信度</div>
+        <p>"长期保住钱"过滤掉了运气成分，留下的才是真正掌握技术的人</p>
+      </div>
+      <div class="card">
+        <div class="card-title steel">师徒制的必要性</div>
+        <p>手艺类知识只能"做中学、跟人学"，无法靠阅读和空想习得</p>
+      </div>
+    </div>
+    <div class="flow fade-up d5">
+      <div class="flow-node"><div class="big">决策框架</div><div class="small">如何评估机会</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="big">风控纪律</div><div class="small">如何避免大亏</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="big">资源网络</div><div class="small">认识谁、如何调动</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><div class="big">周期判断</div><div class="small">何时进退</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Slide 6: 批判视角 ═══ -->
+<div class="slide" data-index="5">
+  <div class="content">
+    <h2 class="fade-in d1 steel">批判性视角 · 四个陷阱</h2>
+    <div class="divider fade-up d2"></div>
+    <div class="grid-2 fade-up d3">
+      <div class="card red-border">
+        <div class="card-title red">跟对人 ≠ 躺赢</div>
+        <p>师傅给的是方法和视角，不是担保。抱"抱大腿分羹"心态反而被淘汰</p>
+      </div>
+      <div class="card red-border">
+        <div class="card-title red">成功逻辑不可照搬</div>
+        <p>特定行业、周期、资源下的成功，未必适用于你。学"如何思考"而非"做了什么"</p>
+      </div>
+      <div class="card red-border">
+        <div class="card-title red">幸存者偏差的回声</div>
+        <p>幸存者方法论里混着运气成分，完全模仿可能复制的是错误</p>
+      </div>
+      <div class="card red-border">
+        <div class="card-title red">技术 ≠ 无捷径</div>
+        <p>不是"学了认知就够"，也不是"跟了师傅就成"，是要把技术练成自己的手艺</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Slide 7: 实践四步 ═══ -->
+<div class="slide" data-index="6">
+  <div class="content">
+    <h2 class="fade-in d1">实践指导 · 四步走</h2>
+    <div class="divider fade-up d2"></div>
+    <div class="step fade-up d3">
+      <div class="step-num">1</div>
+      <div><strong class="gold">识别值得跟随的人</strong><p class="dim">长期赚钱且保住钱 · 愿分享真实经验 · 领域相关 · 人品可靠</p></div>
+    </div>
+    <div class="step fade-up d4">
+      <div class="step-num">2</div>
+      <div><strong class="gold">创造接近的机会</strong><p class="dim">进入圈子 · 先提供价值 · 以工作/合作近距离观察</p></div>
+    </div>
+    <div class="step fade-up d5">
+      <div class="step-num">3</div>
+      <div><strong class="gold">在实战中学习</strong><p class="dim">观察判断 · 提问复盘 · 参与真实项目而非旁观</p></div>
+    </div>
+    <div class="step fade-up d6">
+      <div class="step-num">4</div>
+      <div><strong class="gold">内化为自己的能力</strong><p class="dim">提炼方法论 · 小步试错 · 建立自己的网络</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Slide 8: 结语 ═══ -->
+<div class="slide" data-index="7">
+  <div class="content text-center">
+    <h2 class="fade-in d1">手艺需要师傅，也需要自己</h2>
+    <div class="divider center fade-up d2"></div>
+    <div class="grid-3 fade-up d3" style="margin-top:1.5em;">
+      <div class="card"><div class="big-num" style="font-size:clamp(1.6rem,3vw,2.6rem)">认知是起点</div><p class="dim" style="margin-top:.4em">没有认知，连跟谁学、学什么都不知</p></div>
+      <div class="card"><div class="big-num" style="font-size:clamp(1.6rem,3vw,2.6rem)">师傅是加速器</div><p class="dim" style="margin-top:.4em">好师傅让你少走十年弯路</p></div>
+      <div class="card"><div class="big-num" style="font-size:clamp(1.6rem,3vw,2.6rem)">自己才是主体</div><p class="dim" style="margin-top:.4em">把师傅的技术练成自己的手艺</p></div>
+    </div>
+    <div class="callout fade-up d4" style="margin-top:2em;max-width:820px;margin-left:auto;margin-right:auto;">
+      跟赚过钱的人学，不是为了复制他的结果，<br>而是为了掌握他<strong class="gold">"如何持续赚钱"的能力</strong>——那才是真正可迁移、可长期持有的财富。
+    </div>
+    <p class="fade-up d5" style="margin-top:2em;color:var(--text-dim);font-size:clamp(.75rem,.9vw,.9rem);">认知 · 手艺 · 师傅 —— 三重结构，缺一不可</p>
+  </div>
+</div>
+
+<div class="nav-bar" id="navBar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div class="nav-page"><span id="currentPage">1</span> / <span id="totalPages">8</span></div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  const currentSpan = document.getElementById('currentPage');
+  const totalSpan = document.getElementById('totalPages');
+  const progressBar = document.getElementById('progressBar');
+  totalSpan.textContent = total;
+
+  function goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= total) index = total - 1;
+    if (index === current) return;
+    slides[current].classList.remove('active');
+    slides[index].classList.add('active');
+    current = index;
+    currentSpan.textContent = current + 1;
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+  }
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  });
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.nav-bar')) return;
+    const rect = document.querySelector('.slide-container').getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if (x < rect.width / 2) prev(); else next();
+  });
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) { if (diff > 0) prev(); else next(); }
+  });
+  progressBar.style.width = (1 / total * 100) + '%';
+})();
+</script>
+</body>
+</html>
