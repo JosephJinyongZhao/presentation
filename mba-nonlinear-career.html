@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>事业发展的非线性真相</title>
+<style>
+  :root{
+    --bg:#0a0e1a;
+    --bg2:#0e1424;
+    --card:#131b30;
+    --gold:#e8c36a;
+    --gold2:#f5dfa5;
+    --cyan:#5ad1e8;
+    --green:#6ee7a0;
+    --red:#f48080;
+    --violet:#b39cf0;
+    --text:#e8ecf5;
+    --muted:#93a0b8;
+    --line:rgba(255,255,255,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:radial-gradient(1200px 800px at 70% -10%, #16203a 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,sans-serif;
+    overflow:hidden;
+  }
+  /* 背景网格点缀 */
+  .bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(circle at 50% 50%,#000 40%,transparent 85%);
+  }
+  .slide{
+    position:fixed;inset:0;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    padding:5vh 6vw;
+    opacity:0;visibility:hidden;transform:translateY(24px);
+    transition:opacity .5s ease, transform .5s ease, visibility .5s;
+  }
+  .slide.active{opacity:1;visibility:visible;transform:translateY(0);}
+  .inner{max-width:1500px;width:100%;}
+
+  /* 标题 */
+  h1{font-size:clamp(2.6rem,6vw,5.2rem);font-weight:800;line-height:1.15;
+    background:linear-gradient(120deg,var(--gold2),var(--gold),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  h2{font-size:clamp(2rem,4.2vw,3.6rem);font-weight:700;margin-bottom:2.5vh;
+    color:var(--gold2);}
+  h3{font-size:clamp(1.4rem,2.6vw,2.2rem);font-weight:600;color:var(--cyan);margin-bottom:1.5vh;}
+  .kicker{font-size:clamp(1rem,1.6vw,1.4rem);letter-spacing:.4em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:2vh;}
+  .lead{font-size:clamp(1.15rem,2vw,1.7rem);color:var(--muted);line-height:1.7;}
+
+  p{font-size:clamp(1.1rem,1.9vw,1.6rem);line-height:1.8;color:var(--text);}
+  .muted{color:var(--muted);}
+  .gold{color:var(--gold2);}
+  .cyan{color:var(--cyan);}
+
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:20px;padding:3vh 2.5vw;backdrop-filter:blur(4px);}
+
+  ul{list-style:none;}
+  li{font-size:clamp(1.1rem,1.9vw,1.6rem);line-height:1.7;margin-bottom:1.6vh;
+    padding-left:2.2rem;position:relative;color:var(--text);}
+  li::before{content:"";position:absolute;left:0;top:.75em;width:.7em;height:.7em;
+    border-radius:50%;background:var(--gold);}
+
+  /* 标签 */
+  .chip{display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);
+    border:1px solid var(--line);color:var(--muted);margin-right:.6em;margin-bottom:.6em;}
+
+  /* 双列 */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:2vw;}
+  .col-head{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:700;margin-bottom:2vh;
+    display:flex;align-items:center;gap:.6em;}
+
+  /* 叙事曲线 */
+  .curve{position:relative;width:100%;height:clamp(180px,30vh,300px);margin:3vh 0;}
+  .curve svg{width:100%;height:100%;}
+  .node{position:absolute;transform:translate(-50%,-50%);text-align:center;}
+  .node .dot{width:14px;height:14px;border-radius:50%;margin:0 auto;border:3px solid var(--bg);}
+  .node .lab{font-size:clamp(.8rem,1.2vw,1.05rem);color:var(--muted);margin-top:6px;white-space:nowrap;}
+
+  /* 大引言 */
+  blockquote{font-size:clamp(1.5rem,3vw,2.6rem);line-height:1.6;font-weight:600;
+    border-left:6px solid var(--gold);padding-left:1.5vw;color:var(--text);}
+
+  /* 页码/导航 */
+  .pager{position:fixed;bottom:3vh;left:0;right:0;z-index:5;display:flex;
+    justify-content:center;align-items:center;gap:8px;}
+  .pager .bar{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);
+    cursor:pointer;transition:.3s;}
+  .pager .bar.on{background:var(--gold);width:48px;}
+  .counter{position:fixed;bottom:3.4vh;right:3vw;z-index:5;color:var(--muted);
+    font-size:clamp(1rem,1.6vw,1.4rem);letter-spacing:.2em;}
+  .hint{position:fixed;bottom:3.4vh;left:3vw;z-index:5;color:var(--muted);
+    font-size:clamp(.85rem,1.3vw,1.1rem);}
+
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:clamp(1.1rem,1.8vw,1.5rem);color:var(--gold2);text-align:left;
+    padding:1.4vh 1.2vw;border-bottom:2px solid var(--gold);}
+  td{font-size:clamp(1rem,1.6vw,1.35rem);padding:1.5vh 1.2vw;border-bottom:1px solid var(--line);
+    color:var(--text);line-height:1.6;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--muted);width:38%;}
+
+  .num{font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;color:var(--gold);margin-bottom:1vh;}
+
+  @media(max-width:900px){
+    .cols{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-deco"></div>
+
+<!-- ============ SLIDE 1 封面 ============ -->
+<section class="slide active">
+  <div class="inner" style="text-align:center;">
+    <div class="kicker">MBA 招生圆桌 · 认知复盘</div>
+    <h1 style="margin-bottom:3vh;">事业发展的非线性真相</h1>
+    <p class="lead" style="max-width:900px;margin:0 auto;">从 MBA 交流看职业起伏与过程导向</p>
+    <div style="margin-top:5vh;">
+      <span class="chip">职业起伏</span><span class="chip">过程导向</span><span class="chip">非线性</span>
+    </div>
+    <div style="margin-top:7vh;color:var(--muted);font-size:clamp(.95rem,1.5vw,1.2rem);letter-spacing:.2em;">
+      2026年8月8日 · 西安
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 缘起 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">缘起</div>
+    <h2>一场看似形式化的交流</h2>
+    <p>流程并不新鲜：嘉宾分享、项目介绍、茶歇交流。真正打动人的，是<span class="gold">人在讲述职业经历时那种未经修饰的真实感</span>。</p>
+    <div style="margin-top:3vh;">
+      <blockquote>MBA 的真正价值，或许不在于"教给人一条上升路径"，而在于让人看到——<span class="gold">根本没有直线</span>。</blockquote>
+    </div>
+    <div style="margin-top:3vh;display:flex;gap:1.5vw;flex-wrap:wrap;">
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">01</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">正式演讲 → 逻辑自洽</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">02</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">随意流露 → 磕绊 · 犹豫 · 重来</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">03</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">真实感 → 更有力量</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 两个故事 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">两个故事</div>
+    <h2>没有一帆风顺的事业</h2>
+    <div class="cols">
+      <div class="card">
+        <div class="col-head"><span style="color:var(--red);">●</span>李浩 · 从解散到重新出发</div>
+        <ul>
+          <li>中国移动 —— 大厂，稳定但受限</li>
+          <li>瓜子 / 优信 —— 赶上互联网风口</li>
+          <li><span class="gold">团队解散</span> —— 风口过去，业务线被砍</li>
+          <li>新平台 —— 不如意，仍在寻找</li>
+        </ul>
+        <p class="muted" style="font-size:clamp(.95rem,1.5vw,1.25rem);margin-top:2vh;">没有美化，没有包装，就是一个人走过一些路。</p>
+      </div>
+      <div class="card">
+        <div class="col-head"><span style="color:var(--green);">●</span>雷升涛 · 从失败到一飞冲天</div>
+        <ul>
+          <li>早年创业 —— 不容易，失败</li>
+          <li>蛰伏 —— 寻找新方向</li>
+          <li>抓住新契机 —— 重新出发</li>
+          <li>现在"一飞冲天"</li>
+        </ul>
+        <p class="muted" style="font-size:clamp(.95rem,1.5vw,1.25rem);margin-top:2vh;">中间的挫败与自我怀疑，只在私下交流才能感受。</p>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.3rem,2.6vw,2.2rem);border-left:none;text-align:center;">
+        没有一个人一路顺风。事业的常态不是上升，而是<span class="gold">起伏</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 非线性曲线图 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">核心洞察</div>
+    <h2>非线性，才是职业的真实形态</h2>
+    <div class="curve">
+      <svg viewBox="0 0 1400 300" preserveAspectRatio="none">
+        <!-- 线性参考线 -->
+        <line x1="80" y1="60" x2="1320" y2="60" stroke="rgba(255,255,255,.1)" stroke-width="2" stroke-dasharray="8 8"/>
+        <text x="1100" y="42" fill="#93a0b8" font-size="20">线性叙事（幻觉）</text>
+        <!-- 非线性曲线 -->
+        <path d="M80,240 C220,200 260,150 400,160 C540,175 560,90 700,100 C840,112 860,220 1000,200 C1140,182 1200,80 1320,90"
+          fill="none" stroke="#e8c36a" stroke-width="5" stroke-linecap="round"/>
+        <text x="90" y="270" fill="#e8c36a" font-size="22" font-weight="600">起点</text>
+        <circle cx="400" cy="160" r="8" fill="#5ad1e8"/>
+        <text x="390" y="140" fill="#5ad1e8" font-size="20">转折</text>
+        <circle cx="560" cy="90" r="8" fill="#f48080"/>
+        <text x="550" y="68" fill="#f48080" font-size="20">低谷</text>
+        <circle cx="700" cy="100" r="8" fill="#6ee7a0"/>
+        <text x="690" y="120" fill="#6ee7a0" font-size="20">反弹</text>
+        <circle cx="1000" cy="200" r="8" fill="#b39cf0"/>
+        <text x="985" y="230" fill="#b39cf0" font-size="20">迷茫</text>
+        <circle cx="1320" cy="90" r="8" fill="#e8c36a"/>
+        <text x="1230" y="70" fill="#e8c36a" font-size="20">再出发</text>
+      </svg>
+    </div>
+    <div style="text-align:center;margin-top:1vh;">
+      <blockquote style="font-size:clamp(1.3rem,2.6vw,2.2rem);border-left:none;text-align:center;">
+        线性叙事是事后总结的幻觉，<span class="gold">非线性才是正在经历的真实</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 职业化 vs 过程导向 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">思维对照</div>
+    <h2>职业化思维 vs 过程导向</h2>
+    <div class="card">
+      <table>
+        <tr><th>职业化思维</th><th>过程导向</th></tr>
+        <tr><td>关注终点（晋升、薪酬、title）</td><td>关注过程（学习、体验、成长）</td></tr>
+        <tr><td>把事业当"项目"管理</td><td>把事业当"旅程"经历</td></tr>
+        <tr><td>追求可控、可预测</td><td>接受不确定、拥抱变化</td></tr>
+        <tr><td>成功后容易空虚</td><td>每一步都有意义</td></tr>
+        <tr><td>失败是"偏差"，需避免</td><td>失败是"数据"，需吸收</td></tr>
+      </table>
+    </div>
+    <div style="margin-top:3vh;">
+      <blockquote style="font-size:clamp(1.3rem,2.6vw,2.2rem);">
+        前者让你在顺境高效、逆境崩溃；后者让你<span class="gold">在任何境遇都保持动力</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 过程导向更难 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">为什么难</div>
+    <h2>过程导向，为什么更难？</h2>
+    <div class="cols">
+      <div class="card" style="grid-column:1/2;">
+        <div class="num">1</div>
+        <h3>忍受不确定性</h3>
+        <p class="muted">不知道下一步在哪，还能继续走。</p>
+      </div>
+      <div class="card">
+        <div class="num">2</div>
+        <h3>自我定义价值</h3>
+        <p class="muted">没有外部 title 背书，依然知道自己是谁。</p>
+      </div>
+      <div class="card">
+        <div class="num">3</div>
+        <h3>从失败提取营养</h3>
+        <p class="muted">不是"熬过去"，而是"学到了什么"。</p>
+      </div>
+      <div class="card">
+        <div class="num">4</div>
+        <h3>保持内在动机</h3>
+        <p class="muted">不是"别人考所以考"，而是"我真正需要什么"。</p>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <p class="lead">这些能力，<span class="gold">任何 MBA 课程都不会教</span>，但任何成功者都具备。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 对考生的观察 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">对考生观察</div>
+    <h2>都在求变，但需要更深</h2>
+    <div style="margin-top:1vh;">
+      <blockquote>都在求变 —— 不满足是成长的起点。</blockquote>
+    </div>
+    <div style="margin-top:4vh;display:grid;grid-template-columns:1fr 1fr;gap:2vw;">
+      <div class="card">
+        <div class="col-head" style="color:var(--green);">✓ 健康的求变</div>
+        <ul>
+          <li>对现状不满意</li>
+          <li>看到职业天花板</li>
+          <li>想通过 MBA"上岸"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-head" style="color:var(--red);">⚠ 需要警惕</div>
+        <ul>
+          <li>把 MBA 当作"答案"本身</li>
+          <li>而非"寻找答案的工具"</li>
+          <li>"考上就好了" = "跳槽就好了"</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);">
+        真正有价值的，不是 MBA 标签，而是你在其中建立的<span class="gold">自我认知、世界理解、人的连接</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8 对自己的启示 ============ -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">对自己的启示</div>
+    <h2>从"要做成什么"到"要怎么走"</h2>
+    <div class="card" style="margin-bottom:2.5vh;">
+      <p><span class="cyan">我的焦虑本质</span>：一种结果导向 —— <span class="gold">"我必须做出一个'成'的东西来证明自己。"</span></p>
+      <p class="muted" style="margin-top:1.5vh;">但"证明"的标准是外部的，外部标准永远在变，永远不够。</p>
+    </div>
+    <div class="cols">
+      <div class="card">
+        <div class="col-head" style="color:var(--cyan);">重新定义</div>
+        <ul>
+          <li>分院工作 = 积累对人的理解与组织洞察</li>
+          <li>副业探索 = 做实验，反馈即价值</li>
+          <li>人的连接 = 真实的交流与互相启发</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-head" style="color:var(--red);">警惕自我欺骗</div>
+        <p class="muted" style="margin-bottom:1.5vh;">过程导向 ≠ 放弃目标</p>
+        <ul>
+          <li>有方向，但不执着特定路径</li>
+          <li>从反馈学习，调整行动</li>
+          <li>内在动机驱动，用结果校准</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9 结语 ============ -->
+<section class="slide">
+  <div class="inner" style="text-align:center;">
+    <div class="kicker">结语</div>
+    <h2 style="margin-bottom:4vh;">带着罗盘去探险</h2>
+    <blockquote style="font-size:clamp(1.6rem,3.2vw,2.8rem);border-left:none;text-align:center;max-width:1100px;margin:0 auto;">
+      事业发展的真相，不是一张可以规划好的路线图，<br>
+      而是一段你不知道下一站在哪里的<span class="gold">旅程</span>。
+    </blockquote>
+    <p class="lead" style="margin-top:4vh;">路线图让你焦虑（"我是不是走错了"）<br>
+      <span class="gold" style="font-size:clamp(1.3rem,2.5vw,2.1rem);">旅程让你好奇（"前面会是什么"）</span></p>
+    <div style="margin-top:5vh;">
+      <h3 style="color:var(--gold2);font-size:clamp(1.5rem,2.8vw,2.4rem);">保持好奇，继续走。</h3>
+    </div>
+  </div>
+</section>
+
+<!-- 导航 -->
+<div class="hint">← → 翻页</div>
+<div class="pager" id="pager"></div>
+<div class="counter" id="counter"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const pager = document.getElementById('pager');
+  const counter = document.getElementById('counter');
+  let cur = 0;
+
+  slides.forEach((s,i)=>{
+    const bar = document.createElement('div');
+    bar.className = 'bar' + (i===0?' on':'');
+    bar.addEventListener('click',()=>go(i));
+    pager.appendChild(bar);
+  });
+  const bars = Array.from(pager.children);
+
+  function go(n){
+    n = Math.max(0, Math.min(slides.length-1, n));
+    slides[cur].classList.remove('active');
+    bars[cur].classList.remove('on');
+    cur = n;
+    slides[cur].classList.add('active');
+    bars[cur].classList.add('on');
+    counter.textContent = String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1);
+  });
+
+  // 触摸滑动
+  let sx=0;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx = e.changedTouches[0].clientX - sx;
+    if(Math.abs(dx)>50){ dx<0?go(cur+1):go(cur-1); }
+  },{passive:true});
+
+  // 点击翻页（两侧）
+  document.addEventListener('click',e=>{
+    const x = e.clientX / window.innerWidth;
+    if(x<0.15) go(cur-1); else if(x>0.85) go(cur+1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>
