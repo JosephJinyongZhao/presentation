@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自废武功：工具理性异化下的中年转身与价值重塑</title>
+<style>
+  :root{
+    --bg:#0a0d16;
+    --bg2:#0f1422;
+    --card:#141b2e;
+    --gold:#e8c36a;
+    --gold2:#f5dfa5;
+    --cyan:#5ad1e8;
+    --green:#6ee7a0;
+    --red:#f48080;
+    --violet:#b39cf0;
+    --text:#e8ecf5;
+    --muted:#93a0b8;
+    --line:rgba(255,255,255,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:radial-gradient(1200px 800px at 70% -10%, #1a1428 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,sans-serif;
+    overflow:hidden;
+  }
+  .bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(circle at 50% 50%,#000 40%,transparent 85%);
+  }
+  .slide{
+    position:fixed;inset:0;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    padding:5vh 6vw;
+    opacity:0;visibility:hidden;transform:translateY(24px);
+    transition:opacity .5s ease, transform .5s ease, visibility .5s;
+  }
+  .slide.active{opacity:1;visibility:visible;transform:translateY(0);}
+  .inner{max-width:1500px;width:100%;}
+
+  h1{font-size:clamp(2.4rem,5.4vw,4.8rem);font-weight:800;line-height:1.18;
+    background:linear-gradient(120deg,var(--gold2),var(--gold),var(--red));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  h2{font-size:clamp(2rem,4.2vw,3.6rem);font-weight:700;margin-bottom:2.5vh;
+    color:var(--gold2);}
+  h3{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:600;color:var(--cyan);margin-bottom:1.5vh;}
+  .kicker{font-size:clamp(1rem,1.6vw,1.4rem);letter-spacing:.4em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:2vh;}
+  .lead{font-size:clamp(1.15rem,2vw,1.7rem);color:var(--muted);line-height:1.7;}
+
+  p{font-size:clamp(1.1rem,1.9vw,1.6rem);line-height:1.8;color:var(--text);}
+  .muted{color:var(--muted);}
+  .gold{color:var(--gold2);}
+  .cyan{color:var(--cyan);}
+  .red{color:var(--red);}
+  .green{color:var(--green);}
+
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:20px;padding:3vh 2.5vw;backdrop-filter:blur(4px);}
+
+  ul{list-style:none;}
+  li{font-size:clamp(1.1rem,1.9vw,1.6rem);line-height:1.7;margin-bottom:1.6vh;
+    padding-left:2.2rem;position:relative;color:var(--text);}
+  li::before{content:"";position:absolute;left:0;top:.75em;width:.7em;height:.7em;
+    border-radius:50%;background:var(--gold);}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:2vw;}
+  .col-head{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:700;margin-bottom:2vh;
+    display:flex;align-items:center;gap:.6em;}
+
+  blockquote{font-size:clamp(1.4rem,2.8vw,2.4rem);line-height:1.6;font-weight:600;
+    border-left:6px solid var(--gold);padding-left:1.5vw;color:var(--text);}
+
+  .pager{position:fixed;bottom:3vh;left:0;right:0;z-index:5;display:flex;
+    justify-content:center;align-items:center;gap:8px;}
+  .pager .bar{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);
+    cursor:pointer;transition:.3s;}
+  .pager .bar.on{background:var(--gold);width:48px;}
+  .counter{position:fixed;bottom:3.4vh;right:3vw;z-index:5;color:var(--muted);
+    font-size:clamp(1rem,1.6vw,1.4rem);letter-spacing:.2em;}
+  .hint{position:fixed;bottom:3.4vh;left:3vw;z-index:5;color:var(--muted);
+    font-size:clamp(.85rem,1.3vw,1.1rem);}
+
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:clamp(1.1rem,1.8vw,1.5rem);color:var(--gold2);text-align:left;
+    padding:1.4vh 1.2vw;border-bottom:2px solid var(--gold);}
+  td{font-size:clamp(1rem,1.6vw,1.35rem);padding:1.5vh 1.2vw;border-bottom:1px solid var(--line);
+    color:var(--text);line-height:1.6;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--muted);width:40%;}
+
+  .num{font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;color:var(--gold);margin-bottom:1vh;}
+  .warn{background:rgba(244,128,128,.08);border:1px solid rgba(244,128,128,.25);}
+  .ok{background:rgba(110,231,160,.06);border:1px solid rgba(110,231,160,.22);}
+
+  @media(max-width:900px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="bg-deco"></div>
+
+<!-- SLIDE 1 封面 -->
+<section class="slide active">
+  <div class="inner" style="text-align:center;">
+    <div class="kicker">中年转身 · 存在与意义</div>
+    <h1 style="margin-bottom:3vh;">自废武功</h1>
+    <p class="lead" style="max-width:900px;margin:0 auto;">工具理性异化下的中年转身与价值重塑</p>
+    <div style="margin-top:5vh;">
+      <span class="chip" style="display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);border:1px solid var(--line);color:var(--muted);margin:.4em;">异化</span>
+      <span class="chip" style="display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);border:1px solid var(--line);color:var(--muted);margin:.4em;">工具理性</span>
+      <span class="chip" style="display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);border:1px solid var(--line);color:var(--muted);margin:.4em;">自我救赎</span>
+    </div>
+    <div style="margin-top:7vh;color:var(--muted);font-size:clamp(.95rem,1.5vw,1.2rem);letter-spacing:.2em;">
+      2026年8月9日 · 晨间顿悟
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2 现象 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">现象</div>
+    <h2>优秀者的中年空心化</h2>
+    <blockquote style="border-left-color:var(--red);">这不是失败者的困境，恰恰是<span class="red">成功者的困境</span>：他们太擅长"达成目标"，以至于忘了"为什么出发"。</blockquote>
+    <div style="margin-top:4vh;display:flex;gap:1.5vw;flex-wrap:wrap;">
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">01</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">越优秀 → 越深陷工具理性</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">02</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">创造价值 → 反被价值异化</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">03</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">中年 → 存在与意义缺失</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3 异化本质 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">本质 · 马克思与韦伯</div>
+    <h2>异化与工具理性</h2>
+    <div class="cols">
+      <div class="card">
+        <div class="col-head" style="color:var(--cyan);">异化（马克思）</div>
+        <p class="muted" style="line-height:1.7;">人在创造价值的过程中，反而被自己创造的东西控制、疏离、反噬。</p>
+        <ul style="margin-top:2vh;">
+          <li>把组织考核内化为自我惩罚</li>
+          <li>把自己变成"更好用的工具"</li>
+          <li>丢失了"作为人的意义"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-head" style="color:var(--red);">工具理性（韦伯）</div>
+        <p class="muted" style="line-height:1.7;">只问"怎么最有效"，不问"这件事值不值得做"。</p>
+        <ul style="margin-top:2vh;">
+          <li>效率、KPI、晋升、价值最大化</li>
+          <li>目的本身消失了</li>
+          <li>人变成了实现目的的手段</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.3rem,2.6vw,2.2rem);border-left:none;text-align:center;">
+        当中年危机来临，本质是<span class="gold">意义系统的破产</span>，而非成就的不足。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4 两面 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">核心张力</div>
+    <h2>"自废武功"的两面</h2>
+    <div class="cols">
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">效率 / 价值创造视角</div>
+        <div style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--red);margin-bottom:1.5vh;">自废武功 · 惨烈</div>
+        <ul>
+          <li>放弃已验证的优势与积累</li>
+          <li>重置成本极高</li>
+          <li>经济账算得上"巨大浪费"</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">人性 / 存在视角</div>
+        <div style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--green);margin-bottom:1.5vh;">自我救赎 · 回归</div>
+        <ul>
+          <li>挣脱异化，找回完整性</li>
+          <li>砸碎把自我焊在原地的锁链</li>
+          <li>存在账上"回归本真"</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);border-left:none;text-align:center;">
+        武功本身，可能就是牢笼。<span class="gold">自废武功，有时是砸碎牢笼的唯一方式。</span>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5 逃离 vs 追寻 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">关键区分</div>
+    <h2>离开，是为了"逃离"还是"追寻"？</h2>
+    <div class="cols">
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">逃离驱动</div>
+        <p class="muted" style="margin-bottom:2vh;">太痛苦了，想摆脱现在的状态</p>
+        <ul>
+          <li>往往只是换一条轨道</li>
+          <li><span class="red">异化会继续发生</span></li>
+          <li>从一个牢笼到另一个牢笼</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">追寻驱动</div>
+        <p class="muted" style="margin-bottom:2vh;">有更想要的东西，主动去靠近</p>
+        <ul>
+          <li>找到不再异化自己的方向</li>
+          <li><span class="green">可能是真正的救赎</span></li>
+          <li>主动的、清醒的选择</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);border-left:none;text-align:center;">
+        如果只是"逃"，你只是换了一条轨道，<span class="red">异化照样发生</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6 批判 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">诤友的批判</div>
+    <h2>给"自废武功"泼几盆冷水</h2>
+    <div style="margin-top:2vh;">
+      <blockquote style="border-left-color:var(--red);font-size:clamp(1.15rem,2.2vw,1.8rem);margin-bottom:2.5vh;">
+        ⚠️ 真正的救赎是清醒的，<span class="red">浪漫化的救赎是自欺的</span>。
+      </blockquote>
+    </div>
+    <div class="cols">
+      <div class="card warn">
+        <ul>
+          <li><strong>警惕成为逃避的借口</strong>："离开是追寻" vs "离开是因为不敢面对"</li>
+          <li><strong>"回归人性"可能是自我合理化</strong>：把放弃美化成回归本真</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <ul>
+          <li><strong>自废武功 ≠ 重新开始</strong>：离开是破坏，重建才是创造</li>
+          <li><strong>你可能高估了"背叛系统"的自由</strong>：自由不是离开系统，而是<span class="gold">在任何系统里都保有自己</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7 价值重塑 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">重塑价值系统</div>
+    <h2>从"我创造了什么"到"我成为了谁"</h2>
+    <div class="card">
+      <table>
+        <tr><th>旧价值系统（工具理性）</th><th>新价值系统（存在导向）</th></tr>
+        <tr><td>我达到了什么目标</td><td>我是否在成为更完整的自己</td></tr>
+        <tr><td>我产生了多少价值</td><td>我的价值是否与本真一致</td></tr>
+        <tr><td>外界如何评价我</td><td>我如何评价我自己</td></tr>
+        <tr><td>我是否高效</td><td>我是否活出了意义</td></tr>
+        <tr><td>结果是否成功</td><td>过程是否让我真实</td></tr>
+      </table>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);border-left:none;text-align:center;">
+        用<span class="gold">过程导向</span>替代"结果导向"，把"自废武功"重新定义为<span class="green">"换一种活法"</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8 三个追问 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">长期追问</div>
+    <h2>三个值得诚实面对的问题</h2>
+    <div class="cols">
+      <div class="card">
+        <div class="num">1</div>
+        <h3>逃离 or 追寻？</h3>
+        <p class="muted">我这段时间的转身，是在"逃离"还是在"追寻"？</p>
+      </div>
+      <div class="card">
+        <div class="num">2</div>
+        <h3>完整 or 换地逃避？</h3>
+        <p class="muted">我离开之后，是变得更完整，还是换个地方继续逃避？</p>
+      </div>
+      <div class="card" style="grid-column:1/-1;">
+        <div class="num" style="color:var(--red);">3</div>
+        <h3 style="color:var(--red);">主动舍弃 or 被迫放弃？</h3>
+        <p class="muted">哪些武功是我真心想舍弃的，哪些其实是我舍不得但被迫放弃的？</p>
+        <div style="margin-top:2vh;">
+          <blockquote style="font-size:clamp(1.1rem,2vw,1.6rem);border-left-color:var(--red);">
+            真正的救赎，是你<span class="green">主动舍弃</span>了"不想要的武功"；而真正的自我欺骗，是把<span class="red">被迫放弃</span>说成"主动舍弃"。
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9 结语 -->
+<section class="slide">
+  <div class="inner" style="text-align:center;">
+    <div class="kicker">结语</div>
+    <h2 style="margin-bottom:4vh;">一场没有标准答案的赌注</h2>
+    <blockquote style="font-size:clamp(1.6rem,3.2vw,2.8rem);border-left:none;text-align:center;max-width:1100px;margin:0 auto;">
+      它同时是自废武功，也是自我救赎；<br>
+      同时是惨烈的浪费，也是<span class="gold">必要的回归</span>。
+    </blockquote>
+    <p class="lead" style="margin-top:4vh;max-width:1000px;margin-left:auto;margin-right:auto;">
+      如果最终你变得更能定义自己、更知道自己是谁、更不为外界标尺所困——<br>
+      那么即使"武功废了"，<span class="gold" style="font-size:clamp(1.3rem,2.5vw,2.1rem);">人也活了。</span>
+    </p>
+    <div style="margin-top:5vh;">
+      <h3 style="color:var(--gold2);font-size:clamp(1.4rem,2.6vw,2.2rem);">"活出人"，从来都比"练成武功"更接近意义本身。</h3>
+    </div>
+  </div>
+</section>
+
+<!-- 导航 -->
+<div class="hint">← → 翻页</div>
+<div class="pager" id="pager"></div>
+<div class="counter" id="counter"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const pager = document.getElementById('pager');
+  const counter = document.getElementById('counter');
+  let cur = 0;
+
+  slides.forEach((s,i)=>{
+    const bar = document.createElement('div');
+    bar.className = 'bar' + (i===0?' on':'');
+    bar.addEventListener('click',()=>go(i));
+    pager.appendChild(bar);
+  });
+  const bars = Array.from(pager.children);
+
+  function go(n){
+    n = Math.max(0, Math.min(slides.length-1, n));
+    slides[cur].classList.remove('active');
+    bars[cur].classList.remove('on');
+    cur = n;
+    slides[cur].classList.add('active');
+    bars[cur].classList.add('on');
+    counter.textContent = String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1);
+  });
+
+  let sx=0;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx = e.changedTouches[0].clientX - sx;
+    if(Math.abs(dx)>50){ dx<0?go(cur+1):go(cur-1); }
+  },{passive:true});
+
+  document.addEventListener('click',e=>{
+    const x = e.clientX / window.innerWidth;
+    if(x<0.15) go(cur-1); else if(x>0.85) go(cur+1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>
