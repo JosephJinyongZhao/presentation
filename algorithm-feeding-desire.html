@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>算法比你更懂你的欲望</title>
+<style>
+  :root{
+    --bg:#080a12;
+    --bg2:#0d1120;
+    --card:#121830;
+    --gold:#e8c36a;
+    --gold2:#f5dfa5;
+    --cyan:#5ad1e8;
+    --green:#6ee7a0;
+    --red:#f48080;
+    --violet:#b39cf0;
+    --text:#e8ecf5;
+    --muted:#93a0b8;
+    --line:rgba(255,255,255,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:radial-gradient(1200px 800px at 70% -10%, #101b33 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,sans-serif;
+    overflow:hidden;
+  }
+  .bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(90,209,232,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(90,209,232,.05) 1px,transparent 1px);
+    background-size:50px 50px;
+    mask-image:radial-gradient(circle at 50% 50%,#000 40%,transparent 88%);
+  }
+  .slide{
+    position:fixed;inset:0;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    padding:5vh 6vw;
+    opacity:0;visibility:hidden;transform:translateY(24px);
+    transition:opacity .5s ease, transform .5s ease, visibility .5s;
+  }
+  .slide.active{opacity:1;visibility:visible;transform:translateY(0);}
+  .inner{max-width:1500px;width:100%;}
+
+  h1{font-size:clamp(2.3rem,5.2vw,4.6rem);font-weight:800;line-height:1.18;
+    background:linear-gradient(120deg,var(--gold2),var(--cyan),var(--violet));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  h2{font-size:clamp(2rem,4.2vw,3.6rem);font-weight:700;margin-bottom:2.5vh;
+    color:var(--gold2);}
+  h3{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:600;color:var(--cyan);margin-bottom:1.5vh;}
+  .kicker{font-size:clamp(1rem,1.6vw,1.4rem);letter-spacing:.4em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:2vh;}
+  .lead{font-size:clamp(1.15rem,2vw,1.7rem);color:var(--muted);line-height:1.7;}
+
+  p{font-size:clamp(1.1rem,1.9vw,1.6rem);line-height:1.8;color:var(--text);}
+  .muted{color:var(--muted);}
+  .gold{color:var(--gold2);}
+  .cyan{color:var(--cyan);}
+  .red{color:var(--red);}
+  .green{color:var(--green);}
+
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:20px;padding:3vh 2.5vw;backdrop-filter:blur(4px);}
+
+  ul{list-style:none;}
+  li{font-size:clamp(1.1rem,1.9vw,1.6rem);line-height:1.7;margin-bottom:1.6vh;
+    padding-left:2.2rem;position:relative;color:var(--text);}
+  li::before{content:"";position:absolute;left:0;top:.75em;width:.7em;height:.7em;
+    border-radius:50%;background:var(--cyan);}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:2vw;}
+  .col-head{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:700;margin-bottom:2vh;
+    display:flex;align-items:center;gap:.6em;}
+
+  blockquote{font-size:clamp(1.4rem,2.8vw,2.4rem);line-height:1.6;font-weight:600;
+    border-left:6px solid var(--cyan);padding-left:1.5vw;color:var(--text);}
+
+  .pager{position:fixed;bottom:3vh;left:0;right:0;z-index:5;display:flex;
+    justify-content:center;align-items:center;gap:8px;}
+  .pager .bar{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);
+    cursor:pointer;transition:.3s;}
+  .pager .bar.on{background:var(--cyan);width:48px;}
+  .counter{position:fixed;bottom:3.4vh;right:3vw;z-index:5;color:var(--muted);
+    font-size:clamp(1rem,1.6vw,1.4rem);letter-spacing:.2em;}
+  .hint{position:fixed;bottom:3.4vh;left:3vw;z-index:5;color:var(--muted);
+    font-size:clamp(.85rem,1.3vw,1.1rem);}
+
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:clamp(1.1rem,1.8vw,1.5rem);color:var(--gold2);text-align:left;
+    padding:1.4vh 1.2vw;border-bottom:2px solid var(--cyan);}
+  td{font-size:clamp(1rem,1.6vw,1.35rem);padding:1.5vh 1.2vw;border-bottom:1px solid var(--line);
+    color:var(--text);line-height:1.6;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--muted);width:40%;}
+
+  .num{font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;color:var(--cyan);margin-bottom:1vh;}
+  .warn{background:rgba(244,128,128,.08);border:1px solid rgba(244,128,128,.25);}
+  .ok{background:rgba(110,231,160,.06);border:1px solid rgba(110,231,160,.22);}
+
+  @media(max-width:900px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="bg-deco"></div>
+
+<!-- SLIDE 1 封面 -->
+<section class="slide active">
+  <div class="inner" style="text-align:center;">
+    <div class="kicker">认知 · 算法时代</div>
+    <h1 style="margin-bottom:3vh;">算法比你更懂你的欲望</h1>
+    <p class="lead" style="max-width:920px;margin:0 auto;">当推荐系统精准投喂，谁来守护人的自主性？</p>
+    <div style="margin-top:5vh;">
+      <span class="chip" style="display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);border:1px solid var(--line);color:var(--muted);margin:.4em;">精准投喂</span>
+      <span class="chip" style="display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);border:1px solid var(--line);color:var(--muted);margin:.4em;">自主性</span>
+      <span class="chip" style="display:inline-block;padding:.3em 1em;border-radius:100px;font-size:clamp(.9rem,1.4vw,1.2rem);border:1px solid var(--line);color:var(--muted);margin:.4em;">信息茧房</span>
+    </div>
+    <div style="margin-top:7vh;color:var(--muted);font-size:clamp(.95rem,1.5vw,1.2rem);letter-spacing:.2em;">
+      2026年8月9日 · 认知四部曲 · 其四
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2 现象 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">现象</div>
+    <h2>从"你找内容"到"内容找你"</h2>
+    <blockquote>算法<span class="red">预测你想看什么，然后喂给你</span>。</blockquote>
+    <div style="margin-top:4vh;display:flex;gap:1.5vw;flex-wrap:wrap;">
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">01</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">懂你的即时情绪</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">02</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">懂你的注意力弱点</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">03</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">懂你的消费按钮</p>
+      </div>
+      <div class="card" style="flex:1;min-width:220px;">
+        <div class="num">04</div>
+        <p class="muted" style="font-size:clamp(1rem,1.6vw,1.35rem);">比你更早知道你下一秒要做什么</p>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);border-left:none;text-align:center;">
+        算法不是"了解你"，而是<span class="gold">"预测你、进而操纵你"</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3 本质 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">本质</div>
+    <h2>从"工具理性"到"超个体的操纵"</h2>
+    <div class="cols">
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">工具理性的极致</div>
+        <ul>
+          <li>把人当作可预测、可优化的数据点</li>
+          <li>目标不是"让你满意"，而是"让你停留、让你消费"</li>
+          <li>精准度远超任何传统广告</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">从服务人到塑造人</div>
+        <ul>
+          <li>不问你需不需要，而是制造"你需要"的感觉</li>
+          <li>利用人性中最原始、最不受理性控制的部分</li>
+          <li>你以为是"选择"，其实是"被安排"</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);border-left:none;text-align:center;">
+        被"懂"不等于被"善待"——<span class="red">它懂你，是为了让你上瘾，不是让你幸福</span>。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4 四部曲呼应 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">同一条线索</div>
+    <h2>认知四部曲：同一命题的不同层面</h2>
+    <div class="card">
+      <table>
+        <tr><th>层面</th><th>纯逻辑的形态</th><th>缺的是什么</th></tr>
+        <tr><td>国家 · 压舱石</td><td>纯市场逻辑，无产业兜底</td><td>稳定与就业的"压舱石"</td></tr>
+        <tr><td>个人 · 自废武功</td><td>纯工具理性，人被异化</td><td>意义与自我的"压舱石"</td></tr>
+        <tr><td>口碑 · NPS</td><td>纯满意度，缺信任</td><td>推荐与信任的"压舱石"</td></tr>
+        <tr><td style="color:var(--cyan);">心智 · 本篇</td><td style="color:var(--cyan);">纯算法投喂，欲望被操纵</td><td style="color:var(--cyan);">自主性的"压舱石"</td></tr>
+      </table>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.25rem,2.4vw,2rem);border-left:none;text-align:center;">
+        当算法无限投喂，<span class="gold">谁来守护人的自主性？</span>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5 批判 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">诤友的批判</div>
+    <h2>把"精准推荐"拆开看</h2>
+    <div class="cols">
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">⚠ "它懂你"的浪漫化</div>
+        <ul>
+          <li>它懂的是你的"数据画像"，不是完整人格</li>
+          <li>它懂你的弱点，多过懂你的价值</li>
+          <li>被"懂" ≠ 被"善待"</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">⚠ "推荐即自由"的幻觉</div>
+        <ul>
+          <li>"喜欢"和"自由"是两回事</li>
+          <li>给你想要的，让你留在舒适区，是最有效的"收编"</li>
+          <li>真正的自由，是能走出算法划定的圈</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.15rem,2.2vw,1.8rem);border-left:none;text-align:center;color:var(--muted);">
+        如果算法永远给你"你想看的"，你还能看到"你没想到、但值得看"的东西吗？
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6 守护自主性 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">行动</div>
+    <h2>如何守护自主性</h2>
+    <div class="cols">
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">建立信息主权</div>
+        <ul>
+          <li>区分"刷到了什么"和"我选择了什么"</li>
+          <li>主动记录：多少是主动找的，多少是算法喂的</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">制造算法盲区</div>
+        <ul>
+          <li>刻意看算法没想到你会喜欢的东西</li>
+          <li>主动接触对立观点、陌生领域</li>
+          <li>让算法"猜不中你"</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">设置自主性压舱石</div>
+        <ul>
+          <li>深度阅读（非碎片化）</li>
+          <li>真实关系（面对面连接）</li>
+          <li>创造而非消费</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">主动对抗被动喂养</div>
+        <ul>
+          <li>把"刷"变成"选"</li>
+          <li>明确"为什么打开"而非"让app告诉你该看什么"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7 教育启示 -->
+<section class="slide">
+  <div class="inner">
+    <div class="kicker">教育启示</div>
+    <h2>教育不该是"投喂"，而是"唤醒"</h2>
+    <div class="cols">
+      <div class="card warn">
+        <div class="col-head" style="color:var(--red);">教育的"算法化"风险</div>
+        <ul>
+          <li>个性化推荐让学习"上瘾"</li>
+          <li>算法适合"传递内容"，不适合"培养判断力"</li>
+          <li>让学习"舒服"可能在削弱自主性</li>
+        </ul>
+      </div>
+      <div class="card ok">
+        <div class="col-head" style="color:var(--green);">留"算法之外的天地"</div>
+        <ul>
+          <li>真实世界的连接、探索、创造</li>
+          <li>马里奥派对、呼伦贝尔之旅——算法无法复制</li>
+          <li>让孩子在真实世界扎根</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3vh;text-align:center;">
+      <blockquote style="font-size:clamp(1.2rem,2.3vw,1.9rem);border-left:none;text-align:center;">
+        教育最珍贵的，是<span class="gold">自己定义欲望、自己选择方向的能力</span>——这是任何算法都无法外包的。
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8 结语 -->
+<section class="slide">
+  <div class="inner" style="text-align:center;">
+    <div class="kicker">结语</div>
+    <h2 style="margin-bottom:4vh;">把"自主性"当作这个时代的压舱石</h2>
+    <blockquote style="font-size:clamp(1.5rem,3rem,2.6rem);border-left:none;text-align:center;max-width:1100px;margin:0 auto;">
+      算法会越来越懂你，这几乎是确定的方向。<br>
+      但它越懂你，<span class="gold">你越需要"自己懂自己"</span>。
+    </blockquote>
+    <p class="lead" style="margin-top:4vh;max-width:1000px;margin-left:auto;margin-right:auto;">
+      在这个"被精准喂养"的时代，真正的自由，<br>
+      不是拥有更多想要的，而是<span class="cyan" style="font-size:clamp(1.3rem,2.5vw,2.1rem);">有能力选择自己真正想要的</span>。
+    </p>
+    <div style="margin-top:5vh;">
+      <h3 style="color:var(--gold2);font-size:clamp(1.3rem,2.4vw,2rem);">当算法比你更懂你的欲望时，请记得：你仍然拥有"不服从它的欲望"的自由。</h3>
+    </div>
+  </div>
+</section>
+
+<!-- 导航 -->
+<div class="hint">← → 翻页</div>
+<div class="pager" id="pager"></div>
+<div class="counter" id="counter"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const pager = document.getElementById('pager');
+  const counter = document.getElementById('counter');
+  let cur = 0;
+
+  slides.forEach((s,i)=>{
+    const bar = document.createElement('div');
+    bar.className = 'bar' + (i===0?' on':'');
+    bar.addEventListener('click',()=>go(i));
+    pager.appendChild(bar);
+  });
+  const bars = Array.from(pager.children);
+
+  function go(n){
+    n = Math.max(0, Math.min(slides.length-1, n));
+    slides[cur].classList.remove('active');
+    bars[cur].classList.remove('on');
+    cur = n;
+    slides[cur].classList.add('active');
+    bars[cur].classList.add('on');
+    counter.textContent = String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1);
+  });
+
+  let sx=0;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx = e.changedTouches[0].clientX - sx;
+    if(Math.abs(dx)>50){ dx<0?go(cur+1):go(cur-1); }
+  },{passive:true});
+
+  document.addEventListener('click',e=>{
+    const x = e.clientX / window.innerWidth;
+    if(x<0.15) go(cur-1); else if(x>0.85) go(cur+1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>
