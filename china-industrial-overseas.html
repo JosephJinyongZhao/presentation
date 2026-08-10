@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国工业化升级与"体系出海"的必然逻辑</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:5.5vh 7vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.2vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(38px,6.2vw,86px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.2vh;font-size:clamp(15px,2.2vw,28px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.3vw,30px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(28px,4.2vw,58px);font-weight:600;margin-bottom:4vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:1.8vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3vh 2.4vw;flex:1 1 250px;max-width:430px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(28px,2.8vw,38px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.8vw,25px);color:var(--ink);margin:1.1vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  /* upgrade ladder flow */
+  .ladder{display:flex;align-items:stretch;gap:.9vw;max-width:1500px;width:100%;flex-wrap:wrap;justify-content:center}
+  .lnode{flex:1;min-width:150px;border-radius:12px;padding:2.4vh 1.3vw;text-align:center;background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);position:relative}
+  .lnode .l-lv{font-size:clamp(11px,1vw,14px);letter-spacing:.15em;color:var(--gold);margin-bottom:1vh}
+  .lnode .l-name{font-size:clamp(16px,1.8vw,25px);font-weight:600;color:var(--ink)}
+  .lnode .l-desc{font-size:clamp(11px,1.1vw,15px);color:var(--muted);margin-top:.8vh}
+  .lnode.crown{border-color:var(--gold);border-top:3px solid var(--gold);transform:translateY(-6px)}
+  .lnode.crown .l-name{color:var(--gold2)}
+  .larrow{display:flex;align-items:center;color:var(--gold);font-size:clamp(20px,2vw,30px);font-weight:300}
+  /* cards with icon blocks for 工业明珠 four attributes */
+  .attrs{display:flex;gap:1.8vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .attr{flex:1 1 220px;max-width:340px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);text-align:left;position:relative}
+  .attr .a-ico{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--line);margin-bottom:1.6vh;color:var(--gold2);background:rgba(227,195,130,.08)}
+  .attr h3{font-size:clamp(16px,1.6vw,23px);color:var(--ink);margin-bottom:.8vh;font-weight:600}
+  .attr p{font-size:clamp(12px,1.3vw,18px);color:var(--muted);line-height:1.6}
+  /* comparison panel */
+  .compare{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .col{flex:1;padding:3.4vh 2.6vw;text-align:left}
+  .col.win{background:linear-gradient(165deg,rgba(143,208,168,.10),rgba(143,208,168,.02))}
+  .col.lose{background:linear-gradient(165deg,rgba(224,122,106,.10),rgba(224,122,106,.02))}
+  .col-head{font-size:clamp(17px,1.9vw,26px);font-weight:700;margin-bottom:2vh;display:flex;align-items:center;gap:.8vw}
+  .col.win .col-head{color:var(--green)}
+  .col.lose .col-head{color:#e7a79b}
+  .col-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .col ul{list-style:none}
+  .col li{font-size:clamp(13px,1.5vw,21px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2)}
+  .col li:last-child{border-bottom:none}
+  .col li b{color:var(--ink)}
+  .col li .r{color:var(--muted);font-size:.92em}
+  .steps{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .step{display:flex;gap:1.6vw;align-items:flex-start;padding:2vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--gold)}
+  .step .s-no{font-family:var(--serif);font-size:clamp(24px,2.6vw,38px);color:var(--gold);min-width:2.4ch;line-height:1}
+  .step .s-t{font-size:clamp(17px,1.9vw,26px);font-weight:600;color:var(--ink);margin-bottom:.4vh}
+  .step .s-d{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 260px;max-width:360px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r::before{content:"!";position:absolute;top:1.2vh;right:1.4vw;font-size:clamp(28px,3vw,42px);color:rgba(224,122,106,.25);font-family:var(--serif)}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:24ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可讲述可阅读</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">中国工业 · 体系出海</div>
+    <h1>从卖产品<br>到<span class="accent">输出体系</span></h1>
+    <div class="cover-sub">轻工业 → 家电 → 手机 → 汽车·工业明珠。<br>产品越接近"工业明珠"，出海就越接近"体系出海"。</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">中国工业化升级与"体系出海"的必然逻辑</div>
+  </section>
+
+  <!-- 2 核心命题 -->
+  <section class="slide" data-title="核心命题">
+    <div class="secnum">壹 · 核心命题</div>
+    <h2 class="section-title">出海方式的<span class="hl">质变</span></h2>
+    <div class="lead" style="font-size:clamp(15px,1.8vw,24px);max-width:60ch">
+      <b>轻工业品</b>：出口一件产品即可，几乎不触碰他国产业结构。<br>
+      <b>3C/白电/手机</b>：出口产品 + 品牌，触碰到渠道、供应链。<br>
+      <b>汽车</b>：出口不再是"卖产品"，而是牵动<b>技术、就业、政策合规、产业体系</b>的深度合作。
+    </div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">产品越接近「工业明珠」，出海越接近「体系出海」——<br>不是把货卖过去，而是把自己的产业体系与他国<b>「咬合」</b>在一起。</p>
+  </section>
+
+  <!-- 3 升级阶梯 -->
+  <section class="slide" data-title="升级阶梯">
+    <div class="secnum">贰 · 阶梯</div>
+    <h2 class="section-title">工业化的<span class="hl">升级阶梯</span></h2>
+    <div class="ladder">
+      <div class="lnode"><div class="l-lv">第一级</div><div class="l-name">轻工业</div><div class="l-desc">服装·玩具 · 低成本劳动</div></div>
+      <div class="larrow">→</div>
+      <div class="lnode"><div class="l-lv">第二级</div><div class="l-name">3C · 白电</div><div class="l-desc">规模 + 供应链</div></div>
+      <div class="larrow">→</div>
+      <div class="lnode"><div class="l-lv">第三级</div><div class="l-name">手机</div><div class="l-desc">技术 + 生态</div></div>
+      <div class="larrow">→</div>
+      <div class="lnode crown"><div class="l-lv">第四级</div><div class="l-name">汽车</div><div class="l-desc">工业明珠 · 体系出海</div></div>
+    </div>
+    <div class="divider" style="margin-top:3vh"></div>
+    <p class="lead" style="font-size:clamp(14px,1.6vw,22px);max-width:56ch">升级的<b>必然性</b>：要素成本上升 → 利润与资本积累 → 产业链"链式拉动"外溢。<br>家电、手机沉淀的供应链能力（模具·电子·电池）自然外溢到汽车。</p>
+  </section>
+
+  <!-- 4 工业明珠 -->
+  <section class="slide" data-title="工业明珠">
+    <div class="secnum">叁 · 工业明珠</div>
+    <h2 class="section-title">为什么汽车是<span class="hl">工业明珠</span>？</h2>
+    <div class="attrs">
+      <div class="attr"><div class="a-ico">⛓</div><h3>链条极长</h3><p>上万零部件，带动钢铁、化工、电子、玻璃、模具、物流，是制造业的晴雨表。</p></div>
+      <div class="attr"><div class="a-ico">👥</div><h3>就业极重</h3><p>制造+销售+售后+金融+维修，直接间接带动庞大就业，各国重点保护争夺。</p></div>
+      <div class="attr"><div class="a-ico">⚙</div><h3>技术外溢最强</h3><p>机械、电子、软件、材料、能源的集大成者，能力扩散到几乎所有工业部门。</p></div>
+      <div class="attr"><div class="a-ico">🌐</div><h3>地缘分量重</h3><p>常是贸易顺逆差关键来源，牵动关税、产业政策与国家安全——"政治化"的根源。</p></div>
+    </div>
+  </section>
+
+  <!-- 5 统计 -->
+  <section class="slide" data-title="统计数据">
+    <div class="secnum">叁 · 数据</div>
+    <h2 class="section-title">一组<span class="hl">参照数字</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">01</div><h3>第一大生产国</h3><p>中国连续多年全球<b>第一大汽车生产国</b>，年产量 3000 万辆量级。</p></div>
+      <div class="card"><div class="c-num">02</div><h3>第一大出口国</h3><p>2023 出口约<b>490万</b>辆、2024 约<b>520万</b>辆，先后超越传统出口大国。</p></div>
+      <div class="card"><div class="c-num">03</div><h3>支柱产业</h3><p>汽车及零部件是中国出口重要支柱，含上下游对 GDP 贡献约<b>10%</b>量级。</p></div>
+    </div>
+    <div class="divider" style="margin-top:3vh"></div>
+    <p class="lead" style="font-size:clamp(13px,1.5vw,20px);color:var(--muted)">⚠️ 以上为常见公开口径近似值，正式引用请以中汽协、海关总署当年数据为准。</p>
+  </section>
+
+  <!-- 6 体系出海逻辑 -->
+  <section class="slide" data-title="体系出海逻辑">
+    <div class="secnum">肆 · 为什么必须本地化</div>
+    <h2 class="section-title">「体系出海」的<span class="hl">四重逻辑</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">经济</div><h3>规避壁垒</h3><p>整车出口面临高关税、配额、反倾销；<b>本地化建厂</b>绕开关税、贴近市场。</p></div>
+      <div class="card"><div class="c-num">政治</div><h3>化解摩擦</h3><p>本地化投资把"卖货"变"<b>投资建厂、创造就业</b>"——从抢饭碗到一起做蛋糕。</p></div>
+      <div class="card"><div class="c-num">产业</div><h3>融入体系</h3><p>适配当地法规、消费偏好、供应链，实现<b>技术·产能·渠道</b>多重嵌入。</p></div>
+      <div class="card"><div class="c-num">战略</div><h3>借船出海</h3><p>零跑×斯特兰蒂斯：用<b>股权换市场、合作换时间</b>，提前进入成熟体系。</p></div>
+    </div>
+  </section>
+
+  <!-- 7 正反案例 -->
+  <section class="slide" data-title="正反案例">
+    <div class="secnum">伍 · 镜鉴</div>
+    <h2 class="section-title">发达国家的<span class="hl">正反两面</span></h2>
+    <div class="compare">
+      <div class="col win">
+        <div class="col-head"><span class="tag">正面</span> 本地化者兴</div>
+        <ul>
+          <li><b>日本</b> <span class="r">· 1980s丰田本田美国设厂，绕壁垒赢接纳，奠定全球霸业</span></li>
+          <li><b>德国</b> <span class="r">· 大众在华三十年合资扎根，深度嵌入，穿越周期</span></li>
+          <li><b>韩国</b> <span class="r">· 现代在美国建厂，后发者借本地化实现跨越式国际化</span></li>
+        </ul>
+      </div>
+      <div class="col lose">
+        <div class="col-head"><span class="tag">反面</span> 失根基者衰</div>
+        <ul>
+          <li><b>英国</b> <span class="r">· 汽车工业崩塌式衰落，品牌被外资收购，明珠难再夺回</span></li>
+          <li><b>美国</b> <span class="r">· 70-80s三大车企自满僵化，被日车冲击，克莱斯勒濒破产</span></li>
+          <li><b>法国</b> <span class="r">· 过度保护缺乏全球竞争，相对份额收缩，竞争力不及德日</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 现实启示 -->
+  <section class="slide" data-title="现实启示">
+    <div class="secnum">陆 · 启示</div>
+    <h2 class="section-title">对中国出海的<span class="hl">启示</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">体系出海优于卖货出海</div><div class="s-d">在东南亚、欧洲、中东、拉美布局本地化产能，而非只追整车出口。</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">借船出海是务实路径</div><div class="s-d">参考零跑×斯特兰蒂斯，股权/渠道绑定降低进入门槛与政治阻力。</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">技术 + 标准双输出 + 风险对冲</div><div class="s-d">输出电池、充电、智驾标准掌握话语权；多市场多伙伴多模式组合。</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">吸取英国教训 · 以进为守</div><div class="s-d">守住并升级本土根基，工业明珠不能丢——出海不是弃守本土。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 9 批判性审视 -->
+  <section class="slide" data-title="批判性审视">
+    <div class="secnum">柒 · 反思</div>
+    <h2 class="section-title">批判性<span class="hl">审视</span></h2>
+    <div class="risk">
+      <div class="r"><h3>「必然」可能过于线性</h3><p>升级可能被外部封锁、内需不足、技术瓶颈中断。把必然当躺赢，是最大风险。</p></div>
+      <div class="r"><h3>收益与成本不对称</h3><p>本地化建厂投入巨大、回收周期长，环境恶化会形成沉没成本。</p></div>
+      <div class="r"><h3>「借船」可能受制于人</h3><p>与国际巨头合作，可能丧失独立性、技术主导权，被"卡位"。</p></div>
+      <div class="r"><h3>幸存者偏差</h3><p>我们看见成功的日德韩，也当看见更多失败者——出海是高门槛高淘汰的竞争。</p></div>
+    </div>
+  </section>
+
+  <!-- 10 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">主动本地化者<span class="g">兴</span>，<br>坐失根基者<span class="g">衰</span>，<br>故步自封者<span class="g">困</span>。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:46ch">"体系出海"是被产业升级推动的<b>必然选择</b>，<br>也是需要战略定力与提前布局的<b>主动作为</b>。<br>唯有清醒认知必然逻辑与潜在风险，才能真正<b>领跑</b>而非跟跑。</p>
+    <div class="final-note">从卖产品，到输出体系 · 中国工业出海的新逻辑</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
