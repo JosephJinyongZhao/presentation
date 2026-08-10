@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组织规模与治理模式的阶段转换</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:58ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 260px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  /* dual-column stage model */
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(127,180,217,.10),rgba(127,180,217,.02))}
+  .dcol.large{background:linear-gradient(165deg,rgba(227,195,130,.10),rgba(227,195,130,.02))}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:var(--blue)}
+  .dcol.large .dcol-head{color:var(--gold2)}
+  .dcol-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol.small li .dot{color:var(--blue)}
+  .dcol.large li .dot{color:var(--gold)}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);color:var(--gold2);font-family:var(--serif);font-size:19px;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;z-index:2}
+  /* stages flow */
+  .stages{display:flex;flex-direction:column;gap:1.8vh;max-width:1300px;width:100%}
+  .srow{display:flex;align-items:center;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .srow .s-lbl{font-family:var(--serif);font-size:clamp(20px,2.2vw,34px);color:var(--gold);min-width:7ch;font-weight:600}
+  .srow .s-txt{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .srow .s-txt b{color:var(--ink)}
+  /* matrix table */
+  table.mx{width:100%;max-width:1400px;border-collapse:collapse;font-size:clamp(13px,1.4vw,19px)}
+  table.mx th{padding:1.4vh 1.6vw;color:var(--gold2);font-family:var(--serif);font-weight:600;border-bottom:2px solid var(--line);text-align:left;font-size:clamp(14px,1.5vw,21px)}
+  table.mx td{padding:1.4vh 1.6vw;color:var(--muted);border-bottom:1px solid var(--line2);text-align:left}
+  table.mx td:first-child{color:var(--ink);font-weight:600}
+  table.mx tr:hover td{background:rgba(227,195,130,.04)}
+  .steps{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .step{display:flex;gap:1.6vw;align-items:flex-start;padding:2vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--gold)}
+  .step .s-no{font-family:var(--serif);font-size:clamp(24px,2.6vw,38px);color:var(--gold);min-width:2.4ch;line-height:1}
+  .step .s-t{font-size:clamp(17px,1.9vw,26px);font-weight:600;color:var(--ink);margin-bottom:.4vh}
+  .step .s-d{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 260px;max-width:360px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r::before{content:"!";position:absolute;top:1.2vh;right:1.4vw;font-size:clamp(28px,3vw,42px);color:rgba(224,122,106,.25);font-family:var(--serif)}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:22ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可讲述可阅读</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">组织 · 治理模式</div>
+    <h1>规模，决定<br><span class="accent">治理重心</span></h1>
+    <div class="cover-sub">小团队靠共识与热情，大组织靠制度与SOP。<br>分院的难点在于——它同时活在两个世界里。</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">组织规模与治理模式的阶段转换</div>
+  </section>
+
+  <!-- 2 核心命题 -->
+  <section class="slide" data-title="核心命题">
+    <div class="secnum">壹 · 核心命题</div>
+    <h2 class="section-title">管理：<span class="hl">成本</span>，还是<span class="hl">引擎</span>？</h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">组织小</span> 管理是成本</div>
+        <ul>
+          <li><span class="dot">●</span><span>人少彼此可见，信任足以润滑协作</span></li>
+          <li><span class="dot">●</span><span>多余流程只会<b>拖慢速度、消耗热情</b></span></li>
+          <li><span class="dot">●</span><span>正确姿势是「少管理」——<b>花在共识与愿景上</b></span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">组织大</span> 管理成引擎</div>
+        <ul>
+          <li><span class="dot">◆</span><span>人一多，信息衰减、责任模糊、搭便车出现</span></li>
+          <li><span class="dot">◆</span><span>靠「人治」无法承载效率，需<b>层级+SOP咬合</b></span></li>
+          <li><span class="dot">◆</span><span>用<b>非个人化的意志</b>（制度流程）替代看人脸色</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">规模，决定了治理重心放在<b>共识</b>还是<b>制度</b>上。</p>
+  </section>
+
+  <!-- 3 阶段演进 -->
+  <section class="slide" data-title="阶段演进">
+    <div class="secnum">贰 · 演进</div>
+    <h2 class="section-title">从小到大的<span class="hl">治理转换</span></h2>
+    <div class="stages">
+      <div class="srow"><div class="s-lbl">小组织</div><div class="s-txt">靠<b>愿景共识 + 利益分享 + 多元补位 + 灵活协作</b>，而非「管理」</div></div>
+      <div class="srow"><div class="s-lbl">大组织</div><div class="s-txt">靠<b>层级 + SOP 咬合</b>，用非个人化意志推进，能力沉淀在系统而非个人</div></div>
+      <div class="srow" style="border-left-color:var(--red)"><div class="s-lbl" style="color:var(--red)">转型断层</div><div class="s-txt">最危险的是<b>「从小转大」那一刻</b>——路径依赖、制度误用、共识断裂</div></div>
+    </div>
+  </section>
+
+  <!-- 4 分阶段激励 -->
+  <section class="slide" data-title="分阶段激励">
+    <div class="secnum">叁 · 激励</div>
+    <h2 class="section-title">激励与治理<span class="hl">匹配</span></h2>
+    <table class="mx">
+      <tr><th>阶段</th><th>治理重心</th><th>激励核心</th><th>激励工具</th></tr>
+      <tr><td>小团队</td><td>共识 + 灵活</td><td>意义 + 成长 + 分享</td><td>愿景、授权、分成、认可</td></tr>
+      <tr><td>大组织</td><td>制度 + SOP</td><td>稳定 + 晋升 + 规范</td><td>薪酬、职级、考核、荣誉</td></tr>
+      <tr><td>分院</td><td>外守规制 + 内保灵活</td><td>本地主人 + 总部认可</td><td>本地授权、创新容错、成果分享</td></tr>
+    </table>
+  </section>
+
+  <!-- 5 分院双重身份 -->
+  <section class="slide" data-title="分院双重身份">
+    <div class="secnum">肆 · 分院</div>
+    <h2 class="section-title">分院的<span class="hl">双重身份</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">对外</span> 受规制约束</div>
+        <ul>
+          <li><span class="dot">●</span><span>对齐总部制度、流程、审批、品牌规范</span></li>
+          <li><span class="dot">●</span><span>这部分要<b>尊重，不能越界</b></span></li>
+        </ul>
+      </div>
+      <div class="vs">＋</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">对内</span> 小创新团队</div>
+        <ul>
+          <li><span class="dot">◆</span><span>需灵活性、主动性、多元角色、快速协作</span></li>
+          <li><span class="dot">◆</span><span>内部照搬总部层级，就会<b>「小而僵」</b></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">姿态：<b>「外守规制，内保灵活」</b>——主动设计边界，而非被动被规则推着走。</p>
+  </section>
+
+  <!-- 6 操作建议 -->
+  <section class="slide" data-title="操作建议">
+    <div class="secnum">伍 · 落地</div>
+    <h2 class="section-title">九条<span class="hl">操作建议</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">对内灵活 · 每周30分钟快速对齐会</div><div class="s-d">同步目标、卡点、本周重点，不搞层层汇报</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">角色多元补位 + 本地利益分享</div><div class="s-d">主责清晰但不僵化分工，鼓励看见就补位</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">创新实验池 + 主动对齐清单</div><div class="s-d">每月1-2个低风险试错；梳理需总部审批的事项提前规划</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">创新回传 + 季度治理自问</div><div class="s-d">本地成功模式回传总部争取授权；每季度自问「治理重心该放哪」</div></div></div>
+    </div>
+  </section>
+
+  <!-- 7 批判性审视 -->
+  <section class="slide" data-title="批判性审视">
+    <div class="secnum">陆 · 反思</div>
+    <h2 class="section-title">批判性<span class="hl">审视</span></h2>
+    <div class="risk">
+      <div class="r"><h3>「灵活」可能是混乱的美化</h3><p>连基本目标、责任边界都没有，那不是灵活，是混乱。</p></div>
+      <div class="r"><h3>「制度」可能是回避的借口</h3><p>用SOP掩盖领导力缺位、决策模糊，制度成了挡箭牌。</p></div>
+      <div class="r"><h3>切换成本是真实的</h3><p>同一批人在「受规制」与「要灵活」间切换，需清晰分层降低负担。</p></div>
+      <div class="r"><h3>规模不是唯一变量</h3><p>任务的不确定性与协作依赖度同样决定治理模式。</p></div>
+    </div>
+  </section>
+
+  <!-- 8 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">管理的本质，是在<span class="g">协调成本</span>与<br><span class="g">失控风险</span>之间找平衡。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:42ch">太小不需要管，太大管不住。<br>分院的智慧，在于清醒地活在两个世界里，<b>并主动设计边界</b>。</p>
+    <div class="final-note">对外按大组织规则守边界 · 对内按小团队逻辑活出优势</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
