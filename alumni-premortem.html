@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陕西光华校友会 · 从失败面出发</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 260px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(127,180,217,.10),rgba(127,180,217,.02))}
+  .dcol.large{background:linear-gradient(165deg,rgba(227,195,130,.10),rgba(227,195,130,.02))}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:var(--blue)}
+  .dcol.large .dcol-head{color:var(--gold2)}
+  .dcol-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol.small li .dot{color:var(--blue)}
+  .dcol.large li .dot{color:var(--gold)}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);color:var(--gold2);font-family:var(--serif);font-size:19px;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;z-index:2}
+  .stages{display:flex;flex-direction:column;gap:1.8vh;max-width:1300px;width:100%}
+  .srow{display:flex;align-items:center;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .srow .s-lbl{font-family:var(--serif);font-size:clamp(20px,2.2vw,34px);color:var(--gold);min-width:8ch;font-weight:600}
+  .srow .s-txt{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .srow .s-txt b{color:var(--ink)}
+  .steps{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .step{display:flex;gap:1.6vw;align-items:flex-start;padding:2vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--gold)}
+  .step .s-no{font-family:var(--serif);font-size:clamp(24px,2.6vw,38px);color:var(--gold);min-width:2.4ch;line-height:1}
+  .step .s-t{font-size:clamp(17px,1.9vw,26px);font-weight:600;color:var(--ink);margin-bottom:.4vh}
+  .step .s-d{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 260px;max-width:360px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r::before{content:"!";position:absolute;top:1.2vh;right:1.4vw;font-size:clamp(28px,3vw,42px);color:rgba(224,122,106,.25);font-family:var(--serif)}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:26ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .flow-note{font-size:clamp(15px,1.9vw,26px);color:var(--gold2);margin-top:3.6vh;font-family:var(--serif)}
+  .fail-list{display:flex;flex-direction:column;gap:1.2vh;max-width:1300px;width:100%;text-align:left}
+  .frow{display:flex;align-items:flex-start;gap:1.4vw;padding:1.6vh 2vw;border-radius:10px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--red)}
+  .frow .f-no{font-family:var(--serif);color:#e7a79b;font-size:clamp(18px,2vw,26px);min-width:3ch;font-weight:600}
+  .frow .f-t{font-size:clamp(15px,1.6vw,22px);font-weight:600;color:var(--ink)}
+  .frow .f-d{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.5;margin-top:.3vh}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 下午与刘丹交流参考</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">光华 · 校友会</div>
+    <h1>陕西光华校友会<br><span class="accent">从失败面出发</span></h1>
+    <div class="cover-sub">与其只看到潜力和需求，不如先问：<br>什么会让它失败？什么会让核心价值落空？</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">先防住让它死掉的事，再给它空间，让它自己活出来</div>
+  </section>
+
+  <!-- 2 核心洞察 -->
+  <section class="slide" data-title="核心洞察">
+    <div class="secnum">壹 · 认知转换</div>
+    <h2 class="section-title">从"最好的一面"<br>到<span class="hl">"最坏的一面"</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">常态思维</span> 看潜力</div>
+        <ul>
+          <li><span class="dot">●</span><span>校友资源丰富</span></li>
+          <li><span class="dot">●</span><span>学院品牌背书</span></li>
+          <li><span class="dot">●</span><span>地域需求明确</span></li>
+          <li><span class="dot">●</span><span>可以做什么、连接谁</span></li>
+        </ul>
+      </div>
+      <div class="vs">→</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">反向思维</span> 看风险</div>
+        <ul>
+          <li><span class="dot">◆</span><span><b>什么会让它失败？</b></span></li>
+          <li><span class="dot">◆</span><span><b>什么会让核心价值落空？</b></span></li>
+          <li><span class="dot">◆</span><span>这些才是真正要花时间预防的</span></li>
+          <li><span class="dot">◆</span><span>剩下的，<b>给它空间，让它自然成长</b></span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 事前验尸 -->
+  <section class="slide" data-title="事前验尸">
+    <div class="secnum">贰 · 方法</div>
+    <h2 class="section-title">事前验尸<br><span class="hl">Premortem</span></h2>
+    <div class="card" style="max-width:900px;text-align:center">
+      <h3 style="font-size:clamp(20px,2.2vw,30px)">假设一年后，校友会建设失败了——<br>没有活跃度、没有实际价值、校友不买账。</h3>
+      <div class="divider" style="margin:2.4vh auto"></div>
+      <p style="font-size:clamp(16px,1.8vw,24px);color:var(--gold2)">问：<b>最可能的原因是什么？</b></p>
+    </div>
+    <div class="flow-note">不做事后诸葛亮，而是事前的"反向演习"</div>
+  </section>
+
+  <!-- 4 失败模式 1-3 -->
+  <section class="slide" data-title="失败模式1-3">
+    <div class="secnum">叁 · 失败模式</div>
+    <h2 class="section-title">七条<span class="hl">死法</span></h2>
+    <div class="fail-list">
+      <div class="frow"><div class="f-no">1</div><div><div class="f-t">价值空心化——"只有牌子，没有内容"</div><div class="f-d">校友会沦为五个字，没有实质内容。活动形式化（吃饭合影寒暄），校友来一次就不来了。</div></div></div>
+      <div class="frow"><div class="f-no">2</div><div><div class="f-t">核心人物依赖——"一个人扛，扛不动就散了"</div><div class="f-d">过度依赖一两个人，精力转移就停摆。没有形成"自运转"机制，没有第二圈层。</div></div></div>
+      <div class="frow"><div class="f-no">3</div><div><div class="f-t">供需错配——"我们以为校友需要，其实不需要"</div><div class="f-d">凭想象设计活动，而非从真实需求出发。行业、年龄、阶段差异巨大，不是"光华校友"四个字就能统合。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 5 失败模式 4-5 -->
+  <section class="slide" data-title="失败模式4-5">
+    <div class="secnum">叁 · 失败模式</div>
+    <h2 class="section-title">七条<span class="hl">死法</span></h2>
+    <div class="fail-list">
+      <div class="frow"><div class="f-no">4</div><div><div class="f-t">官方化、形式化——"变成另一个行政组织"</div><div class="f-d">过度追求"正规化"——章程、层级、审批流程，把灵活性和自发性压死。校友会是<b>社群</b>，不是<b>机构</b>。</div></div></div>
+      <div class="frow"><div class="f-no">5</div><div><div class="f-t">短期功利化——"校友觉得你在利用他们"</div><div class="f-d">一上来就谈招生、合作、资源对接。顺序错了，一切白费。核心原则：<b>先给，再取；先连接，再合作。</b></div></div></div>
+      <div class="frow"><div class="f-no">6</div><div><div class="f-t">沉默的大多数——"活跃的永远是那几个人"</div><div class="f-d">形成封闭小圈子，新人进不来。80% 校友是"沉默的"，不是不关心，是<b>没找到参与的方式</b>。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 6 失败模式 7 -->
+  <section class="slide" data-title="失败模式7">
+    <div class="secnum">叁 · 失败模式</div>
+    <h2 class="section-title">最容易忽略的一条</h2>
+    <div class="fail-list">
+      <div class="frow"><div class="f-no">7</div><div><div class="f-t">没有反馈闭环——"做了很多，不知道对不对"</div><div class="f-d">办完活动不收集反馈、不迭代。不知道校友真实感受，不知道"为什么来"和"为什么不来"。<b>校友会的核心资产不是"办了哪些活动"，而是"校友为什么愿意来"。</b></div></div></div>
+    </div>
+    <div class="divider" style="margin-top:4vh"></div>
+    <p class="lead" style="font-size:clamp(16px,2vw,28px)">这七条不是"可能发生"，而是<b>几乎一定会发生其中几条</b>——如果不主动预防的话。</p>
+  </section>
+
+  <!-- 7 精力分配 -->
+  <section class="slide" data-title="精力分配">
+    <div class="secnum">肆 · 精力分配</div>
+    <h2 class="section-title">什么<span class="hl">必须管</span>，什么<span class="hl">该放手</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">防火墙</span> 必须花精力预防</div>
+        <ul>
+          <li><span class="dot">●</span><span>先定义核心价值："一句话"是什么</span></li>
+          <li><span class="dot">●</span><span>培养 3-5 个核心圈层，分散责任</span></li>
+          <li><span class="dot">●</span><span>先做需求摸底，再设计活动</span></li>
+          <li><span class="dot">●</span><span>保持"社群感"，不急建制化</span></li>
+          <li><span class="dot">●</span><span>前 3-6 个月只做连接，不主动谈合作</span></li>
+          <li><span class="dot">●</span><span>设计低门槛参与（线上、轻量）</span></li>
+          <li><span class="dot">●</span><span>每次活动后必收反馈、必迭代</span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">给空间</span> 放手让它自然发生</div>
+        <ul>
+          <li><span class="dot">◆</span><span>活动形式——不预设，让校友共创</span></li>
+          <li><span class="dot">◆</span><span>参与节奏——有人来有人不来，正常</span></li>
+          <li><span class="dot">◆</span><span>具体连接——不干预谁和谁聊得来</span></li>
+          <li><span class="dot">◆</span><span>成长方向——会自然找到生态位</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 给空间 -->
+  <section class="slide" data-title="给空间">
+    <div class="secnum">伍 · 哲学</div>
+    <h2 class="section-title">校友会是<span class="hl">有机体</span>，<br>不是<span class="hl">项目</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">×</div><h3>项目思维</h3><p>明确开始、结束、交付物。第一个月就要 X 场活动、Y 人参加。追求<b>可量化的进度</b>。</p></div>
+      <div class="card"><div class="c-num">✓</div><h3>有机体思维</h3><p>需要土壤、阳光、时间。允许有一段"看起来没进展"的时期——<b>那是在长根</b>。最好的形态是长出来的，不是设计出来的。</p></div>
+      <div class="card"><div class="c-num">园</div><h3>你的角色：园丁</h3><p>不是设计师，不是项目经理。提供条件、预防风险、<b>然后退后一步</b>。</p></div>
+    </div>
+  </section>
+
+  <!-- 9 交流要点 -->
+  <section class="slide" data-title="交流要点">
+    <div class="secnum">陆 · 下午交流</div>
+    <h2 class="section-title">与刘丹讨论的<span class="hl">五个要点</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">共识核心价值</div><div class="s-d">陕西光华校友会存在的"一句话理由"是什么？不是"服务校友"这种空话，而是具体的、可感知的价值。</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">对齐失败模式</div><div class="s-d">把七条"死法"过一遍，看刘丹最担心哪些，哪些你们有共识。</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">确定"必须管"的事</div><div class="s-d">从七条预防动作中，选出 3-5 条作为近期重点。其余的，放手。</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">讨论"给空间"的边界</div><div class="s-d">哪些事不要管、不要催、不要预设——让校友自己来填充。</div></div></div>
+      <div class="step"><div class="s-no">5</div><div><div class="s-t">明确下一步</div><div class="s-d">不是"我们要做什么"，而是"我们先预防什么，然后看会发生什么"。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 10 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">先防住让<span class="g">它死掉</span>的事，<br>再给它<span class="g">空间</span>，让它自己活出来。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:48ch">与其把校友会当成需要"建设"的项目，<br>不如把它当成需要<b>"保护"的有机体</b>。</p>
+    <div class="final-note">做园丁，不做设计师。提供条件，然后退后一步。</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
