@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生下半场的「未完成愿望」</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 260px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(127,180,217,.10),rgba(127,180,217,.02))}
+  .dcol.large{background:linear-gradient(165deg,rgba(227,195,130,.10),rgba(227,195,130,.02))}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:var(--blue)}
+  .dcol.large .dcol-head{color:var(--gold2)}
+  .dcol-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol.small li .dot{color:var(--blue)}
+  .dcol.large li .dot{color:var(--gold)}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);color:var(--gold2);font-family:var(--serif);font-size:19px;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;z-index:2}
+  .stages{display:flex;flex-direction:column;gap:1.8vh;max-width:1300px;width:100%}
+  .srow{display:flex;align-items:center;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .srow .s-lbl{font-family:var(--serif);font-size:clamp(20px,2.2vw,34px);color:var(--gold);min-width:8ch;font-weight:600}
+  .srow .s-txt{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .srow .s-txt b{color:var(--ink)}
+  .steps{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .step{display:flex;gap:1.6vw;align-items:flex-start;padding:2vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--gold)}
+  .step .s-no{font-family:var(--serif);font-size:clamp(24px,2.6vw,38px);color:var(--gold);min-width:2.4ch;line-height:1}
+  .step .s-t{font-size:clamp(17px,1.9vw,26px);font-weight:600;color:var(--ink);margin-bottom:.4vh}
+  .step .s-d{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 260px;max-width:360px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r::before{content:"!";position:absolute;top:1.2vh;right:1.4vw;font-size:clamp(28px,3vw,42px);color:rgba(224,122,106,.25);font-family:var(--serif)}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:26ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .flow-note{font-size:clamp(15px,1.9vw,26px);color:var(--gold2);margin-top:3.6vh;font-family:var(--serif)}
+  .theory .t{display:flex;align-items:flex-start;gap:1.4vw;padding:1.5vh 0;text-align:left;border-bottom:1px dashed var(--line2);max-width:1200px;width:100%}
+  .theory .t:last-child{border-bottom:none}
+  .theory .t .t-lbl{font-family:var(--serif);color:var(--gold);font-size:clamp(14px,1.5vw,20px);min-width:14ch;font-weight:600}
+  .theory .t .t-txt{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.5}
+  .theory .t .t-txt b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可讲述可阅读</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">人生 · 自我洞察</div>
+    <h1>人生下半场的<br><span class="accent">「未完成愿望」</span></h1>
+    <div class="cover-sub">在退休、空巢、大病等人生节点——被压抑了几十年的愿望，<br>会以"疯狂"的方式回来。但这不是终点，而是被听见的开始。</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">从延迟爆发的疯狂，到提前觉察的建设性转化</div>
+  </section>
+
+  <!-- 2 核心观察 -->
+  <section class="slide" data-title="核心观察">
+    <div class="secnum">壹 · 核心命题</div>
+    <h2 class="section-title">当被压抑的愿望，<span class="hl">在节点期爆发</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">父</div><h3>60多岁执意创锅炉厂</h3><p>一生为家庭、为责任而活，退休后突然<b>all-in 创业</b>——执拗、投入、最终失败。不是"疯狂"，是<b>阴影的反弹</b>。</p></div>
+      <div class="card"><div class="c-num">母</div><h3>退休前后追剧场、找股神</h3><p>退休前想造剧场，退休后追随"股神"投机，<b>孤注一掷</b>、剧烈失败。不是"贪婪"，是<b>未哀悼的丧失</b>。</p></div>
+      <div class="card"><div class="c-num">生</div><h3>MBA学生的起伏</h3><p>事业中期，看似理性的选择，回头看却<b>步步走向疯狂</b>——在自以为理性的选择中，做着最不理性的事。</p></div>
+    </div>
+  </section>
+
+  <!-- 3 两个主张 -->
+  <section class="slide" data-title="两个主张">
+    <div class="secnum">壹 · 主张</div>
+    <h2 class="section-title">两个<span class="hl">核心主张</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">主张一</span> 提早觉察 + 系统外部关照</div>
+        <ul>
+          <li><span class="dot">●</span><span>不要靠一个人在自以为理性的选择中走向疯狂</span></li>
+          <li><span class="dot">●</span><span>建立<b>系统性的外部关照和解决方案</b></span></li>
+          <li><span class="dot">●</span><span>自己可能一步步走向疯狂而不自知</span></li>
+        </ul>
+      </div>
+      <div class="vs">＋</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">主张二</span> 导向建设性与创造性</div>
+        <ul>
+          <li><span class="dot">◆</span><span>将心中的力量导向<b>建设性和创造性</b>的事</span></li>
+          <li><span class="dot">◆</span><span>不要让它自由发展、导向破坏性结果</span></li>
+          <li><span class="dot">◆</span><span>人生节点往往蕴含着陷阱与危害</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">从历史、数据、最佳实践中，找到将内心动力变成<b>人生发展动力</b>的方式。</p>
+  </section>
+
+  <!-- 4 学术坐标系 -->
+  <section class="slide" data-title="学术坐标">
+    <div class="secnum">贰 · 理论</div>
+    <h2 class="section-title">五个独立理论，<span class="hl">指向同一结构</span></h2>
+    <div class="theory">
+      <div class="t"><div class="t-lbl">荣格 · 阴影</div><div class="t-txt">前半生为外部而活，压抑"阴影"；后半生<b>被丢下的自己会回来</b>——以症状、冲动、灾难的方式。</div></div>
+      <div class="t"><div class="t-lbl">蔡格尼克效应</div><div class="t-txt">未完成的事持续索求完成——<b>压抑 ≠ 消失，只是延迟</b>。越压抑得彻底，爆发越剧烈。</div></div>
+      <div class="t"><div class="t-lbl">埃里克森</div><div class="t-txt">老年核心冲突：<b>"自我整合 vs 绝望"</b>。"这一生是否有意义"的焦虑，驱动"最后一搏"。</div></div>
+      <div class="t"><div class="t-lbl">行为经济学</div><div class="t-txt">沉没成本 + 损失厌恶 + 过度自信 + 时间紧迫感 → <b>风险阈值系统性下移</b>。</div></div>
+      <div class="t"><div class="t-lbl">哀悼 vs 能量</div><div class="t-txt">表面是"想做成什么"的积极能量，本质是<b>逃避面对"我老了/我错过了"</b>——未哀悼的丧失。</div></div>
+    </div>
+  </section>
+
+  <!-- 5 压力罐模型 -->
+  <section class="slide" data-title="压力罐模型">
+    <div class="secnum">叁 · 机制</div>
+    <h2 class="section-title">「压力罐」<span class="hl">模型</span></h2>
+    <div class="stages">
+      <div class="srow"><div class="s-lbl">积累</div><div class="s-txt">被压抑的愿望与情绪，几十年持续积累——<b>不因压抑而消失，只因压抑而延迟</b></div></div>
+      <div class="srow"><div class="s-lbl">压制</div><div class="s-txt">平时被"理性约束"压住——工作、责任、社会期待充当<b>压力罐的盖子</b></div></div>
+      <div class="srow"><div class="s-lbl" style="color:var(--red)">触发</div><div class="s-txt">退休 · 空巢 · 丧偶 · 大病 · 重大人生节点——<b>理性约束松动，盖子打开</b></div></div>
+      <div class="srow" style="border-left-color:var(--red)"><div class="s-lbl" style="color:var(--red)">爆发</div><div class="s-txt"><b>原始愿望以爆发形式释放</b>——all-in 创业 · 孤注一掷投机 · 颠覆性人生转向</div></div>
+    </div>
+    <div class="flow-note">最危险的不是"想做"，而是"以全押的方式想做"。</div>
+  </section>
+
+  <!-- 6 批判视角1 -->
+  <section class="slide" data-title="批判一">
+    <div class="secnum">肆 · 反思</div>
+    <h2 class="section-title">六个批判性<span class="hl">审视</span></h2>
+    <div class="risk">
+      <div class="r"><h3>「疯狂」是事后归因</h3><p>父亲若成功，叫"老骥伏枥"；失败才叫"执拗"。用结果倒推动机，是认知上最隐蔽的陷阱。</p></div>
+      <div class="r"><h3>「建设性 vs 破坏性」太简化</h3><p>重点不在"改造愿望"（否定它），而在"改造实现方式"（给愿望装上可逆、小步、有护栏的出口）。</p></div>
+      <div class="r"><h3>「提早觉察」的悖论</h3><p>"我把它导向建设性"可能正是新一轮自我欺骗——用"建设性"再次否定真实冲动，比"我想疯一回"更虚伪。</p></div>
+      <div class="r"><h3>样本偏差</h3><p>从这个家庭和几个MBA学生，推不出"人生节点必然疯狂"的规律。更多人退休后是平稳的。</p></div>
+    </div>
+  </section>
+
+  <!-- 7 批判视角2 -->
+  <section class="slide" data-title="批判二">
+    <div class="secnum">肆 · 反思</div>
+    <h2 class="section-title">最重要的两条<span class="hl">修正</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">本质</span> 哀悼，而非能量</div>
+        <ul>
+          <li><span class="dot">●</span><span>父辈行为表面是"积极能量"</span></li>
+          <li><span class="dot">●</span><span>本质是<b>逃避哀悼</b>——逃避面对衰老、错过、无意义</span></li>
+          <li><span class="dot">●</span><span>跳过哀悼谈转化，<br>会<b>不断用新项目掩盖旧伤口</b></span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">系统</span> 关照的两面性</div>
+        <ul>
+          <li><span class="dot">◆</span><span>系统关照好，但过度会<b>剥夺主体性与尊严</b></span></li>
+          <li><span class="dot">◆</span><span>把关照变成"监护"，<br>触发更强反抗："我偏要证明自己"</span></li>
+          <li><span class="dot">◆</span><span>平衡：<b>保护底线 + 尊重自主</b></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">第一步不是"转化力量"，而是<b>允许哀悼完成</b>——承认"我老了""我错过了""有些事就是没实现"。</p>
+  </section>
+
+  <!-- 8 个人层面 -->
+  <section class="slide" data-title="个人层面">
+    <div class="secnum">伍 · 方案 · 个人</div>
+    <h2 class="section-title">提前觉察 + <span class="hl">低风险实现</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">提前做「人生愿望审计」</div><div class="s-d">50岁前后开始，每年盘点：有哪些愿望被压抑？背后是"想证明什么"还是"想逃避什么"？</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">区分「哀悼议题」和「能量议题」</div><div class="s-d">愿望背后是"我错过了/我老了"→ 哀悼；是"真想做"→ 能量。诊断错误，一切方案落空。</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">把宏大愿望「拆小、试点、可逆」</div><div class="s-d">想办厂 → 先做低成本验证；想投资 → 用小额、分散、可学习的方式。满足冲动，但不接受全押。</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">给自己设「冲动防火墙」</div><div class="s-d">愿望资金不动养老底线；单笔设上限+冷静期；重大决策强制引入外部顾问。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 9 家庭层面 -->
+  <section class="slide" data-title="家庭层面">
+    <div class="secnum">伍 · 方案 · 家庭</div>
+    <h2 class="section-title">让愿望在家庭内<span class="hl">被容纳</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">1</div><h3>家庭会议制度</h3><p>定期让每个成员（包括长辈）表达"这一生还没做完的事"——<b>在平时被听到，而非积累几十年后爆发</b>。</p></div>
+      <div class="card"><div class="c-num">2</div><h3>代际沟通：识别信号</h3><p>识别父辈的早期信号（突然执念、异常投资热情、反复念叨"我这辈子……"）。<b>理解 + 一起设计实现方式</b>，而非反对。</p></div>
+      <div class="card"><div class="c-num">3</div><h3>财务与法律保护</h3><p>家庭资产隔离，防止孤注一掷拖垮全家；大额决策建立"子女共同知情"机制；<b>对"股神"类承诺保持警惕</b>。</p></div>
+    </div>
+  </section>
+
+  <!-- 10 社会层面 + 最佳实践 -->
+  <section class="slide" data-title="社会+实践">
+    <div class="secnum">伍 · 方案 · 社会</div>
+    <h2 class="section-title">结构性缺口与<span class="hl">最佳实践</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">社会</span> 结构性缺口</div>
+        <ul>
+          <li><span class="dot">●</span><span><b>退休规划教育</b>严重缺乏——"第二人生"需要学，不是"自然就会"</span></li>
+          <li><span class="dot">●</span><span><b>防收割机制</b>——金融诈骗、投机陷阱大量瞄准独居/空巢老人</span></li>
+        </ul>
+      </div>
+      <div class="vs">＋</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">实践</span> 最佳参照</div>
+        <ul>
+          <li><span class="dot">◆</span><span><b>Encore Career</b>：逐步过渡、技能迁移、小步验证</span></li>
+          <li><span class="dot">◆</span><span><b>团块世代</b>：兴趣+社区+少量资本，强调"有事做、有连接"</span></li>
+          <li><span class="dot">◆</span><span><b>存在主义治疗</b>：找到"即便在此刻，仍值得活的意义"</span></li>
+          <li><span class="dot">◆</span><span><b>荣格个体化</b>：把被丢下的自己请回来，给它有尊严的位置</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 落地清单 -->
+  <section class="slide" data-title="落地清单">
+    <div class="secnum">陆 · 落地</div>
+    <h2 class="section-title">给你的<span class="hl">五条行动清单</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">本周</div><div><div class="s-t">写一份「我的未完成愿望」清单</div><div class="s-d">诚实区分"我想证明什么"和"我真想做什么"，先不急着改造它们，只是看见。</div></div></div>
+      <div class="step"><div class="s-no">本月</div><div><div class="s-t">和大宝、父母做一次坦诚对话</div><div class="s-d">用家庭会议的形式，聊聊"这一生还没做完的事"。</div></div></div>
+      <div class="step"><div class="s-no">本季</div><div><div class="s-t">为自己设定「冲动防火墙」规则</div><div class="s-d">金额上限、冷静期、外部顾问——写下来，写下来才算数。</div></div></div>
+      <div class="step"><div class="s-no">持续</div><div><div class="s-t">把「哀悼」和「能量」分开处理</div><div class="s-d">先允许自己承认丧失，再决定要不要投入新的事。</div></div></div>
+      <div class="step"><div class="s-no">每年</div><div><div class="s-t">做一次「人生愿望审计」</div><div class="s-d">作为年度体检的一部分——不是等到退休，而是从现在开始。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 12 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">与其<span class="g">管理疯狂</span>，<br>不如<span class="g">设计人生</span>。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:50ch">承认每个人的内心都有被压抑的愿望与未哀悼的丧失。<br>既不美化它们，也不妖魔化它们。<br>通过提前觉察、家庭容纳、财务护栏和尊重自主，<br><b>给它们一个有尊严的出口</b>。</p>
+    <div class="final-note">让被压抑的愿望成为人生下半场的动力，而不是决堤的洪水</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
