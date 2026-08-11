@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爱需要空间</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 260px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(127,180,217,.10),rgba(127,180,217,.02))}
+  .dcol.large{background:linear-gradient(165deg,rgba(227,195,130,.10),rgba(227,195,130,.02))}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:var(--blue)}
+  .dcol.large .dcol-head{color:var(--gold2)}
+  .dcol-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol.small li .dot{color:var(--blue)}
+  .dcol.large li .dot{color:var(--gold)}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);color:var(--gold2);font-family:var(--serif);font-size:19px;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;z-index:2}
+  .stages{display:flex;flex-direction:column;gap:1.8vh;max-width:1300px;width:100%}
+  .srow{display:flex;align-items:center;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .srow .s-lbl{font-family:var(--serif);font-size:clamp(20px,2.2vw,34px);color:var(--gold);min-width:8ch;font-weight:600}
+  .srow .s-txt{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .srow .s-txt b{color:var(--ink)}
+  .steps{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .step{display:flex;gap:1.6vw;align-items:flex-start;padding:2vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--gold)}
+  .step .s-no{font-family:var(--serif);font-size:clamp(24px,2.6vw,38px);color:var(--gold);min-width:2.4ch;line-height:1}
+  .step .s-t{font-size:clamp(17px,1.9vw,26px);font-weight:600;color:var(--ink);margin-bottom:.4vh}
+  .step .s-d{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 260px;max-width:360px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r::before{content:"!";position:absolute;top:1.2vh;right:1.4vw;font-size:clamp(28px,3vw,42px);color:rgba(224,122,106,.25);font-family:var(--serif)}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:26ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .flow-note{font-size:clamp(15px,1.9vw,26px);color:var(--gold2);margin-top:3.6vh;font-family:var(--serif)}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可讲述可阅读</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">家庭 · 关系认知</div>
+    <h1>爱，需要<span class="accent">空间</span></h1>
+    <div class="cover-sub">亲密关系中最容易被忽视的真相：<br>不是靠得越近越亲密，而是给彼此留出呼吸的余地。</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">亲密关系中的呼吸、边界与成长</div>
+  </section>
+
+  <!-- 2 核心洞察 -->
+  <section class="slide" data-title="核心洞察">
+    <div class="secnum">壹 · 核心命题</div>
+    <h2 class="section-title">爱不是<span class="hl">占有</span>，是<span class="hl">容纳</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">01</div><h3>空间不是距离</h3><p>空间不是疏远，而是<b>让爱有地方生长</b>。无间隙的亲密 = 无氧的燃烧，终将熄灭。</p></div>
+      <div class="card"><div class="c-num">02</div><h3>越紧握，越流失</h3><p>当你试图控制、占有、时刻确认，对方感受到的不是爱，是<b>窒息</b>。爱在自由中生长，在控制中枯萎。</p></div>
+      <div class="card"><div class="c-num">03</div><h3>生活也需要空间</h3><p>不只是爱人之间，生活本身也需要空间——<b>留白的时间、未被安排的间隙、不被打扰的沉默</b>。空间是生活存在的必要条件。</p></div>
+    </div>
+  </section>
+
+  <!-- 3 三维空间 -->
+  <section class="slide" data-title="三维空间">
+    <div class="secnum">贰 · 结构</div>
+    <h2 class="section-title">三种<span class="hl">空间</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">情</div><h3>情感空间</h3><p>允许对方有自己的情绪，不急于"修复"或"反驳"。<b>她的愤怒、你的沉默，都需要被容纳</b>，而非被消灭。</p></div>
+      <div class="card"><div class="c-num">时</div><h3>时间空间</h3><p>不被填满的日常。每个人都需要<b>属于自己的时间</b>——不是"偷来的"，而是被尊重和保护的。</p></div>
+      <div class="card"><div class="c-num">物</div><h3>物理空间</h3><p>一个属于自己的角落、一段独处的散步、一间可以关上门不必解释的房间。物理空间是<b>心理空间的锚点</b>。</p></div>
+    </div>
+  </section>
+
+  <!-- 4 窒息模式 -->
+  <section class="slide" data-title="窒息模式">
+    <div class="secnum">叁 · 诊断</div>
+    <h2 class="section-title">当爱变成<span class="hl">控制</span></h2>
+    <div class="stages">
+      <div class="srow"><div class="s-lbl">起点</div><div class="s-txt">出于爱——想确认对方在、想确认对方好、想确认对方爱自己</div></div>
+      <div class="srow"><div class="s-lbl">升级</div><div class="s-txt">从"想知道"变成"应该知道"，从"关心"变成<b>"你要按我的期待来"</b></div></div>
+      <div class="srow" style="border-left-color:var(--red)"><div class="s-lbl" style="color:var(--red)">结果</div><div class="s-txt"><b>对方感到的不是爱，是窒息</b>——逃开不是因为不爱，是因为无法呼吸</div></div>
+    </div>
+    <div class="flow-note">「全或无」模式的本质：不给对方、也不给自己留空间。</div>
+  </section>
+
+  <!-- 5 空间悖论 -->
+  <section class="slide" data-title="空间悖论">
+    <div class="secnum">肆 · 悖论</div>
+    <h2 class="section-title">空间的<span class="hl">悖论</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">直觉</span> 紧握 = 安全</div>
+        <ul>
+          <li><span class="dot">●</span><span>离开视线 = 失去控制</span></li>
+          <li><span class="dot">●</span><span>沉默 = 危险信号</span></li>
+          <li><span class="dot">●</span><span>独处 = 被抛弃</span></li>
+          <li><span class="dot">●</span><span>结果：<b>越紧握，越窒息</b></span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">真相</span> 放手 = 自由</div>
+        <ul>
+          <li><span class="dot">◆</span><span>空间 = 信任的信号</span></li>
+          <li><span class="dot">◆</span><span>沉默 = 可以被容纳的空白</span></li>
+          <li><span class="dot">◆</span><span>独处 = 回到自己，<b>才能更好地回到对方</b></span></li>
+          <li><span class="dot">◆</span><span>结果：<b>越放手，越靠近</b></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">给空间，不是放弃，而是<b>选择一种更勇敢的爱</b>——不怕短暂分离，因为相信连接。</p>
+  </section>
+
+  <!-- 6 家庭中的空间 -->
+  <section class="slide" data-title="家庭空间">
+    <div class="secnum">伍 · 实践</div>
+    <h2 class="section-title">家庭中的<span class="hl">空间创造</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">1</div><h3>夫妻之间</h3><p>允许对方有独立的时间、兴趣、情绪。不把"在一起"等同于"时刻同步"。<b>高质量的分离，支撑高质量的相聚</b>。</p></div>
+      <div class="card"><div class="c-num">2</div><h3>亲子之间</h3><p>给孩子不被安排的时间——<b>无聊是创造力的土壤</b>。不把每一分钟都变成"教育时刻"，沉默的陪伴也是陪伴。</p></div>
+      <div class="card"><div class="c-num">3</div><h3>自我之间</h3><p>给自己留出不被打扰的时间——<b>不是"偷来的"，是"被保护的"</b>。独处不是逃避，是回到自己，才有能力回到他人。</p></div>
+    </div>
+  </section>
+
+  <!-- 7 与另外两个框架的关联 -->
+  <section class="slide" data-title="三个框架">
+    <div class="secnum">陆 · 关联</div>
+    <h2 class="section-title">三个框架的<span class="hl">内在连接</span></h2>
+    <div class="stages">
+      <div class="srow"><div class="s-lbl">互补性稀缺</div><div class="s-txt">在变革中，<b>未被关注的互补环节</b>创造最大价值。空间，就是人际关系中的"互补性稀缺"——最被忽视、却最刚需的环节。</div></div>
+      <div class="srow"><div class="s-lbl">未完成愿望</div><div class="s-txt">被压抑的愿望需要<b>空间来表达</b>。没有空间，愿望只能以"疯狂"的方式爆发。给空间，就是给愿望一个安全的出口。</div></div>
+      <div class="srow"><div class="s-lbl">爱需要空间</div><div class="s-txt">空间是前两个框架的<b>容器</b>——没有空间，无法觉察互补性，也无法容纳未完成的愿望。空间，是让一切生长的基础。</div></div>
+    </div>
+  </section>
+
+  <!-- 8 批判视角 -->
+  <section class="slide" data-title="批判">
+    <div class="secnum">柒 · 反思</div>
+    <h2 class="section-title">空间的<span class="hl">边界</span></h2>
+    <div class="risk">
+      <div class="r"><h3>空间 ≠ 冷漠</h3><p>给空间不是"不管了"。空间的本质是<b>尊重</b>，不是放弃。冷漠是关闭连接，空间是给连接留出呼吸的余地。</p></div>
+      <div class="r"><h3>空间 ≠ 回避冲突</h3><p>用"我需要空间"来逃避沟通，是空间的误用。真正的空间包含<b>面对冲突的勇气</b>，而非逃避。</p></div>
+      <div class="r"><h3>空间需要双方共识</h3><p>单方面宣布"我需要空间"可能被理解为推开。空间的建立需要<b>沟通与共识</b>——"我需要一些时间，但我会回来"。</p></div>
+      <div class="r"><h3>空间不是奢侈品</h3><p>在忙碌的生活中，空间常被当作"等有空再说"的奢侈品。但空间是<b>必需品</b>——没有空间的关系，如同没有睡眠的身体。</p></div>
+    </div>
+  </section>
+
+  <!-- 9 行动框架 -->
+  <section class="slide" data-title="行动">
+    <div class="secnum">捌 · 落地</div>
+    <h2 class="section-title">创造空间的<span class="hl">五个动作</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">每天留出不被安排的15分钟</div><div class="s-d">不是"偷来的空闲"，是日程上明确保护的空白。对你自己，也对家人。</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">当对方需要空间时，不追问"为什么"</div><div class="s-d">空间不需要理由。信任对方的需要，比理解对方的需要更重要。</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">在冲突中引入"暂停"机制</div><div class="s-d">约定一个信号（如"我需要暂停一下"），暂停不是逃跑，而是给出空间让情绪沉降。</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">创造一个"只说感受、不解决问题"的对话空间</div><div class="s-d">定期有一次对话，主题不是"怎么解决"，而是"我现在感受到什么"。不评判，只容纳。</div></div></div>
+      <div class="step"><div class="s-no">5</div><div><div class="s-t">保护彼此的独处时间</div><div class="s-d">明确告诉对方："这段时间是我的，结束后我会回来。"然后用行动兑现承诺。</div></div></div>
+    </div>
+  </section>
+
+  <!-- 10 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">空间，不是爱的<span class="g">反面</span>，<br>而是爱的<span class="g">容器</span>。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:48ch">没有空间的爱，如无氧的火焰——终将熄灭。<br>给彼此留出呼吸的余地，<br>不是放弃，而是<b>选择一种更勇敢的爱</b>。</p>
+    <div class="final-note">爱在自由中生长，在控制中枯萎。生活亦然。</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
