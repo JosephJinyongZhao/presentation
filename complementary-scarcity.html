@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>结构性变革中的「互补性稀缺」</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 260px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(127,180,217,.10),rgba(127,180,217,.02))}
+  .dcol.large{background:linear-gradient(165deg,rgba(227,195,130,.10),rgba(227,195,130,.02))}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:var(--blue)}
+  .dcol.large .dcol-head{color:var(--gold2)}
+  .dcol-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol.small li .dot{color:var(--blue)}
+  .dcol.large li .dot{color:var(--gold)}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);color:var(--gold2);font-family:var(--serif);font-size:19px;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;z-index:2}
+  .stages{display:flex;flex-direction:column;gap:1.8vh;max-width:1300px;width:100%}
+  .srow{display:flex;align-items:center;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .srow .s-lbl{font-family:var(--serif);font-size:clamp(20px,2.2vw,34px);color:var(--gold);min-width:8ch;font-weight:600}
+  .srow .s-txt{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .srow .s-txt b{color:var(--ink)}
+  .steps{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .step{display:flex;gap:1.6vw;align-items:flex-start;padding:2vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:3px solid var(--gold)}
+  .step .s-no{font-family:var(--serif);font-size:clamp(24px,2.6vw,38px);color:var(--gold);min-width:2.4ch;line-height:1}
+  .step .s-t{font-size:clamp(17px,1.9vw,26px);font-weight:600;color:var(--ink);margin-bottom:.4vh}
+  .step .s-d{font-size:clamp(14px,1.5vw,20px);color:var(--muted);line-height:1.55}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 260px;max-width:360px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r::before{content:"!";position:absolute;top:1.2vh;right:1.4vw;font-size:clamp(28px,3vw,42px);color:rgba(224,122,106,.25);font-family:var(--serif)}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:26ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .flow-note{font-size:clamp(15px,1.9vw,26px);color:var(--gold2);margin-top:3.6vh;font-family:var(--serif)}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可讲述可阅读</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">经济 · 商业认知</div>
+    <h1>结构性变革中的<br><span class="accent">互补性稀缺</span></h1>
+    <div class="cover-sub">当所有人冲向舞台中央，真正的机会，常在灯光照不到的<br>互补环节里——被忽视、难复制、供不应求。</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">从主升浪到边际租金的逆向捕捉</div>
+  </section>
+
+  <!-- 2 核心洞察 -->
+  <section class="slide" data-title="核心洞察">
+    <div class="secnum">壹 · 核心命题</div>
+    <h2 class="section-title">小主体，赚的是<span class="hl">边际</span>的钱</h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">01</div><h3>边际价值</h3><p>你对系统不产生系统性影响，就是<b>价格接受者</b>——收入由你所处的相对价格决定，而非努力本身。</p></div>
+      <div class="card"><div class="c-num">02</div><h3>相对价格</h3><p>技术、政策、竞争格局会<b>大规模重排相对价格</b>。你要找的不是「涨的东西」，而是「相对价格持续抬升的东西」。</p></div>
+      <div class="card"><div class="c-num">03</div><h3>互补性</h3><p>主升浪的受益者常在<b>主升浪之外</b>——被主流忽视、却供给刚性的互补环节，那里才有供不应求与超额租金。</p></div>
+    </div>
+  </section>
+
+  <!-- 3 概念坐标系 -->
+  <section class="slide" data-title="概念坐标">
+    <div class="secnum">贰 · 概念</div>
+    <h2 class="section-title">六个经济学<span class="hl">坐标</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">1</div><h3>价格接受者</h3><p>你的产量不足以影响价格，收益 = 边际价格 × 产量。</p></div>
+      <div class="card"><div class="c-num">2</div><h3>相对价格</h3><p>决定真实收益的是相对价格，而非名义价格。</p></div>
+      <div class="card"><div class="c-num">3</div><h3>互补品</h3><p>一方需求上升带动另一方——GPU↔HBM，算力↔电力。</p></div>
+      <div class="card"><div class="c-num">4</div><h3>供给弹性</h3><p>一切的关键：供给刚性 → 需求牵引 → 价格暴涨。</p></div>
+      <div class="card"><div class="c-num">5</div><h3>经济租金</h3><p>超出正常回报的部分，来自稀缺而非努力。</p></div>
+      <div class="card"><div class="c-num">6</div><h3>比较优势</h3><p>找到相对价格抬升、且你能进入的缝隙。</p></div>
+    </div>
+  </section>
+
+  <!-- 4 核心机制 -->
+  <section class="slide" data-title="核心机制">
+    <div class="secnum">叁 · 机制</div>
+    <h2 class="section-title">超额租金如何<span class="hl">形成</span></h2>
+    <div class="stages">
+      <div class="srow"><div class="s-lbl">外生冲击</div><div class="s-txt">技术革命 / 政策开放，触发需求爆发</div></div>
+      <div class="srow"><div class="s-lbl">主环节</div><div class="s-txt">资本与注意力涌入 → 竞争激烈 → 供给跟上 → <b>利润被摊薄</b></div></div>
+      <div class="srow"><div class="s-lbl">互补环节</div><div class="s-txt">需求被牵引，却<b>不受关注 + 供给刚性</b>（扩产以年计 / 土地固定）</div></div>
+      <div class="srow" style="border-left-color:var(--gold)"><div class="s-lbl" style="color:var(--gold)">供不应求</div><div class="s-txt"><b>相对价格暴涨 → 超额租金</b></div></div>
+    </div>
+    <div class="flow-note">错配期（供给调整的时滞）= 租金窗口。供给越慢，窗口越长。</div>
+  </section>
+
+  <!-- 5 案例1 AI→HBM -->
+  <section class="slide" data-title="案例 · AI→HBM">
+    <div class="secnum">肆 · 案例</div>
+    <h2 class="section-title">AI 革命 → <span class="hl">HBM 内存</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">主环节</span> GPU / 模型</div>
+        <ul>
+          <li><span class="dot">●</span><span>全民焦点，资本涌入</span></li>
+          <li><span class="dot">●</span><span>竞争激烈、供给跟上、<b>利润摊薄</b></span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">互补环节</span> HBM</div>
+        <ul>
+          <li><span class="dot">◆</span><span>决定训练/推理速度，<b>供给高度集中</b>（三家）</span></li>
+          <li><span class="dot">◆</span><span>扩产周期以年计 → <b>供不应求、价格暴涨</b></span></li>
+          <li><span class="dot">◆</span><span>AI 时代的「卖水人」不止英伟达</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">当所有人盯着 GPU 时，HBM 是「互补性 + 供给刚性」的教科书案例。</p>
+  </section>
+
+  <!-- 6 案例2 香港→住宿 -->
+  <section class="slide" data-title="案例 · 香港→住宿">
+    <div class="secnum">肆 · 案例</div>
+    <h2 class="section-title">教育开放 → <span class="hl">香港住宿</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">主环节</span> 教育 / 商学内容</div>
+        <ul>
+          <li><span class="dot">●</span><span>提供者众多、<b>竞争充分</b></span></li>
+          <li><span class="dot">●</span><span>新增内容供给跟得上</span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">互补环节</span> 住宿</div>
+        <ul>
+          <li><span class="dot">◆</span><span>土地供给<b>高度刚性</b>（地理+规划+开发周期）</span></li>
+          <li><span class="dot">◆</span><span>需求被人才/学生流入牵引 → 租金上行</span></li>
+          <li><span class="dot">◆</span><span>典型<b>李嘉图租金</b>（供给固定要素）</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">政策红利，常先被「地理位置 / 存量资产」捕获，而非新增服务。</p>
+  </section>
+
+  <!-- 7 案例3&4 历史参照 -->
+  <section class="slide" data-title="案例 · 历史参照">
+    <div class="secnum">肆 · 案例</div>
+    <h2 class="section-title">历史里的<span class="hl">同一结构</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">淘</div><h3>淘金热 · 卖铲子</h3><p>淘金者涌入、竞争惨烈、多数亏钱；<b>卖铲子、卖牛仔裤（Levi's）的</b>稳定赚钱——供给有壁垒、需求被牵引。</p></div>
+      <div class="card"><div class="c-num">锂</div><h3>新能源 → 上游资源</h3><p>电池制造是主环节，但价格最猛的是<b>锂、钴、镍</b>——矿脉开采周期长、审批慢，供给刚性，需求被牵引。</p></div>
+      <div class="card"><div class="c-num">电</div><h3>AI 最稀缺的是电力</h3><p>人人讨论芯片与模型，真正瓶颈是<b>电力</b>——算力的互补品，电网扩容周期长、供给弹性极低。</p></div>
+    </div>
+  </section>
+
+  <!-- 8 方法论五步 -->
+  <section class="slide" data-title="方法论">
+    <div class="secnum">伍 · 方法</div>
+    <h2 class="section-title">五步<span class="hl">捕捉</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">识别主升浪</div><div class="s-d">看清主环节与资本、注意力集中之处</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">反向追问「互补性清单」</div><div class="s-d">它缺什么、依赖什么、越爆发什么越被带动</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">筛选供给刚性</div><div class="s-d">只保留「高供给刚性 + 低关注度」的环节</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">判断结构性 vs 周期性</div><div class="s-d">区分真机会与高位接盘的分水岭</div></div></div>
+      <div class="step"><div class="s-no">5</div><div><div class="s-t">评估「我能不能进去」</div><div class="s-d">识别机会 ≠ 抓住机会——进不去只是风景</div></div></div>
+    </div>
+  </section>
+
+  <!-- 9 批判视角1 -->
+  <section class="slide" data-title="批判一">
+    <div class="secnum">陆 · 反思</div>
+    <h2 class="section-title">批判性<span class="hl">审视</span></h2>
+    <div class="risk">
+      <div class="r"><h3>租金来自供给刚性，而非互补性</h3><p>没有供给刚性的互补环节，供给几个月就追上、价格回落。互补性只是需求侧的触发。</p></div>
+      <div class="r"><h3>事后归因 + 幸存者偏差</h3><p>你看到的「内存赚钱、住宿赚钱」都是活下来的赢家；沉默的失败案例被忽略了。</p></div>
+      <div class="r"><h3>「多想一步」会自我消耗</h3><p>当逆向成为共识，第二步就变成第一步，资本同样涌入、红利同样摊薄。</p></div>
+      <div class="r"><h3>结构性 vs 周期性不分</h3><p>内存、锂、矿产既是结构机会又是周期品种——把周期涨价当结构机会，就是接盘。</p></div>
+    </div>
+  </section>
+
+  <!-- 10 批判视角2 -->
+  <section class="slide" data-title="批判二">
+    <div class="secnum">陆 · 反思</div>
+    <h2 class="section-title">还有三道<span class="hl">边界</span></h2>
+    <div class="risk">
+      <div class="r"><h3>识别机会 ≠ 能进入机会</h3><p>HBM 谁都知道赚钱，但技术+资本壁垒进不去。对小主体，只问「哪条缝隙恰好是我够得着的」。</p></div>
+      <div class="r"><h3>租金的社会代价与政策反制</h3><p>住宿涨价挤出本地居民、电价上涨——政策会限价、放开供给，租金窗口最快关闭。</p></div>
+      <div class="r"><h3>别只做价格接受者</h3><p>真正的大财富来自「改变了价格的人」。捕捉边际租金是生存，创造新结构才是跨越。</p></div>
+    </div>
+  </section>
+
+  <!-- 11 结构性vs周期性 -->
+  <section class="slide" data-title="分水岭">
+    <div class="secnum">柒 · 分水岭</div>
+    <h2 class="section-title">结构性 vs <span class="hl">周期性</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">结构性</span> 可长期持有</div>
+        <ul>
+          <li><span class="dot">●</span><span>持久、不可逆的力量（技术范式 / 能源转型）</span></li>
+          <li><span class="dot">●</span><span>趋势可持续<b>数年甚至数十年</b></span></li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">周期性</span> 涨快回落也快</div>
+        <ul>
+          <li><span class="dot">◆</span><span>短期供需错配、库存周期、情绪驱动</span></li>
+          <li><span class="dot">◆</span><span>终将被新增产能<b>填平</b></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:3.4vh"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,26px)">用周期的眼光看结构，或用结构的眼光看周期，<b>都会犯错</b>。先判断是哪种，再决定下注力度。</p>
+  </section>
+
+  <!-- 12 落地建议 -->
+  <section class="slide" data-title="落地">
+    <div class="secnum">捌 · 落地</div>
+    <h2 class="section-title">给小主体的<span class="hl">六条建议</span></h2>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><div><div class="s-t">永远追问「互补性清单」</div><div class="s-d">面对主升浪，先问它依赖什么、缺什么</div></div></div>
+      <div class="step"><div class="s-no">2</div><div><div class="s-t">只押「供给刚性 + 低关注度」</div><div class="s-d">互补性与供给弹性一起评估，缺一不可</div></div></div>
+      <div class="step"><div class="s-no">3</div><div><div class="s-t">先分结构与周期</div><div class="s-d">再决定下注的力度与期限</div></div></div>
+      <div class="step"><div class="s-no">4</div><div><div class="s-t">找「我能进得去的缝隙」</div><div class="s-d">放弃巨头垄断的高租金环节，专注门槛适中的位置</div></div></div>
+      <div class="step"><div class="s-no">5</div><div><div class="s-t">设好退出护栏</div><div class="s-d">租金会均值回归、政策会反制，明确退出条件</div></div></div>
+      <div class="step"><div class="s-no">6</div><div><div class="s-t">别只做价格接受者</div><div class="s-d">捕捉边际租金是生存，创造新结构才是跨越</div></div></div>
+    </div>
+  </section>
+
+  <!-- 13 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">租金来自<span class="g">供给刚性</span>，<br>而非<span class="g">互补性</span>。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:48ch">机会可能只是周期错觉；识别不等于能进入；逆向思维会自我消耗。<br>而最稀缺的，永远是<b>创造新结构的能力</b>，不只捕捉边际租金。</p>
+    <div class="final-note">多想一步，反过来想——但要记得，这一步的价值，正在被越来越多的人看到</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
