@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陕西民营企业家 · 此起彼伏</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 260px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .timeline{display:flex;flex-direction:column;gap:1.6vh;max-width:1350px;width:100%;text-align:left}
+  .trow{display:flex;align-items:flex-start;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .trow .t-lbl{font-family:var(--serif);font-size:clamp(18px,1.9vw,28px);color:var(--gold);min-width:11ch;font-weight:600;line-height:1.2}
+  .trow .t-txt{font-size:clamp(14px,1.5vw,21px);color:var(--muted);line-height:1.55}
+  .trow .t-txt b{color:var(--ink)}
+  .trow.danger{border-left-color:var(--red)}
+  .trow.danger .t-lbl{color:#e7a79b}
+  .trow.success{border-left-color:var(--green)}
+  .trow.success .t-lbl{color:#a8d9bd}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(224,122,106,.09),transparent)}
+  .dcol.large{background:linear-gradient(165deg,rgba(143,208,168,.08),transparent)}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:#e7a79b}
+  .dcol.large .dcol-head{color:#a8d9bd}
+  .dcol-head .tag{font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor;opacity:.85}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol.small li .dot{color:#e7a79b}
+  .dcol.large li .dot{color:#a8d9bd}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);color:var(--gold2);font-family:var(--serif);font-size:19px;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;z-index:2}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 240px;max-width:420px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(224,122,106,.09),transparent);border:1px solid rgba(224,122,106,.22);text-align:left;position:relative}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#e7a79b;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:28ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .person-head{font-family:var(--serif);font-size:clamp(34px,5vw,66px);font-weight:600;color:var(--gold2);margin-bottom:.8vh;line-height:1.15}
+  .person-sub{font-size:clamp(16px,2vw,26px);color:var(--muted);margin-bottom:3.4vh}
+  .verdict{font-family:var(--serif);font-size:clamp(20px,2.6vw,34px);color:var(--ink);line-height:1.5;max-width:40ch;margin-top:3.4vh}
+  .verdict b{color:var(--gold2)}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可投屏讲解</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">陕西民营经济观察</div>
+    <h1>陕西民营企业家<br><span class="accent">此起彼伏</span></h1>
+    <div class="cover-sub">一部"谁押对了时代动力"的淘汰赛<br>从政商关系到技术资本，从第一代草莽到新科技系</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.6vw,22px);color:var(--muted)">靠政商关系起家者，随政商时代退潮；靠技术与资本市场的新民营，正在接棒</div>
+  </section>
+
+  <!-- 2 总览 -->
+  <section class="slide" data-title="五系总览">
+    <div class="secnum">壹 · 全景</div>
+    <h2 class="section-title">五条<span class="hl">代际脉络</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">壹</div><h3>第一代草莽</h3><p>1990s下海潮<br>吴一坚 · 荣海 · 郭家学<br><b>政商关系 + 杠杆</b></p></div>
+      <div class="card"><div class="c-num">贰</div><h3>医药系</h3><p>咸阳/西安药企<br>赵步长 · 郭家学<br><b>单品 + 家族 / 并购</b></p></div>
+      <div class="card"><div class="c-num">叁</div><h3>大宗重工</h3><p>规模+周期<br>何金碧（迈科）· 李黑记（东岭）<br><b>大宗 + 重资产 + 杠杆</b></p></div>
+      <div class="card"><div class="c-num">肆</div><h3>地产文化</h3><p>城市运营商<br>崔荣华 · 吕建中<br><b>地产 / 文化IP</b></p></div>
+      <div class="card"><div class="c-num">伍</div><h3>新科技系</h3><p>正在接棒<br>隆基 · 巨子 · 麦科 · 源杰<br><b>技术 + 资本 + 全球市场</b></p></div>
+    </div>
+  </section>
+
+  <!-- 3 第一代 吴一坚 -->
+  <section class="slide" data-title="吴一坚">
+    <div class="secnum">壹 · 第一代草莽</div>
+    <div class="person-head">吴一坚 · 金花集团</div>
+    <div class="person-sub">政商关系驱动型造富的巅峰与崩塌样本</div>
+    <div class="timeline">
+      <div class="trow success"><div class="t-lbl">1984-1991</div><div class="t-txt">600元下海 → 海南10个月滚到<b>3亿</b>（电视机厂空手套白狼）</div></div>
+      <div class="trow success"><div class="t-lbl">1993-2014</div><div class="t-txt">金花股份A股上市、世纪金花钟楼开张 → <b>2013-2014蝉联陕西首富</b></div></div>
+      <div class="trow danger"><div class="t-lbl">2015</div><div class="t-txt">卷入政商关系"协助调查"，<b>护城河抽离</b></div></div>
+      <div class="trow danger"><div class="t-lbl">2019-2022</div><div class="t-txt">世纪金花低价易主、被执行近10亿成"老赖"、金花股份股权被拍卖</div></div>
+      <div class="trow danger"><div class="t-lbl">2023-2025</div><div class="t-txt">破产 → 涉嫌<b>背信损害上市公司利益案</b>被警方受理</div></div>
+    </div>
+    <div class="verdict">成与败同一根源：<b>高杠杆的政商/信用驱动模式</b>——在最该收缩转型时，他选择了逆势加注。</div>
+  </section>
+
+  <!-- 4 荣海 郭家学 -->
+  <section class="slide" data-title="荣海·郭家学">
+    <div class="secnum">壹 · 第一代草莽</div>
+    <h2 class="section-title">荣海 &amp; 郭家学</h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">荣</div><h3>荣海 · 海星集团</h3><p>交大教授下海（1957生），1992年办海星，横跨IT、超市、地产、制药。<br><b>多元扩张 → 红利退潮后摊子失控 → 淡出</b><br><br>教训：多元化是双刃剑，红利退潮时最难收缩。</p></div>
+      <div class="card"><div class="c-num">郭</div><h3>郭家学 · 东盛/广誉远</h3><p>咸阳人（1966生），医药并购狂人，一度控股多家上市公司。<br><b>激进杠杆并购 → 债务危机，首富变"首负"</b><br><br>教训：并购的尽头是资金链，资金链的尽头是命。</p></div>
+    </div>
+  </section>
+
+  <!-- 5 医药系 赵步长 -->
+  <section class="slide" data-title="赵步长">
+    <div class="secnum">贰 · 医药系</div>
+    <div class="person-head">赵步长 · 步长制药</div>
+    <div class="person-sub">心脑血管中药龙头 · 家族传承相对成功的样本</div>
+    <div class="timeline">
+      <div class="trow success"><div class="t-lbl">1942</div><div class="t-txt">生于西安长安区，1963年西安交大医疗专业毕业，中医出身</div></div>
+      <div class="trow success"><div class="t-lbl">1993</div><div class="t-txt">创办咸阳步长制药，主打<b>心脑血管中成药</b>，成陕西医药龙头</div></div>
+      <div class="trow"><div class="t-lbl">家族接班</div><div class="t-txt">大儿子赵涛（联合创始人）、二儿子赵超（总裁）、女儿赵菁（山东丹红制药董事长）<b>——家族传承较成功</b></div></div>
+      <div class="trow"><div class="t-lbl">至今</div><div class="t-txt">仍是知名药企，但因销售模式等问题时有争议</div></div>
+    </div>
+    <div class="verdict">陕西民营药企中<b>"家族支撑事业"</b>而非"家族押注事业"的正面样本。</div>
+  </section>
+
+  <!-- 6 大宗 何金碧 -->
+  <section class="slide" data-title="何金碧">
+    <div class="secnum">叁 · 大宗重工</div>
+    <div class="person-head">何金碧 · 迈科金属</div>
+    <div class="person-sub">陕西第一大民企 · 铜贸帝国与预重整</div>
+    <div class="timeline">
+      <div class="trow success"><div class="t-lbl">1993</div><div class="t-txt">创立迈科集团，大宗商品交易 + 供应链金融 + 期货经纪</div></div>
+      <div class="trow success"><div class="t-lbl">巅峰</div><div class="t-txt">中国最大电解铜供应商之一，2021年营收<b>1598.78亿，陕西民营50强第一</b></div></div>
+      <div class="trow danger"><div class="t-lbl">2022.9</div><div class="t-txt">出现经营性资金困难，业务结构单一、高杠杆预警</div></div>
+      <div class="trow danger"><div class="t-lbl">2023</div><div class="t-txt">欠10亿货款被厦门信达起诉 → <b>正式申请预重整</b></div></div>
+    </div>
+    <div class="verdict">规模巅峰却<b>结构脆弱</b>——把一家贸易公司做成了<b>金融杠杆公司</b>。</div>
+  </section>
+
+  <!-- 7 李黑记 -->
+  <section class="slide" data-title="李黑记">
+    <div class="secnum">叁 · 大宗重工</div>
+    <div class="person-head">李黑记 · 东岭集团</div>
+    <div class="person-sub">村办企业到民营500强，再到债务困局</div>
+    <div class="timeline">
+      <div class="trow success"><div class="t-lbl">1980s</div><div class="t-txt">从村办企业发展成横跨有色、钢铁、地产的大型民企</div></div>
+      <div class="trow success"><div class="t-lbl">长期</div><div class="t-txt"><b>中国民营企业500强</b>，宝鸡乃至陕西民营经济门面</div></div>
+      <div class="trow danger"><div class="t-lbl">近年</div><div class="t-txt"><b>被执行人、限制高消费、票据持续逾期</b>，债务压力沉重</div></div>
+    </div>
+    <div class="verdict">传统大宗/重资产在周期下行+高杠杆下首当其冲——<b>"大"不等于"强"，规模是负债的另一种说法。</b>（与何金碧可对照研究）</div>
+  </section>
+
+  <!-- 8 地产文化 -->
+  <section class="slide" data-title="地产文化系">
+    <div class="secnum">肆 · 地产文化</div>
+    <h2 class="section-title">崔荣华 &amp; 吕建中</h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">崔</div><h3>崔荣华 · 荣华集团</h3><p>西安本土知名民营房企，涉足地产、置业、康养、酒店、文化投资。<br><b>近年转型康养/健康产业</b><br><br>代表西安地产系民企相对稳健的生存样本。</p></div>
+      <div class="card"><div class="c-num">吕</div><h3>吕建中 · 大唐西市</h3><p>唯一在唐长安西市原址上再建的盛唐文化商旅项目，集文博、古玩、会展、地产于一体。<br><b>文化IP + 商业</b>，国家文化产业示范基地<br><br>靠文化IP而非单纯地产立足的成功样本。</p></div>
+    </div>
+  </section>
+
+  <!-- 9 新科技 隆基 -->
+  <section class="slide" data-title="隆基">
+    <div class="secnum">伍 · 新科技系</div>
+    <div class="person-head">李振国 / 钟宝申 · 隆基绿能</div>
+    <div class="person-sub">全球光伏单晶龙头 · 陕西民营科技旗帜</div>
+    <div class="timeline">
+      <div class="trow success"><div class="t-lbl">2000</div><div class="t-txt">李振国创办隆基前身（兰州大学"兰大合伙人"）</div></div>
+      <div class="trow success"><div class="t-lbl">2006</div><div class="t-txt">确立<b>单晶硅技术路线</b>，用技术判断赌赢行业方向</div></div>
+      <div class="trow success"><div class="t-lbl">2019-2020</div><div class="t-txt">单晶市占率反超多晶，<b>2020年达90%</b></div></div>
+      <div class="trow"><div class="t-lbl">2025</div><div class="t-txt">李振国辞任董事总经理，专注技术研发；提出"Solar for Solar""绿电+绿氢"</div></div>
+    </div>
+    <div class="verdict">陕西第一次出现"技术路线判断 + 全球市场"级别的民营科技巨头。</div>
+  </section>
+
+  <!-- 10 巨子 -->
+  <section class="slide" data-title="巨子生物">
+    <div class="secnum">伍 · 新科技系</div>
+    <div class="person-head">严建亚 / 范代娣 · 巨子生物</div>
+    <div class="person-sub">技术夫妻档 · 现任陕西首富</div>
+    <div class="timeline">
+      <div class="trow success"><div class="t-lbl">组合</div><div class="t-txt">严建亚创办<b>巨子生物</b>（胶原蛋白/医美）+ <b>三角防务</b>（军工模锻）；妻子范代娣为西北大学副校长、技术核心</div></div>
+      <div class="trow success"><div class="t-lbl">崛起</div><div class="t-txt">重组胶原蛋白 → "医美+功效护肤"龙头；军工模锻切入航空航天</div></div>
+      <div class="trow success"><div class="t-lbl">2025</div><div class="t-txt">夫妇以约<b>457亿元</b>持股市值成为新一任陕西首富</div></div>
+    </div>
+    <div class="verdict">陕西首富由"地产/政商"转向<b>"科技+实业"</b>的标志性事件。</div>
+  </section>
+
+  <!-- 11 麦科 + 源杰 -->
+  <section class="slide" data-title="麦科·源杰">
+    <div class="secnum">伍 · 新科技系</div>
+    <h2 class="section-title">教授夫妻 &amp; 光芯片新贵</h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">麦</div><h3>王冰/王梅 · 麦科医药</h3><p>交大教授夫妻，2007年创办，从细胞分选转型<b>多肽创新药</b>。<br>2026年6月港股上市，<b>首日涨102.75%</b>，西北首家18A创新药企<br><br>学者创业 + 源头创新 + 资本市场。</p></div>
+      <div class="card"><div class="c-num">源</div><h3>张欣刚 · 源杰科技</h3><p>清华本科+南加州博士，2013年回咸阳创办，坚持<b>IDM全流程</b>，磷化铟光芯片国内第一。<br>2026年成<b>A股第二高价股</b>（市值近千亿）<br><br>海归技术 + 陕西国资陪伴 + AI风口。</p></div>
+    </div>
+  </section>
+
+  <!-- 12 规律 -->
+  <section class="slide" data-title="五大规律">
+    <div class="secnum">陆 · 内在规律</div>
+    <h2 class="section-title">此起彼伏背后的<span class="hl">五条主线</span></h2>
+    <div class="risk">
+      <div class="r"><h3>① 驱动力的切换</h3><p>政商关系 → 技术+资本。谁押对了时代动力，谁穿越周期。</p></div>
+      <div class="r"><h3>② 杠杆是把双刃剑</h3><p>吴一坚、郭家学、李黑记都在高杠杆翻车。放大速度，也放大死亡。</p></div>
+      <div class="r"><h3>③ 大≠强，多元≠安全</h3><p>海星、东盛多元化成包袱；隆基、巨子在单一赛道技术深耕中做大。</p></div>
+      <div class="r"><h3>④ 家族绑定的方式</h3><p>"家族支撑事业"是稳定器，"家族押注事业"是放大器。</p></div>
+      <div class="r"><h3>⑤ 新民营改写叙事</h3><p>首富从吴一坚→严建亚。主导力量从资源/地产/政商转向科技/军工/医美/创新药。</p></div>
+    </div>
+  </section>
+
+  <!-- 13 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">谁押对了<span class="g">时代动力</span>，<br>谁就穿越<span class="g">周期</span>。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:52ch">陕西民营经济是一部淘汰赛——<br>靠政商关系起家者，随政商时代<b>退潮</b>；<br>靠技术 + 资本市场的新民营，正在<b>接棒</b>。</p>
+    <div class="final-note">区域不缺企业家，缺的是与法治化、市场化接轨的新民营土壤</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
