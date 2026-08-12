@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>克里希那穆提：语言之外、分裂之外</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a12;
+  --bg2:#12121c;
+  --bg3:#1c1c28;
+  --text:#c8c4bc;
+  --muted:#6e6a64;
+  --gold:#c9a84c;
+  --gold-bright:#e8c860;
+  --gold-dim:#6a5828;
+  --accent:#d4a849;
+  --blue:#5b8def;
+  --red:#e05555;
+  --green:#5cb878;
+  --purple:#9b7ed8;
+  --teal:#4db8a8;
+  --border:#282838;
+  --font:system-ui,-apple-system,'PingFang SC','Noto Sans SC',sans-serif;
+}
+html{font-size:clamp(14px,1.2vw,18px)}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  line-height:1.55;
+  overflow:hidden;
+  height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+#slides{width:100%;height:100vh;position:relative}
+.slide{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:clamp(1.5rem,4vh,3.5rem) clamp(1.5rem,6vw,7rem);
+  text-align:center;
+}
+.slide.active{display:flex}
+.slide h1{font-size:clamp(2rem,5vw,4rem);font-weight:800;color:var(--gold);margin-bottom:.3em;line-height:1.15}
+.slide h2{font-size:clamp(1.3rem,2.8vw,2.2rem);font-weight:700;color:var(--accent);margin-bottom:.5em;line-height:1.25}
+.slide h3{font-size:clamp(1rem,2vw,1.5rem);font-weight:600;color:var(--gold-dim);margin-bottom:.4em}
+.slide p{font-size:clamp(.9rem,1.6vw,1.3rem);max-width:46rem;margin-bottom:.4em;color:var(--text)}
+.slide .big{font-size:clamp(1.1rem,2.2vw,1.8rem);font-weight:700;color:var(--accent);margin:.5em 0}
+.slide .quote{font-size:clamp(1rem,1.8vw,1.4rem);color:var(--gold);font-style:italic;border-left:3px solid var(--gold);padding-left:1em;margin:.6em 0;text-align:left;max-width:40rem}
+.slide .sub{font-size:clamp(.8rem,1.3vw,.95rem);color:var(--muted);margin-top:.3em}
+.slide ul{text-align:left;max-width:40rem;margin:.3em auto;list-style:none}
+.slide li{font-size:clamp(.85rem,1.4vw,1.1rem);margin:.25em 0;padding-left:1.1em;position:relative}
+.slide li::before{content:'▸';position:absolute;left:0;color:var(--gold)}
+.slide .highlight{color:var(--accent);font-weight:700}
+.slide .grid{display:grid;gap:clamp(.6rem,1.5vw,1.2rem);max-width:58rem;width:100%;margin:.5em auto}
+.slide .grid.g2{grid-template-columns:1fr 1fr}
+.slide .grid.g3{grid-template-columns:1fr 1fr 1fr}
+.slide .card{background:var(--bg2);padding:clamp(.7rem,1.6vw,1.3rem);border-radius:8px;text-align:left;border:1px solid var(--border)}
+.slide .card.center{text-align:center}
+.slide .card h3{color:var(--gold);font-size:clamp(.85rem,1.5vw,1.1rem);margin-bottom:.3em}
+.slide .card p{font-size:clamp(.75rem,1.2vw,.95rem);max-width:none;margin-bottom:.15em}
+.slide .card em{color:var(--accent);font-style:normal}
+.slide .tag{display:inline-block;background:rgba(201,168,76,.12);color:var(--gold);padding:.15em .5em;border-radius:4px;font-size:clamp(.7rem,1vw,.8rem);margin:.15em}
+.slide .num{font-size:clamp(2rem,4vw,3.5rem);font-weight:900;color:var(--gold);line-height:1}
+.slide .divider{width:60%;height:1px;background:var(--border);margin:.6em 0}
+.slide .flow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(.4rem,1vw,.8rem);margin:.5em 0}
+.slide .flow-item{background:var(--bg2);padding:.5em 1em;border-radius:6px;font-size:clamp(.8rem,1.3vw,1rem);border:1px solid var(--border)}
+.slide .flow-item.hl{border-color:var(--gold);color:var(--accent);font-weight:700}
+.slide .arrow{font-size:clamp(1.2rem,2.5vw,2rem);color:var(--muted);margin:0 .2em}
+.slide .layer{display:flex;align-items:center;gap:clamp(.5rem,1.5vw,1rem);text-align:left;max-width:46rem;margin:.25em auto;width:100%}
+.slide .layer .ln{flex-shrink:0;width:clamp(2rem,3.5vw,2.8rem);height:clamp(2rem,3.5vw,2.8rem);border-radius:50%;background:var(--bg2);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:clamp(.9rem,1.6vw,1.3rem);font-weight:800;color:var(--gold)}
+.slide .layer .lc{flex:1}
+.slide .layer .lc h3{font-size:clamp(.85rem,1.4vw,1.1rem);color:var(--accent);margin-bottom:.1em}
+.slide .layer .lc p{font-size:clamp(.75rem,1.2vw,.95rem);max-width:none;margin-bottom:0}
+.slide .bar{display:flex;align-items:center;gap:.6em;margin:.3em 0;max-width:40rem;width:100%}
+.slide .bar .bar-label{width:clamp(5rem,10vw,7rem);text-align:right;font-size:clamp(.75rem,1.2vw,.9rem);color:var(--muted);flex-shrink:0}
+.slide .bar .bar-track{flex:1;height:clamp(.6rem,1.2vw,.9rem);background:var(--bg2);border-radius:4px;overflow:hidden}
+.slide .bar .bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.slide .bar .bar-fill.gold{background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+.slide .bar .bar-fill.blue{background:linear-gradient(90deg,#3a5a9a,var(--blue))}
+.slide .bar .bar-fill.red{background:linear-gradient(90deg,#8a3a3a,var(--red))}
+.slide .bar .bar-fill.green{background:linear-gradient(90deg,#3a7a4a,var(--green))}
+.slide .bar .bar-fill.purple{background:linear-gradient(90deg,#5a3a8a,var(--purple))}
+.slide .bar .bar-fill.teal{background:linear-gradient(90deg,#2a6a5a,var(--teal))}
+.slide .two-col{display:flex;gap:clamp(1rem,2vw,2rem);max-width:54rem;width:100%;margin:.5em auto;align-items:stretch}
+.slide .two-col>div{flex:1}
+.slide .vs{font-size:clamp(1.5rem,3vw,2.5rem);color:var(--muted);font-weight:300}
+.slide .moon{position:relative;width:clamp(4rem,8vw,6rem);height:clamp(4rem,8vw,6rem);border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0e8c8,#c9a84c 40%,#6a5828 80%,#1a1a2a 100%);margin:0 auto;box-shadow:0 0 60px rgba(201,168,76,.15)}
+.slide .finger{position:absolute;bottom:-10%;left:60%;font-size:clamp(2rem,4vw,3rem)}
+#nav{position:fixed;bottom:clamp(.8rem,2.5vh,1.5rem);display:flex;gap:.5em;z-index:10}
+#nav button{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:.4em 1em;border-radius:6px;cursor:pointer;font-size:clamp(.75rem,1.2vw,.9rem);font-family:var(--font)}
+#nav button:hover{background:#2a2a36;border-color:var(--gold)}
+#nav .pi{color:var(--muted);font-size:clamp(.7rem,1vw,.8rem);align-self:center;margin:0 .4em}
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);z-index:10;transition:width .3s}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="slides">
+
+<!-- 1: Title -->
+<div class="slide active">
+  <div class="moon" style="margin-bottom:1.5em"></div>
+  <h1>克里希那穆提</h1>
+  <div class="big">语言之外、分裂之外</div>
+  <div class="divider"></div>
+  <p class="sub">一场认知秩序的降维与重建</p>
+  <div class="quote" style="margin-top:1.5em;max-width:30rem;text-align:center;border:none;font-style:normal">所有文字皆是手指，不是月亮。<br>请勿盯着手指。</div>
+</div>
+
+<!-- 2: 为什么反复击中 -->
+<div class="slide">
+  <h2>为什么克里希那穆提会"反复击中"你</h2>
+  <p>这不是一个知识问题，而是一个<strong>结构问题</strong>。</p>
+  <div class="divider"></div>
+  <p style="text-align:left;max-width:44rem">你之前识别出的三个底层模式——情感表达的系统性缺席、有始无终=系统性回避、性与情感的分裂——这些都归结为"智识成熟但情感表达能力停留在初中水平"。</p>
+  <div class="quote">克氏给你的不是答案，而是一把<em>解剖刀</em>：<br>这些模式不是"你的问题"，而是<em>人类意识的基本结构</em>（内外分裂）在你身上的具体显现。</div>
+</div>
+
+<!-- 3: 七层概览 -->
+<div class="slide">
+  <h2>核心命题：七层递进</h2>
+  <div style="display:flex;flex-direction:column;gap:.3em;max-width:44rem;width:100%">
+    <div class="layer"><div class="ln">1</div><div class="lc"><h3>文字 ≠ 事实</h3><p>符号系统会悄悄取代它所指向的东西</p></div></div>
+    <div class="layer"><div class="ln">2</div><div class="lc"><h3>理智可拒绝一切，也可合理化一切</h3><p>同一个理智，识破骗局，也构建完美的自我辩护</p></div></div>
+    <div class="layer"><div class="ln">3</div><div class="lc"><h3>思想制造了"内外分裂"</h3><p>把经验分成"我"和"非我"——分裂的起源</p></div></div>
+    <div class="layer"><div class="ln">4</div><div class="lc"><h3>外境由宗教和意识形态打造</h3><p>内在世界迎合外在意象，冲突由此而生</p></div></div>
+    <div class="layer"><div class="ln">5</div><div class="lc"><h3>没有外在，也没有内在</h3><p>分裂本身是幻觉——苹果从来只是一整个</p></div></div>
+    <div class="layer"><div class="ln">6</div><div class="lc"><h3>经验者即被经验之物</h3><p>那个"我"就是愤怒本身，没有愤怒就没有"我"</p></div></div>
+    <div class="layer"><div class="ln">7</div><div class="lc"><h3>完整性无法借文字表达</h3><p>文字结构本身就是分裂的——主语和谓语</p></div></div>
+  </div>
+</div>
+
+<!-- 4: 第一层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem)">第一层</div>
+  <h2>文字 ≠ 事实</h2>
+  <p>当你把"爱"这个词说出来的时候，你已经在远离爱本身。</p>
+  <div class="divider"></div>
+  <div class="two-col">
+    <div class="card" style="text-align:center">
+      <h3>🏷️ 文字</h3>
+      <p>"我爱你"</p>
+      <p class="sub">承载文化预设、个人历史、社会期待</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3>💛 实相</h3>
+      <p>当下的感受</p>
+      <p class="sub">活生生的、不经过符号中介的体验</p>
+    </div>
+  </div>
+  <div class="quote" style="margin-top:.8em;max-width:38rem">克氏不是反智。他是在提醒：<em>符号系统有它自己的惯性，它会悄悄取代它所指向的东西。</em></div>
+</div>
+
+<!-- 5: 第二层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem)">第二层</div>
+  <h2>理智：最锋利的双刃剑</h2>
+  <div class="grid g2">
+    <div class="card"><h3>🗡️ 识破骗局</h3><p>理智可以帮你识破意识形态、宗教教条、商业话术</p></div>
+    <div class="card"><h3>🛡️ 自我辩护</h3><p>同一个理智，也能帮你构建一个完美的自我辩护系统</p></div>
+  </div>
+  <div class="divider"></div>
+  <p class="sub" style="text-align:left;max-width:44rem">你之前写"情感表达能力停留在初中水平"——这句话本身就是一个理智构建的<em>解释</em>。它很聪明、很准确，但它也是一种"合理化"：把感受包装成分析，然后觉得"我已经理解了"，从而避免了真正的感受。</p>
+  <div class="quote" style="border-color:var(--red)">理智的自我辩护往往比外部的意识形态更难识破，因为它是<em>你自己建的</em>。你信任它。</div>
+</div>
+
+<!-- 6: 第三层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem)">第三层</div>
+  <h2>思想制造了"内外分裂"</h2>
+  <p>克氏心理学的核心洞见</p>
+  <div class="divider"></div>
+  <div class="flow" style="flex-direction:column;gap:.3em">
+    <div class="flow-item">我的想法 ←→ 别人的期待</div>
+    <div class="flow-item">我的感受 ←→ 社会规范</div>
+    <div class="flow-item">我的需求 ←→ 家庭责任</div>
+    <div class="flow-item">我的渴望 ←→ 功能性运转</div>
+  </div>
+  <p style="margin-top:.8em;text-align:left;max-width:44rem">你不是天生就有"内外分裂"——是思想制造了它。你的"内在世界"（对深度连接的渴望）和"外在世界"（功能性的运转）一直在相互迎合，但从未真正合一。</p>
+  <div class="quote">你活在一个<em>你自己制造</em>的分裂里。</div>
+</div>
+
+<!-- 7: 第四层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem)">第四层</div>
+  <h2>外境由意识形态打造</h2>
+  <p>克氏把个人心理延伸到了<strong>社会结构</strong></p>
+  <div class="grid g2" style="margin-top:.5em">
+    <div class="card"><h3>🏠 你的"外境"</h3><p>父母忙于创业、用行动表达爱而非语言的家庭</p><p class="sub">给了你一个意象："独立"是好的，"需要"是弱的</p></div>
+    <div class="card"><h3>🪞 内在的迎合</h3><p>你变得高度自立，学会了不表达需求，不表达情感</p><p class="sub">内在世界压抑了，但压抑的东西不会消失——它会在深夜反扑</p></div>
+  </div>
+  <div class="quote" style="border-color:var(--red);margin-top:.8em">这就是克氏说的"冲突"：不是你和别人冲突，是你的<em>内在世界和外在世界的意象之间永远对不上账</em>。</div>
+</div>
+
+<!-- 8: 第五层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem);color:var(--teal)">第五层</div>
+  <h2 style="color:var(--teal)">没有外在，也没有内在</h2>
+  <p>克氏最激进、也最难理解的一步</p>
+  <div class="divider"></div>
+  <div class="big" style="color:var(--teal);font-size:clamp(1.2rem,2.3vw,1.8rem)">分裂本身是幻觉。</div>
+  <p style="text-align:left;max-width:44rem;margin-top:.8em">"内在世界"和"外在世界"不是两个东西——它们是同一个意识活动创造出来的两个概念。就像你用刀切一个苹果，切完之后你说"这是两半苹果"，但苹果从来只是一整个。</p>
+  <div class="quote" style="border-color:var(--teal)">你在"分析自己的情感模式"时，假设有一个"分析者"（内在的我）和一个"被分析的情感模式"（外在的我）。但克氏说：<em>这个"分析者"本身就是那个"情感模式"的产物。</em></div>
+</div>
+
+<!-- 9: 第六层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem);color:var(--purple)">第六层</div>
+  <h2 style="color:var(--purple)">经验者即被经验之物</h2>
+  <p>第五层之后的<strong>落地</strong></p>
+  <div class="divider"></div>
+  <div class="two-col">
+    <div class="card center"><h3>通常的理解</h3><div class="flow" style="flex-direction:column;gap:.2em"><div class="flow-item">我</div><div class="arrow">↓</div><div class="flow-item" style="border-color:var(--red);color:var(--red)">愤怒</div></div><p class="sub">"我"在经验"愤怒"</p></div>
+    <div class="card center"><h3>克氏的理解</h3><div class="flow" style="flex-direction:column;gap:.2em"><div class="flow-item hl">我 = 愤怒</div></div><p class="sub">那个"我"就是愤怒本身<br>没有愤怒，就没有那个"愤怒的我"</p></div>
+  </div>
+  <div class="quote" style="border-color:var(--purple);margin-top:1em">你不需要"处理"你的情感缺席——因为那个"处理者"就是情感缺席的产物。你只需要<em>完全地、不带分析地、不去命名地</em>体验当下的感受。</div>
+</div>
+
+<!-- 10: 第七层 -->
+<div class="slide">
+  <div class="num" style="font-size:clamp(1.5rem,3vw,2.5rem)">第七层</div>
+  <h2>完整性无法借文字表达</h2>
+  <p>回到起点，但已经不是起点</p>
+  <div class="divider"></div>
+  <p style="text-align:left;max-width:44rem">不是因为文字"不够好"，而是因为<strong>文字的结构本身就是分裂的</strong>——主语和谓语、观察者和被观察者、我和世界。只要你在用语言，你就在分裂。</p>
+  <div class="quote">这就是为什么克氏反复拒绝把他的教诲变成"体系"。<br>任何体系都是语言结构，<br>语言结构本身就是分裂的产物。</div>
+  <p class="sub" style="margin-top:1em">真理是无路之国。</p>
+</div>
+
+<!-- 11: 七层全貌 -->
+<div class="slide">
+  <h2>七层递进：从分裂到合一</h2>
+  <div class="flow" style="flex-direction:column;gap:.2em">
+    <div class="flow-item">① 文字≠事实</div><div class="arrow">↓</div>
+    <div class="flow-item">② 理智可拒绝一切，也可合理化一切</div><div class="arrow">↓</div>
+    <div class="flow-item">③ 思想制造了"内外分裂"</div><div class="arrow">↓</div>
+    <div class="flow-item">④ 外境由意识形态打造 → 内在迎合</div><div class="arrow">↓</div>
+    <div class="flow-item hl" style="border-color:var(--teal);color:var(--teal)">⑤ 没有外在，也没有内在</div><div class="arrow">↓</div>
+    <div class="flow-item hl" style="border-color:var(--purple);color:var(--purple)">⑥ 经验者即被经验之物</div><div class="arrow">↓</div>
+    <div class="flow-item hl">⑦ 完整性无法借文字表达</div>
+  </div>
+  <p class="sub" style="margin-top:.8em">前三层在<strong>分析"分裂是怎么来的"</strong>，第四层连接个人与社会，后三层在<strong>打破分裂本身</strong>。</p>
+</div>
+
+<!-- 12: 与个人模式连接 -->
+<div class="slide">
+  <h2>与你的三个模式</h2>
+  <div class="grid g3">
+    <div class="card"><h3>💔 情感缺席</h3><p>你不是"没有情感"</p><p class="sub">你是在情感升起的那一刻，已经切到"观察者模式"了。观察者是冷的，站在外面的。你体验到的"情感缺席"不是情感的缺失，而是<em>观察者替代了参与者</em>。</p></div>
+    <div class="card"><h3>🏃 有始无终</h3><p>逃避的不是"结束"</p><p class="sub">你逃避的是<em>成为"正在结束"的那个人</em>。你要站在"结束"之外，观察它，分析它，然后安全撤退。但真正的结束意味着：你就是那个结束本身。</p></div>
+    <div class="card"><h3>⚡ 性与情感分裂</h3><p>"功能性可以，情感连接不够深"</p><p class="sub">身体在参与的时候，你的意识在观察。观察者永远无法真正参与——因为观察者靠"距离"生存。当观察者消失，参与者才会出现。</p></div>
+  </div>
+</div>
+
+<!-- 13: 批判性视角 -->
+<div class="slide">
+  <h2>批判性视角：克氏不是答案</h2>
+  <div class="grid g2">
+    <div class="card"><h3>⚠️ 最大盲区</h3><p>他假设了"一步到位"的可能性</p><p class="sub">他知道终点在哪，但拒绝方法论——因为方法论本身就是分裂的产物。对普通人来说这很致命：<em>你知道终点在哪，但你没有路</em>。</p></div>
+    <div class="card"><h3>🧘 禅宗/道家对比</h3><p>"不立文字"高度一致，但禅宗有<em>修行次第</em>（坐禅、公案、棒喝），庄子用寓言、老子用诗<em>指月亮</em>——克氏拒绝任何"指"。</p></div>
+    <div class="card"><h3>🩺 心理治疗视角</h3><p>克氏缺少"中间态"。一个经历了童年创伤的人，需要先建立安全的"观察者"（治疗师陪伴），再慢慢缩小观察者与痛苦的距离——<em>克氏跳过了前面三步</em>。</p></div>
+    <div class="card"><h3>🔮 神秘主义维度</h3><p>他的洞见来自"直接的感知"而非推论。他的认知方式是<em>直觉-体证型</em>的，而非以分解、验证、复现为特征的科学方式。跟他学，不是学"知识"，而是学"看"。</p></div>
+  </div>
+</div>
+
+<!-- 14: 多元路径 -->
+<div class="slide">
+  <h2>克氏之外的路径</h2>
+  <div class="grid g2" style="max-width:52rem">
+    <div class="card"><h3>🧘 正念/禅修</h3><p>观呼吸，不评判</p><p class="sub">方向一致，但有方法。给分裂者一条路，而非只说"别分裂"</p></div>
+    <div class="card"><h3>🔄 格式塔治疗</h3><p>未完成事件驱动当下模式</p><p class="sub">都强调"当下"，但有治疗框架。把你的"有始无终"变成可操作的治疗目标</p></div>
+    <div class="card"><h3>💞 依恋理论</h3><p>早年关系模式影响终身</p><p class="sub">克氏不谈"原因"，心理学谈原因。帮你理解"为什么"而非只是"是什么"</p></div>
+    <div class="card"><h3>🏛️ 斯多葛哲学</h3><p>区分可控与不可控</p><p class="sub">都强调内在自由，但更"入世"。在"合一"与"社会角色"之间找到平衡</p></div>
+    <div class="card" style="grid-column:1/-1"><h3>🖋️ 存在主义</h3><p>人注定自由，自由即责任</p><p class="sub">都强调直接面对，但萨特更重视选择。把"无内外分裂"转化为"我可以选择"</p></div>
+  </div>
+</div>
+
+<!-- 15: 三个练习 -->
+<div class="slide">
+  <h2>三个可操作的练习</h2>
+  <div class="grid g3">
+    <div class="card"><h3>练习一：停止命名</h3><div class="num" style="font-size:clamp(1.2rem,2.5vw,2rem);color:var(--blue)">5分钟/天</div><p>只是坐着，感受身体。如果有念头出现，<strong>不要给它命名</strong>——不要说"这是焦虑""这是回忆""这是计划"。只是感受那个念头的能量质感。</p><p class="sub">命名是分裂的开始，不命名是合一的练习。</p></div>
+    <div class="card"><h3>练习二：觉察观察者</h3><div class="num" style="font-size:clamp(1.2rem,2.5vw,2rem);color:var(--green)">对话中</div><p>和大宝说话时，注意你什么时候会切到"分析模式"——"她为什么生气？""我应该怎么回应？"——那一刻，你已经变成了观察者。</p><p class="sub">不要对抗观察者，只是<strong>注意到它</strong>。注意到的那一刻，你已经打开了一条缝。</p></div>
+    <div class="card"><h3>练习三：不做任何事</h3><div class="num" style="font-size:clamp(1.2rem,2.5vw,2rem);color:var(--purple)">和小鱼</div><p>每天和小鱼一起，什么都不做——不看书、不看屏幕、不聊天。只是在一起。</p><p class="sub">让他体验"存在不需要理由"，也让你自己体验。这是打破"功能性外境"最简单的入口。</p></div>
+  </div>
+</div>
+
+<!-- 16: 重要提醒 -->
+<div class="slide">
+  <h2>一个重要的提醒</h2>
+  <div class="divider"></div>
+  <div class="big" style="font-size:clamp(1.2rem,2.5vw,2rem)">"思考者即被思考之物"<br>≠<br><span class="highlight">"不要思考"</span></div>
+  <div class="divider"></div>
+  <p style="text-align:left;max-width:44rem">思考是工具，就像手是工具。手里拿着锤子砸自己，问题不是手，是用手的方式。</p>
+  <div class="quote" style="max-width:38rem">克氏的价值在于让你看见<em>"手里有锤子"这个事实</em>，<br>而不是让你从此不用手。</div>
+</div>
+
+<!-- 17: 最后的话 -->
+<div class="slide">
+  <h2>最后的话</h2>
+  <p>克氏对你来说，不是导师，不是答案。</p>
+  <p>他是一个<strong>坐标</strong>——他告诉你"完整"是什么感觉，让你知道你现在所在的"分裂"不是唯一的状态。</p>
+  <div class="divider"></div>
+  <p style="text-align:left;max-width:44rem">但路要你自己走。而且路不在克氏的书中，在：</p>
+  <ul>
+    <li>你下一次和大宝说话时，不分析她，只是听她</li>
+    <li>你下一次和小鱼玩时，不计划"教育目标"，只是玩</li>
+    <li>你下一次感受到情绪时，不命名它，不分析它，只是感受它</li>
+  </ul>
+  <div class="quote" style="margin-top:1em;max-width:38rem">这些才是克氏说的"完整性"。<br>它不在文字里，在<em>你停止分析的那一刻</em>。</div>
+</div>
+
+<!-- 18: 结尾 -->
+<div class="slide">
+  <div class="moon" style="margin-bottom:1.5em"></div>
+  <h1>真理是无路之国</h1>
+  <div class="big" style="font-size:clamp(1.2rem,2.5vw,2rem)">你不是在寻找它<br>你是在成为它</div>
+  <div class="sub" style="margin-top:2em">克里希那穆提<br>最后一次公开演讲，1986年1月，去世前一个月</div>
+</div>
+
+</div>
+
+<div id="nav">
+  <button onclick="prev()">◀</button>
+  <span class="pi" id="pi">1/18</span>
+  <button onclick="next()">▶</button>
+</div>
+
+<script>
+let c=0;
+const s=document.querySelectorAll('.slide'),t=s.length;
+const pi=document.getElementById('pi'),pr=document.getElementById('progress');
+function show(n){
+  s[c].classList.remove('active');
+  c=(n+t)%t;
+  s[c].classList.add('active');
+  pi.textContent=(c+1)+'/'+t;
+  pr.style.width=((c+1)/t*100)+'%';
+}
+function next(){show(c+1)}function prev(){show(c-1)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') {e.preventDefault();next()}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') {e.preventDefault();prev()}
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('#nav')||e.target.closest('button')) return;
+  e.clientX/window.innerWidth>.5?next():prev();
+});
+</script>
+</body>
+</html>
