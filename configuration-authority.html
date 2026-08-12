@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>谁有权配置资源</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f0f;
+  --bg-card:#1a1a1a;
+  --text:#e8e0d4;
+  --muted:#a09888;
+  --gold:#c9a84c;
+  --gold-dim:#8a7030;
+  --accent:#d4a849;
+  --red:#c0392b;
+  --font:system-ui,-apple-system,'PingFang SC','Noto Sans SC',sans-serif;
+}
+html{font-size:clamp(14px,1.2vw,18px)}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  line-height:1.6;
+  overflow:hidden;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+#slides{width:100%;height:100vh;position:relative}
+.slide{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:clamp(2rem,5vh,4rem) clamp(2rem,8vw,8rem);
+  text-align:center;
+}
+.slide.active{display:flex}
+.slide h1{font-size:clamp(2rem,5vw,4rem);font-weight:800;color:var(--gold);margin-bottom:.5em;line-height:1.2}
+.slide h2{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;color:var(--accent);margin-bottom:.6em;line-height:1.3}
+.slide h3{font-size:clamp(1.1rem,2.2vw,1.6rem);font-weight:600;color:var(--gold-dim);margin-bottom:.5em}
+.slide p{font-size:clamp(1rem,1.8vw,1.4rem);max-width:48rem;margin-bottom:.6em;color:var(--text)}
+.slide .big{font-size:clamp(1.2rem,2.4vw,2rem);font-weight:700;color:var(--accent);margin:.6em 0}
+.slide .quote{font-size:clamp(1.1rem,2vw,1.6rem);color:var(--gold);font-style:italic;border-left:3px solid var(--gold);padding-left:1em;margin:.8em 0;text-align:left;max-width:42rem}
+.slide .sub{font-size:clamp(.85rem,1.4vw,1rem);color:var(--muted);margin-top:.5em}
+.slide .author{font-size:clamp(.9rem,1.5vw,1.1rem);color:var(--muted);margin-top:1em}
+.slide ul{text-align:left;max-width:42rem;margin:.4em auto;list-style:none}
+.slide li{font-size:clamp(.9rem,1.5vw,1.2rem);margin:.3em 0;padding-left:1.2em;position:relative;color:var(--text)}
+.slide li::before{content:'▸';position:absolute;left:0;color:var(--gold)}
+.slide .highlight{color:var(--accent);font-weight:700}
+.slide .grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.8rem,2vw,1.5rem);max-width:56rem;width:100%;margin:.6em auto}
+.slide .card{background:var(--bg-card);padding:clamp(.8rem,2vw,1.5rem);border-radius:8px;text-align:left;border:1px solid #2a2a2a}
+.slide .card h3{color:var(--gold);font-size:clamp(.9rem,1.6vw,1.2rem);margin-bottom:.4em}
+.slide .card p{font-size:clamp(.8rem,1.3vw,1rem);max-width:none;margin-bottom:.2em}
+.slide .three-col{grid-template-columns:1fr 1fr 1fr}
+.slide .arrow{font-size:clamp(1.5rem,3vw,2.5rem);color:var(--gold-dim);margin:.2em 0}
+.slide .flow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(.5rem,1.5vw,1rem);margin:.6em 0}
+.slide .flow-item{background:var(--bg-card);padding:.6em 1em;border-radius:6px;font-size:clamp(.8rem,1.4vw,1rem);border:1px solid #2a2a2a}
+.slide .flow-item.gold{border-color:var(--gold);color:var(--accent)}
+.slide .tag{display:inline-block;background:rgba(201,168,76,.15);color:var(--gold);padding:.2em .6em;border-radius:4px;font-size:clamp(.7rem,1.1vw,.85rem);margin:.2em}
+#nav{position:fixed;bottom:clamp(1rem,3vh,2rem);display:flex;gap:.6em;z-index:10}
+#nav button{background:var(--bg-card);border:1px solid #3a3a3a;color:var(--text);padding:.5em 1.2em;border-radius:6px;cursor:pointer;font-size:clamp(.8rem,1.3vw,1rem);font-family:var(--font)}
+#nav button:hover{background:#2a2a2a;border-color:var(--gold)}
+#nav #page-indicator{color:var(--muted);font-size:clamp(.75rem,1.1vw,.85rem);align-self:center;margin:0 .5em}
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);z-index:10;transition:width .3s}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="slides">
+
+<!-- 1: Title -->
+<div class="slide active">
+  <h1>谁有权配置资源</h1>
+  <p class="big">市场、企业家与AI时代的筛选</p>
+  <p class="author">陈玉宇　北京大学光华管理学院　教授</p>
+  <p class="sub" style="margin-top:2em">市场经济的一个深层功能，正在于不断筛选<br>「谁有资格决定资源流向」</p>
+</div>
+
+<!-- 2: Opening -->
+<div class="slide">
+  <h2>市场经济的另一半</h2>
+  <p>市场经济通常被说成一种资源配置机制。但这句话只说了一半。</p>
+  <p style="margin-top:.8em">资源从不自我配置。价格不亲手雇人，竞争不亲自建厂，利润也不自行选择下一轮投资方向。</p>
+  <p class="big">问题不仅是资源流向何方，<br>更是<span class="highlight">谁有权决定其流向</span>。</p>
+</div>
+
+<!-- 3: Entrepreneur -->
+<div class="slide">
+  <h2>企业家是什么</h2>
+  <p>首先是一个<span class="highlight">提出配置判断的人</span>：</p>
+  <p>某种产品值得生产，某项技术值得采用，<br>某个组织流程值得重组，某个尚未被充分表达的需求值得下注。</p>
+  <div class="quote">企业家的权威不由任命而来，<br>而在市场筛选中放大。</div>
+</div>
+
+<!-- 4: AI context -->
+<div class="slide">
+  <h2>AI时代的尖锐问题</h2>
+  <p>当方案、叙事、原型皆可被机器廉价生成，<br>看似能提出配置判断的人骤增。</p>
+  <p style="margin-top:.8em">但社会仍需要决定哪个判断值得投入资源、<br>并为这个决定承担后果的人。</p>
+  <div class="quote">判断可生成，担责不可生成。</div>
+</div>
+
+<!-- 5: 谁有权计划 -->
+<div class="slide">
+  <h2>谁有权计划</h2>
+  <p>问题从来不在有无计划，而在<span class="highlight">谁有权计划</span>。</p>
+  <ul>
+    <li>企业家提出组合判断，起初毫无权威，只是一个假说</li>
+    <li>消费者以购买投票，投资人以估值投票</li>
+    <li>员工以去留投票，供应商以账期投票</li>
+    <li>竞争者以模仿或回避投票</li>
+  </ul>
+  <p class="big">成功者得利润、融资、声誉、人才<br>失败者亏损、出局、配置权收回</p>
+</div>
+
+<!-- 6: 配置权不从拥有资源开始 -->
+<div class="slide">
+  <h2>配置权不从拥有资源开始</h2>
+  <p>历史上多数改变产业结构的企业家，<br>起点上并不拥有其后来所调动资源的万分之一。</p>
+  <p>资本是别人的，人才是市场上的，技术常常是公开的。</p>
+  <p class="big">配置权是<span class="highlight">连续变量</span>，而非一种身份：<br>从一间车库 → 一条产品线 → 一个产业的方向</p>
+</div>
+
+<!-- 7: 四种放大器 -->
+<div class="slide">
+  <h2>四种放大器</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><h3>💰 利润</h3><p>把上一轮判断的正确性直接兑换成下一轮可支配资源</p><p class="sub">最直接的放大器</p></div>
+    <div class="card"><h3>📈 融资</h3><p>将尚未实现的判断提前折现，化为今天可调动的资本</p><p class="sub">配置权的期货市场</p></div>
+    <div class="card"><h3>⭐ 声誉</h3><p>把全部判断记录压缩成可跨行业、跨地域携带的信号</p><p class="sub">最便携的放大器</p></div>
+    <div class="card"><h3>👥 人才流动</h3><p>员工押上自己的年华，对雇主判断力的评估很少为言辞所动</p><p class="sub">最诚实的放大器</p></div>
+  </div>
+</div>
+
+<!-- 8: 撤销是渐进的 -->
+<div class="slide">
+  <h2>撤销是渐进的</h2>
+  <p>配置权很少在一夜之间被剥夺；它是一点一点漏走的：</p>
+  <ul>
+    <li>供应商收紧账期</li>
+    <li>投资人在下一轮压低估值</li>
+    <li>核心员工开始面试</li>
+    <li>客户续约时多问几句</li>
+  </ul>
+  <div class="quote">市场的判决书不是一次性宣读的，<br>它以连续折价的方式执行。</div>
+</div>
+
+<!-- 9: 筛选记录不是品质 -->
+<div class="slide">
+  <h2>市场筛选的是记录，不是品质</h2>
+  <p>市场不问出身、学历、口才、自我叙述</p>
+  <p class="big">它只问一件事：<br>你上一次的配置判断，<span class="highlight">兑现了没有</span>？</p>
+  <p style="margin-top:1em">企业家不是神秘英雄，而是一种制度的产物。</p>
+</div>
+
+<!-- 10: 旧理论 -->
+<div class="slide">
+  <h2>既有理论缺了什么</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="card"><h3>熊彼特</h3><p>实行"新组合"<br>创造性破坏</p></div>
+    <div class="card"><h3>奈特</h3><p>承担不可保险的<br>不确定性</p></div>
+    <div class="card"><h3>哈耶克/柯兹纳</h3><p>发现机会<br>利用分散知识</p></div>
+  </div>
+  <p style="margin-top:1em">这些理论都在回答<span class="highlight">企业家做什么</span>。</p>
+  <p class="big">但没回答：<br>为何某些人赢得更多资本与信任，另一些人被淘汰？</p>
+</div>
+
+<!-- 11: 企业家是制度产出 -->
+<div class="slide">
+  <h2>企业家是筛选制度的产出</h2>
+  <p>一国企业家的多寡，主要不取决于人群中冒险性格的分布密度，而取决于<span class="highlight">筛选制度的质量</span>：</p>
+  <ul>
+    <li>试错空间是否可得</li>
+    <li>反馈是否真实而不受扭曲</li>
+    <li>撤销是否执行而不获豁免</li>
+    <li>判断记录是否可积累、可携带、可验证</li>
+  </ul>
+  <div class="quote">企业家精神的课程培养不出企业家，<br>而资本市场、破产法和可执行的合同能够"生产"企业家。</div>
+</div>
+
+<!-- 12: 为什么主流经济学不讲 -->
+<div class="slide">
+  <h2>为什么主流经济学不讲</h2>
+  <p>阿罗—德布鲁的世界里，所有可能性皆已列出</p>
+  <p class="big">一个所有可能性皆已列出的世界，<br>不需要有人<span class="highlight">提出</span>可能性。</p>
+  <p style="margin-top:1em">企业家进不了模型，不是因为不重要，<br>而是因为模型的结构已把他的问题排除。</p>
+</div>
+
+<!-- 13: 兰格删除了筛选 -->
+<div class="slide">
+  <h2>兰格：保留了计算，删除了筛选</h2>
+  <p>兰格设想的市场社会主义里，企业经理由计划当局任命，<br>任务是遵守规则，而非提出判断。</p>
+  <p>经理不因判断正确而扩大配置权，<br>也不因判断错误而失去它。</p>
+  <div class="quote">半个多世纪后，各国国企改革的反复困顿，<br>多是在为此删除补课。</div>
+</div>
+
+<!-- 14: 市场里的任命 -->
+<div class="slide">
+  <h2>任命 vs 筛选</h2>
+  <p>区别不在有无任命，而在<span class="highlight">任命者自身是否处于筛选之下</span>。</p>
+  <ul>
+    <li>任命错CEO的董事会 → 公司被收购或破产</li>
+    <li>投错项目的基金 → 募不到下一期</li>
+    <li>配置失误的内部计划体制 → 被竞争者整体淘汰</li>
+  </ul>
+  <p class="big">计划经济的任命链条向上追溯，<br>到顶也找不到一个会破产的环节。</p>
+</div>
+
+<!-- 15: 筛选压力穿透 -->
+<div class="slide">
+  <h2>筛选压力穿透到第几层</h2>
+  <p>大公司为什么官僚化？垄断企业为什么趋于平庸？</p>
+  <p>当某一环节被垄断利润、进入壁垒或政治庇护<br>与退出机制隔离开——</p>
+  <p>任命仍在进行，撤销却不再发生。</p>
+  <div class="quote">市场与计划的区别，不是两种非黑即白的标签，<br>而是一个连续的问题：<br><span class="highlight">筛选压力能穿透到组织的第几层。</span></div>
+</div>
+
+<!-- 16: AI横向冲击 -->
+<div class="slide">
+  <h2>AI：一次横向冲击</h2>
+  <p>AI同时压低生成、搜索、预测、编码、表达、局部决策的成本</p>
+  <p style="margin-top:.8em">几乎所有既有的分工安排都要重新定价：</p>
+  <ul>
+    <li>哪些任务应交给机器，哪些须留给人</li>
+    <li>哪些流程应拆开重排，哪些组织边界应重画</li>
+    <li>哪些昨天不可行的产品，今天变得可行</li>
+  </ul>
+  <p class="big">无一是技术问题，全是资源重组判断。</p>
+</div>
+
+<!-- 17: 价值流向 -->
+<div class="slide">
+  <h2>价值流向不可生成的环节</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="card"><h3>🩺 医疗</h3><p>诊断建议可生成<br>采纳哪个建议、承担误诊后果的判断未变便宜</p></div>
+    <div class="card"><h3>⚖️ 法律</h3><p>法律文书可生成<br>出庭策略与执业责任未变便宜</p></div>
+    <div class="card"><h3>📚 教育</h3><p>教学材料可生成<br>决定一个孩子有限时间学什么，未变便宜</p></div>
+  </div>
+  <p style="margin-top:1em">每个行业，价值都在从可生成流向不可生成——<br><span class="highlight">配置判断与后果承担</span>。</p>
+</div>
+
+<!-- 18: AI不能持有配置权 -->
+<div class="slide">
+  <h2>AI为什么不能持有配置权</h2>
+  <p class="big">配置权的本质是可撤销性：<br>获得它的前提，是<span class="highlight">能够失去它</span>。</p>
+  <ul>
+    <li>企业家可以破产，可被清算，可失去声誉</li>
+    <li>AI模型被关闭——一无所失</li>
+    <li>被撤销权威的主体，必须拥有资产、声誉、法律身份与组织生命</li>
+  </ul>
+  <p>AI可参与判断，却不能成为承担配置后果的最终主体。</p>
+</div>
+
+<!-- 19: 顾问与委托人 -->
+<div class="slide">
+  <h2>顾问与委托人</h2>
+  <p>AI可以是历史上最强大的顾问——<br>起草方案、比较方案、压力测试方案<br>将企业家的判断力放大十倍</p>
+  <p style="margin-top:.8em">但顾问永远是顾问：<br>听不听由委托人决定，后果由委托人承受。</p>
+  <div class="quote">采纳建议这个动作本身无法外包。<br>采纳就是签字，签字就是把自己抵押进去。</div>
+</div>
+
+<!-- 20: 担责不可生成 -->
+<div class="slide">
+  <h2>担责不可生成</h2>
+  <p>企业家的不可替代，不在于比AI更会写方案或更会计算</p>
+  <p class="big">他的不可替代，在于他是<br>一个<span class="highlight">可被奖励、惩罚、撤换和清算</span>的<br>配置权威承受者。</p>
+  <p style="margin-top:1em">AI可以帮他判断，但不能替他担责。</p>
+</div>
+
+<!-- 21: 一整套关于失去的制度 -->
+<div class="slide">
+  <h2>一整套关于"失去"的制度</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><h3>有限责任</h3><p>界定失去的边界</p></div>
+    <div class="card"><h3>破产法</h3><p>规定失去的程序</p></div>
+    <div class="card"><h3>抵押与担保</h3><p>为失去提供预先的承诺</p></div>
+    <div class="card"><h3>信用体系</h3><p>记录失去的历史</p></div>
+    <div class="card"><h3>声誉市场</h3><p>为失去定价</p></div>
+  </div>
+  <p style="margin-top:.8em">这套制度是市场经济的<span class="highlight">核心装置</span>。</p>
+  <div class="quote">没有可信的失去，就没有可信的筛选。<br>AI无论多强，接口的另一端<br>必须是一个<span class="highlight">会疼的主体</span>。</div>
+</div>
+
+<!-- 22: 稀缺移到担责 -->
+<div class="slide">
+  <h2>稀缺移到担责的供给侧</h2>
+  <p class="big">AI越强，判断的生成越便宜，<br>配置权反而越向<span class="highlight">少数能担责的主体</span>集中。</p>
+  <p>生成判断的边际成本趋近于零，<br>承担后果的能力却未增加分毫。</p>
+  <p style="margin-top:.8em">AI不会让企业家职能消散在算法里，<br>而是把它从组织的毛细血管中析出，<br>凝结成更清晰、更昂贵、更集中的形态。</p>
+  <p class="big">企业家职能的总密度下降，单价上升。</p>
+</div>
+
+<!-- 23: 信号塌陷 -->
+<div class="slide">
+  <h2>AI破坏旧信号</h2>
+  <p>市场筛选企业家，从来不是直接观察判断质量——<br>质量唯事后可见——而是依靠<span class="highlight">代理信号</span>。</p>
+  <p style="margin-top:.8em">旧信号能筛选，因其昂贵，伪造不划算。</p>
+  <p class="big">AI把这些表层产出的成本压至近零，<br>前提随之瓦解。</p>
+  <p>"看起来会做事"的人急剧变多，<br>"真的能把事情接入现实"的人反而更难识别。</p>
+</div>
+
+<!-- 24: 柠檬市场 -->
+<div class="slide">
+  <h2>柠檬市场的退化逻辑</h2>
+  <p>当买方无法分辨质量，价格向平均质量收敛</p>
+  <p>真企业家的融资成本被劣质同行抬高<br>被迫补贴擅长生成外观者</p>
+  <p>包装的回报率 > 做实事的回报率<br>更多资源流向包装</p>
+  <div class="quote">一个自我强化的退化：<br>信号越不可信，认真做事越吃亏。</div>
+</div>
+
+<!-- 25: 筛选者也在被筛选 -->
+<div class="slide">
+  <h2>筛选者也在被筛选</h2>
+  <p>投资人配置资本，但投资人自己——</p>
+  <ul>
+    <li>被出资人筛选</li>
+    <li>被退出业绩筛选</li>
+    <li>被下一期募资筛选</li>
+  </ul>
+  <p style="margin-top:.8em">识别不出真企业家的基金，几年之内就会从市场上消失。</p>
+  <p class="big">信号塌陷不是筛选的终结，<br>而是筛选压力<span class="highlight">向筛选者的传导</span>。</p>
+</div>
+
+<!-- 26: 筛选机制自我重组 -->
+<div class="slide">
+  <h2>筛选机制自我重组</h2>
+  <p>市场经济更深一层的能力：</p>
+  <p class="big">不仅筛选配置者，<br>还允许<span class="highlight">筛选机制本身被重组</span>。</p>
+  <p style="margin-top:.8em">旧信号失效造成的损失，<br>精确地落在继续依赖旧信号的筛选者头上。</p>
+  <p>发明不出新信号的筛选者，自己会被淘汰；<br>于是新信号终将被发明——<br>非出于任何人的设计，而出于筛选者自身的生存压力。</p>
+</div>
+
+<!-- 27: 真企业家的策略 -->
+<div class="slide">
+  <h2>真企业家的策略</h2>
+  <p>当表达贬值时，理性的做法不是把表达做得更精美——<br>那是在<span class="highlight">贬值资产上加仓</span>。</p>
+  <p style="margin-top:.8em">而是尽早制造不可伪造的记录：</p>
+  <ul>
+    <li>尽早接触付费客户，而非打磨叙事</li>
+    <li>尽早让判断进入有后果的环境，而非停留在演示里</li>
+    <li>尽早留下可追溯的过程，而不只是可展示的结果</li>
+    <li>甚至，尽早经历一次有记录的失败与修正</li>
+  </ul>
+  <div class="quote">在新的信号体系里，一次诚实记录在案的失败，<br>可能比十页生成的成功叙事更值钱。</div>
+</div>
+
+<!-- 28: 信号会死筛选不死 -->
+<div class="slide">
+  <h2>信号会死，筛选不死</h2>
+  <div class="flow" style="flex-direction:column;gap:.5em">
+    <div class="flow-item">印刷术前：识字 = 精英信号</div>
+    <div class="arrow">↓</div>
+    <div class="flow-item">印刷普及：筛选转向学历</div>
+    <div class="arrow">↓</div>
+    <div class="flow-item">高等教育扩张：筛选转向经验与作品集</div>
+    <div class="arrow">↓</div>
+    <div class="flow-item gold">AI时代：筛选转向不可伪造的过程记录与承担后果的历史</div>
+  </div>
+  <p class="big" style="margin-top:1em">当一切表达皆可伪造时，<br>唯一不可伪造的，是你为自己的判断<span class="highlight">实际付出过什么</span>。</p>
+</div>
+
+<!-- 29: 结语 -->
+<div class="slide">
+  <h2>结语</h2>
+  <p>市场经济的核心优势，不在永不出错，<br>而在允许大量配置判断被提出、被检验、被放大或被撤销——<br>且当检验的方法失效时，<span class="highlight">检验方法本身亦在被检验</span>。</p>
+  <div class="quote">算力可以买，退出机制买不来。</div>
+  <p style="margin-top:1em">企业家不应被神秘化为英雄。<br>他是层层嵌套的筛选制度所发现的配置权威，<br>是一连串被市场兑现的判断的人格化，<br>是配置后果的最终承受者。</p>
+</div>
+
+<!-- 30: Final -->
+<div class="slide">
+  <h1>判断可生成<br>担责不可生成</h1>
+  <p style="margin-top:1em">只要这一句还成立，<br>市场对企业家的筛选，<br>便仍是一个经济体最重要的生产过程。</p>
+  <p class="author" style="margin-top:2em">—— 陈玉宇</p>
+</div>
+
+</div>
+
+<div id="nav">
+  <button onclick="prev()">◀ 上一页</button>
+  <span id="page-indicator">1 / 30</span>
+  <button onclick="next()">下一页 ▶</button>
+</div>
+
+<script>
+let current=0;
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+const indicator=document.getElementById('page-indicator');
+const progress=document.getElementById('progress');
+
+function show(n){
+  slides[current].classList.remove('active');
+  current=(n+total)%total;
+  slides[current].classList.add('active');
+  indicator.textContent=(current+1)+' / '+total;
+  progress.style.width=((current+1)/total*100)+'%';
+}
+
+function next(){show(current+1)}
+function prev(){show(current-1)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') {e.preventDefault();next()}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') {e.preventDefault();prev()}
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('#nav')||e.target.closest('button')) return;
+  const x=e.clientX/window.innerWidth;
+  if(x>.5) next(); else prev();
+});
+</script>
+</body>
+</html>
