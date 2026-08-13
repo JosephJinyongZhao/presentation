@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>民营企业家谱系 · 双坐标</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;--violet:#b39ddb;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 250px;max-width:430px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .card.green{border-top-color:var(--green)}.card.green .c-num{color:var(--green)}
+  .card.red{border-top-color:var(--red)}.card.red .c-num{color:var(--red)}
+  .card.blue{border-top-color:var(--blue)}.card.blue .c-num{color:var(--blue)}
+  .card.violet{border-top-color:var(--violet)}.card.violet .c-num{color:var(--violet)}
+  .timeline{display:flex;flex-direction:column;gap:1.6vh;max-width:1350px;width:100%;text-align:left}
+  .trow{display:flex;align-items:flex-start;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .trow .t-lbl{font-family:var(--serif);font-size:clamp(18px,1.9vw,28px);color:var(--gold);min-width:12ch;font-weight:600;line-height:1.2}
+  .trow .t-txt{font-size:clamp(14px,1.5vw,21px);color:var(--muted);line-height:1.55}
+  .trow .t-txt b{color:var(--ink)}
+  .trow.danger{border-left-color:var(--red)}
+  .trow.danger .t-lbl{color:#e7a79b}
+  .trow.success{border-left-color:var(--green)}
+  .trow.success .t-lbl{color:#a8d9bd}
+  .trow.blue{border-left-color:var(--blue)}
+  .trow.blue .t-lbl{color:#a3c8e4}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(224,122,106,.09),transparent)}
+  .dcol.large{background:linear-gradient(165deg,rgba(143,208,168,.08),transparent)}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:#e7a79b}
+  .dcol.large .dcol-head{color:#a8d9bd}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol li .dot{color:#e7a79b;font-size:1.2em;line-height:1}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 240px;max-width:420px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(127,180,217,.08),transparent);border:1px solid rgba(127,180,217,.22);text-align:left;position:relative}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#a3c8e4;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:28ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .chartbox{width:100%;max-width:1200px}
+  .chartbox svg{width:100%;height:auto;display:block}
+  .chartbox text{font-family:var(--sans)}
+  .axis-lbl{font-size:clamp(12px,1.3vw,18px);letter-spacing:.18em}
+  .legend{display:flex;gap:2vw;justify-content:center;margin-top:2.4vh;flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:.6vw;font-size:clamp(12px,1.3vw,18px);color:var(--muted)}
+  .legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+  .step5{display:flex;flex-direction:column;gap:1.8vh;max-width:1350px;width:100%;text-align:left}
+  .srow{display:flex;align-items:center;gap:1.6vw;padding:1.7vh 2.2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--line);text-align:left}
+  .srow .yr{font-family:var(--serif);font-size:clamp(17px,1.8vw,26px);color:var(--gold);min-width:13ch;font-weight:600}
+  .srow .pow{font-size:clamp(13px,1.35vw,19px);color:var(--muted);min-width:13ch}
+  .srow .who{font-size:clamp(14px,1.5vw,21px);color:var(--ink);flex:1;line-height:1.5}
+  .srow .who b{color:var(--gold2)}
+  .srow.g{border-left-color:var(--green)}.srow.b{border-left-color:var(--blue)}.srow.r{border-left-color:var(--red)}
+  .big-num{font-family:var(--serif);font-size:clamp(80px,16vw,240px);line-height:1;font-weight:600;background:linear-gradient(180deg,var(--gold2),rgba(227,195,130,.25));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .era-sub{font-size:clamp(18px,2.4vw,32px);color:var(--ink);margin:2vh 0}
+  .era-sub b{color:var(--gold2)}
+  .era-attr{font-size:clamp(15px,1.9vw,25px);color:var(--muted);max-width:52ch;line-height:1.6}
+  .era-attr b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可投屏讲解</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">中国改革年代 · 民营企业家谱系</div>
+    <h1>时代动力 × 地域基因<br><span class="accent">双坐标看企业家</span></h1>
+    <div class="cover-sub">纵向：改革近半个世纪的五次动力换挡与代际更替<br>横向：地域资源禀赋如何"长"出不同类型的企业家<br>交汇处，就是陕西最清晰的历史坐标</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(14px,1.7vw,23px);color:var(--muted)">企业家是时代动力与地域基因的产物——谁踩对了时代动力，谁吃透了地域禀赋，谁就穿越周期</div>
+  </section>
+
+  <!-- 2 核心命题 + 双坐标图 -->
+  <section class="slide" data-title="核心命题">
+    <div class="secnum">导 · 框架</div>
+    <h2 class="section-title">一套<span class="hl">双坐标</span>的观察框架</h2>
+    <div class="chartbox">
+      <svg viewBox="0 0 900 560">
+        <defs>
+          <linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e07a6a"/><stop offset="1" stop-color="#8fd0a8"/></linearGradient>
+          <linearGradient id="gv" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#7fb4d9"/><stop offset="1" stop-color="#b39ddb"/></linearGradient>
+        </defs>
+        <!-- axes -->
+        <line x1="80" y1="480" x2="860" y2="480" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <line x1="80" y1="480" x2="80" y2="60" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <line x1="80" y1="480" x2="860" y2="480" stroke="#e07a6a" stroke-width="2"/>
+        <line x1="80" y1="480" x2="80" y2="60" stroke="#b39ddb" stroke-width="2"/>
+        <text x="840" y="510" class="axis-lbl" fill="#e07a6a" text-anchor="end">横轴 · 时代动力</text>
+        <text x="96" y="76" class="axis-lbl" fill="#b39ddb">纵轴 · 地域基因</text>
+        <text x="240" y="508" fill="#8b96a6" font-size="15" text-anchor="middle">关系/资源</text>
+        <text x="640" y="508" fill="#8b96a6" font-size="15" text-anchor="middle">技术/资本</text>
+        <text x="92" y="520" fill="#8b96a6" font-size="15">市场/草根</text>
+        <text x="92" y="120" fill="#8b96a6" font-size="15">科教/转化</text>
+        <!-- quadrant labels -->
+        <text x="460" y="140" fill="rgba(255,255,255,.28)" font-size="17" text-anchor="middle">关系型 · 科教高</text>
+        <text x="460" y="440" fill="rgba(255,255,255,.28)" font-size="17" text-anchor="middle">关系型 · 草根</text>
+        <text x="700" y="140" fill="rgba(255,255,255,.28)" font-size="17" text-anchor="middle">技术型 · 科教高</text>
+        <text x="700" y="440" fill="rgba(255,255,255,.28)" font-size="17" text-anchor="middle">技术型 · 草根</text>
+        <!-- old points -->
+        <circle cx="230" cy="390" r="13" fill="#e07a6a" opacity=".85"/>
+        <text x="230" y="372" fill="#e7a79b" font-size="16" text-anchor="middle">吴一坚/李黑记</text>
+        <!-- new points -->
+        <circle cx="700" cy="180" r="13" fill="#8fd0a8" opacity=".9"/>
+        <text x="700" y="150" fill="#a8d9bd" font-size="16" text-anchor="middle">隆基/巨子/麦科</text>
+        <!-- arrow -->
+        <line x1="270" y1="380" x2="660" y2="200" stroke="url(#gg)" stroke-width="4" marker-end="url(#arr)"/>
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8fd0a8"/></marker></defs>
+        <text x="445" y="285" fill="#f0d9a8" font-size="20" text-anchor="middle" font-family="serif">陕西的迁移轨迹</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i style="background:#e07a6a"></i>早年 · 左下</span>
+      <span><i style="background:#8fd0a8"></i>今日 · 右上</span>
+    </div>
+  </section>
+
+  <!-- 3 纵轴导览 -->
+  <section class="slide" data-title="纵轴导览">
+    <div class="secnum">上篇 · 纵轴</div>
+    <h2 class="section-title">改革年代的五次<span class="hl">动力换挡</span></h2>
+    <div class="step5">
+      <div class="srow"><div class="yr">1978–1992</div><div class="pow">体制缝隙</div><div class="who"><b>草根 · 胆识</b>——乡镇企业与个体户，在计划边缘试水</div></div>
+      <div class="srow b"><div class="yr">1992–2001</div><div class="pow">产权明晰</div><div class="who"><b>精英 · 关系</b>——"92派"下海，政商关系成为核心资产</div></div>
+      <div class="srow"><div class="yr">2001–2012</div><div class="pow">城镇化/资源</div><div class="who"><b>杠杆 · 资源</b>——规模为王，重资产狂飙</div></div>
+      <div class="srow r"><div class="yr">2012–2018</div><div class="pow">流量/资本</div><div class="who"><b>平台 · 轻资产</b>——陕西此轮缺席，暴露结构短板</div></div>
+      <div class="srow g"><div class="yr">2018至今</div><div class="pow">硬科技</div><div class="who"><b>科研 · 长周期</b>——技术+资本+人才，陕西踩中节拍</div></div>
+    </div>
+    <div class="final-note">时代动力换挡 = 企业家代际的新陈代谢</div>
+  </section>
+
+  <!-- 4 第一代 -->
+  <section class="slide" data-title="第一代">
+    <div class="secnum">纵轴 · 第一代</div>
+    <div class="big-num">01</div>
+    <div class="era-sub">1978–1992 · <b>体制外的缝隙生长</b></div>
+    <div class="era-attr">计划松动，市场被允许"试点"。<b>草根、胆识、汗水</b>，在体制缝隙里找食，产权长期不清，戴着"红帽子"经营。</div>
+    <div class="grid" style="margin-top:3.4vh">
+      <div class="card"><div class="c-num">鲁</div><h3>鲁冠球 · 万向</h3><p>铁匠铺起步，把乡镇小厂做成汽车零部件龙头。</p></div>
+      <div class="card"><div class="c-num">年</div><h3>年广久 · 傻子瓜子</h3><p>个体户符号，邓小平两次点名保护。</p></div>
+      <div class="card red"><div class="c-num">陕</div><h3>陕西 · 空白</h3><p>军工能源主导，民营连"缝隙"都难觅。</p></div>
+    </div>
+  </section>
+
+  <!-- 5 第二代 -->
+  <section class="slide" data-title="第二代">
+    <div class="secnum">纵轴 · 第二代</div>
+    <div class="big-num">02</div>
+    <div class="era-sub">1992–2001 · <b>"92派"与野蛮生长</b></div>
+    <div class="era-attr">南巡定调，产权明晰化启动。<b>体制内精英下海</b>，双轨制套利空间巨大，<b>政商关系</b>是核心资产。</div>
+    <div class="grid" style="margin-top:3.4vh">
+      <div class="card blue"><div class="c-num">全国</div><h3>陈东升 · 郭广昌 · 冯仑</h3><p>知识精英下海，泰康、复星、万通的"92派"标杆。</p></div>
+      <div class="card red"><div class="c-num">陕</div><h3>吴一坚 · 荣海 · 郭家学</h3><p>金花、海星、东盛——<b>关系拿资源、胆子铺规模</b>。</p></div>
+    </div>
+  </section>
+
+  <!-- 6 第三代 -->
+  <section class="slide" data-title="第三代">
+    <div class="secnum">纵轴 · 第三代</div>
+    <div class="big-num">03</div>
+    <div class="era-sub">2001–2012 · <b>入世与重资产扩张</b></div>
+    <div class="era-attr">加入WTO + 城镇化 + 资源牛市。<b>规模与杠杆成为信仰</b>，政商深度绑定，拿地、拿矿、拿牌照。</div>
+    <div class="grid" style="margin-top:3.4vh">
+      <div class="card blue"><div class="c-num">全国</div><h3>王健林 · 许家印</h3><p>地产与高杠杆的极致，"做大即做强"。</p></div>
+      <div class="card red"><div class="c-num">陕</div><h3>李黑记 · 崔荣华</h3><p>东岭（钢铁/有色）、荣华（地产/农业）——<b>关系+资源+杠杆</b>用到极致，也埋下债务隐患。</p></div>
+    </div>
+  </section>
+
+  <!-- 7 第四代 缺席 -->
+  <section class="slide" data-title="第四代">
+    <div class="secnum">纵轴 · 第四代</div>
+    <div class="big-num">04</div>
+    <div class="era-sub">2012–2018 · <b>移动互联网 · 陕西缺席</b></div>
+    <div class="era-attr">流量、平台、资本+技术，BAT与TMT在杭州、深圳、北京爆发。<br>陕西<b>没有长出全国性平台巨头</b>——流量经济不是陕西禀赋所长。</div>
+    <div class="divider"></div>
+    <div class="quote" style="font-size:clamp(20px,2.6vw,34px)">但这个"缺席"恰恰埋下伏笔：<br><span class="g">没吃到流量红利，不代表没有别的红利。</span></div>
+  </section>
+
+  <!-- 8 第五代 -->
+  <section class="slide" data-title="第五代">
+    <div class="secnum">纵轴 · 第五代</div>
+    <div class="big-num">05</div>
+    <div class="era-sub">2018至今 · <b>硬科技 · 新民营接棒</b></div>
+    <div class="era-attr">高质量发展 + 国产替代。<b>技术 + 资本 + 人才</b>，创始人多为科研背景，长周期、重研发、与国际竞争。</div>
+    <div class="grid" style="margin-top:3.4vh">
+      <div class="card green"><div class="c-num">隆</div><h3>隆基 · 李振国</h3><p>西北大学物理系，单晶硅光伏全球龙头——<b>科教人才 + 制造</b>。</p></div>
+      <div class="card green"><div class="c-num">巨</div><h3>巨子 · 范代娣</h3><p>西大教授创业，重组胶原蛋白，登顶陕西首富——<b>教授 + 生物科技</b>。</p></div>
+      <div class="card green"><div class="c-num">麦</div><h3>麦科 · 王冰/王梅</h3><p>交大教授夫妻，创新药港股上市——<b>教授 + 生物医药</b>。</p></div>
+    </div>
+  </section>
+
+  <!-- 9 纵轴小结表 -->
+  <section class="slide" data-title="纵轴小结">
+    <div class="secnum">纵轴 · 小结</div>
+    <h2 class="section-title">时代动力的一次次<span class="hl">换挡</span></h2>
+    <div class="timeline">
+      <div class="trow"><div class="t-lbl">1978–1992</div><div class="t-txt">体制缝隙 → <b>草根、胆识、汗水</b> → 陕西（空白）</div></div>
+      <div class="trow blue"><div class="t-lbl">1992–2001</div><div class="t-txt">产权明晰 → <b>精英、关系、规模</b> → 吴一坚、荣海、郭家学</div></div>
+      <div class="trow"><div class="t-lbl">2001–2012</div><div class="t-txt">城镇化/资源 → <b>杠杆、资源、政商</b> → 李黑记、崔荣华</div></div>
+      <div class="trow danger"><div class="t-lbl">2012–2018</div><div class="t-txt">流量/资本 → <b>技术+资本+平台</b> → 陕西缺席</div></div>
+      <div class="trow success"><div class="t-lbl">2018至今</div><div class="t-txt">硬科技 → <b>科研、研发、长周期</b> → 隆基、巨子、麦科</div></div>
+    </div>
+    <div class="final-note">靠关系起家的，随政商时代退潮；靠技术起家的，随硬科技时代崛起。</div>
+  </section>
+
+  <!-- 10 横轴导览 -->
+  <section class="slide" data-title="横轴导览">
+    <div class="secnum">下篇 · 横轴</div>
+    <h2 class="section-title">地域基因的<span class="hl">形成逻辑</span></h2>
+    <div class="quote" style="font-size:clamp(22px,3vw,40px);max-width:34ch">有什么样的<b>资源禀赋</b>，<br>就长什么样的<b>产业</b>，<br>就出什么样的<b>企业家</b>。</div>
+    <div class="divider"></div>
+    <div class="lead" style="font-size:clamp(15px,1.9vw,25px);max-width:60ch;color:var(--muted)">自然/历史/制度禀赋 → 主导产业路径 → 企业家的入场方式与气质类型</div>
+  </section>
+
+  <!-- 11 七种地域基因 -->
+  <section class="slide" data-title="地域基因">
+    <div class="secnum">横轴 · 七种地域基因</div>
+    <h2 class="section-title">中国的<span class="hl">企业家地图</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">浙</div><h3>市场网络型</h3><p>人多地少无资源 → 走遍天下，草根商会。<b>宗庆后 · 李书福 · 马云</b></p></div>
+      <div class="card blue"><div class="c-num">粤</div><h3>外向制造型</h3><p>毗邻港澳外资密 → 世界工厂。<b>任正非 · 马化腾 · 王传福</b></p></div>
+      <div class="card green"><div class="c-num">闽</div><h3>跨境敢闯型</h3><p>海岸华侨网络 → 出海冒险。<b>曹德旺</b></p></div>
+      <div class="card"><div class="c-num">苏</div><h3>乡镇改制型</h3><p>集体经济+制造传统 → 重工制造，稳健。</p></div>
+      <div class="card red"><div class="c-num">鲁</div><h3>官本位型</h3><p>国企重工儒家文化 → 民营偏弱，企业家精神受压。</p></div>
+      <div class="card red"><div class="c-num">东</div><h3>路径依赖型</h3><p>重工国企存量巨大 → 体制依赖、转型阵痛。</p></div>
+      <div class="card red"><div class="c-num">晋</div><h3>资源型</h3><p>煤炭矿产 → 资源富豪，周期极强，"成也资源败也资源"。</p></div>
+    </div>
+  </section>
+
+  <!-- 12 陕西禀赋解剖 -->
+  <section class="slide" data-title="陕西禀赋">
+    <div class="secnum">横轴 · 陕西专论</div>
+    <h2 class="section-title">陕西的<span class="hl">三块复合禀赋</span></h2>
+    <div class="grid">
+      <div class="card blue"><div class="c-num">军</div><h3>军工</h3><p>三线建设与航天航空重镇，西飞、航天四院等——<b>技术溢出源</b>。</p></div>
+      <div class="card green"><div class="c-num">教</div><h3>科教</h3><p>西安交大、西工大、西北大学、西电……<b>科研人才密度全国前列</b>。</p></div>
+      <div class="card red"><div class="c-num">能</div><h3>能源</h3><p>陕北煤炭、延长石油、天然气——<b>国企主导</b>，民营难入核心。</p></div>
+    </div>
+    <div class="divider"></div>
+    <div class="era-attr" style="font-size:clamp(15px,1.9vw,25px)">军工+能源皆属国企，民营早年只能在<b>政商关系 / 地产 / 文旅</b>中找机会——所以前几代多为<b>关系型</b>。</div>
+  </section>
+
+  <!-- 13 陕西新路径 -->
+  <section class="slide" data-title="科教转化">
+    <div class="secnum">横轴 · 陕西新路径</div>
+    <h2 class="section-title">科教成果转化：<span class="hl">独有主场</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag">传统受制</span>老路子</div>
+        <ul>
+          <li><span class="dot">·</span>政商关系拿资源</li>
+          <li><span class="dot">·</span>地产 / 文旅</li>
+          <li><span class="dot">·</span>缺产业纵深，规模小起步晚</li>
+        </ul>
+      </div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag">新主场</span>科教转化</div>
+        <ul>
+          <li><span class="dot">·</span>隆基：西北大学物理系 → 光伏龙头</li>
+          <li><span class="dot">·</span>巨子：西大教授范代娣 → 胶原蛋白首富</li>
+          <li><span class="dot">·</span>麦科：交大教授夫妻 → 港股创新药</li>
+          <li><span class="dot">·</span><b>把实验室里的成果，变成能上市的公司</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="final-note">为什么陕西能走通"教授创业"？高校密度高 · 产权赋权松绑 · 硬科技资本愿等长周期</div>
+  </section>
+
+  <!-- 14 综合坐标图 -->
+  <section class="slide" data-title="综合定位">
+    <div class="secnum">综合框架</div>
+    <h2 class="section-title">双坐标定位<span class="hl">陕西民营</span></h2>
+    <div class="chartbox">
+      <svg viewBox="0 0 900 520">
+        <line x1="80" y1="450" x2="840" y2="450" stroke="#e07a6a" stroke-width="2.5"/>
+        <line x1="80" y1="450" x2="80" y2="60" stroke="#b39ddb" stroke-width="2.5"/>
+        <text x="820" y="480" fill="#e07a6a" font-size="17" text-anchor="end" letter-spacing="2">时代动力 → 技术/资本</text>
+        <text x="92" y="76" fill="#b39ddb" font-size="17" letter-spacing="2">地域基因 → 科教转化</text>
+        <!-- migration path -->
+        <path d="M200 400 C 360 380, 500 300, 720 160" fill="none" stroke="url(#gg2)" stroke-width="5" stroke-dasharray="2 10" marker-end="url(#arr2)"/>
+        <defs>
+          <linearGradient id="gg2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#e07a6a"/><stop offset="1" stop-color="#8fd0a8"/></linearGradient>
+          <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8fd0a8"/></marker>
+        </defs>
+        <circle cx="200" cy="400" r="16" fill="#e07a6a" opacity=".9"/>
+        <text x="200" y="372" fill="#e7a79b" font-size="18" text-anchor="middle">早年 · 左下</text>
+        <text x="200" y="432" fill="#8b96a6" font-size="15" text-anchor="middle">政商关系 + 资源地产</text>
+        <circle cx="720" cy="160" r="16" fill="#8fd0a8"/>
+        <text x="720" y="118" fill="#a8d9bd" font-size="18" text-anchor="middle">今日 · 右上</text>
+        <text x="720" y="196" fill="#8b96a6" font-size="15" text-anchor="middle">科教转化 + 硬科技</text>
+        <text x="470" y="285" fill="#f0d9a8" font-size="22" text-anchor="middle" font-family="serif">陕西民营的历史，就是一次从"左下"向"右上"的迁移</text>
+      </svg>
+    </div>
+    <div class="final-note">站在右上象限的，比留在左下象限的，更符合时代动力，也更吃透本地禀赋</div>
+  </section>
+
+  <!-- 15 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语 · 启示</div>
+    <div class="quote">判断一家企业，<br>先问两个<span class="g">坐标</span>。</div>
+    <div class="divider"></div>
+    <div class="risk" style="margin-top:2vh">
+      <div class="r"><h3>① 它站在哪个时代动力上？</h3><p>关系？资源？流量？还是技术？——答案决定它能否穿越周期。</p></div>
+      <div class="r"><h3>② 它吃哪份地域禀赋？</h3><p>市场？制造？还是科教？——答案决定它的主场在哪。</p></div>
+      <div class="r"><h3>③ 陕西的机会在科教转化</h3><p>不模仿温州、不复制广东，把"教授创业"这条路走深走透。</p></div>
+    </div>
+    <div class="final-note">真正能穿越多轮换挡的，是能持续把禀赋与时代重新对齐的企业家</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
