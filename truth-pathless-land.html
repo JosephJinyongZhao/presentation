@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实相的无路之国 · 克里希那穆提 × 科学心智</title>
+<style>
+  :root{
+    --bg:#07090d;--bg2:#0c1017;--panel:#10151f;--panel2:#0a0e15;
+    --ink:#eef2f7;--muted:#8b96a6;
+    --gold:#e3c382;--gold2:#f0d9a8;--line:rgba(227,195,130,.22);--line2:rgba(255,255,255,.08);
+    --green:#8fd0a8;--red:#e07a6a;--blue:#7fb4d9;--violet:#b39ddb;
+    --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 700px at 78% -10%,rgba(227,195,130,.10),transparent 60%),radial-gradient(900px 600px at 8% 108%,rgba(127,180,217,.07),transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(rgba(255,255,255,.028) 1px,transparent 1px);background-size:26px 26px}
+  .stage{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:center;padding:4vh 5vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 8vw;opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .slide.left{transform:translateX(-26px)}.slide.right{transform:translateX(26px)}
+  .kicker{font-size:clamp(13px,1.6vw,20px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:2.4vh}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,6.4vw,90px);line-height:1.12;letter-spacing:.02em}
+  h1 .accent{color:var(--gold2)}
+  .cover-sub{margin-top:3.4vh;font-size:clamp(16px,2.3vw,30px);color:var(--muted);max-width:60ch;line-height:1.6}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,56px);color:var(--gold2);margin-bottom:2vh}
+  .lead{font-size:clamp(17px,2.4vw,32px);line-height:1.55;max-width:46ch}
+  .lead b{color:var(--gold2)}
+  .divider{width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh 0}
+  .secnum{font-family:var(--serif);font-size:clamp(12px,1.4vw,18px);color:var(--gold);letter-spacing:.3em;margin-bottom:1vh}
+  .section-title{font-family:var(--serif);font-size:clamp(30px,4.4vw,60px);font-weight:600;margin-bottom:4.5vh;line-height:1.2}
+  .section-title .hl{color:var(--gold2)}
+  .grid{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-top:2px solid var(--gold);border-radius:14px;padding:3.4vh 2.6vw;flex:1 1 250px;max-width:440px;text-align:left;position:relative;overflow:hidden;transition:transform .35s ease,border-color .35s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--line)}
+  .card .c-num{font-family:var(--serif);font-size:clamp(30px,3vw,40px);color:var(--gold);opacity:.85;line-height:1}
+  .card h3{font-size:clamp(18px,1.9vw,26px);color:var(--ink);margin:1.2vh 0 1vh;font-weight:600}
+  .card p{font-size:clamp(14px,1.45vw,20px);color:var(--muted);line-height:1.6}
+  .card p b{color:var(--ink)}
+  .card.green{border-top-color:var(--green)}.card.green .c-num{color:var(--green)}
+  .card.red{border-top-color:var(--red)}.card.red .c-num{color:var(--red)}
+  .card.blue{border-top-color:var(--blue)}.card.blue .c-num{color:var(--blue)}
+  .card.violet{border-top-color:var(--violet)}.card.violet .c-num{color:var(--violet)}
+  .timeline{display:flex;flex-direction:column;gap:1.6vh;max-width:1350px;width:100%;text-align:left}
+  .trow{display:flex;align-items:flex-start;gap:1.6vw;padding:2vh 2.4vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .trow .t-lbl{font-family:var(--serif);font-size:clamp(18px,1.9vw,28px);color:var(--gold);min-width:12ch;font-weight:600;line-height:1.2}
+  .trow .t-txt{font-size:clamp(14px,1.5vw,21px);color:var(--muted);line-height:1.55}
+  .trow .t-txt b{color:var(--ink)}
+  .trow.red{border-left-color:var(--red)}.trow.red .t-lbl{color:#e7a79b}
+  .trow.green{border-left-color:var(--green)}.trow.green .t-lbl{color:#a8d9bd}
+  .trow.blue{border-left-color:var(--blue)}.trow.blue .t-lbl{color:#a3c8e4}
+  .trow.violet{border-left-color:var(--violet)}.trow.violet .t-lbl{color:#c3b0e0}
+  .duo{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line2);width:100%;max-width:1500px;box-shadow:0 30px 80px -40px rgba(0,0,0,.7);position:relative}
+  .dcol{flex:1;padding:4vh 3vw;text-align:left}
+  .dcol.small{background:linear-gradient(165deg,rgba(224,122,106,.09),transparent)}
+  .dcol.large{background:linear-gradient(165deg,rgba(143,208,168,.08),transparent)}
+  .dcol-head{font-size:clamp(18px,2vw,28px);font-weight:700;margin-bottom:2.4vh;display:flex;align-items:center;gap:.8vw}
+  .dcol.small .dcol-head{color:#e7a79b}
+  .dcol.large .dcol-head{color:#a8d9bd}
+  .dcol ul{list-style:none}
+  .dcol li{font-size:clamp(14px,1.6vw,23px);line-height:1.5;padding:.7em 0;border-bottom:1px dashed var(--line2);display:flex;gap:1vw;align-items:flex-start}
+  .dcol li:last-child{border-bottom:none}
+  .dcol li .dot{font-size:1.2em;line-height:1}
+  .dcol.small li .dot{color:#e7a79b}
+  .dcol.large li .dot{color:#a8d9bd}
+  .risk{display:flex;gap:1.6vw;flex-wrap:wrap;justify-content:center;max-width:1500px;width:100%}
+  .risk .r{flex:1 1 240px;max-width:420px;border-radius:14px;padding:3vh 2vw;background:linear-gradient(160deg,rgba(179,157,219,.08),transparent);border:1px solid rgba(179,157,219,.22);text-align:left;position:relative}
+  .risk .r h3{font-size:clamp(16px,1.7vw,23px);color:#c3b0e0;margin-bottom:1vh;font-weight:600}
+  .risk .r p{font-size:clamp(13px,1.4vw,19px);color:var(--muted);line-height:1.6}
+  .risk.red .r{background:linear-gradient(160deg,rgba(224,122,106,.08),transparent);border-color:rgba(224,122,106,.22)}
+  .risk.red .r h3{color:#e7a79b}
+  .quote{font-family:var(--serif);font-size:clamp(26px,4vw,54px);line-height:1.5;max-width:30ch}
+  .quote .g{color:var(--gold2)}
+  .final-note{color:var(--muted);font-size:clamp(14px,1.5vw,20px);margin-top:4vh;letter-spacing:.06em}
+  .nav{position:fixed;z-index:5;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:2vw;background:rgba(10,13,18,.72);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:999px;padding:.8vh 1.4vw}
+  .nav button{background:none;border:none;color:var(--gold);font-size:clamp(22px,2.4vw,34px);cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s,transform .2s}
+  .nav button:hover{opacity:1;transform:scale(1.15)}
+  .dots{display:flex;gap:.55vw}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--gold);width:26px;border-radius:6px}
+  .count{color:var(--muted);font-size:clamp(12px,1.2vw,16px);letter-spacing:.15em}
+  .hint{position:fixed;z-index:4;top:2.6vh;right:3vw;color:var(--muted);font-size:clamp(11px,1.1vw,15px);letter-spacing:.2em;opacity:.6}
+  .step{display:flex;flex-direction:column;gap:1.6vh;max-width:1250px;width:100%;text-align:left}
+  .st{display:flex;align-items:center;gap:1.6vw;padding:1.6vh 2vw;border-radius:12px;background:linear-gradient(120deg,var(--panel),transparent);border-left:4px solid var(--gold);text-align:left}
+  .st .n{font-family:var(--serif);font-size:clamp(20px,2vw,30px);color:var(--gold);min-width:3ch;font-weight:600}
+  .st .t{font-size:clamp(14px,1.5vw,21px);color:var(--ink);line-height:1.5}
+  .st .t b{color:var(--gold2)}
+  .st .t span{color:var(--muted)}
+  .chartbox{width:100%;max-width:1100px}
+  .chartbox svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:2vw;justify-content:center;margin-top:2.4vh;flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:.6vw;font-size:clamp(12px,1.3vw,18px);color:var(--muted)}
+  .legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="hint">◀ ▶ 方向键翻页 · 可投屏讲解</div>
+<div class="stage">
+
+  <!-- 1 COVER -->
+  <section class="slide active" data-title="封面">
+    <div class="kicker">克里希那穆提 × 科学心智</div>
+    <h1>实相的<br><span class="accent">无路之国</span></h1>
+    <div class="cover-sub">历史与宗教找不到它，辩证找不到它，改变观点也无济于事<br>只有当心智从它拼凑的一切中解脱，才能洞见实相</div>
+    <div class="divider"></div>
+    <div style="font-size:clamp(15px,1.9vw,25px);color:var(--muted)">一篇写给"科学时代的确信者"的自我审视</div>
+  </section>
+
+  <!-- 2 核心命题 -->
+  <section class="slide" data-title="核心命题">
+    <div class="secnum">导 · 命题</div>
+    <div class="quote">所有通往实相的努力，<br>都在<span class="g">背着实相</span>而行。</div>
+    <div class="divider"></div>
+    <div class="era-sub" style="font-size:clamp(18px,2.3vw,30px);color:var(--muted)">唯一的门，是放下"已知"——<b style="color:var(--ink)">Freedom from the Known</b></div>
+  </section>
+
+  <!-- 3 三个否定 -->
+  <section class="slide" data-title="三个否定">
+    <div class="secnum">上篇 · 克里希那穆提</div>
+    <h2 class="section-title">"无路之国"的<span class="hl">三个否定</span></h2>
+    <div class="grid">
+      <div class="card"><div class="c-num">无路</div><h3>No Path</h3><p>没有方法、系统、道路能通往实相。<b>所有法门都是用已知去框未知</b>——越走越在牢笼里打转。</p></div>
+      <div class="card blue"><div class="c-num">无经验</div><h3>Not Experienceable</h3><p>实相无法被"经验"。因为经验暗含分裂——<b>"经验者"与"被经验的对象"</b>，而这二元正是遮蔽之源。</p></div>
+      <div class="card violet"><div class="c-num">无思想</div><h3>Not via Thought</h3><p>辩证、观点、信念都是<b>心智的拼凑物</b>。换一种信念，只是换一个牢笼。<b>思考无法抵达实相。</b></p></div>
+    </div>
+  </section>
+
+  <!-- 4 K正面主张 -->
+  <section class="slide" data-title="正面主张">
+    <div class="secnum">上篇 · 正面主张</div>
+    <h2 class="section-title">克里希那穆提的<span class="hl">正面主张</span></h2>
+    <div class="timeline">
+      <div class="trow violet"><div class="t-lbl">观察者即被观察者</div><div class="t-txt">看见愤怒时，"看愤怒的我"与"愤怒"并非两个东西。<b>二元瓦解，实相才显现。</b></div></div>
+      <div class="trow blue"><div class="t-lbl">觉察而非专注</div><div class="t-txt">专注是聚焦于一点（仍是选择与排除）；<b>觉察是不带选择地、整体地、如实地观看。</b></div></div>
+      <div class="trow gold"><div class="t-lbl">实相是活的</div><div class="t-txt">一旦你把它变成知识、信念、观点，它立刻死去。<b>实相不能被"持有"，只能被"洞见"。</b></div></div>
+    </div>
+  </section>
+
+  <!-- 5 核心问题 -->
+  <section class="slide" data-title="核心问题">
+    <div class="secnum">中篇 · 对话</div>
+    <div class="quote" style="font-size:clamp(24px,3.4vw,46px)">如果"无路"，<br>为何科学这条"路"<span class="g">如此有效</span>？</div>
+    <div class="divider"></div>
+    <div class="final-note" style="font-size:clamp(15px,1.8vw,23px)">这是全篇最值得你停留的问题</div>
+  </section>
+
+  <!-- 6 两层面答案 -->
+  <section class="slide" data-title="两层面答案">
+    <div class="secnum">中篇 · 两层面答案</div>
+    <h2 class="section-title">科学与 K 的<span class="hl">分工</span></h2>
+    <div class="duo">
+      <div class="dcol small">
+        <div class="dcol-head"><span class="tag" style="font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor">科学有效</span>可操作层</div>
+        <ul>
+          <li><span class="dot">·</span>处理可观测、可操作的那一层实相</li>
+          <li><span class="dot">·</span>在这里"路"真实有效——造出飞机、芯片、疫苗</li>
+        </ul>
+      </div>
+      <div class="dcol large">
+        <div class="dcol-head"><span class="tag" style="font-size:clamp(10px,1vw,14px);letter-spacing:.2em;padding:.4em .9em;border-radius:999px;border:1px solid currentColor">K 的洞察</span>边界</div>
+        <ul>
+          <li><span class="dot">·</span>科学只逼近"它自己框架能容纳"的实相</li>
+          <li><span class="dot">·</span>回答"世界如何运作"，不回答"观察者是谁"</li>
+          <li><span class="dot">·</span><b>能走得很远，但走不出"已知"</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="final-note">科学不是错的，只是有它的边界</div>
+  </section>
+
+  <!-- 7 科学训练者的盲区 -->
+  <section class="slide" data-title="盲区">
+    <div class="secnum">中篇 · 盲区</div>
+    <h2 class="section-title">科学训练者的<span class="hl">集体盲区</span></h2>
+    <div class="risk red">
+      <div class="r"><h3>科学主义</h3><p>把科学方法误当作实相本身。"科学的"被默认为"真实的"——<b>不是科学在说话，是时代在催眠。</b></p></div>
+      <div class="r"><h3>确认偏误</h3><p>只找支持自己信念的证据。科学训练教你证伪，<b>科学文化却让你对"科学正确"失去证伪意识。</b></p></div>
+      <div class="r"><h3>达克效应</h3><p>越在框架内熟练，越难看见框架外。<b>专业深度，常常同时是视野的窄化。</b></p></div>
+      <div class="r"><h3>时代盲区</h3><p>整个时代替你确认。当"所有人都信科学能解释一切"，<b>共识不等于实相，只是大家用同一副眼镜。</b></p></div>
+    </div>
+  </section>
+
+  <!-- 8 科学的自救 -->
+  <section class="slide" data-title="科学自救">
+    <div class="secnum">中篇 · 自救</div>
+    <h2 class="section-title">科学自身的<span class="hl">自我修正</span></h2>
+    <div class="timeline">
+      <div class="trow green"><div class="t-lbl">波普尔</div><div class="t-txt"><b>可证伪性</b>——科学命题的价值不在"它是真的"，而在"它可能被证明是假的"。<b>科学不宣称绝对真理，只提供"还没被推翻的近似"。</b></div></div>
+      <div class="trow blue"><div class="t-lbl">库恩</div><div class="t-txt"><b>范式转换</b>——常规科学→危机→范式革命。从地心说、日心说，到牛顿、爱因斯坦，<b>科学自己也"换路"。</b></div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="era-sub" style="font-size:clamp(16px,2vw,26px);color:var(--muted)">科学一遍遍证明：它认为的"实相"，其实只是<b style="color:var(--gold2)">"当前的范式"</b>——与"无路"惊人呼应</div>
+  </section>
+
+  <!-- 9 去执练习 -->
+  <section class="slide" data-title="去执练习">
+    <div class="secnum">下篇 · 方法</div>
+    <h2 class="section-title">七个<span class="hl">去执练习</span></h2>
+    <div class="step">
+      <div class="st"><div class="n">1</div><div class="t"><b>命名你的框架</b> <span>— 写下你深信不疑的 3 个信念，看见它们是第一步</span></div></div>
+      <div class="st"><div class="n">2</div><div class="t"><b>反向证伪</b> <span>— 为每个信念认真寻找对立面的最强证据</span></div></div>
+      <div class="st"><div class="n">3</div><div class="t"><b>多元采样</b> <span>— 定期读与你立场相反的观点</span></div></div>
+      <div class="st"><div class="n">4</div><div class="t"><b>区分三层</b> <span>— 事实 / 解释 / 信念，多数执念是把后两者当成事实</span></div></div>
+      <div class="st"><div class="n">5</div><div class="t"><b>苏格拉底式自问</b> <span>— "我是如何知道这是真的？"</span></div></div>
+      <div class="st"><div class="n">6</div><div class="t"><b>练习"不知道"</b> <span>— 每天主动说一次"我不知道"</span></div></div>
+      <div class="st"><div class="n">7</div><div class="t"><b>觉察"我"的出场</b> <span>— 是实相在说话，还是"我"在维护自己？</span></div></div>
+    </div>
+  </section>
+
+  <!-- 10 批判K -->
+  <section class="slide" data-title="批判K">
+    <div class="secnum">下篇 · 反躬自省</div>
+    <h2 class="section-title">批判克里希那穆提<span class="hl">本身</span></h2>
+    <div class="risk">
+      <div class="r"><h3>① "无路"成为新执念</h3><p>执着于"放下"，"放下"就成了你的"持有"。以"我要无路"为目标，你已在选择。</p></div>
+      <div class="r"><h3>② 反智的滑坡</h3><p>"思想无路"若被简单化，会滑向反理性、反科学。不该成为拒绝思考的借口。</p></div>
+      <div class="r"><h3>③ 二元的悖论</h3><p>反对二元，但"无路 vs 有路"本身又是二元。彻底反二元的思想无法用二元表达。</p></div>
+      <div class="r"><h3>④ 人间仍需"有路"</h3><p>在存在层面"无路"；但在人间还要吃饭、工作、做决策——那里"路"必须存在。</p></div>
+    </div>
+  </section>
+
+  <!-- 11 整合 -->
+  <section class="slide" data-title="整合">
+    <div class="secnum">整合 · 互补</div>
+    <h2 class="section-title">两种智慧，<span class="hl">不是对立，是互补</span></h2>
+    <div class="chartbox">
+      <svg viewBox="0 0 1000 430">
+        <rect x="40" y="30" width="430" height="360" rx="16" fill="rgba(224,122,106,.08)" stroke="rgba(224,122,106,.35)" stroke-width="2"/>
+        <text x="255" y="80" fill="#e7a79b" font-size="26" text-anchor="middle" font-family="serif">科学</text>
+        <text x="255" y="120" fill="#8b96a6" font-size="19" text-anchor="middle">可观测世界如何运作</text>
+        <text x="255" y="180" fill="#eef2f7" font-size="22" text-anchor="middle">严谨</text>
+        <text x="255" y="220" fill="#eef2f7" font-size="22" text-anchor="middle">可证伪</text>
+        <text x="255" y="260" fill="#eef2f7" font-size="22" text-anchor="middle">可操作</text>
+        <text x="255" y="320" fill="#8b96a6" font-size="19" text-anchor="middle">谦卑于未知</text>
+        <rect x="530" y="30" width="430" height="360" rx="16" fill="rgba(179,157,219,.08)" stroke="rgba(179,157,219,.35)" stroke-width="2"/>
+        <text x="745" y="80" fill="#c3b0e0" font-size="26" text-anchor="middle" font-family="serif">克里希那穆提</text>
+        <text x="745" y="120" fill="#8b96a6" font-size="19" text-anchor="middle">存在者本身是什么</text>
+        <text x="745" y="180" fill="#eef2f7" font-size="22" text-anchor="middle">觉察</text>
+        <text x="745" y="220" fill="#eef2f7" font-size="22" text-anchor="middle">去执</text>
+        <text x="745" y="260" fill="#eef2f7" font-size="22" text-anchor="middle">不被框架绑架</text>
+        <text x="745" y="320" fill="#8b96a6" font-size="19" text-anchor="middle">对已知之外敬畏</text>
+        <text x="500" y="240" fill="#f0d9a8" font-size="34" text-anchor="middle" font-family="serif">⇄</text>
+        <text x="500" y="300" fill="#8b96a6" font-size="17" text-anchor="middle">互相纠偏</text>
+      </svg>
+    </div>
+    <div class="final-note">用科学的严谨约束 K 的玄虚，用 K 的开放约束科学的傲慢</div>
+  </section>
+
+  <!-- 12 结语 -->
+  <section class="slide" data-title="结语">
+    <div class="kicker">结语</div>
+    <div class="quote">科学是你手里的<b>一副眼镜</b>，<br>不是你的<b>眼睛</b>。</div>
+    <div class="divider"></div>
+    <p class="lead" style="font-size:clamp(17px,2.2vw,29px);max-width:50ch">防执念的最终方法，不是"找到更正确的实相"，而是<b>永远为自己的确信留一道缝。</b></p>
+    <div class="final-note">科学让你走得更远；克里希那穆提让你走得不被自己束缚。两者都值得拥有，也需彼此制衡。</div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count"></div>
+  <button id="next" aria-label="下一页">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const countEl=document.getElementById('count');
+  let cur=0;
+  slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsWrap.appendChild(d);});
+  const dots=[...dotsWrap.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    const dir=n>cur?'right':(n<cur?'left':'');
+    slides[cur].classList.remove('active');
+    if(dir)slides[n].classList.add(dir);
+    cur=n;
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    countEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+    setTimeout(()=>slides.forEach(s=>s.classList.remove('left','right')),400);
+  }
+  document.getElementById('next').addEventListener('click',()=>go(cur+1));
+  document.getElementById('prev').addEventListener('click',()=>go(cur-1));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
+</script>
+</body>
+</html>
