@@ -287,6 +287,9 @@
   document.getElementById('next').addEventListener('click',()=>go(cur+1));
   document.getElementById('prev').addEventListener('click',()=>go(cur-1));
   document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}if(e.key==='ArrowLeft')go(cur-1);});
+  let tx=0,ty=0,ts=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;ts=Date.now();},{passive:true});
+  document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty,dt=Date.now()-ts;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5&&dt<500){if(dx<0)go(cur+1);else go(cur-1);}},{passive:true});
   countEl.textContent='01 / '+String(slides.length).padStart(2,'0');
 </script>
 </body>
