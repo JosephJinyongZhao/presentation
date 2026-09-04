@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>选择重于努力 — 增长、稀缺性与主动进取 — 赵锦勇</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a16;
+    --bg2: #12122a;
+    --gold: #c9a84c;
+    --gold-light: #e8d48b;
+    --cream: #f5f0e8;
+    --text: #ece7dd;
+    --text-dim: rgba(236,231,221,0.62);
+    --accent: #d46a4a;
+    --blue: #4a7fb5;
+    --green: #4aa875;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans SC', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
+  .slides-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+  .slide {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 5vh 5vw; opacity: 0; transform: translateY(40px);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; text-align: center;
+    background: radial-gradient(1200px 600px at 50% -10%, rgba(201,168,76,0.08), transparent 60%), var(--bg);
+  }
+  .slide.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .slide.exit { opacity: 0; transform: translateY(-40px); }
+
+  .kicker { font-size: clamp(0.75rem, 1vw, 0.95rem); color: var(--gold); letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 16px; font-weight: 600; }
+  h2 { font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3.7rem); font-weight: 900; color: var(--cream); line-height: 1.35; margin-bottom: 30px; max-width: 92%; }
+  h2 .hl { color: var(--gold-light); }
+  h2 em { font-style: normal; }
+  .lead { font-size: clamp(1.05rem, 1.7vw, 1.6rem); color: var(--text-dim); line-height: 1.9; max-width: 86%; }
+  .lead strong { color: var(--gold-light); }
+
+  .slide-title { justify-content: center; }
+  .slide-title .gold-bar { width: 84px; height: 4px; background: var(--gold); margin-bottom: 40px; border-radius: 2px; }
+  .slide-title h1 { font-family: 'Noto Serif SC', serif; font-size: clamp(2.4rem, 4.8vw, 4.6rem); font-weight: 900; letter-spacing: 0.04em; line-height: 1.4; margin-bottom: 26px; }
+  .slide-title h1 .sub { display: block; font-size: 0.55em; font-weight: 700; color: var(--gold-light); margin-top: 10px; letter-spacing: 0.1em; }
+  .slide-title .subtitle { font-size: clamp(1rem, 1.5vw, 1.4rem); color: var(--gold-light); letter-spacing: 0.1em; font-weight: 300; margin-bottom: 46px; }
+  .slide-title .meta { font-size: clamp(0.75rem, 1vw, 0.95rem); color: rgba(255,255,255,0.4); letter-spacing: 0.08em; }
+
+  .big-quote { font-family: 'Noto Serif SC', serif; font-size: clamp(1.35rem, 2.6vw, 2.5rem); font-weight: 600; line-height: 1.75; max-width: 88%; border-left: 5px solid var(--gold); padding: 24px 34px; background: rgba(201,168,76,0.06); text-align: left; }
+  .big-quote em { color: var(--gold-light); font-style: normal; font-weight: 700; }
+  .big-quote .dim { color: var(--text-dim); font-weight: 400; }
+
+  .verdict { margin-top: 26px; max-width: 88%; font-size: clamp(1.05rem, 1.7vw, 1.55rem); line-height: 1.8; color: var(--gold-light); }
+  .verdict .dim { color: var(--text-dim); }
+
+  .trio { display: flex; gap: 18px; justify-content: center; margin-top: 20px; flex-wrap: wrap; max-width: 94%; }
+  .trio-box { flex: 1 1 240px; max-width: 340px; border-radius: 16px; padding: 26px 22px; text-align: left; }
+  .trio-box .t-num { font-family: 'Noto Serif SC', serif; font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
+  .trio-box .t-name { font-size: clamp(1.15rem, 1.7vw, 1.5rem); font-weight: 700; margin-bottom: 10px; }
+  .trio-box .t-desc { font-size: clamp(0.85rem, 1.2vw, 1.05rem); line-height: 1.75; color: var(--text-dim); }
+  .trio-box .t-tag { display: inline-block; margin-top: 12px; padding: 3px 12px; border-radius: 20px; font-size: clamp(0.7rem, 0.95vw, 0.85rem); font-weight: 700; }
+  .tb-gold { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.4); } .tb-gold .t-num, .tb-gold .t-name { color: var(--gold-light); } .tb-gold .t-tag { background: rgba(201,168,76,0.14); color: var(--gold-light); }
+  .tb-blue { background: rgba(74,127,181,0.1); border: 1px solid rgba(74,127,181,0.4); } .tb-blue .t-num, .tb-blue .t-name { color: var(--blue); } .tb-blue .t-tag { background: rgba(74,127,181,0.14); color: #a9c7e6; }
+  .tb-red { background: rgba(212,106,74,0.1); border: 1px solid rgba(212,106,74,0.4); } .tb-red .t-num, .tb-red .t-name { color: var(--accent); } .tb-red .t-tag { background: rgba(212,106,74,0.14); color: #e6b3a4; }
+  .tb-green { background: rgba(74,168,117,0.1); border: 1px solid rgba(74,168,117,0.4); } .tb-green .t-num, .tb-green .t-name { color: var(--green); } .tb-green .t-tag { background: rgba(74,168,117,0.14); color: #9ed4b6; }
+
+  .flow { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px; width: 94%; max-width: 1120px; }
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; width: 100%; }
+  .fnode { padding: 14px 20px; border-radius: 12px; font-size: clamp(0.95rem, 1.5vw, 1.35rem); font-weight: 700; min-width: 120px; text-align: center; }
+  .fn-gold { background: rgba(201,168,76,0.14); border: 2px solid var(--gold); color: var(--gold-light); }
+  .fn-blue { background: rgba(74,127,181,0.14); border: 2px solid var(--blue); color: #a9c7e6; }
+  .fn-green { background: rgba(74,168,117,0.14); border: 2px solid var(--green); color: #9ed4b6; }
+  .fn-red { background: rgba(212,106,74,0.16); border: 2px solid var(--accent); color: #e6b3a4; }
+  .farrow { color: var(--gold); font-size: clamp(1.3rem, 1.9vw, 1.9rem); font-weight: 300; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; width: 92%; max-width: 1180px; margin-top: 16px; }
+  .cards.c2 { grid-template-columns: repeat(2, 1fr); max-width: 1000px; }
+  .cards.c1 { grid-template-columns: 1fr; max-width: 900px; }
+  .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; padding: 22px 24px; text-align: left; }
+  .card .c-ic { font-size: 1.7rem; margin-bottom: 6px; }
+  .card .c-name { font-family: 'Noto Serif SC', serif; font-size: clamp(1.15rem, 1.8vw, 1.6rem); font-weight: 700; color: var(--gold-light); margin-bottom: 8px; }
+  .card .c-desc { font-size: clamp(0.85rem, 1.2vw, 1.08rem); line-height: 1.7; color: var(--text); }
+  .card .c-desc strong { color: var(--accent); }
+  .card.red .c-name { color: #e6b3a4; }
+  .card .c-tag { display: inline-block; margin-top: 10px; padding: 3px 12px; border-radius: 20px; font-size: clamp(0.68rem, 0.9vw, 0.82rem); font-weight: 700; }
+
+  .items { text-align: left; max-width: 88%; margin-top: 6px; }
+  .item { display: flex; align-items: flex-start; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: clamp(1rem, 1.5vw, 1.38rem); line-height: 1.7; }
+  .item .num { color: var(--gold); font-weight: 700; font-family: 'Noto Serif SC', serif; flex-shrink: 0; }
+  .item strong { color: var(--gold-light); }
+  .item .mark { color: var(--accent); font-weight: 700; }
+  .items.c2grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 36px; max-width: 92%; }
+  .items.c2grid .item { border-bottom: none; padding: 10px 0; }
+
+  .slide-end { justify-content: center; }
+  .slide-end h2 { font-size: clamp(2.2rem, 4.4vw, 4.2rem); font-weight: 900; letter-spacing: 0.06em; margin-bottom: 18px; }
+  .slide-end .gold-bar { width: 72px; height: 4px; background: var(--gold); margin: 18px auto; border-radius: 2px; }
+  .slide-end p { font-size: clamp(1rem, 1.6vw, 1.5rem); color: var(--gold-light); letter-spacing: 0.06em; line-height: 1.9; }
+  .slide-end .doc-link { margin-top: 40px; font-size: clamp(0.85rem, 1.2vw, 1.1rem); color: var(--text-dim); }
+  .slide-end .doc-link a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,168,76,0.4); word-break: break-all; }
+
+  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; background: rgba(10,10,22,0.9); padding: 12px 22px; z-index: 100; border-top: 1px solid rgba(255,255,255,0.06); }
+  .nav-bar .progress { position: absolute; top: -1px; left: 0; height: 3px; background: var(--gold); transition: width 0.3s ease; }
+  .nav-bar .page-info { font-size: 0.8rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-right: auto; }
+  .nav-btns button { background: rgba(255,255,255,0.08); color: var(--cream); border: none; width: 36px; height: 36px; border-radius: 8px; font-size: 1.15rem; cursor: pointer; margin-left: 8px; transition: background 0.2s; }
+  .nav-btns button:hover { background: rgba(201,168,76,0.3); }
+  .keyboard-hint { position: fixed; bottom: 58px; right: 18px; font-size: 0.72rem; color: rgba(255,255,255,0.3); z-index: 100; letter-spacing: 0.06em; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 26px 16px; }
+    h2 { font-size: clamp(1.5rem, 6vw, 2.1rem); }
+    .cards { grid-template-columns: 1fr; }
+    .cards.c2 { grid-template-columns: 1fr; }
+    .items.c2grid { grid-template-columns: 1fr; }
+    .big-quote { font-size: 1.1rem; }
+    .item { font-size: 0.92rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides-container" id="slidesContainer">
+
+  <!-- 1. 封面 -->
+  <div class="slide slide-title active" data-index="0">
+    <div class="gold-bar"></div>
+    <h1>选择重于努力
+      <span class="sub">增长 × 稀缺 × 主动</span>
+    </h1>
+    <div class="subtitle">判断与选择的系统论述 · 附批判性审视</div>
+    <div class="meta">赵锦勇 · 2026-09</div>
+  </div>
+
+  <!-- 2. 缘起：三个人的转身 -->
+  <div class="slide" data-index="1">
+    <div class="kicker">缘起 · 三个人的转身</div>
+    <h2>从三个人的选择说起</h2>
+    <div class="trio">
+      <div class="trio-box tb-blue">
+        <div class="t-name">石凡 · 华侨全球资产配置</div>
+        <div class="t-desc">押注全球资产配置需求增长 × 海外华人群体扩大。调用：全球化配置能力 + 对华人的深入了解。</div>
+        <div class="t-tag">专业稀缺 × 信任稀缺</div>
+      </div>
+      <div class="trio-box tb-gold">
+        <div class="t-name">蔡洪滨 · 香港全球化教育</div>
+        <div class="t-desc">押注"一国两制"下香港作为内外交流枢纽的制度红利。调用：国内社会联系 + 学术与全球化能力。</div>
+        <div class="t-tag">网络稀缺 × 专业稀缺</div>
+      </div>
+      <div class="trio-box tb-green">
+        <div class="t-name">雷升涛 · AI 赛道创业</div>
+        <div class="t-desc">押注 AI 这一最具确定性的高速增长领域。调用：清华技术平台（借力而非依赖）+ 创业经验。</div>
+        <div class="t-tag">平台借力 × 经验稀缺</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 共同结构：三要素 -->
+  <div class="slide" data-index="2">
+    <div class="kicker">共同结构</div>
+    <h2>三个案例背后的<em class="hl">三要素</em></h2>
+    <div class="trio">
+      <div class="trio-box tb-gold">
+        <div class="t-num">01</div>
+        <div class="t-name">增长性</div>
+        <div class="t-desc">赛道处于扩张期，需求在放大而非萎缩。</div>
+      </div>
+      <div class="trio-box tb-blue">
+        <div class="t-num">02</div>
+        <div class="t-name">稀缺性</div>
+        <div class="t-desc">自身技能在此供给不足，定价权在自己手里。</div>
+      </div>
+      <div class="trio-box tb-green">
+        <div class="t-num">03</div>
+        <div class="t-name">主动性</div>
+        <div class="t-desc">不被动等待，而是主动预判、主动构建、主动进场。</div>
+      </div>
+    </div>
+    <div class="verdict">要主动进取、对未来有预判——<br>而不是消极等待、依赖系统、依赖某些个人，那些终会消失</div>
+  </div>
+
+  <!-- 4. 核心命题 -->
+  <div class="slide" data-index="3">
+    <div class="kicker">核心命题</div>
+    <div class="big-quote">
+      "市场为稀缺性付钱，<em>不为辛苦付钱</em>。<br>
+      努力决定的是量，选择决定的是<em>单价</em>。"
+    </div>
+    <div class="verdict">比努力更重要的，是<strong>积极的判断与选择</strong>——<br>从五个层面展开</div>
+    <div class="items" style="margin-top:22px;">
+      <div class="item"><span class="num">①</span><div>经济学 · 回报由<strong>稀缺性</strong>定价</div></div>
+      <div class="item"><span class="num">②</span><div>产业周期 · 增长行业的<strong>结构性红利</strong></div></div>
+      <div class="item"><span class="num">③</span><div>结构 · 借力平台，<strong>不依赖平台</strong></div></div>
+      <div class="item"><span class="num">④</span><div>认知 · <strong>判断力</strong>本身就是最稀缺的技能</div></div>
+      <div class="item"><span class="num">⑤</span><div>行动 · <strong>主动进取</strong>的心理机制</div></div>
+    </div>
+  </div>
+
+  <!-- 5. 层面一：经济学 -->
+  <div class="slide" data-index="4">
+    <div class="kicker">层面一 · 经济学</div>
+    <h2>回报由<em class="hl">稀缺性</em>定价<br>不由努力定价</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="c-ic">⚖️</div>
+        <div class="c-name">定价逻辑</div>
+        <div class="c-desc">搬砖再努力，单价不变；稀缺技能哪怕少做，单价翻倍。</div>
+      </div>
+      <div class="card">
+        <div class="c-ic">📉</div>
+        <div class="c-name">边际回报</div>
+        <div class="c-desc">萎缩行业里努力边际回报趋近于零甚至为负——<strong>越努力越内卷</strong>。</div>
+      </div>
+      <div class="card">
+        <div class="c-ic">🌊</div>
+        <div class="c-name">贝塔与阿尔法</div>
+        <div class="c-desc">行业贝塔决定水位：涨潮大家都浮起来，退潮努力也托不住。阿尔法只在有贝塔的地方有意义。</div>
+      </div>
+    </div>
+    <div class="verdict">努力决定"量"，选择决定"单价"</div>
+  </div>
+
+  <!-- 6. 层面二：产业周期 -->
+  <div class="slide" data-index="5">
+    <div class="kicker">层面二 · 产业周期</div>
+    <h2>增长行业的<em class="hl">结构性红利</em></h2>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="fnode fn-blue">缓慢起步</div>
+        <div class="farrow">→</div>
+        <div class="fnode fn-gold">高速增长</div>
+        <div class="farrow">→</div>
+        <div class="fnode fn-green">平台期</div>
+        <div class="farrow">→</div>
+        <div class="fnode fn-red">衰退</div>
+      </div>
+      <div class="lead" style="margin-top:6px;">绝大多数行业利润在<strong>高速增长期</strong>创造，平台期与衰退期只是分蛋糕</div>
+    </div>
+    <div class="cards" style="margin-top:20px;">
+      <div class="card">
+        <div class="c-name">需求外溢</div>
+        <div class="c-desc">蛋糕变大，参与者不必零和竞争。</div>
+      </div>
+      <div class="card">
+        <div class="c-name">人才稀缺溢价</div>
+        <div class="c-desc">供给跟不上需求，能力溢价高。</div>
+      </div>
+      <div class="card">
+        <div class="c-name">认知红利</div>
+        <div class="c-desc">规则未定，先入者参与定义，获得认知领先。</div>
+      </div>
+    </div>
+    <div class="verdict" style="color:var(--text);"><span class="dim" style="color:var(--text-dim);">内卷是"努力"的通货膨胀——</span>跳出内卷的唯一方式是<strong style="color:var(--gold-light);">换战场</strong>，而不是更努力</div>
+  </div>
+
+  <!-- 7. 层面三：结构 -->
+  <div class="slide" data-index="6">
+    <div class="kicker">层面三 · 结构</div>
+    <h2>借力平台，<em class="hl">不依赖平台</em></h2>
+    <div class="cards c2">
+      <div class="card">
+        <div class="c-ic">🔍</div>
+        <div class="c-name">平台的放大器</div>
+        <div class="c-desc">平台（机构、体制、大厂、关系网）能放大个人能力——理性的借力。</div>
+      </div>
+      <div class="card red">
+        <div class="c-ic">⏳</div>
+        <div class="c-name">平台的半衰期</div>
+        <div class="c-desc">体制会改革、大厂会裁员、关系会疏远、系统会消失。依赖系统的人，把命运交给系统的生命周期。</div>
+      </div>
+    </div>
+    <div class="verdict">判断标准：一个能力<strong>离开平台就不成立</strong>，那它不是你的能力，是平台的能力。<br><span class="dim">真正属于你的，是"可携带"的部分——可迁移的技能、可再生的信任、可复制的认知。</span></div>
+  </div>
+
+  <!-- 8. 层面四：认知 -->
+  <div class="slide" data-index="7">
+    <div class="kicker">层面四 · 认知</div>
+    <h2>判断力本身就是<em class="hl">最稀缺的技能</em></h2>
+    <div class="cards">
+      <div class="card">
+        <div class="c-name">信息优势</div>
+        <div class="c-desc">站在前沿，接触一线，先于众人看到。</div>
+      </div>
+      <div class="card">
+        <div class="c-name">模式识别</div>
+        <div class="c-desc">从历史规律中识别结构的重复。</div>
+      </div>
+      <div class="card">
+        <div class="c-name">反共识勇气</div>
+        <div class="c-desc">在众人行动之前入场。</div>
+      </div>
+    </div>
+    <div class="verdict">努力是线性积累，判断是<strong>乘法</strong>——<br>一次正确的行业选择，胜过十年的勤奋</div>
+    <div class="lead" style="margin-top:12px;">每一次主动选择，都是一次判断力的实战训练；<br>每一次被动等待，都是一次判断力的萎缩</div>
+  </div>
+
+  <!-- 9. 层面五：行动 -->
+  <div class="slide" data-index="8">
+    <div class="kicker">层面五 · 行动</div>
+    <h2>主动进取的<em class="hl">心理机制</em></h2>
+    <div class="cards">
+      <div class="card red">
+        <div class="c-name">被动等待的三根源</div>
+        <div class="c-desc">损失厌恶（怕失去现有）· 现状偏好（惯性最省力）· 确定性偏好（看不见结果不敢动）。演化上是保护机制，剧变期是陷阱。</div>
+      </div>
+      <div class="card">
+        <div class="c-name">主动进取三步</div>
+        <div class="c-desc">持续扫描机会（保持信息开放）→ 小步试错（低成本验证）→ 快速切换（及时止损与转向）。</div>
+      </div>
+    </div>
+    <div class="verdict">不选择也是一种选择——<br>留在原地，就是放弃所有其他可能性，这个成本<strong>看不见，却最昂贵</strong></div>
+  </div>
+
+  <!-- 10. 批判总览 -->
+  <div class="slide" data-index="9">
+    <div class="kicker">批判性审视 · 防止自我确认</div>
+    <h2>越是振奋的洞察<br>越需要<em class="hl" style="color:#e6b3a4;">反向验证</em></h2>
+    <div class="items c2grid">
+      <div class="item"><span class="num">1</span><div><strong>幸存者偏差</strong>——你看到的都是赢家</div></div>
+      <div class="item"><span class="num">2</span><div><strong>因果方向存疑</strong>——是能力强，不是选得对</div></div>
+      <div class="item"><span class="num">3</span><div><strong>拥挤度悖论</strong>——人人看出的增长已被定价</div></div>
+      <div class="item"><span class="num">4</span><div><strong>稀缺性的时效性</strong>——稀缺是动态的</div></div>
+      <div class="item"><span class="num">5</span><div><strong>隐含假设</strong>——人可以自由切换赛道？</div></div>
+      <div class="item"><span class="num">6</span><div><strong>隐含假设</strong>——"不依赖系统"本身依赖系统</div></div>
+      <div class="item"><span class="num">7</span><div><strong>价值判断主观性</strong>——对谁有价值？</div></div>
+    </div>
+  </div>
+
+  <!-- 11. 视角 1-2 -->
+  <div class="slide" data-index="10">
+    <div class="kicker">批判视角 ①②</div>
+    <h2>幸存者偏差 &amp; 因果方向</h2>
+    <div class="cards c2">
+      <div class="card red">
+        <div class="c-name">① 幸存者偏差</div>
+        <div class="c-desc">同样的"选择逻辑"在无数失败者身上同样成立——也有人押注 AI 血本无归，也有人去香港铩羽而归。<strong>选择正确与否，事后看是因果，事前看是概率。</strong>用赢家叙事反推方法论，会高估判断的确定性。</div>
+      </div>
+      <div class="card red">
+        <div class="c-name">② 因果方向存疑</div>
+        <div class="c-desc">三人都是顶级人才。对强者，"选什么"可能只是<strong>能力的变现渠道</strong>，而非成功的原因。<strong>能力是常量，选择是变量</strong>——只观察变量时，会高估变量的解释力。对普通人，选择的重要性可能远低于对强者的重要性。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. 视角 3-4 -->
+  <div class="slide" data-index="11">
+    <div class="kicker">批判视角 ③④</div>
+    <h2>拥挤度悖论 &amp; 稀缺性时效</h2>
+    <div class="cards c2">
+      <div class="card red">
+        <div class="c-name">③ 拥挤度悖论</div>
+        <div class="c-desc">当所有人都看出"有增长"时，红利已被价格吸收——今天的 AI 人人往里挤，人才溢价被稀释，失败率被抬高。<strong>真正的高增长往往在被低估处</strong>；追逐"显而易见的高增长"，本身可能已经晚了。</div>
+      </div>
+      <div class="card red">
+        <div class="c-name">④ 稀缺性的时效性</div>
+        <div class="c-desc">AI 正以极快速度把各种"稀缺"变成"普遍"——翻译、编程、设计，甚至部分判断。<strong>你花五年练成的稀缺，可能五年后被技术抹平。</strong>更稳的策略是追"需要时间积累、且技术难以替代"的稀缺：<strong>信任、判断、连接、审美</strong>。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. 视角 5-6 -->
+  <div class="slide" data-index="12">
+    <div class="kicker">批判视角 ⑤⑥ · 两个隐含假设</div>
+    <h2>最隐蔽的两处<em class="hl" style="color:#e6b3a4;">自我欺骗</em></h2>
+    <div class="cards c2">
+      <div class="card red">
+        <div class="c-name">⑤ "人可以自由切换赛道"</div>
+        <div class="c-desc">现实约束是硬的：沉没成本、家庭责任、年龄窗口、地域限制、资金压力。<strong>把"应该主动选择"说给被房贷和孩子绑住的中年人听，是一种傲慢。</strong>讨论选择，必须同时讨论约束下的可行集。</div>
+      </div>
+      <div class="card red">
+        <div class="c-name">⑥ "不依赖系统"本身依赖系统</div>
+        <div class="c-desc">三人看似脱离旧系统，实则都深度依赖——蔡洪滨依赖学术系统与制度红利，雷升涛依赖清华平台，石凡依赖圈层信任。<strong>"不依赖系统"的叙事，可能正是系统赋能的结果：先被系统喂大，再宣称独立。</strong>警惕把平台红利误认为个人能力。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. 视角 7 + 提醒 -->
+  <div class="slide" data-index="13">
+    <div class="kicker">批判视角 ⑦ · 价值判断</div>
+    <h2>"有价值"是对谁而言？</h2>
+    <div class="cards c1">
+      <div class="card red">
+        <div class="c-name">⑦ 价值判断是主观的</div>
+        <div class="c-desc">市场价值、社会价值、生命意义价值并不总是一致。纯粹以增长和稀缺为导向，可能牺牲意义感——而<strong>意义感恰恰是长期坚持的燃料</strong>。只有增长没有意义，你会在中途失去动力；只有意义没有增长，你会在现实中失去阵地。两者都需要，比例因人而异。</div>
+      </div>
+    </div>
+    <div class="verdict" style="margin-top:24px;">这个洞察太顺耳——先问自己：<br><strong>我现在的位置和资源，有多少是平台给的？剥离之后还剩什么？</strong></div>
+  </div>
+
+  <!-- 15. 实践操作系统 -->
+  <div class="slide" data-index="14">
+    <div class="kicker">从洞察到实践</div>
+    <h2>判断与选择的<em class="hl">操作系统</em></h2>
+    <div class="items c2grid">
+      <div class="item"><span class="num">1</span><div><strong>双维评估</strong>：赛道在扩张？我的能力在此稀缺且补不上？两问皆肯定，才重仓。</div></div>
+      <div class="item"><span class="num">2</span><div><strong>技能资产审计</strong>：每半年盘点——哪些升值、贬值、将被技术抹平。</div></div>
+      <div class="item"><span class="num">3</span><div><strong>保持可选择性</strong>：主业求稳、副业求期权；可选择性是入场的资格。</div></div>
+      <div class="item"><span class="num">4</span><div><strong>制造信息优势</strong>：站在前沿、跨圈交流、对反常识信号敏感。</div></div>
+      <div class="item"><span class="num">5</span><div><strong>剥离测试</strong>：离开平台什么依然成立？持续投资可携带资产。</div></div>
+      <div class="item"><span class="num">6</span><div><strong>概率思维</strong>：用"下注"代替"押注"，让错误可承受、正确可重复。</div></div>
+    </div>
+  </div>
+
+  <!-- 16. 回到自身 -->
+  <div class="slide" data-index="15">
+    <div class="kicker">回到自身 · 三个自我追问</div>
+    <h2>不替你下结论，<br>只留三个<em class="hl">追问</em></h2>
+    <div class="items">
+      <div class="item"><span class="num">❶</span><div>我的主赛道是<strong>扩张期还是平台期</strong>？——商学院价值锚点正从"教什么"转向"筛选谁、连接谁"，连接与平台能力在升值。</div></div>
+      <div class="item"><span class="num">❷</span><div>我的<strong>稀缺性在哪里</strong>？——教育运营 × 校友网络 × AI 快速理解 × 信任资产，组合可能稀缺，需要验证"谁在为组合付钱"。</div></div>
+      <div class="item"><span class="num">❸</span><div>我有哪些<strong>"可携带资产"正在增值</strong>？——人脉连接、内容能力、AI 应用、个人信任，不依赖任何单一平台。</div></div>
+    </div>
+  </div>
+
+  <!-- 17. 结语 -->
+  <div class="slide slide-end" data-index="16">
+    <h2>判断力是努力的方向<br>努力是判断力的兑现</h2>
+    <div class="gold-bar"></div>
+    <p>没有判断的努力是内卷</p>
+    <p style="margin-top:10px;">没有努力的判断是空想</p>
+    <p style="margin-top:26px;color:var(--text);font-size:clamp(0.95rem,1.5vw,1.35rem);letter-spacing:0.02em;">真正的稀缺，不是某个技能，<br>而是"持续做出正确判断"的能力本身——它值得用一生去训练</p>
+    <div class="doc-link">完整论述：<a href="https://www.feishu.cn/wiki/Sg99wYW6TiHIJikHe2vc8aAtnMc" target="_blank">选择重于努力：增长、稀缺性与主动进取的系统论述（飞书文档）</a></div>
+  </div>
+
+</div>
+
+<div class="nav-bar">
+  <div class="progress" id="progressBar"></div>
+  <div class="page-info" id="pageInfo">1 / 17</div>
+  <div class="nav-btns">
+    <button onclick="prevSlide()" title="上一页">‹</button>
+    <button onclick="nextSlide()" title="下一页">›</button>
+  </div>
+</div>
+<div class="keyboard-hint">← → / 空格 翻页</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+const progressBar = document.getElementById('progressBar');
+const pageInfo = document.getElementById('pageInfo');
+
+function update() {
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'exit');
+    if (i === current) s.classList.add('active');
+    else if (i < current) s.classList.add('exit');
+  });
+  progressBar.style.width = ((current + 1) / total * 100) + '%';
+  pageInfo.textContent = (current + 1) + ' / ' + total;
+}
+
+function nextSlide() { if (current < total - 1) { current++; update(); } }
+function prevSlide() { if (current > 0) { current--; update(); } }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prevSlide(); }
+  if (e.key === 'Home') { current = 0; update(); }
+  if (e.key === 'End') { current = total - 1; update(); }
+});
+
+let touchX = 0;
+document.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) { dx < 0 ? nextSlide() : prevSlide(); }
+});
+
+update();
+</script>
+</body>
+</html>
